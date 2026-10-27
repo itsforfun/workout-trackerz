@@ -1010,7 +1010,7 @@
             opacity:0; visibility:hidden; transition:opacity 0.35s var(--ease), visibility 0s linear 0.35s; }
         .record.show { opacity:1; visibility:visible; transition:opacity 0.35s var(--ease); }
         .record-ring { position:relative; width:min(240px,64vw); margin-bottom:var(--s4); }
-        .record-ring svg { display:block; width:100%; height:auto; transform:rotate(-90deg); }
+        .record-ring > svg { display:block; width:100%; height:auto; transform:rotate(-90deg); }
         .rr-bg { fill:none; stroke:rgba(217,178,95,0.12); stroke-width:3; }
         .rr-fg { fill:none; stroke:url(#recordGold); stroke-width:3; stroke-linecap:round; stroke-dasharray:578; stroke-dashoffset:578; filter:drop-shadow(0 0 8px rgba(217,178,95,0.6)); }
         .record.show .rr-fg { animation:recordRing 1.3s var(--ease) 0.15s forwards; }
@@ -1053,6 +1053,41 @@
             body.scrolled:not(:has(.workout-screen.active))::before { height:calc(env(safe-area-inset-top) + var(--ios-blur-band) + 12px);
                 background:linear-gradient(to bottom, var(--bg) 0, var(--bg) env(safe-area-inset-top), rgba(19,16,14,0) 100%); }
         }
+
+        /* ── Consistency score + achievements (v1.18) ── */
+        .hero-rings { position:relative; }
+        .hero-score { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; pointer-events:none; }
+        .hero-score strong { font-weight:300; font-size:1.25rem; letter-spacing:-0.02em; line-height:1; }
+        .hero-score span { font-size:0.5rem; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; color:var(--text-muted); margin-top:3px; }
+        .hero-link { background:none; border:none; padding:0; font:inherit; font-size:0.74rem; color:var(--text-muted); cursor:pointer; }
+        .hero-link strong { color:var(--accent); font-weight:500; }
+
+        .consistency-card { background:var(--raised); box-shadow:var(--lift); border-radius:var(--r-card); padding:var(--s5); margin-bottom:var(--s4); }
+        .consistency-label { font-size:0.62rem; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; color:var(--text-muted); }
+        .consistency-score { font-weight:200; font-size:4rem; letter-spacing:-0.04em; line-height:1; margin:6px 0 4px; }
+        .consistency-sub { font-size:0.74rem; color:var(--text-muted); }
+        .consistency-parts { display:flex; flex-direction:column; gap:var(--s3); margin-top:var(--s5); }
+        .cp-row { display:grid; grid-template-columns:56px 1fr auto; align-items:center; gap:var(--s3); }
+        .cp-label { font-size:0.78rem; color:var(--text-dim); }
+        .cp-bar { height:4px; border-radius:999px; background:rgba(255,255,255,0.06); overflow:hidden; }
+        .cp-bar span { display:block; height:100%; border-radius:999px; background:linear-gradient(90deg,rgba(240,232,216,0.35),rgba(240,232,216,0.85)); transition:width 0.8s var(--ease); }
+        .cp-text { font-size:0.72rem; color:var(--text-muted); white-space:nowrap; }
+
+        .section-head { display:flex; justify-content:space-between; align-items:baseline; margin:var(--s6) 2px var(--s3); }
+        .section-head h3 { font-family:var(--font-display); font-size:1.4rem; letter-spacing:0.04em; font-weight:400; }
+        .section-head span { font-size:0.8rem; color:var(--text-muted); }
+        .achievement-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:var(--s2); }
+        .achievement { display:flex; flex-direction:column; align-items:center; gap:6px; text-align:center; padding:var(--s4) var(--s2) var(--s3); border:none; border-radius:var(--r-inner); background:var(--raised); box-shadow:var(--lift); color:var(--text-muted); font-family:var(--font-ui); cursor:pointer; }
+        .achievement-icon { width:46px; height:46px; display:grid; place-items:center; border-radius:50%; background:rgba(255,255,255,0.03); box-shadow:inset 0 0 0 1px rgba(240,232,216,0.08); color:var(--text-muted); }
+        .achievement-name { font-size:0.74rem; font-weight:500; line-height:1.25; color:var(--text-dim); }
+        .achievement-sub { font-size:0.62rem; color:var(--text-muted); }
+        .achievement-bar { width:60%; height:3px; border-radius:999px; background:rgba(255,255,255,0.06); overflow:hidden; }
+        .achievement-bar span { display:block; height:100%; background:rgba(240,232,216,0.5); border-radius:999px; }
+        .achievement.earned .achievement-icon { color:var(--accent); background:radial-gradient(circle,rgba(217,178,95,0.16),rgba(217,178,95,0.04)); box-shadow:inset 0 0 0 1px rgba(217,178,95,0.5), 0 0 18px -6px rgba(217,178,95,0.5); }
+        .achievement.earned .achievement-name { color:var(--text); }
+        .moment-medal { display:grid; place-items:center; width:76px; height:76px; margin:10px auto 4px; border-radius:50%; color:var(--accent); background:radial-gradient(circle,rgba(217,178,95,0.18),rgba(217,178,95,0.03)); box-shadow:inset 0 0 0 1px rgba(217,178,95,0.45); }
+        .moment-medal svg { display:block; }
+        .record-value .moment-medal svg { filter:drop-shadow(0 0 10px rgba(217,178,95,0.5)); }
     </style>
 </head>
 <body>
@@ -1304,6 +1339,7 @@
             <div class="hero">
                 <h1>PROGRESS</h1>
             </div>
+            <div class="consistency-card" id="consistencyCard"></div>
             <div class="stat-row" id="progressSummary"></div>
 
             <div class="progress-panel">
@@ -1317,6 +1353,7 @@
             </div>
 
             <div class="progress-list" id="progressList"></div>
+            <div id="achievementsCard"></div>
         </div>
     </div>
 
@@ -1577,7 +1614,7 @@
 
 // Shown at the bottom of Settings so you can tell which version a phone is running.
 // Bump it with every deploy.
-const APP_VERSION = '1.17 · 28 Oct';
+const APP_VERSION = '1.18 · 28 Oct';
 
 const SUPABASE_URL = 'https://hcwbcxhblfjpdlkwykez.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_mEe_5g2UITyp5O-F9YRhRg_wTQWuOtf';
@@ -2913,6 +2950,8 @@ function renderTodayHero() {
     const cardio = cardioWeek().moderate;
     const steps = stepsOn(todayStr());
     const goal = stepGoal();
+    const consistency = consistencyScore();
+    const achieved = Object.keys(allData._achievements || {}).length;
     const rings = [
         { label: 'Lift', color: '#f3ece0', value: stats.thisWeek, target: liftTarget, text: `${stats.thisWeek}<small>/${liftTarget}</small>`, unit: 'this week' },
         { label: 'Cardio', color: '#86d6a8', value: cardio, target: 150, text: `${cardio}<small>/150 min</small>`, unit: 'this week' },
@@ -2929,6 +2968,7 @@ function renderTodayHero() {
     }).join('');
     el.innerHTML = `
         <div class="hero-rings">
+            <div class="hero-score"><strong>${consistency.score}</strong><span>score</span></div>
             <svg viewBox="0 0 200 200" aria-hidden="true">
                 <defs><linearGradient id="heroGold" x1="0" y1="0" x2="1" y2="1">
                     <stop offset="0" stop-color="#f2d891"/><stop offset="1" stop-color="#b38636"/>
@@ -2945,7 +2985,7 @@ function renderTodayHero() {
         </div>
         <div class="hero-foot">
             <span><strong>${stats.streak}</strong> ${stats.streak === 1 ? 'week' : 'weeks'} in a row</span>
-            <span><strong>${stats.total}</strong> workouts</span>
+            <button class="hero-link" onclick="openAchievements()"><strong>${achieved}</strong> of ${achievementList().length} achievements →</button>
         </div>
     `;
     // Rings sweep in from empty
@@ -2955,12 +2995,13 @@ function renderTodayHero() {
     // Steps live on the Steps tab; fetch today's count once so the ring is right on first open
     if (!heroStepsRequested && currentUser) {
         heroStepsRequested = true;
-        loadSteps().then(ok => { if (ok) renderTodayHero(); });
+        loadSteps().then(ok => { if (ok) { checkAchievements(); renderTodayHero(); } });
     }
 }
 
 function renderToday() {
     const prog = PROGRAMS[currentProgram];
+    checkAchievements();
     const nextDay = getNextDay();
     if (todayDay === null || todayDay >= prog.days.length) todayDay = nextDay;
     const week = todayWeek !== null ? todayWeek : getCurrentWeek();
@@ -3147,6 +3188,8 @@ function toggleHabit(i, on) {
     habits[todayStr()] = [...today].sort((a, b) => a - b);
     scheduleSave();
     renderHabits();
+    checkAchievements();
+    renderTodayHero();
 }
 
 // Week 6+: suggest the harder version of an exercise once knees and balance are solid
@@ -3431,6 +3474,7 @@ function stepsOn(date) {
 async function renderSteps() {
     drawSteps();            // draw what we have straight away
     if (await loadSteps()) {
+        checkAchievements();
         drawSteps();
         renderHabits();     // the steps habit ticks itself
     }
@@ -4157,12 +4201,23 @@ let recordTimer = null;
 
 function showRecord(ex, value, prev) {
     const repsBased = isRepsBased(ex);
-    document.getElementById('recordValue').textContent = repsBased ? String(value) : kgToDisplay(value);
-    document.getElementById('recordUnit').textContent = repsBased ? 'reps' : setWeightUnit(ex);
-    document.getElementById('recordName').textContent = exerciseDisplayName(ex, activeWorkout.week);
     const gain = repsBased ? `+${value - prev} reps` : `+${kgToDisplay(value - prev)} ${unitLabel('kg')}`;
-    document.getElementById('recordPrev').textContent =
-        `Previous best ${repsBased ? `${prev} reps` : `${kgToDisplay(prev)} ${setWeightUnit(ex)}`} · ${gain}`;
+    queueMoment(() => showMoment({
+        kicker: 'New record',
+        valueHtml: escapeHtml(repsBased ? String(value) : kgToDisplay(value)),
+        unit: repsBased ? 'reps' : setWeightUnit(ex),
+        name: exerciseDisplayName(ex, activeWorkout ? activeWorkout.week : 0),
+        sub: `Previous best ${repsBased ? `${prev} reps` : `${kgToDisplay(prev)} ${setWeightUnit(ex)}`} · ${gain}`,
+    }));
+}
+
+// Full-screen gold moment (new record, achievement); closes itself after a few seconds
+function showMoment({ kicker, valueHtml, unit, name, sub }) {
+    document.querySelector('#recordMoment .record-kicker').textContent = kicker;
+    document.getElementById('recordValue').innerHTML = valueHtml;
+    document.getElementById('recordUnit').textContent = unit;
+    document.getElementById('recordName').textContent = name;
+    document.getElementById('recordPrev').textContent = sub;
     const el = document.getElementById('recordMoment');
     el.classList.remove('show');
     void el.offsetWidth;   // restart the animation
@@ -4177,6 +4232,7 @@ function showRecord(ex, value, prev) {
 function closeRecord() {
     clearTimeout(recordTimer);
     document.getElementById('recordMoment').classList.remove('show');
+    setTimeout(nextMoment, 450);
 }
 
 // Two soft rising notes, quieter than the rest-timer beep
@@ -4766,6 +4822,280 @@ function celebrate({ icon, color, kicker, title, text }) {
 function closeCelebration() {
     document.getElementById('celebrate').classList.remove('show');
     document.getElementById('celebrateConfetti').innerHTML = '';
+    setTimeout(nextMoment, 450);
+}
+
+// ════════════════════════════════════════════
+//  CONSISTENCY SCORE + ACHIEVEMENTS
+// ════════════════════════════════════════════
+
+// Consistency score (0–100) over the last 7 days: lifting vs the plan (40), cardio vs the WHO 150 min (20),
+// steps vs the daily goal (20) and daily habits (20). Parts with nothing to measure (no steps ever synced,
+// a program without habits) drop out and the rest are re-weighted.
+function consistencyScore() {
+    const today = todayStr();
+    const from = addDays(today, -6);
+    const inWindow = d => d >= from && d <= today;
+    const prog = PROGRAMS[currentProgram];
+    const parts = [];
+
+    const workouts = allWorkoutDates().filter(inWindow).length;
+    parts.push({ key: 'lift', label: 'Lift', weight: 40, ratio: Math.min(1, workouts / weeklyLiftTarget(prog)), text: `${workouts} of ${weeklyLiftTarget(prog)} workouts` });
+
+    const cardio = cardioMinutes(inWindow);
+    parts.push({ key: 'cardio', label: 'Cardio', weight: 20, ratio: Math.min(1, cardio / 150), text: `${cardio} of 150 min` });
+
+    if (Object.keys(stepData).length) {
+        const days = Array.from({ length: 7 }, (_, i) => addDays(today, -i));
+        const avg = days.reduce((sum, d) => sum + stepsOn(d), 0) / 7;
+        parts.push({ key: 'steps', label: 'Steps', weight: 20, ratio: Math.min(1, avg / stepGoal()), text: `${Math.round(avg).toLocaleString()} a day` });
+    }
+
+    if (prog.habits && prog.habits.length) {
+        const days = Array.from({ length: 7 }, (_, i) => addDays(today, -i));
+        const share = days.reduce((sum, d) => sum + habitsDone(d) / prog.habits.length, 0) / 7;
+        parts.push({ key: 'habits', label: 'Habits', weight: 20, ratio: share, text: `${Math.round(share * 100)}% ticked` });
+    }
+
+    const total = parts.reduce((sum, p) => sum + p.weight, 0);
+    const score = Math.round((100 * parts.reduce((sum, p) => sum + p.weight * p.ratio, 0)) / total);
+    return { score, parts };
+}
+
+// WHO moderate-equivalent minutes (Zone 4–5 count double, Zone 1 not at all) for sessions on matching dates
+function cardioMinutes(matchDate) {
+    let minutes = 0;
+    Object.values(metaFor('_sessions')).forEach(list => (list || []).forEach(s => {
+        if (s.type !== 'cardio' || !matchDate(s.date)) return;
+        if (s.zone >= 4) minutes += 2 * (s.minutes || 0);
+        else if (s.zone >= 2 || !s.zone) minutes += s.minutes || 0;
+    }));
+    return minutes;
+}
+
+// Ticked habits on a date; the steps habit counts once 8,000 steps are synced
+function habitsDone(date) {
+    const prog = PROGRAMS[currentProgram];
+    const done = new Set((metaFor('_habits')[date]) || []);
+    if (prog.habits && /steps/i.test(prog.habits[0]) && stepsOn(date) >= 8000) done.add(0);
+    return done.size;
+}
+
+// Everything the achievements measure, from the saved log (across all programs where it makes sense)
+function achievementStats() {
+    const stats = { workouts: 0, bestStreak: 0, records: 0, topTier: 0, bestCardioWeek: 0, cardioSessions: 0,
+        stepGoalDays: 0, bestStepStreak: 0, perfectDays: 0, bestScore: 0, maxWeeksLogged: 0 };
+
+    const dates = allWorkoutDates();
+    stats.workouts = dates.length;
+    const weeks = [...new Set(dates.map(mondayOf))].sort();
+    let run = 0;
+    weeks.forEach((week, i) => {
+        run = i && addDays(weeks[i - 1], 7) === week ? run + 1 : 1;
+        stats.bestStreak = Math.max(stats.bestStreak, run);
+    });
+
+    // Records: a logged week that beats every earlier week of the same exercise; tiers: best lift per exercise
+    Object.keys(PROGRAMS).forEach(pid => {
+        const data = allData[pid];
+        if (!data) return;
+        const loggedWeeks = new Set();
+        PROGRAMS[pid].exercises.forEach(ex => {
+            const logged = getLoggedWeeks(ex.id, data);
+            logged.forEach(l => loggedWeeks.add(l.week));
+            let best = null;
+            logged.forEach(l => {
+                if (best !== null && l.value > best && !ex.assist) stats.records++;
+                best = best === null ? l.value : Math.max(best, l.value);
+            });
+            if (best !== null && ex.thresholds) {
+                const scaled = { ...ex, standardGender: ex.standardGender || PROGRAMS[pid].gender };
+                stats.topTier = Math.max(stats.topTier, getTier(scaled, best));
+            }
+        });
+        stats.maxWeeksLogged = Math.max(stats.maxWeeksLogged, loggedWeeks.size);
+    });
+
+    const cardioByWeek = {};
+    Object.values(metaFor('_sessions')).forEach(list => (list || []).forEach(s => {
+        if (s.type !== 'cardio') return;
+        stats.cardioSessions++;
+        cardioByWeek[mondayOf(s.date)] = true;
+    }));
+    Object.keys(cardioByWeek).forEach(monday => {
+        const sunday = addDays(monday, 6);
+        stats.bestCardioWeek = Math.max(stats.bestCardioWeek, cardioMinutes(d => d >= monday && d <= sunday));
+    });
+
+    const goal = stepGoal();
+    const stepDays = Object.keys(stepData).sort();
+    let stepRun = 0;
+    stepDays.forEach((day, i) => {
+        if (stepData[day].steps >= goal) {
+            stats.stepGoalDays++;
+            stepRun = i && addDays(stepDays[i - 1], 1) === day && stepData[stepDays[i - 1]].steps >= goal ? stepRun + 1 : 1;
+            stats.bestStepStreak = Math.max(stats.bestStepStreak, stepRun);
+        }
+    });
+
+    const prog = PROGRAMS[currentProgram];
+    if (prog.habits && prog.habits.length) {
+        stats.perfectDays = Object.keys(metaFor('_habits')).filter(d => habitsDone(d) >= prog.habits.length).length;
+    }
+
+    stats.bestScore = Math.max(allData._bestScore || 0, consistencyScore().score);
+    return stats;
+}
+
+const ACHIEVEMENT_ICONS = {
+    lift: '<path d="M6 8v8M3.5 10v4M18 8v8M20.5 10v4M6 12h12"/>',
+    streak: '<path d="M12 3c.8 3 4.5 4.6 4.5 9a4.5 4.5 0 0 1-9 0c0-2 .9-3.3 2-4.3.2 1.8 1.1 2.8 2.2 2.8 0-2.6-.9-4.6.3-7.5z"/>',
+    record: '<path d="M8 4h8v4.5a4 4 0 0 1-8 0V4zM8 6H5.5a2.5 2.5 0 0 0 2.6 3.2M16 6h2.5a2.5 2.5 0 0 1-2.6 3.2M12 12.5V16M9 20h6M10 16h4v4h-4z"/>',
+    tier: '<path d="M12 3.5l7.4 4.25v8.5L12 20.5l-7.4-4.25v-8.5z"/>',
+    cardio: '<path d="M3 12h4l2-4.5 3.5 9 2.2-4.5H21"/>',
+    steps: '<path d="M8.5 4c1.9 0 2.8 2 2.8 4.6S10.4 12.5 8.5 12.5 5.7 11 5.7 8.6 6.6 4 8.5 4zM15.5 11.5c1.9 0 2.8 2 2.8 4.6s-.9 3.9-2.8 3.9-2.8-1.5-2.8-3.9.9-4.6 2.8-4.6z"/>',
+    habit: '<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+    score: '<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor"/>',
+};
+
+function achievementList() {
+    const tierAchievements = [2, 3, 4, 5, 6].map(tier => ({
+        id: `tier-${tier}`, icon: 'tier', name: tierName(tier), desc: `Reach ${tierName(tier)} on any lift`, goal: tier, stat: 'topTier', count: false,
+    }));
+    return [
+        { id: 'workouts-1', icon: 'lift', name: 'First Session', desc: 'Finish your first workout', goal: 1, stat: 'workouts' },
+        { id: 'workouts-10', icon: 'lift', name: 'Ten Strong', desc: 'Finish 10 workouts', goal: 10, stat: 'workouts' },
+        { id: 'workouts-25', icon: 'lift', name: 'Twenty-Five', desc: 'Finish 25 workouts', goal: 25, stat: 'workouts' },
+        { id: 'workouts-50', icon: 'lift', name: 'Half Century', desc: 'Finish 50 workouts', goal: 50, stat: 'workouts' },
+        { id: 'cycle', icon: 'lift', name: 'Full Cycle', desc: 'Log all 12 weeks of a program', goal: 12, stat: 'maxWeeksLogged' },
+        { id: 'streak-3', icon: 'streak', name: 'Three in a Row', desc: 'Train 3 weeks in a row', goal: 3, stat: 'bestStreak' },
+        { id: 'streak-6', icon: 'streak', name: 'Six-Week Habit', desc: 'Train 6 weeks in a row', goal: 6, stat: 'bestStreak' },
+        { id: 'streak-12', icon: 'streak', name: 'Twelve-Week Run', desc: 'Train 12 weeks in a row', goal: 12, stat: 'bestStreak' },
+        { id: 'record-1', icon: 'record', name: 'New Ground', desc: 'Set your first personal record', goal: 1, stat: 'records' },
+        { id: 'record-10', icon: 'record', name: 'Record Breaker', desc: 'Set 10 personal records', goal: 10, stat: 'records' },
+        { id: 'record-25', icon: 'record', name: 'Relentless', desc: 'Set 25 personal records', goal: 25, stat: 'records' },
+        ...tierAchievements,
+        { id: 'cardio-150', icon: 'cardio', name: 'Heart Healthy', desc: 'Reach 150 cardio minutes in one week', goal: 150, stat: 'bestCardioWeek' },
+        { id: 'cardio-10', icon: 'cardio', name: 'Aerobic Base', desc: 'Log 10 cardio sessions', goal: 10, stat: 'cardioSessions' },
+        { id: 'steps-1', icon: 'steps', name: 'Goal Getter', desc: 'Hit your daily step goal', goal: 1, stat: 'stepGoalDays' },
+        { id: 'steps-7', icon: 'steps', name: 'Seven Straight', desc: 'Hit your step goal 7 days in a row', goal: 7, stat: 'bestStepStreak' },
+        { id: 'habits-1', icon: 'habit', name: 'Perfect Day', desc: 'Tick every daily habit in one day', goal: 1, stat: 'perfectDays' },
+        { id: 'habits-7', icon: 'habit', name: 'Dialed In', desc: 'Have 7 perfect habit days', goal: 7, stat: 'perfectDays' },
+        { id: 'score-80', icon: 'score', name: 'Locked In', desc: 'Reach a consistency score of 80', goal: 80, stat: 'bestScore' },
+        { id: 'score-100', icon: 'score', name: 'Flawless', desc: 'Reach a consistency score of 100', goal: 100, stat: 'bestScore' },
+    ];
+}
+
+function achievementIcon(icon, size = 22) {
+    return `<svg viewBox="0 0 24 24" width="${size}" height="${size}" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ACHIEVEMENT_ICONS[icon]}</svg>`;
+}
+
+// Earned achievements are kept in workout_data._achievements ({ id: date }) so they stay earned
+// even when the data behind them (like 30 days of steps) moves on.
+function checkAchievements() {
+    if (!currentUser || !currentProgram) return [];
+    const stats = achievementStats();
+    if (stats.bestScore > (allData._bestScore || 0)) {
+        allData._bestScore = stats.bestScore;
+        scheduleSave();
+    }
+    const firstRun = !allData._achievements;
+    const earned = allData._achievements || (allData._achievements = {});
+    const fresh = achievementList().filter(a => !earned[a.id] && stats[a.stat] >= a.goal);
+    if (!fresh.length) {
+        if (firstRun) scheduleSave();
+        return [];
+    }
+    fresh.forEach(a => { earned[a.id] = todayStr(); });
+    scheduleSave();
+    // Existing users get their back catalogue quietly; only new ones are celebrated
+    if (!firstRun) fresh.slice(0, 3).forEach(a => queueMoment(() => showAchievement(a)));
+    return fresh;
+}
+
+function showAchievement(a) {
+    showMoment({
+        kicker: 'Achievement',
+        valueHtml: `<span class="moment-medal">${achievementIcon(a.icon, 44)}</span>`,
+        unit: '',
+        name: a.name,
+        sub: a.desc,
+    });
+}
+
+function openAchievements() {
+    switchTab('progress');
+    setTimeout(() => {
+        const el = document.getElementById('achievementsCard');
+        if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 70, behavior: prefersReducedMotion() ? 'auto' : 'smooth' });
+    }, 650);
+}
+
+// Achievements section on the Progress tab
+function renderAchievements() {
+    const el = document.getElementById('achievementsCard');
+    if (!el) return;
+    const stats = achievementStats();
+    const earned = allData._achievements || {};
+    const list = achievementList();
+    const count = list.filter(a => earned[a.id]).length;
+    el.innerHTML = `
+        <div class="section-head"><h3>Achievements</h3><span>${count} / ${list.length}</span></div>
+        <div class="achievement-grid">
+            ${list.map(a => {
+                const got = earned[a.id];
+                const ratio = Math.min(1, (stats[a.stat] || 0) / a.goal);
+                const progress = a.count === false ? '' : `${Math.min(stats[a.stat] || 0, a.goal)} / ${a.goal}`;
+                return `
+                    <button class="achievement${got ? ' earned' : ''}" onclick="showToast('${escapeHtml(a.desc).replace(/'/g, '&#39;')}')">
+                        <span class="achievement-icon">${achievementIcon(a.icon)}</span>
+                        <span class="achievement-name">${escapeHtml(a.name)}</span>
+                        ${got
+                            ? `<span class="achievement-sub">${escapeHtml(prettyDate(got))}</span>`
+                            : `<span class="achievement-bar"><span style="width:${Math.round(ratio * 100)}%"></span></span>${progress ? `<span class="achievement-sub">${progress}</span>` : ''}`}
+                    </button>`;
+            }).join('')}
+        </div>
+    `;
+}
+
+// Consistency breakdown on the Progress tab
+function renderConsistency() {
+    const el = document.getElementById('consistencyCard');
+    if (!el) return;
+    const { score, parts } = consistencyScore();
+    el.innerHTML = `
+        <div class="consistency-top">
+            <div>
+                <div class="consistency-label">Consistency</div>
+                <div class="consistency-score">${score}</div>
+                <div class="consistency-sub">Last 7 days · best ${Math.max(allData._bestScore || 0, score)}</div>
+            </div>
+        </div>
+        <div class="consistency-parts">
+            ${parts.map(p => `
+                <div class="cp-row">
+                    <span class="cp-label">${p.label}</span>
+                    <span class="cp-bar"><span style="width:${Math.round(p.ratio * 100)}%"></span></span>
+                    <span class="cp-text">${escapeHtml(p.text)}</span>
+                </div>`).join('')}
+        </div>
+    `;
+}
+
+// One full-screen moment at a time (records, achievements); the rest wait their turn
+const momentQueue = [];
+
+function queueMoment(show) {
+    momentQueue.push(show);
+    nextMoment();
+}
+
+function nextMoment() {
+    const busy = document.getElementById('recordMoment').classList.contains('show')
+        || document.getElementById('celebrate').classList.contains('show');
+    if (busy || !momentQueue.length) return;
+    momentQueue.shift()();
 }
 
 // ════════════════════════════════════════════
@@ -4803,6 +5133,8 @@ function previousCycle() {
 
 function renderProgress() {
     const prog = PROGRAMS[currentProgram];
+    renderConsistency();
+    renderAchievements();
     if (!prog.exercises.some(ex => ex.id === progressExerciseId)) {
         // Default to the first exercise with data, else the first exercise
         const withData = prog.exercises.find(ex => getLoggedWeeks(ex.id).length);
