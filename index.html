@@ -1088,13 +1088,64 @@
         .moment-medal { display:grid; place-items:center; width:76px; height:76px; margin:10px auto 4px; border-radius:50%; color:var(--accent); background:radial-gradient(circle,rgba(217,178,95,0.18),rgba(217,178,95,0.03)); box-shadow:inset 0 0 0 1px rgba(217,178,95,0.45); }
         .moment-medal svg { display:block; }
         .record-value .moment-medal svg { filter:drop-shadow(0 0 10px rgba(217,178,95,0.5)); }
+
+        /* ── Polish (v1.19): sheets, placeholders, empty states, pull to refresh, filled tab icons ── */
+        .sheet-grabber { display:none; width:38px; height:5px; border-radius:3px; background:rgba(240,232,216,0.22); margin:0 auto 14px; }
+        @media (max-width:600px) {
+            .modal-overlay { align-items:flex-end; }
+            .modal { width:100%; max-width:none; max-height:88vh; overflow-y:auto; border-radius:26px 26px 0 0; padding:10px 20px calc(20px + env(safe-area-inset-bottom)); transition:transform 0.25s var(--ease); }
+            .modal-overlay.active { animation:fadeIn 0.25s ease both; }
+            .modal-overlay.active .modal { animation:sheetRise 0.42s var(--ease) backwards; }
+            .sheet-grabber { display:block; }
+        }
+        @keyframes sheetRise { from { transform:translateY(100%); } to { transform:none; } }
+        @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+
+        .sk { border-radius:var(--r-inner); background:linear-gradient(90deg,rgba(240,232,216,0.06) 25%,rgba(240,232,216,0.13) 50%,rgba(240,232,216,0.06) 75%); background-size:200% 100%; animation:shimmer 1.4s ease-in-out infinite; }
+        @keyframes shimmer { from { background-position:200% 0; } to { background-position:-200% 0; } }
+        @media (prefers-reduced-motion: reduce) { .sk { animation:none; } }
+        .loading-skeleton { width:min(560px, 100%); padding:calc(env(safe-area-inset-top) + var(--ios-blur-band) + 20px) 16px 0; align-self:flex-start; display:flex; flex-direction:column; gap:var(--s4); }
+        .sk-title { height:22px; width:45%; }
+        .sk-hero { height:190px; border-radius:var(--r-card); }
+        .sk-line { height:14px; width:60%; }
+        .sk-list { height:260px; border-radius:var(--r-card); }
+        .sk-num { width:150px; height:52px; border-radius:12px; margin-bottom:8px; }
+
+        .empty-state { display:none; text-align:center; padding:var(--s6) var(--s5); background:var(--raised); box-shadow:var(--lift); border-radius:var(--r-card); margin-bottom:var(--s4); }
+        .empty-state h3 { font-size:1.05rem; font-weight:500; margin-bottom:6px; }
+        .empty-state p { font-size:0.82rem; color:var(--text-muted); line-height:1.55; max-width:280px; margin:0 auto; }
+        .empty-state .btn { margin-top:var(--s5); }
+        .empty-icon { width:56px; height:56px; margin:0 auto var(--s4); display:grid; place-items:center; border-radius:50%; color:var(--text-dim); background:rgba(255,255,255,0.03); box-shadow:inset 0 0 0 1px rgba(240,232,216,0.1); }
+        #page-progress.is-empty #progressWelcome { display:block; }
+        #page-progress.is-empty #progressSummary, #page-progress.is-empty .progress-panel, #page-progress.is-empty #progressList { display:none; }
+        .empty-state.compact { background:none; box-shadow:none; padding:var(--s6) var(--s4); margin:0; }
+        .steps-panel.is-empty .chart-wrap { display:none; }
+        .steps-panel.is-empty #stepsEmpty { display:block; }
+        .chart-empty { font-size:0.8rem; color:var(--text-muted); line-height:1.55; padding:48px 16px; }
+        .chart-empty strong { display:block; font-size:0.95rem; font-weight:500; color:var(--text-dim); margin-bottom:4px; }
+
+        .ptr { position:fixed; left:50%; top:calc(env(safe-area-inset-top) + var(--ios-blur-band) + 8px); z-index:310; width:36px; height:36px; display:grid; place-items:center; border-radius:50%; background:var(--surface3); color:var(--text-dim); box-shadow:var(--lift); opacity:0; transform:translate(-50%, 0); pointer-events:none; transition:opacity 0.2s, transform 0.25s var(--ease); }
+        .ptr.ready { color:var(--text); }
+        .ptr.spinning { opacity:1 !important; animation:ptrSpin 0.8s linear infinite; }
+        @keyframes ptrSpin { from { transform:translate(-50%, 24px) rotate(0deg); } to { transform:translate(-50%, 24px) rotate(360deg); } }
+
+        .bottom-nav .tab-btn svg .f, .bottom-nav .tab-btn svg .cut, .bottom-nav .tab-btn svg .area { transition:fill 0.25s var(--ease), stroke 0.25s var(--ease); }
+        .bottom-nav .tab-btn svg .area { stroke:none; }
+        .bottom-nav .tab-btn.active svg .f { fill:currentColor; }
+        .bottom-nav .tab-btn.active svg .cut { fill:var(--bg); stroke:var(--bg); }
+        .bottom-nav .tab-btn.active svg .area { fill:currentColor; fill-opacity:0.25; }
     </style>
 </head>
 <body>
 
 <!-- LOADING SCREEN (shown while we check for an existing login) -->
 <div class="screen loading-screen active" id="loadingScreen">
-    <div class="auth-loading">Loading…</div>
+    <div class="loading-skeleton" aria-label="Loading">
+        <div class="sk sk-title"></div>
+        <div class="sk sk-hero"></div>
+        <div class="sk sk-line"></div>
+        <div class="sk sk-list"></div>
+    </div>
 </div>
 
 <!-- AUTH SCREEN -->
@@ -1295,11 +1346,11 @@
 
     <!-- Bottom tab bar (phones) -->
     <nav class="bottom-nav">
-        <button class="tab-btn active" onclick="switchTab('today')"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M10 8.5l5 3.5-5 3.5z"/></svg><span>Today</span></button>
-        <button class="tab-btn" onclick="switchTab('tracker')"><svg viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></svg><span>Tracker</span></button>
-        <button class="tab-btn" onclick="switchTab('steps')"><svg viewBox="0 0 24 24"><path d="M7.5 3.5c1.6 0 2.6 1.9 2.6 4.4 0 2.3-.8 4.1-2.3 4.1S5.2 10.8 5.2 8.6C5.2 5.6 6 3.5 7.5 3.5z"/><path d="M5.6 14.5l4.2-.6.4 2.6c.2 1.3-.7 2.4-2 2.5s-2.3-.8-2.4-2z"/><path d="M16.5 7.5c1.5 0 2.3 2.1 2.3 5.1 0 2.2-1 3.4-2.6 3.4s-2.3-1.8-2.3-4.1c0-2.5 1-4.4 2.6-4.4z"/><path d="M14.2 18.5l4.2.6-.2 1.9c-.1 1.2-1.1 2-2.4 2s-2-1.1-1.9-2.4z"/></svg><span>Steps</span></button>
-        <button class="tab-btn" onclick="switchTab('progress')"><svg viewBox="0 0 24 24"><path d="M3 20h18"/><path d="M5 16l5-5 4 3 6-7"/></svg><span>Progress</span></button>
-        <button class="tab-btn" onclick="switchTab('settings')"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg><span>Settings</span></button>
+        <button class="tab-btn active" onclick="switchTab('today')"><svg viewBox="0 0 24 24"><circle class="f" cx="12" cy="12" r="9"/><path class="cut" d="M10 8.5l5 3.5-5 3.5z"/></svg><span>Today</span></button>
+        <button class="tab-btn" onclick="switchTab('tracker')"><svg viewBox="0 0 24 24"><rect class="f" x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect class="f" x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect class="f" x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect class="f" x="13.5" y="13.5" width="7" height="7" rx="1.5"/></svg><span>Tracker</span></button>
+        <button class="tab-btn" onclick="switchTab('steps')"><svg viewBox="0 0 24 24"><path class="f" d="M7.5 3.5c1.6 0 2.6 1.9 2.6 4.4 0 2.3-.8 4.1-2.3 4.1S5.2 10.8 5.2 8.6C5.2 5.6 6 3.5 7.5 3.5z"/><path class="f" d="M5.6 14.5l4.2-.6.4 2.6c.2 1.3-.7 2.4-2 2.5s-2.3-.8-2.4-2z"/><path class="f" d="M16.5 7.5c1.5 0 2.3 2.1 2.3 5.1 0 2.2-1 3.4-2.6 3.4s-2.3-1.8-2.3-4.1c0-2.5 1-4.4 2.6-4.4z"/><path class="f" d="M14.2 18.5l4.2.6-.2 1.9c-.1 1.2-1.1 2-2.4 2s-2-1.1-1.9-2.4z"/></svg><span>Steps</span></button>
+        <button class="tab-btn" onclick="switchTab('progress')"><svg viewBox="0 0 24 24"><path class="area" d="M5 16l5-5 4 3 6-7v13H5z"/><path d="M3 20h18"/><path d="M5 16l5-5 4 3 6-7"/></svg><span>Progress</span></button>
+        <button class="tab-btn" onclick="switchTab('settings')"><svg viewBox="0 0 24 24"><circle class="cut" cx="12" cy="12" r="3"/><path class="f" d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg><span>Settings</span></button>
     </nav>
 
     <!-- TODAY PAGE -->
@@ -1339,6 +1390,12 @@
             <div class="hero">
                 <h1>PROGRESS</h1>
             </div>
+            <div class="empty-state" id="progressWelcome">
+                <div class="empty-icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20h18"/><path d="M5 16l5-5 4 3 6-7"/></svg></div>
+                <h3>Your progress starts here</h3>
+                <p>Finish a workout and your lifts, records and tiers show up on this page.</p>
+                <button class="btn btn-primary" onclick="switchTab('today')">Go to today's workout</button>
+            </div>
             <div class="consistency-card" id="consistencyCard"></div>
             <div class="stat-row" id="progressSummary"></div>
 
@@ -1347,7 +1404,7 @@
                 <select class="form-input" id="progressExercise" onchange="selectProgressExercise(this.value)"></select>
                 <div class="stat-row" id="progressStats"></div>
                 <div class="chart-wrap"><canvas id="progressChart"></canvas></div>
-                <div class="chart-empty" id="progressEmpty">No numbers logged for this exercise yet — fill in a week on the Tracker tab.</div>
+                <div class="chart-empty" id="progressEmpty"><strong>Nothing logged yet</strong>Finish this lift in a workout, or fill in a week on the Tracker tab.</div>
                 <div class="tier-track-label" id="tierTrackLabel"></div>
                 <div class="tier-track" id="tierTrack"></div>
             </div>
@@ -1365,7 +1422,8 @@
             </div>
             <div id="stepsRing"></div>
             <div class="streak-row" id="stepsStats"></div>
-            <div class="steps-panel"><div class="chart-wrap steps-chart"><canvas id="stepsChart"></canvas></div></div>
+            <div class="steps-panel"><div class="chart-wrap steps-chart"><canvas id="stepsChart"></canvas></div>
+                <div class="empty-state compact" id="stepsEmpty"><h3>No steps yet</h3><p>Set up Apple Health sync below, or type today's steps.</p></div></div>
             <div id="stepsActions"></div>
             <div id="stepsSetup"></div>
         </div>
@@ -1614,7 +1672,7 @@
 
 // Shown at the bottom of Settings so you can tell which version a phone is running.
 // Bump it with every deploy.
-const APP_VERSION = '1.18 · 28 Oct';
+const APP_VERSION = '1.19 · 28 Oct';
 
 const SUPABASE_URL = 'https://hcwbcxhblfjpdlkwykez.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_mEe_5g2UITyp5O-F9YRhRg_wTQWuOtf';
@@ -2953,9 +3011,9 @@ function renderTodayHero() {
     const consistency = consistencyScore();
     const achieved = Object.keys(allData._achievements || {}).length;
     const rings = [
-        { label: 'Lift', color: '#f3ece0', value: stats.thisWeek, target: liftTarget, text: `${stats.thisWeek}<small>/${liftTarget}</small>`, unit: 'this week' },
-        { label: 'Cardio', color: '#86d6a8', value: cardio, target: 150, text: `${cardio}<small>/150 min</small>`, unit: 'this week' },
-        { label: 'Steps', color: '#8fbbd9', value: steps, target: goal, text: `${compactNum(steps)}<small>/${compactNum(goal)}</small>`, unit: 'today' },
+        { label: 'Lift', color: '#f3ece0', value: stats.thisWeek, target: liftTarget, text: `<span data-count="${stats.thisWeek}" data-key="hero-lift"></span><small>/${liftTarget}</small>` },
+        { label: 'Cardio', color: '#86d6a8', value: cardio, target: 150, text: `<span data-count="${cardio}" data-key="hero-cardio"></span><small>/150 min</small>` },
+        { label: 'Steps', color: '#8fbbd9', value: steps, target: goal, text: `<span data-count="${steps}" data-key="hero-steps" data-format="compact"></span><small>/${compactNum(goal)}</small>` },
     ];
     const circles = rings.map((ring, i) => {
         const r = HERO_RING_RADII[i];
@@ -2968,7 +3026,7 @@ function renderTodayHero() {
     }).join('');
     el.innerHTML = `
         <div class="hero-rings">
-            <div class="hero-score"><strong>${consistency.score}</strong><span>score</span></div>
+            <div class="hero-score"><strong data-count="${consistency.score}" data-key="hero-score"></strong><span>score</span></div>
             <svg viewBox="0 0 200 200" aria-hidden="true">
                 <defs><linearGradient id="heroGold" x1="0" y1="0" x2="1" y2="1">
                     <stop offset="0" stop-color="#f2d891"/><stop offset="1" stop-color="#b38636"/>
@@ -2989,6 +3047,7 @@ function renderTodayHero() {
         </div>
     `;
     // Rings sweep in from empty
+    rollNumbers(el);
     el.getBoundingClientRect();
     setTimeout(() => el.querySelectorAll('.hr-fg').forEach(circle => { circle.style.strokeDashoffset = circle.dataset.offset; }), 30);
 
@@ -3452,6 +3511,9 @@ function stepGoal() {
     return (userProfile && userProfile.stepGoal) || 10000;
 }
 
+// False until the first load finishes (shows placeholders instead of a misleading 0)
+let stepsLoaded = false;
+
 async function loadSteps() {
     if (!currentUser || !sb) return false;
     try {
@@ -3464,6 +3526,8 @@ async function loadSteps() {
     } catch (error) {
         console.warn('Steps not loaded:', error.message || error);
         return false;
+    } finally {
+        stepsLoaded = true;
     }
 }
 
@@ -3503,12 +3567,15 @@ function drawSteps() {
                 <circle class="ring-fg" cx="100" cy="100" r="88" stroke-dasharray="${circumference}" stroke-dashoffset="${circumference * (1 - ratio)}"/>
             </svg>
             <div class="ring-center">
-                <div class="ring-steps">${steps.toLocaleString()}</div>
+                ${stepsLoaded
+                    ? `<div class="ring-steps" data-count="${steps}" data-key="steps-today" data-format="locale"></div>`
+                    : '<div class="sk sk-num"></div>'}
                 <div class="ring-goal">of ${goal.toLocaleString()} steps</div>
-                <div class="ring-sync">${escapeHtml(synced)}</div>
+                <div class="ring-sync">${stepsLoaded ? escapeHtml(synced) : 'Loading…'}</div>
             </div>
         </div>
     `;
+    rollNumbers(document.getElementById('stepsRing'));
 
     // Last 7 days average, goal streak, best of the last 30 days
     const last7 = Array.from({ length: 7 }, (_, i) => stepsOn(addDays(today, -i)));
@@ -3551,6 +3618,9 @@ function drawStepsChart(goal) {
     if (typeof Chart === 'undefined') return;
     const days = Array.from({ length: 14 }, (_, i) => addDays(todayStr(), i - 13));
     const values = days.map(stepsOn);
+    const empty = stepsLoaded && values.every(v => !v);
+    document.querySelector('.steps-panel').classList.toggle('is-empty', empty);
+    if (empty) return;
     stepsChart = new Chart(document.getElementById('stepsChart'), {
         type: 'bar',
         data: {
@@ -5068,7 +5138,7 @@ function renderConsistency() {
         <div class="consistency-top">
             <div>
                 <div class="consistency-label">Consistency</div>
-                <div class="consistency-score">${score}</div>
+                <div class="consistency-score" data-count="${score}" data-key="consistency"></div>
                 <div class="consistency-sub">Last 7 days · best ${Math.max(allData._bestScore || 0, score)}</div>
             </div>
         </div>
@@ -5081,6 +5151,7 @@ function renderConsistency() {
                 </div>`).join('')}
         </div>
     `;
+    rollNumbers(el);
 }
 
 // One full-screen moment at a time (records, achievements); the rest wait their turn
@@ -5133,6 +5204,8 @@ function previousCycle() {
 
 function renderProgress() {
     const prog = PROGRAMS[currentProgram];
+    const hasData = prog.exercises.some(ex => getLoggedWeeks(ex.id).length);
+    document.getElementById('page-progress').classList.toggle('is-empty', !hasData);
     renderConsistency();
     renderAchievements();
     if (!prog.exercises.some(ex => ex.id === progressExerciseId)) {
@@ -5656,16 +5729,142 @@ function showToast(msg) {
     setTimeout(() => t.classList.remove('show'), 3000);
 }
 
-document.getElementById('importModal').addEventListener('click', function(e) {
-    if (e.target === this) closeImport();
-});
-
 // Don't lose the last few keystrokes when the phone locks or the tab closes
 document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'hidden') flushSave();
     else if (currentUser && document.getElementById('page-steps').classList.contains('active')) renderSteps();
     else if (activeWorkout && rest.interval) tickRest();
 });
+
+
+// ════════════════════════════════════════════
+//  POLISH: bottom sheets, rolling numbers, pull to refresh
+// ════════════════════════════════════════════
+
+const SHEET_CLOSE = { pickerModal: closePicker, cardioModal: closeCardioLog, swapModal: closeSwap, importModal: closeImport };
+
+function closeSheet(overlay) {
+    const close = SHEET_CLOSE[overlay.id];
+    if (close) close();
+    else overlay.classList.remove('active');
+}
+
+// On phones every modal is a bottom sheet: drag it down (or tap outside it) to close
+function initSheets() {
+    document.querySelectorAll('.modal-overlay').forEach(overlay => {
+        const sheet = overlay.querySelector('.modal');
+        sheet.insertAdjacentHTML('afterbegin', '<div class="sheet-grabber" aria-hidden="true"></div>');
+        overlay.addEventListener('click', e => { if (e.target === overlay) closeSheet(overlay); });
+        let startY = null;
+        let dy = 0;
+        let startAt = 0;
+        sheet.addEventListener('touchstart', e => {
+            // Lists and fields inside the sheet keep their own scrolling and text selection
+            if (sheet.scrollTop > 0 || e.target.closest('input, textarea, select, .swap-list')) {
+                startY = null;
+                return;
+            }
+            startY = e.touches[0].clientY;
+            dy = 0;
+            startAt = Date.now();
+            sheet.style.transition = 'none';
+        }, { passive: true });
+        sheet.addEventListener('touchmove', e => {
+            if (startY === null) return;
+            dy = Math.max(0, e.touches[0].clientY - startY);
+            sheet.style.transform = `translateY(${dy}px)`;
+        }, { passive: true });
+        sheet.addEventListener('touchend', () => {
+            if (startY === null) return;
+            startY = null;
+            sheet.style.transition = '';
+            const flick = dy / Math.max(1, Date.now() - startAt) > 0.6 && dy > 30;
+            if (dy > 110 || flick) {
+                sheet.style.transform = 'translateY(100%)';
+                setTimeout(() => {
+                    closeSheet(overlay);
+                    sheet.style.transform = '';
+                }, 220);
+            } else {
+                sheet.style.transform = '';
+            }
+        });
+    });
+}
+
+// Numbers marked data-count="…" data-key="…" roll from the value last shown under that key
+const shownCounts = {};
+
+function formatCount(value, format) {
+    const n = Math.round(value);
+    if (format === 'compact') return compactNum(n);
+    if (format === 'locale') return n.toLocaleString();
+    return String(n);
+}
+
+function rollNumbers(root) {
+    root.querySelectorAll('[data-count]').forEach(el => {
+        const to = parseFloat(el.dataset.count);
+        const key = el.dataset.key;
+        const from = key in shownCounts ? shownCounts[key] : 0;
+        shownCounts[key] = to;
+        const format = el.dataset.format;
+        if (from === to || prefersReducedMotion()) {
+            el.textContent = formatCount(to, format);
+            return;
+        }
+        const duration = 900;
+        const start = performance.now();
+        el.textContent = formatCount(from, format);
+        const step = now => {
+            const t = Math.min(1, (now - start) / duration);
+            el.textContent = formatCount(from + (to - from) * (1 - Math.pow(1 - t, 3)), format);
+            if (t < 1) requestAnimationFrame(step);
+        };
+        requestAnimationFrame(step);
+        // Animation frames pause in background tabs; land on the right number regardless
+        setTimeout(() => { el.textContent = formatCount(to, format); }, duration + 150);
+    });
+}
+
+// Pull down at the top of the Steps tab to fetch the latest synced count
+function initPullToRefresh() {
+    const page = document.getElementById('page-steps');
+    const spinner = document.createElement('div');
+    spinner.className = 'ptr';
+    spinner.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 12a8 8 0 1 1-2.34-5.66"/><path d="M20 4v4.5h-4.5"/></svg>';
+    document.body.appendChild(spinner);
+    const threshold = 80;
+    let startY = null;
+    let dy = 0;
+    page.addEventListener('touchstart', e => {
+        startY = window.scrollY <= 0 && page.classList.contains('active') ? e.touches[0].clientY : null;
+        dy = 0;
+    }, { passive: true });
+    page.addEventListener('touchmove', e => {
+        if (startY === null) return;
+        dy = Math.max(0, e.touches[0].clientY - startY);
+        const pull = Math.min(1, dy / threshold);
+        spinner.style.opacity = pull;
+        spinner.style.transform = `translate(-50%, ${pull * 24}px) rotate(${pull * 270}deg)`;
+        spinner.classList.toggle('ready', dy >= threshold);
+    }, { passive: true });
+    page.addEventListener('touchend', async () => {
+        if (startY === null) return;
+        startY = null;
+        if (dy >= threshold) {
+            haptic();
+            spinner.classList.add('spinning');
+            await Promise.all([renderSteps(), new Promise(r => setTimeout(r, 600))]);
+        }
+        spinner.classList.remove('spinning', 'ready');
+        spinner.style.opacity = 0;
+        spinner.style.transform = '';
+    });
+}
+
+initSheets();
+initPullToRefresh();
 
 // ════════════════════════════════════════════
 //  INIT

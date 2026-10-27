@@ -278,3 +278,9 @@ reference/debug-screenshots/  ← Supabase key page, "Script error" console, Git
 - Achievements (`achievementList()`, 24): workouts, full 12-week cycle, week streaks, personal records, tiers (Novice→God/Goddess), cardio, steps, perfect habit days, score 80/100. Earned ones are stored in `workout_data._achievements` ({id: date}) so they stay earned. The first run stores the existing ones silently; later ones get the gold moment (`showMoment`, shared with new records, queued via `queueMoment` so only one shows at a time). `checkAchievements()` runs in `renderToday`, `toggleHabit` and after steps load.
 - Grid lives at the bottom of Progress; the Today hero footer links to it (`openAchievements`).
 
+## 16. Polish (v1.19, 2026-10-28)
+- **Bottom sheets:** under 600px every `.modal-overlay` is a bottom sheet (grabber, slide-up). `initSheets()` adds drag-to-close and tap-outside; `SHEET_CLOSE` maps each overlay id to its close function, so a new modal must be added there.
+- **Rolling numbers:** mark a number `data-count="…" data-key="…"` (optional `data-format="compact|locale"`) and call `rollNumbers(container)` after rendering; it counts from the last value shown under that key.
+- **Placeholders:** `.sk` shimmer blocks (loading screen, steps ring until `stepsLoaded`). **Empty states:** `.empty-state` (Progress with nothing logged, steps chart with no steps).
+- **Pull to refresh** on Steps (`initPullToRefresh`, reloads synced steps). **Tab icons:** shapes with class `f` fill and `cut` knock out when the tab is active; Progress uses an `area` path.
+
