@@ -808,6 +808,7 @@
         .setup-steps code, .copy-row code { font-family:var(--font-num); font-size:0.72rem; color:var(--text); background:rgba(0,0,0,0.3); border-radius:6px; padding:2px 6px; word-break:break-all; }
         .copy-row { display:flex; align-items:center; gap:8px; margin:6px 0; }
         .copy-row code { flex:1; }
+        .shortcut-link { display:block; width:fit-content; margin:6px 0 8px; text-decoration:none; color:var(--accent); border-color:var(--accent); }
 
         /* Program builder + your programs */
         .selector-section { margin-top:40px; }
@@ -1351,7 +1352,7 @@
 
 // Shown at the bottom of Settings so you can tell which version a phone is running.
 // Bump it with every deploy.
-const APP_VERSION = '1.7 · 27 Oct';
+const APP_VERSION = '1.8 · 27 Oct';
 
 const SUPABASE_URL = 'https://hcwbcxhblfjpdlkwykez.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_mEe_5g2UITyp5O-F9YRhRg_wTQWuOtf';
@@ -3085,6 +3086,8 @@ function saveCardioLog() {
 // and posts them with the user's private step token to the steps-ingest Edge Function, which
 // writes public.step_counts. The tab reads that table and refreshes every minute while open.
 const STEPS_SHORTCUT_NAME = 'Workout Steps';
+// Shared copy of the shortcut; it asks for the user's step key when it is added
+const STEPS_SHORTCUT_LINK = 'https://www.icloud.com/shortcuts/5b67429d97e04da19d333fc90a22e08e';
 const STEPS_INGEST_URL = `${SUPABASE_URL}/functions/v1/steps-ingest`;
 const STEP_GOALS = [6000, 7000, 8000, 10000, 12000, 15000];
 
@@ -3229,27 +3232,17 @@ async function renderStepsSetup(open) {
     }
     el.innerHTML = `
         <details class="mobility-card setup-card" ${open ? 'open' : ''}>
-            <summary><h3>Set up Apple Health sync</h3><span class="warmup-hint">One time · 5 min</span></summary>
-            <p class="warmup-note">On your iPhone, in the <strong>Shortcuts</strong> app:</p>
+            <summary><h3>Set up Apple Health sync</h3><span class="warmup-hint">One time · 2 min</span></summary>
             <ol class="setup-steps">
-                <li>Tap <strong>+</strong> to make a new shortcut and rename it exactly <strong>${STEPS_SHORTCUT_NAME}</strong>.</li>
-                <li>Add <strong>Find Health Samples</strong>. Set Type to <strong>Steps</strong> and add the filter <strong>Start Date is today</strong>. If you wear an Apple Watch, also add <strong>Source is</strong> your Watch so steps aren't counted twice.</li>
-                <li>Add <strong>Calculate Statistics</strong> and set it to <strong>Sum</strong> of Health Samples.</li>
-                <li>Add <strong>Format Date</strong>: Current Date, format <strong>Custom</strong>, then type <code>yyyy-MM-dd</code>.</li>
-                <li>Add <strong>Get Contents of URL</strong> with this address:
-                    <span class="copy-row"><code>${escapeHtml(STEPS_INGEST_URL)}</code><button class="swap-btn" onclick="copyText('${escapeHtml(STEPS_INGEST_URL)}')">Copy</button></span>
-                    Tap <strong>Show More</strong>: Method <strong>POST</strong>, Request Body <strong>JSON</strong>, and add three fields:
-                    <ul>
-                        <li><code>token</code> (Text): your private key
-                            <span class="copy-row"><code>${escapeHtml(stepToken)}</code><button class="swap-btn" onclick="copyText('${escapeHtml(stepToken)}')">Copy</button></span></li>
-                        <li><code>steps</code> (Number): the <strong>Statistics</strong> variable</li>
-                        <li><code>date</code> (Text): the <strong>Formatted Date</strong> variable</li>
-                    </ul>
-                </li>
-                <li>Tap <strong>Done</strong>, then run it once and allow access to Health when asked.</li>
-                <li>For automatic updates: <strong>Automation</strong> tab → <strong>+</strong> → <strong>Time of Day</strong> → pick a time, Daily, <strong>Run Immediately</strong> → choose ${STEPS_SHORTCUT_NAME}. Add a few (e.g. 9:00, 12:00, 15:00, 18:00, 21:00). iPhones can't repeat a shortcut every hour on their own.</li>
+                <li>Copy your private step key:
+                    <span class="copy-row"><code>${escapeHtml(stepToken)}</code><button class="swap-btn" onclick="copyText('${escapeHtml(stepToken)}')">Copy</button></span></li>
+                <li><a class="btn shortcut-link" href="${STEPS_SHORTCUT_LINK}" target="_blank" rel="noopener">Get the ${STEPS_SHORTCUT_NAME} shortcut</a>
+                    Tap <strong>Add Shortcut</strong>, and paste your key when it asks for it. Keep the name <strong>${STEPS_SHORTCUT_NAME}</strong>.</li>
+                <li>Run it once from the Shortcuts app and tap <strong>Always Allow</strong> for Health and for sending, so it can run on its own later.</li>
+                <li>Make it run by itself: open the shortcut, add a few times of day (e.g. every few hours, plus 23:30 for the day's final total), or use <strong>Automation</strong> → <strong>+</strong> → <strong>Time of Day</strong> → <strong>Run Immediately</strong>.</li>
+                <li>Wear an Apple Watch? If your steps look about double what the Health app shows, edit the shortcut's <strong>Find Health Samples</strong> and set <strong>Source is</strong> your Watch.</li>
             </ol>
-            <p class="warmup-note">Keep your key private: anyone with it can send step counts to your account. The <strong>Sync from Apple Health</strong> button above runs the same shortcut on demand.</p>
+            <p class="warmup-note">Keep your key private: anyone with it can send step counts to your account. The <strong>Sync from Apple Health</strong> button above runs the shortcut on demand.</p>
         </details>
     `;
 }
