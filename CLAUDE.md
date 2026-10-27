@@ -190,6 +190,7 @@ Future: if the JSON blob gets large, move to normalized tables (`workout_logs`, 
 - Inter for UI text, DM Mono only for numbers, Bebas Neue for display headings. **No emoji anywhere**; icons are inline SVG.
 - Tiers are shown as coloured hexagons (`tierIcon`) and roman-numeral medals (`tierMedal`); the old glyph icons are gone.
 - Rounded layered surfaces, gold gradient for primary actions, bottom tab bar under 900px. All of this lives in the "PREMIUM DESIGN LAYER" CSS block, which overrides the older base rules above it.
+- **SYSTEM LAYER (v1.11, last CSS block, wins over everything above):** tokens `--s1..--s7` spacing, `--r-card` 20px / `--r-inner` 14px, `--raised` + `--lift` surfaces (depth, no outlines), `--ease` motion curve, one uppercase label style, big light Inter numbers (DM Mono retired via `--font-num`). Gold only for the main action, PRs, tiers, goals reached and unlocks. Main screens are number-first: explanations live in workout mode, log sheets and expandable cards. Add new styles there, using the tokens.
 
 ---
 

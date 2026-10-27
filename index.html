@@ -16,7 +16,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=DM+Mono:wght@400;500&family=Bebas+Neue&family=Playfair+Display:wght@700;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700&family=DM+Mono:wght@400;500&family=Bebas+Neue&family=Playfair+Display:wght@700;900&display=swap');
         * { margin:0; padding:0; box-sizing:border-box; }
         
         :root {
@@ -862,6 +862,96 @@
         .link-btn:hover { color:var(--accent); }
         .auth-error.info { background:rgba(127,217,168,0.1); border-color:var(--green); color:var(--green); }
         .save-status.error { color:#e8734a; }
+
+        /* ════════════════════════════════════════════
+           SYSTEM LAYER (v1.11) — loaded last, wins over the layers above.
+           One spacing scale, one corner radius, one surface, one motion curve.
+           Gold is reserved for the main action, records, tiers and goals reached.
+           ════════════════════════════════════════════ */
+        :root {
+            --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:24px; --s6:32px; --s7:48px;
+            --r-card:20px; --r-inner:14px;
+            --ease:cubic-bezier(.2,.8,.2,1);
+            --hairline:rgba(240,232,216,0.07);
+            --raised:linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.018));
+            --lift:inset 0 1px 0 rgba(255,255,255,0.05), 0 20px 40px -28px rgba(0,0,0,0.9);
+            --font-num:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+        }
+        body { font-variant-numeric:tabular-nums; }
+
+        /* Surfaces: depth instead of outlines */
+        .stat, .exercise-block, .progress-panel, .progress-row, .mobility-card, .zone-card, .cardio-week,
+        .today-list, .wo-card, .modal, .program-card, .auth-card, .profile-card, .wp-day, .steps-panel {
+            background:var(--raised); border-color:transparent; box-shadow:var(--lift);
+        }
+        .exercise-block, .progress-panel, .mobility-card, .zone-card, .cardio-week, .today-list, .wo-card,
+        .program-card, .steps-panel { border-radius:var(--r-card); }
+        .progress-row, .wp-day { border-radius:var(--r-inner); }
+        .zone-card.recommended { border-color:transparent; box-shadow:var(--lift), inset 3px 0 0 var(--zone); }
+
+        /* One label style */
+        .stat-label, .zone-list-head, .program-specs span, .week-label, .wp-name, .cardio-week-top span {
+            font-family:var(--font-ui); font-size:0.62rem; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; color:var(--text-muted);
+        }
+        .kicker { color:var(--text-muted); }
+
+        /* Numbers lead: large, light, tabular */
+        .stat-value { font-family:var(--font-ui); font-weight:300; font-size:2rem; letter-spacing:-0.03em; line-height:1.1; }
+        .stat-sub { font-size:0.7rem; color:var(--text-muted); }
+        .ring-steps { font-family:var(--font-ui); font-weight:200; font-size:3.6rem; letter-spacing:-0.04em; }
+        .cardio-week-top strong { font-weight:300; font-size:1.4rem; letter-spacing:-0.02em; }
+        .rest-time { font-family:var(--font-ui); font-weight:300; letter-spacing:-0.02em; }
+        .exercise-meta, .workout-sub, .zone-bpm, .row-best, .zone-num { font-family:var(--font-ui); }
+
+        /* Stat groups read as one quiet row, divided by hairlines, not as boxes */
+        .streak-row, .stat-row { gap:0; background:var(--raised); box-shadow:var(--lift); border-radius:var(--r-card); padding:var(--s4) 0; }
+        .streak-row .stat, .stat-row .stat { background:none; box-shadow:none; border:none; border-radius:0; padding:0 var(--s3); text-align:center; }
+        .streak-row .stat + .stat { border-left:1px solid var(--hairline); }
+        .stat-row .stat { padding:var(--s2) var(--s4); text-align:left; }
+        @media (max-width:600px) {
+            .stat-row .stat:nth-child(odd) { border-right:1px solid var(--hairline); }
+            .stat-row .stat:nth-child(n+3) { border-top:1px solid var(--hairline); padding-top:var(--s3); margin-top:var(--s1); }
+        }
+        @media (min-width:601px) { .stat-row .stat + .stat { border-left:1px solid var(--hairline); } }
+        .progress-panel .stat-row { background:rgba(0,0,0,0.18); box-shadow:none; }
+
+        /* Gold, held back */
+        .back-link, .program-cta, .shortcut-link { color:var(--text-dim); border-color:var(--border-bright); }
+        .day-number, .program-index { color:var(--text-muted); }
+        .wp-day.today { border-color:transparent; box-shadow:var(--lift), inset 0 0 0 1px rgba(240,232,216,0.35); }
+        .wp-day.done { border-color:transparent; box-shadow:var(--lift), inset 0 0 0 1px rgba(134,214,168,0.35); }
+        .power-unlock { border:none; background:var(--raised); box-shadow:var(--lift); }
+        .power-unlock strong { color:var(--text); }
+        .power-unlock.unlocked { box-shadow:var(--lift), inset 0 0 0 1px rgba(217,178,95,0.28); }
+        .power-unlock.unlocked strong { color:var(--accent); }
+        .form-input:focus { border-color:rgba(240,232,216,0.45); box-shadow:0 0 0 4px rgba(240,232,216,0.06); }
+        .week-input-wrap input:focus { border-bottom-color:var(--text-dim); }
+        .bottom-nav .tab-btn.active { color:var(--text); }
+        .ring-fg { stroke:url(#ringCream); }
+        .steps-ring.reached .ring-fg { stroke:url(#ringGold); }
+
+        /* Tracker: calmer grid; units only where a number is */
+        .week-grid { border-top:1px solid var(--hairline); }
+        .week-col { border-right:1px solid var(--hairline); }
+        .week-label { background:none; border-bottom:none; font-size:0.56rem; padding-top:var(--s2); }
+        .week-input-wrap input { border-bottom-color:transparent; font-size:0.95rem; font-weight:400; }
+        .week-input-wrap input:placeholder-shown { color:var(--text-muted); }
+        .week-input-wrap input:placeholder-shown + .input-hint { visibility:hidden; }
+        .exercise-note { color:var(--text-muted); }
+        .day-label { border-bottom-color:var(--hairline); }
+
+        .progress-panel > .form-label { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); }
+
+        /* Page headers: title only */
+        .hero { margin-bottom:var(--s5); }
+
+        /* Motion: one curve, tactile presses */
+        button, .btn, .zone-session, .wp-day, .program-card { transition:transform 0.18s var(--ease), opacity 0.18s var(--ease), background-color 0.25s var(--ease), color 0.25s var(--ease); }
+        button:active, .btn:active { transform:scale(0.97); }
+        .bottom-nav .tab-btn:active { transform:scale(0.92); }
+        @media (prefers-reduced-motion: reduce) {
+            button:active, .btn:active, .bottom-nav .tab-btn:active { transform:none; }
+        }
     </style>
 </head>
 <body>
@@ -1112,7 +1202,6 @@
         <div class="container">
             <div class="hero">
                 <h1>PROGRESS</h1>
-                <p>Your 12-week journey, lift by lift</p>
             </div>
             <div class="stat-row" id="progressSummary"></div>
 
@@ -1135,7 +1224,6 @@
         <div class="container today-container">
             <div class="hero">
                 <h1>STEPS</h1>
-                <p>From Apple Health, updated through your Shortcut</p>
             </div>
             <div id="stepsRing"></div>
             <div class="streak-row" id="stepsStats"></div>
@@ -1150,7 +1238,6 @@
         <div class="container">
             <div class="hero">
                 <h1>SETTINGS</h1>
-                <p>Manage your profile & preferences</p>
             </div>
 
             <!-- Body Metrics Section -->
@@ -1366,7 +1453,7 @@
 
 // Shown at the bottom of Settings so you can tell which version a phone is running.
 // Bump it with every deploy.
-const APP_VERSION = '1.10 · 28 Oct';
+const APP_VERSION = '1.11 · 28 Oct';
 
 const SUPABASE_URL = 'https://hcwbcxhblfjpdlkwykez.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_mEe_5g2UITyp5O-F9YRhRg_wTQWuOtf';
@@ -2711,20 +2798,17 @@ function renderToday() {
         const p = getPrescription(ex);
         return sum + p.sets * (p.restSec + 40);
     }, 0) / 60) + 5;
-    const lastDone = [...workoutSessions()].reverse().find(s => s.day === todayDay);
     const weekOptions = Array.from({ length: WEEKS }, (_, w) =>
         `<option value="${w}"${w === week ? ' selected' : ''}>Week ${w + 1}</option>`).join('');
     document.getElementById('todayMeta').innerHTML = `
-        ${exercises.length} exercises · ~${minutes} minutes<br>
-        Logging to <select class="week-select" onchange="selectTodayWeek(this.value)">${weekOptions}</select> of ${WEEKS}
-        ${lastDone ? ` · last done ${escapeHtml(prettyDate(lastDone.date))}` : ''}
+        ${exercises.length} exercises · ${minutes} min · <select class="week-select" onchange="selectTodayWeek(this.value)">${weekOptions}</select>
     `;
 
     renderWarmup(exercises);
 
     let readyToProgress = 0;
     document.getElementById('todayList').innerHTML = exercises.map((ex, idx) => {
-        const p = getPrescription(ex);
+        // Rest, form notes and progression tips appear in workout mode; this list stays a glance
         const progression = getProgression(ex);
         if (progression && progression.type === 'kg') readyToProgress++;
         const target = progression ? ` · ${formatSetWeight(ex, progression.kg)}` : '';
@@ -2732,9 +2816,7 @@ function renderToday() {
             <div class="today-item" style="--i:${idx}">
                 <div class="today-item-main">
                     <div class="today-item-name">${escapeHtml(exerciseDisplayName(ex, week))}</div>
-                    <div class="today-item-sub">${escapeHtml(prescriptionText(ex))}${p.restText ? ` · ${escapeHtml(p.restText)} rest` : ''}${escapeHtml(target)}</div>
-                    ${ex.note && !ex.alternates ? `<div class="today-item-note">${escapeHtml(ex.note)}</div>` : ''}
-                    ${progression ? `<div class="today-item-note">${escapeHtml(progression.text)}</div>` : ''}
+                    <div class="today-item-sub">${escapeHtml(prescriptionText(ex))}${escapeHtml(target)}</div>
                     ${upgradeText(ex, week) ? `<div class="today-item-note upgrade">${escapeHtml(upgradeText(ex, week))}</div>` : ''}
                 </div>
                 ${progressionBadge(progression)}
@@ -3180,6 +3262,8 @@ function drawSteps() {
             <svg viewBox="0 0 200 200" aria-hidden="true">
                 <defs><linearGradient id="ringGold" x1="0" y1="0" x2="1" y2="1">
                     <stop offset="0" stop-color="#f2d891"/><stop offset="1" stop-color="#b38636"/>
+                </linearGradient><linearGradient id="ringCream" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0" stop-color="#f3ece0"/><stop offset="1" stop-color="#a99a83"/>
                 </linearGradient></defs>
                 <circle class="ring-bg" cx="100" cy="100" r="88"/>
                 <circle class="ring-fg" cx="100" cy="100" r="88" stroke-dasharray="${circumference}" stroke-dashoffset="${circumference * (1 - ratio)}"/>
@@ -3203,9 +3287,9 @@ function drawSteps() {
     }
     const best = Math.max(0, ...Object.values(stepData).map(r => r.steps));
     document.getElementById('stepsStats').innerHTML =
-        statTile('7-day average', average.toLocaleString(), 'steps a day') +
-        statTile('Goal streak', String(streak), streak === 1 ? 'day' : 'days') +
-        statTile('Best day', best.toLocaleString(), 'last 30 days');
+        statTile('Average', average.toLocaleString(), 'per day, 7 days') +
+        statTile('Streak', String(streak), streak === 1 ? 'day at goal' : 'days at goal') +
+        statTile('Best', best.toLocaleString(), 'last 30 days');
 
     drawStepsChart(goal);
 
@@ -3238,7 +3322,7 @@ function drawStepsChart(goal) {
         data: {
             labels: days.map(d => parseDate(d).toLocaleDateString(undefined, { weekday: 'narrow' })),
             datasets: [
-                { label: 'Steps', data: values, backgroundColor: values.map(v => (v >= goal ? '#d9b25f' : 'rgba(217,178,95,0.35)')), borderRadius: 6, maxBarThickness: 22 },
+                { label: 'Steps', data: values, backgroundColor: values.map(v => (v >= goal ? '#d9b25f' : 'rgba(240,232,216,0.16)')), borderRadius: 6, maxBarThickness: 22 },
                 { type: 'line', label: 'Goal', data: days.map(() => goal), borderColor: 'rgba(134,214,168,0.8)', borderDash: [5, 4], borderWidth: 1.5, pointRadius: 0 },
             ],
         },
@@ -4512,7 +4596,7 @@ function renderProgressDetail() {
     renderTierTrack(ex, best, thresholds, tier);
 }
 
-const CHART_TICKS = { color: '#a89578', font: { family: 'DM Mono', size: 10 } };
+const CHART_TICKS = { color: '#7f725f', font: { family: 'Inter', size: 10 } };
 const CHART_GRID = { color: 'rgba(61,52,44,0.6)' };
 
 function renderProgressChart(ex, logged, thresholds, tier) {
