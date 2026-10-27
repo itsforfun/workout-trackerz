@@ -138,6 +138,10 @@ Barbell Back Squat 3×6-8 3 min [80,115,155,195,240,285] · Barbell Bench Press 
 Built from 4.2, same basic-gym constraint. 6 exercises, ~50-55 min.
 Barbell Hip Thrust 3×8-10 3 min [60,100,140,180,220,260] · Barbell RDL 3×10-12 2-3 min [35,55,75,100,130,160] · DB Goblet Squat 3×10-12 2 min [16,24,32,42,54,68] · Lat Pulldown (wide) 3×10-12 2 min [25,38,52,68,86,105] · DB Shoulder Press 3×10-12 2 min [8,12,18,24,32,40] · Barbell Row 3×10-12 2 min [25,38,52,68,88,108]
 
+### 4.5 "3-Day Full Body" — id `fullBody3` (added 2026-10-27)
+Source spec: `reference/3-day-full-body-spec.md` — **local only, git-ignored** (it holds personal health details; never commit it). Joint-friendly fat-loss full body: Mon A / Wed B / Fri C lifting, Tue/Thu easy cardio, weekend walks. Male thresholds (approximate, chosen to match the other programs).
+Program-level fields only this program uses: `coachRules` (stall → hold weight +1 rep; ≥7 days off → prefill 10% lighter; effort banner), `weekPlan`, `warmup`, `habits` (saved in `workout_data._habits[date]`), `powerUnlockKg` (240 lb). Exercise fields: `per` ('side'/'leg'), `repLabel` ('m' for the carry), `upgrade` ({week, to}), `depthRule` (rack pull). Swaps marked `assist` (assisted pull-up) treat less weight as progress. The spec's supplement/medication notes are deliberately not in the app.
+
 Design principles agreed in the chat: compounds first, 6-12 reps, 2-4 min rest on compounds, ~4-6 exercises per full-body session (the owner rejected a 9-exercise version as too long).
 
 ---

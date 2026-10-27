@@ -715,6 +715,40 @@
             *, *::before, *::after { animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important; }
         }
 
+        /* 3-Day Full Body: week plan, power unlock, warm-up, workout banner */
+        .week-plan { display:grid; grid-template-columns:repeat(7,1fr); gap:6px; margin-bottom:12px; }
+        .wp-day { display:flex; flex-direction:column; align-items:center; gap:4px; padding:9px 2px; border-radius:12px; background:var(--card); border:1px solid var(--border); }
+        .wp-name { font-size:0.6rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-muted); }
+        .wp-label { font-size:0.7rem; font-weight:600; color:var(--text-dim); }
+        .wp-day.lift .wp-label { color:var(--text); }
+        .wp-day.today { border-color:rgba(217,178,95,0.6); box-shadow:0 0 0 3px rgba(217,178,95,0.12); }
+        .wp-day.done { background:rgba(134,214,168,0.1); border-color:rgba(134,214,168,0.4); }
+        .wp-day.done .wp-label { color:var(--green); }
+        .wp-note { display:flex; align-items:center; justify-content:space-between; gap:12px; font-size:0.8rem; color:var(--text-dim); line-height:1.5; background:var(--card); border:1px solid var(--border); border-radius:14px; padding:12px 14px; margin-bottom:12px; }
+        .wp-note strong { color:var(--text); }
+        .wp-note .btn { flex:none; }
+        .wp-done { color:var(--green); font-weight:600; white-space:nowrap; }
+        .power-unlock { display:flex; justify-content:space-between; gap:10px; font-size:0.78rem; color:var(--text-dim); padding:10px 14px; border-radius:14px; border:1px dashed rgba(217,178,95,0.4); margin-bottom:20px; }
+        .power-unlock strong { color:var(--accent); white-space:nowrap; }
+        .power-unlock.unlocked { border-style:solid; background:rgba(217,178,95,0.08); color:var(--text); }
+        .power-unlock:empty { display:none; }
+        .warmup-card { margin:0 0 16px; }
+        .warmup-card summary { display:flex; justify-content:space-between; align-items:center; cursor:pointer; list-style:none; }
+        .warmup-card summary::-webkit-details-marker { display:none; }
+        .warmup-card summary h3 { margin:0; }
+        .warmup-hint { font-size:0.7rem; color:var(--text-muted); }
+        .warmup-card[open] .warmup-hint { display:none; }
+        .warmup-card[open] summary { margin-bottom:8px; }
+        .warmup-note { font-size:0.74rem; color:var(--text-dim); line-height:1.6; margin-top:10px; }
+        .warmup-note strong { color:var(--text); }
+        .today-item-note.upgrade { color:var(--accent); }
+        .wo-banner { font-size:0.8rem; line-height:1.6; color:var(--text-dim); background:rgba(217,178,95,0.07); border:1px solid rgba(217,178,95,0.3); border-radius:14px; padding:12px 14px; margin-bottom:14px; }
+        .wo-banner strong { color:var(--text); }
+        @media (max-width:600px) {
+            .wp-day { padding:8px 0; }
+            .wp-label { font-size:0.62rem; }
+        }
+
         /* SCREENS: exactly one .screen has .active at a time (see showScreen) */
         .screen:not(.active) { display:none !important; }
         .loading-screen { display:flex; align-items:center; justify-content:center; min-height:100vh; }
@@ -880,6 +914,13 @@
                 <div class="program-specs"><div><span>Split</span>Full body</div><div><span>Session</span>50–55 min</div><div><span>Kit</span>Basic gym</div></div>
                 <div class="program-cta">Select program <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
             </button>
+            <button class="program-card" onclick="selectProgram('fullBody3')">
+                <div class="program-top"><span class="program-index">05</span><span class="program-tag">Beginner · 3 days + cardio</span></div>
+                <div class="program-title">3-Day Full Body</div>
+                <div class="program-desc">A fat-loss plan for returning lifters: joint-friendly squats, hinges and carries, with ankle, knee and core work built into every session.</div>
+                <div class="program-specs"><div><span>Split</span>A · B · C + cardio</div><div><span>Session</span>~50 min</div><div><span>Focus</span>Fat loss &amp; strength</div></div>
+                <div class="program-cta">Select program <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+            </button>
         </div>
     </div>
 </div>
@@ -917,12 +958,16 @@
     <div class="page active" id="page-today">
         <div class="container today-container">
             <div class="streak-row" id="streakRow"></div>
+            <div id="weekPlan"></div>
+            <div id="powerUnlock"></div>
             <div class="day-strip" id="dayStrip"></div>
             <div class="today-meta" id="todayMeta"></div>
+            <div id="warmupCard"></div>
             <div class="today-list" id="todayList"></div>
             <div class="today-hint" id="todayHint"></div>
             <button class="start-btn" id="startWorkoutBtn" onclick="startWorkout()"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l13-7.5z"/></svg> Start workout</button>
             <div id="mobilityCard"></div>
+            <div id="habitsCard"></div>
         </div>
     </div>
 
@@ -1153,7 +1198,7 @@
 
 // Shown at the bottom of Settings so you can tell which version a phone is running.
 // Bump it with every deploy.
-const APP_VERSION = '1.5 · 27 Oct';
+const APP_VERSION = '1.6 · 27 Oct';
 
 const SUPABASE_URL = 'https://hcwbcxhblfjpdlkwykez.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_mEe_5g2UITyp5O-F9YRhRg_wTQWuOtf';
@@ -1984,6 +2029,57 @@ const PROGRAMS = {
             { id:'db-shoulder-press', day:0, name:'Dumbbell Shoulder Press', meta:'3×10-12, 2min', unit:'kg/DB', thresholds:[8,12,18,24,32,40], note:'Slight elbow flare' },
             { id:'barbell-row', bar:true, day:0, name:'Barbell Row', meta:'3×10-12, 2min', unit:'kg', thresholds:[25,38,52,68,88,108], note:'Elbows flare, pull to lower chest' },
         ]
+    },
+    // Joint-friendly full body for returning lifters, fat loss first; needs no trap bar or leg press.
+    // Rest: 2-3 min after the first two lifts, 60-90 s after the rest.
+    fullBody3: {
+        name: '3-Day Full Body',
+        subtitle: 'Fat-loss full body · Mon / Wed / Fri',
+        gender: 'male',
+        heroTitle: 'REBUILD<br>STRONGER',
+        heroSubtitle: 'Lose fat · Build muscle · Move well',
+        days: ['A · Squat', 'B · Hinge', 'C · Pull'],
+        coachRules: true,              // stall, layoff and effort rules (see getProgression / workoutPrefill)
+        powerUnlockKg: 108.862,        // 240 lb: add low box jumps or sled pushes
+        // 0 = Sunday … 6 = Saturday; numbers are lifting days (index into `days`)
+        weekPlan: { 1: 0, 2: 'cardio', 3: 1, 4: 'cardio', 5: 2, 6: 'rest', 0: 'rest' },
+        warmup: {
+            common: [['Bike or incline walk', '4 min'], ['Couch stretch', '30 s per side']],
+            days: [
+                [['Single-leg balance', '2 × 30 s per leg'], ['Dead bug', '2 × 8 per side']],
+                [['Slow single-leg calf raise', '2 × 12 per leg'], ['Glute bridge', '2 × 10']],
+                [['Ankle wall stretch', '10 per side'], ['Standing knee march', '2 × 10 per leg']],
+            ],
+            note: 'Balance progression: eyes open → eyes closed → standing on a cushion.',
+        },
+        habits: [
+            '8,000–10,000 steps',
+            'Stand or walk 1–2 min every 30–60 min at the desk',
+            '180–200 g protein',
+            '~500 kcal below maintenance',
+            '7+ hours sleep',
+            'Couch stretch once during the workday',
+        ],
+        exercises: [
+            // Day A — squat day
+            { id:'goblet-box-squat', day:0, name:'Goblet Box Squat', meta:'3×6-10, 2-3min', unit:'kg/DB', thresholds:[16,24,32,40,50,60], note:'Sit back, touch the box, stand', upgrade:{ week:6, to:'Goblet Squat' } },
+            { id:'incline-db-press', day:0, name:'Incline DB Press', meta:'3×8-12, 2-3min', unit:'kg/DB', thresholds:[18,26,34,44,54,64], note:'Elbows about 45°, full stretch' },
+            { id:'lat-pulldown', day:0, name:'Lat Pulldown', meta:'3×8-12, 1-1.5min', unit:'kg', thresholds:[40,55,70,85,100,120], note:'Pull elbows down to the ribs' },
+            { id:'seated-leg-curl', day:0, name:'Seated Leg Curl', meta:'3×10-15, 1-1.5min', unit:'kg', thresholds:[30,45,60,78,96,115], note:'Lower over 3 seconds' },
+            { id:'pallof-press', day:0, name:'Pallof Press', meta:'3×10/side, 1-1.5min', unit:'kg', per:'side', thresholds:[10,15,20,27,35,45], note:'Don\'t let the torso twist' },
+            // Day B — hinge day
+            { id:'db-rdl', day:1, name:'DB Romanian Deadlift', meta:'3×6-10, 2-3min', unit:'kg/DB', thresholds:[20,28,36,46,56,66], note:'Push the hips back, flat back' },
+            { id:'seated-db-ohp', day:1, name:'Seated DB Overhead Press', meta:'3×8-12, 2-3min', unit:'kg/DB', thresholds:[14,20,26,34,42,50], note:'Ribs down, don\'t arch' },
+            { id:'chest-supported-row', day:1, name:'Chest-Supported Row', meta:'3×8-12, 1-1.5min', unit:'kg', thresholds:[30,45,60,75,90,110], note:'Squeeze the shoulder blades' },
+            { id:'static-split-squat', day:1, name:'Static Split Squat', meta:'3×8/leg, 1-1.5min', unit:'kg/DB', per:'leg', thresholds:[8,14,20,28,36,46], note:'Weight through the front heel', upgrade:{ week:6, to:'Bulgarian Split Squat' } },
+            { id:'reverse-incline-crunch', day:1, name:'Reverse Incline Crunch', meta:'3×10-15, 1-1.5min', unit:'reps/+kg', thresholds:[8,12,15,20,25,30], note:'Curl the hips up, not the legs' },
+            // Day C — heavy pull day
+            { id:'rack-pull', bar:true, day:2, name:'Barbell Rack Pull', meta:'3×5-8, 2-3min', unit:'kg', thresholds:[80,110,145,185,225,265], note:'Bar just below the kneecap. Chest up, drag the bar up the thighs', depthRule:true },
+            { id:'machine-chest-press', day:2, name:'Machine Chest Press', meta:'3×8-12, 2-3min', unit:'kg', thresholds:[40,60,80,100,125,150], note:'Control the lowering (push-ups via Swap)' },
+            { id:'single-arm-row', day:2, name:'Single-Arm DB Row', meta:'3×8-12, 1-1.5min', unit:'kg/DB', thresholds:[20,28,36,44,54,64], note:'Lead with the elbow (assisted pull-up via Swap)' },
+            { id:'slow-step-up', day:2, name:'Step-Up, 3-Second Lowering', meta:'3×8/leg, 1-1.5min', unit:'kg/DB', per:'leg', thresholds:[8,14,20,28,36,46], note:'Don\'t push off the back foot' },
+            { id:'suitcase-carry', day:2, name:'Suitcase Carry', meta:'3×30m/side, 1-1.5min', unit:'kg/DB', per:'side', repLabel:'m', thresholds:[16,24,32,40,50,60], note:'Stay tall, don\'t lean' },
+        ]
     }
 };
 
@@ -2116,7 +2212,7 @@ function prescriptionText(ex) {
     const p = getPrescription(ex);
     if (!p.repMin) return `${p.sets} sets to failure (AMRAP)`;
     const reps = p.repMin === p.repMax ? p.repMin : `${p.repMin}–${p.repMax}`;
-    return `${p.sets} sets of ${reps} reps`;
+    return `${p.sets} sets of ${reps}${ex.repLabel === 'm' ? 'm' : ' reps'}${ex.per ? ` per ${ex.per}` : ''}`;
 }
 
 // "Cable Curls" in odd weeks, "Tricep Pressdown" in even weeks
@@ -2135,8 +2231,8 @@ function getLastSetsEntry(exId) {
 }
 
 // Weight jumps when the top of the rep range is hit on every set
-const KG_INCREMENT = { 'kg': 2.5, 'kg/DB': 2, 'kg/side': 1, 'kg+': 2.5, 'reps/+kg': 2.5 };
-const LB_INCREMENT = { 'kg': 5, 'kg/DB': 5, 'kg/side': 2.5, 'kg+': 5, 'reps/+kg': 5 };
+const KG_INCREMENT = { 'kg': 2.5, 'kg/DB': 2, 'kg/side': 1, 'kg+': 2.5, 'reps/+kg': 2.5, 'kg assist': 2.5 };
+const LB_INCREMENT = { 'kg': 5, 'kg/DB': 5, 'kg/side': 2.5, 'kg+': 5, 'reps/+kg': 5, 'kg assist': 5 };
 
 function incrementKg(ex) {
     return usesLb() ? LB_INCREMENT[ex.unit] / LB_PER_KG : KG_INCREMENT[ex.unit];
@@ -2159,7 +2255,9 @@ function getProgression(ex) {
     const sets = entrySets(last.entry).filter(s => parseInt(s.reps) > 0);
     if (!sets.length) return null;
 
-    const topKg = Math.max(...sets.map(s => parseFloat(s.kg) || 0));
+    // Assisted machines: less assistance is progress
+    const weights = sets.map(s => parseFloat(s.kg) || 0);
+    const topKg = ex.assist ? Math.min(...weights) : Math.max(...weights);
     const reps = sets.map(s => parseInt(s.reps));
 
     if (p.repMin && reps.some(r => r < p.repMin)) {
@@ -2171,14 +2269,38 @@ function getProgression(ex) {
             text: `Complete all ${p.sets} sets at ${formatSetWeight(ex, topKg)}` };
     }
     if (p.repMax && reps.every(r => r >= p.repMax)) {
-        const next = Math.round((topKg + incrementKg(ex)) * 1000) / 1000;
         const step = usesLb() ? LB_INCREMENT[ex.unit] : KG_INCREMENT[ex.unit];
-        return { type: 'kg', label: `+${formatNum(step)}${usesLb() ? 'lb' : 'kg'}`, kg: next, reps: p.repMin,
-            text: `Hit ${p.repMax} reps on every set — go up to ${formatSetWeight(ex, next)}` };
+        const unitShort = usesLb() ? 'lb' : 'kg';
+        if (ex.assist) {
+            const less = Math.max(0, Math.round((topKg - incrementKg(ex)) * 1000) / 1000);
+            return { type: 'kg', label: `−${formatNum(step)}${unitShort}`, kg: less, reps: p.repMin,
+                text: `Hit ${p.repMax} reps on every set — drop the assistance to ${formatSetWeight(ex, less)}` };
+        }
+        const next = Math.round((topKg + incrementKg(ex)) * 1000) / 1000;
+        return { type: 'kg', label: `+${formatNum(step)}${unitShort}`, kg: next, reps: p.repMin,
+            text: ex.depthRule
+                ? `${p.sets} × ${p.repMax} clean — lower the bar one notch next time, or go up to ${formatSetWeight(ex, next)}`
+                : `Hit ${p.repMax} reps on every set — go up to ${formatSetWeight(ex, next)}` };
+    }
+    // Coach rule: same weight three sessions running → hold it and chase one more rep
+    if (PROGRAMS[currentProgram].coachRules && isStalled(ex.id)) {
+        return { type: 'reps', label: 'stall', kg: topKg, reps: Math.min(Math.max(...reps) + 1, p.repMax || 99),
+            text: `Same weight 3 sessions running — hold ${formatSetWeight(ex, topKg)} and chase +1 rep` };
     }
     const best = Math.max(...reps);
     return { type: 'reps', label: 'reps', kg: topKg, reps: p.repMax || best + 1,
         text: p.repMax ? `Same weight, push for ${p.repMax} reps` : `Beat last time: ${best} reps` };
+}
+
+// True when the last three logged sessions all used the same top weight
+function isStalled(exId) {
+    const weeks = progData()[exId] || {};
+    const tops = [];
+    for (let w = WEEKS - 1; w >= 0 && tops.length < 3; w--) {
+        const sets = entrySets(weeks[w]);
+        if (sets && sets.length) tops.push(Math.max(...sets.map(s => parseFloat(s.kg) || 0)));
+    }
+    return tops.length === 3 && tops.every(t => t === tops[0]);
 }
 
 function progressionBadge(prog) {
@@ -2389,6 +2511,8 @@ function renderToday() {
         statTile('This week', String(stats.thisWeek), stats.thisWeek === 1 ? 'workout' : 'workouts') +
         statTile('Streak', String(stats.streak), stats.streak === 1 ? 'week in a row' : 'weeks in a row') +
         statTile('Total', String(stats.total), 'workouts');
+    renderWeekPlan();
+    document.getElementById('powerUnlock').innerHTML = powerUnlockHtml();
 
     document.getElementById('dayStrip').innerHTML = prog.days.map((name, i) => `
         <button class="day-tab${i === todayDay ? ' active' : ''}" onclick="selectTodayDay(${i})">
@@ -2412,6 +2536,8 @@ function renderToday() {
         ${lastDone ? ` · last done ${escapeHtml(prettyDate(lastDone.date))}` : ''}
     `;
 
+    renderWarmup(exercises);
+
     let readyToProgress = 0;
     document.getElementById('todayList').innerHTML = exercises.map((ex, idx) => {
         const p = getPrescription(ex);
@@ -2425,15 +2551,18 @@ function renderToday() {
                     <div class="today-item-sub">${escapeHtml(prescriptionText(ex))}${p.restText ? ` · ${escapeHtml(p.restText)} rest` : ''}${escapeHtml(target)}</div>
                     ${ex.note && !ex.alternates ? `<div class="today-item-note">${escapeHtml(ex.note)}</div>` : ''}
                     ${progression ? `<div class="today-item-note">${escapeHtml(progression.text)}</div>` : ''}
+                    ${upgradeText(ex, week) ? `<div class="today-item-note upgrade">${escapeHtml(upgradeText(ex, week))}</div>` : ''}
                 </div>
                 ${progressionBadge(progression)}
             </div>
         `;
     }).join('');
 
-    document.getElementById('todayHint').textContent = readyToProgress
-        ? `${readyToProgress} exercise${readyToProgress === 1 ? '' : 's'} ready to go up in weight`
-        : '';
+    const daysOff = prog.coachRules ? daysSinceLastWorkout() : null;
+    const hints = [];
+    if (daysOff !== null && daysOff >= 7) hints.push(`${daysOff} days since your last session, so the workout starts 10% lighter`);
+    if (readyToProgress) hints.push(`${readyToProgress} exercise${readyToProgress === 1 ? '' : 's'} ready to go up in weight`);
+    document.getElementById('todayHint').textContent = hints.join(' · ');
 
     const btn = document.getElementById('startWorkoutBtn');
     if (activeWorkout) {
@@ -2445,6 +2574,147 @@ function renderToday() {
     }
 
     renderMobility();
+    renderHabits();
+}
+
+// ── Programs with a weekly plan, warm-up, daily habits and a power milestone (3-Day Full Body) ──
+
+const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+// Mon–Sun strip: what each day is for, with a tick once it's done this week
+function renderWeekPlan() {
+    const el = document.getElementById('weekPlan');
+    const prog = PROGRAMS[currentProgram];
+    if (!prog.weekPlan) {
+        el.innerHTML = '';
+        return;
+    }
+    const monday = mondayOf(todayStr());
+    const today = todayStr();
+    const sessions = programSessions();
+    const days = [1, 2, 3, 4, 5, 6, 0].map((weekday, i) => {
+        const date = addDays(monday, i);
+        const plan = prog.weekPlan[weekday];
+        const label = typeof plan === 'number' ? prog.days[plan].split(' ')[0] : plan === 'cardio' ? 'Cardio' : 'Walk';
+        const done = sessions.some(s => s.date === date && (s.type === 'workout' || s.type === 'cardio'));
+        return `
+            <div class="wp-day${date === today ? ' today' : ''}${done ? ' done' : ''}${typeof plan === 'number' ? ' lift' : ''}">
+                <span class="wp-name">${WEEKDAYS[weekday]}</span>
+                <span class="wp-label">${escapeHtml(label)}</span>
+            </div>`;
+    }).join('');
+
+    const todayPlan = prog.weekPlan[new Date().getDay()];
+    let note = '';
+    if (todayPlan === 'cardio') {
+        const logged = sessions.some(s => s.date === today && s.type === 'cardio');
+        note = `
+            <div class="wp-note">
+                <strong>Cardio day.</strong> 20–30 min easy bike or incline walk, at a pace where you can still talk.
+                ${logged ? '<span class="wp-done">Logged today</span>' : '<button class="btn" onclick="logCardio()">Log cardio</button>'}
+            </div>`;
+    } else if (todayPlan === 'rest') {
+        note = '<div class="wp-note"><strong>Walk or rest day.</strong> An easy walk keeps the steps up and helps recovery.</div>';
+    }
+    el.innerHTML = `<div class="week-plan">${days}</div>${note}`;
+}
+
+function logCardio() {
+    haptic();
+    programSessions().push({ date: todayStr(), day: null, week: getCurrentWeek(), type: 'cardio', minutes: 25 });
+    scheduleSave();
+    renderToday();
+    showToast('Cardio logged');
+}
+
+// Warm-up for the selected day, plus the effort and pain rules
+function renderWarmup(exercises) {
+    const el = document.getElementById('warmupCard');
+    const prog = PROGRAMS[currentProgram];
+    if (!prog.warmup) {
+        el.innerHTML = '';
+        return;
+    }
+    // Two light build-up sets of the first lift, at about 50% and 75% of today's weight
+    const first = exercises[0];
+    const working = first ? parseFloat(workoutPrefill(first).kg) : NaN;
+    const unit = first ? setWeightUnit(first) : '';
+    const rampText = working > 0
+        ? `${formatNum(Math.round(working * 0.5))} ${unit} × 8, then ${formatNum(Math.round(working * 0.75))} ${unit} × 4`
+        : 'building to your working weight';
+    const items = [...prog.warmup.common, ...prog.warmup.days[todayDay],
+        [`2 light sets of ${first ? first.name : 'the first lift'}`, rampText]];
+    el.innerHTML = `
+        <details class="mobility-card warmup-card">
+            <summary><h3>Warm-up · ~6 min</h3><span class="warmup-hint">Tap to open</span></summary>
+            ${items.map(([name, dose]) => `
+                <label class="mobility-item"><input type="checkbox"> ${escapeHtml(name)} <small>${escapeHtml(dose)}</small></label>
+            `).join('')}
+            <p class="warmup-note">${escapeHtml(prog.warmup.note)}</p>
+            <p class="warmup-note"><strong>Effort:</strong> stop every set with 1–3 reps in reserve.
+                <strong>Pain:</strong> up to ~3/10 that settles by the next day is fine. Sharp pain, or pain that gets worse session to session, means back off that exercise.</p>
+            <p class="warmup-note">See a physio for back pain running down a leg, numbness or tingling, or an ankle that keeps giving way.</p>
+        </details>
+    `;
+}
+
+// Power work unlocks at the bodyweight milestone
+function powerUnlockHtml() {
+    const prog = PROGRAMS[currentProgram];
+    if (!prog.powerUnlockKg || !userProfile || !userProfile.weight) return '';
+    const unit = usesLb() ? 'lb' : 'kg';
+    if (userProfile.weight <= prog.powerUnlockKg) {
+        return `<div class="power-unlock unlocked"><strong>Power work unlocked.</strong> Add low box jumps or sled pushes after the warm-up.</div>`;
+    }
+    const toGo = kgToDisplay(userProfile.weight - prog.powerUnlockKg);
+    return `<div class="power-unlock"><span>Power unlock at ${kgToDisplay(prog.powerUnlockKg)} ${unit}</span><strong>${toGo} ${unit} to go</strong></div>`;
+}
+
+// Daily habit checklist, saved per date
+function renderHabits() {
+    const el = document.getElementById('habitsCard');
+    const prog = PROGRAMS[currentProgram];
+    if (!prog.habits) {
+        el.innerHTML = '';
+        return;
+    }
+    const checked = new Set((metaFor('_habits')[todayStr()]) || []);
+    el.innerHTML = `
+        <div class="mobility-card">
+            <h3>Daily habits</h3>
+            <p>${checked.size} of ${prog.habits.length} done today</p>
+            ${prog.habits.map((habit, i) => `
+                <label class="mobility-item">
+                    <input type="checkbox" ${checked.has(i) ? 'checked' : ''} onchange="toggleHabit(${i}, this.checked)">
+                    ${escapeHtml(habit)}
+                </label>
+            `).join('')}
+        </div>
+    `;
+}
+
+function toggleHabit(i, on) {
+    haptic();
+    const habits = metaFor('_habits');
+    const today = new Set(habits[todayStr()] || []);
+    if (on) today.add(i);
+    else today.delete(i);
+    habits[todayStr()] = [...today].sort((a, b) => a - b);
+    scheduleSave();
+    renderHabits();
+}
+
+// Week 6+: suggest the harder version of an exercise once knees and balance are solid
+function upgradeText(ex, week) {
+    return ex.upgrade && week + 1 >= ex.upgrade.week
+        ? `Week ${ex.upgrade.week}+: if knees and balance feel solid, upgrade to ${ex.upgrade.to} (tap Swap during the workout).`
+        : '';
+}
+
+// Days since this program's last lifting session (null when there is none)
+function daysSinceLastWorkout() {
+    const sessions = workoutSessions();
+    return sessions.length ? daysBetween(sessions[sessions.length - 1].date, todayStr()) : null;
 }
 
 function selectTodayDay(day) {
@@ -2547,7 +2817,8 @@ function startWorkout() {
         const { kg, target } = workoutPrefill(ex);
         rows[ex.id] = Array.from({ length: getPrescription(ex).sets }, () => ({ kg, reps: '', target, done: false }));
     });
-    activeWorkout = { program: currentProgram, day: todayDay, week, startedAt: Date.now(), rows, swaps: {} };
+    const daysOff = prog.coachRules ? daysSinceLastWorkout() : null;
+    activeWorkout = { program: currentProgram, day: todayDay, week, startedAt: Date.now(), rows, swaps: {}, layoffDays: daysOff >= 7 ? daysOff : 0 };
     persistActiveWorkout();
     haptic();
     resumeWorkout();
@@ -2559,7 +2830,13 @@ function workoutPrefill(ex) {
     const progression = getProgression(ex);
     const lastKg = progression ? progression.kg : parseFloat(entryKg((progData()[ex.id] || {})[highestWeekFor(ex.id)]));
     // Pull-ups' tracked number is reps, so only prefill their added weight from logged sets
-    const kg = progression ? kgToDisplay(progression.kg) : (!isRepsBased(ex) && !isNaN(lastKg) ? kgToDisplay(lastKg) : '');
+    let kg = progression ? kgToDisplay(progression.kg) : (!isRepsBased(ex) && !isNaN(lastKg) ? kgToDisplay(lastKg) : '');
+    // Coach rule: back after a week or more off → start 10% lighter and rebuild over 2 sessions
+    const daysOff = PROGRAMS[currentProgram].coachRules ? daysSinceLastWorkout() : null;
+    if (daysOff !== null && daysOff >= 7 && kg !== '' && !isRepsBased(ex) && !ex.assist) {
+        const step = usesLb() ? LB_INCREMENT[ex.unit] : KG_INCREMENT[ex.unit];
+        kg = formatNum(Math.max(step, Math.round((parseFloat(kg) * 0.9) / step) * step));
+    }
     const target = progression ? progression.reps : (p.repMax || '');
     return { kg, target: String(target) };
 }
@@ -2570,7 +2847,8 @@ function workoutExercise(exId) {
     const ex = getExercise(exId);
     const swap = activeWorkout && activeWorkout.swaps && activeWorkout.swaps[exId];
     if (!swap) return ex;
-    return { ...ex, id: swap.id, name: swap.name, unit: swap.unit || ex.unit, bar: !!swap.bar, note: '', alternates: null, swappedFrom: ex.name };
+    return { ...ex, id: swap.id, name: swap.name, unit: swap.unit || ex.unit, bar: !!swap.bar, assist: !!swap.assist,
+        note: '', alternates: null, upgrade: null, depthRule: false, repLabel: ex.repLabel, swappedFrom: ex.name };
 }
 
 function highestWeekFor(exId) {
@@ -2586,13 +2864,23 @@ function resumeWorkout() {
     updateWorkoutClock();
 }
 
+// Banner above the exercises: layoff notice and the effort rule (coach-rules programs)
+function workoutBannerHtml() {
+    const lines = [];
+    if (activeWorkout.layoffDays) {
+        lines.push(`<strong>Welcome back after ${activeWorkout.layoffDays} days off.</strong> Weights are 10% lighter today; build back up over the next 2 sessions.`);
+    }
+    if (PROGRAMS[currentProgram].coachRules) lines.push('Stop every set with 1–3 reps in reserve.');
+    return lines.length ? `<div class="wo-banner">${lines.join('<br>')}</div>` : '';
+}
+
 function renderWorkout() {
     const prog = PROGRAMS[currentProgram];
     const w = activeWorkout;
     document.getElementById('workoutTitle').textContent = prog.days[w.day];
     const body = document.getElementById('workoutBody');
 
-    body.innerHTML = Object.entries(w.rows).map(([exId, rows]) => {
+    body.innerHTML = workoutBannerHtml() + Object.entries(w.rows).map(([exId, rows]) => {
         const ex = workoutExercise(exId);
         const p = getPrescription(ex);
         const progression = getProgression(ex);
@@ -2608,6 +2896,7 @@ function renderWorkout() {
                     <div class="wo-sub">${escapeHtml(prescriptionText(ex))}${p.restText ? ` · ${escapeHtml(p.restText)} rest` : ''}</div>
                     ${ex.note && !ex.alternates ? `<div class="wo-sub" style="font-style:italic;">${escapeHtml(ex.note)}</div>` : ''}
                     ${progression ? `<div class="wo-tip prog-badge ${progression.type}" style="white-space:normal;"><span>${escapeHtml(progression.text)}</span></div>` : ''}
+                    ${!ex.swappedFrom && upgradeText(ex, w.week) ? `<div class="wo-sub swapped">${escapeHtml(upgradeText(ex, w.week))}</div>` : ''}
                 </div>
                 <div class="plates" id="plates_${exId}">${platesHtml(exId)}</div>
                 ${rows.map((row, i) => setRowHtml(ex, i, row, exId)).join('')}
@@ -2630,7 +2919,7 @@ function setRowHtml(ex, i, row, key = ex.id) {
             <div class="set-field">
                 <input type="text" inputmode="numeric" value="${escapeHtml(row.reps)}" placeholder="${escapeHtml(row.target || 'reps')}"
                     oninput="updateSet('${key}',${i},'reps',this.value)">
-                <span>reps</span>
+                <span>${escapeHtml(ex.repLabel || 'reps')}</span>
             </div>
             <button class="set-check" onclick="toggleSetDone('${key}',${i})" aria-label="Mark set ${i + 1} done">${CHECK_ICON}</button>
         </div>
@@ -2734,19 +3023,20 @@ function finishWorkout() {
         if (!done.length) return;
 
         const sets = done.map(r => ({ kg: String(displayToKg(r.kg) || 0), reps: String(parseInt(r.reps)) }));
-        // The tracked number: heaviest set, or most reps for pull-ups
-        const value = isRepsBased(ex)
-            ? Math.max(...sets.map(s => +s.reps))
+        // The tracked number: heaviest set, most reps for pull-ups, or least assistance on assisted machines
+        const value = isRepsBased(ex) ? Math.max(...sets.map(s => +s.reps))
+            : ex.assist ? Math.min(...sets.map(s => +s.kg))
             : Math.max(...sets.map(s => +s.kg));
-        if (!(value > 0)) return;
+        if (!(value > 0) && !ex.assist) return;
 
         const prevBest = getBestKg(exId);
         const prevTier = getTier(ex, prevBest);
         if (!data[exId]) data[exId] = {};
         const existing = parseFloat(entryKg(data[exId][w.week]));
-        data[exId][w.week] = { kg: String(Math.max(value, isNaN(existing) ? 0 : existing)), sets, date };
+        const kept = ex.assist ? value : Math.max(value, isNaN(existing) ? 0 : existing);
+        data[exId][w.week] = { kg: String(kept), sets, date };
 
-        if (prevBest !== null && value > prevBest) prs.push(exerciseDisplayName(ex, w.week));
+        if (!ex.assist && prevBest !== null && value > prevBest) prs.push(exerciseDisplayName(ex, w.week));
         if (swapped) return;
         const newTier = getTier(ex, getBestKg(exId));
         if (newTier > prevTier) tierUps.push({ ex, tier: newTier });
@@ -2849,8 +3139,8 @@ const SWAPS = {
     'lying-cable-lateral-raise': [['Cable Lateral Raise', 'kg/side'], ['DB Lateral Raise', 'kg/DB'], ['Machine Lateral Raise', 'kg']],
     'cable-lateral-raise': [['DB Lateral Raise', 'kg/DB'], ['Machine Lateral Raise', 'kg']],
     'cable-overhead-tri-ext': [['Rope Pressdown', 'kg'], ['DB Overhead Extension', 'kg/DB'], ['EZ-Bar Skull Crusher', 'kg']],
-    'pull-ups': [['Lat Pulldown', 'kg'], ['Assisted Pull-Up Machine', 'kg'], ['Chin-Ups', 'reps/+kg']],
-    'lat-pulldown-wide': [['Assisted Pull-Up Machine', 'kg'], ['Single-Arm Cable Pulldown', 'kg'], ['Pull-Ups', 'reps/+kg']],
+    'pull-ups': [['Lat Pulldown', 'kg'], ['Assisted Pull-Up Machine', 'kg assist', false, true], ['Chin-Ups', 'reps/+kg']],
+    'lat-pulldown-wide': [['Assisted Pull-Up Machine', 'kg assist', false, true], ['Single-Arm Cable Pulldown', 'kg'], ['Pull-Ups', 'reps/+kg']],
     'db-incline-row': [['Chest-Supported Machine Row', 'kg'], ['Seated Cable Row', 'kg'], ['One-Arm DB Row', 'kg/DB']],
     'barbell-row': [['Chest-Supported Machine Row', 'kg'], ['Seated Cable Row', 'kg'], ['DB Incline Row', 'kg/DB']],
     'seated-cable-high-row': [['Face Pull', 'kg'], ['Machine High Row', 'kg']],
@@ -2875,6 +3165,21 @@ const SWAPS = {
     'standing-calf-raise-a': [['Seated Calf Raise', 'kg'], ['Leg Press Calf Raise', 'kg'], ['Single-Leg Calf Raise', 'kg/DB']],
     'standing-calf-raise-c': [['Seated Calf Raise', 'kg'], ['Leg Press Calf Raise', 'kg'], ['Single-Leg Calf Raise', 'kg/DB']],
     'cable-crunch': [['Machine Crunch', 'kg'], ['Hanging Knee Raise', 'kg+']],
+    // 3-Day Full Body: alternatives keep the same movement pattern (spec section 5)
+    'goblet-box-squat': [['Goblet Squat', 'kg/DB'], ['Smith Machine Box Squat', 'kg'], ['Barbell Box Squat', 'kg', true]],
+    'incline-db-press': [['Incline Machine Press', 'kg'], ['Flat DB Press', 'kg/DB'], ['Push-Ups', 'reps/+kg']],
+    'lat-pulldown': [['Assisted Pull-Up Machine', 'kg assist', false, true], ['Single-Arm Cable Pulldown', 'kg']],
+    'pallof-press': [['Cable Anti-Rotation Hold', 'kg'], ['Dead Bug', 'reps/+kg']],
+    'db-rdl': [['Barbell RDL', 'kg', true], ['Cable Pull-Through', 'kg'], ['45° Back Extension', 'kg+']],
+    'seated-db-ohp': [['Machine Shoulder Press', 'kg'], ['Landmine Press', 'kg']],
+    'chest-supported-row': [['Seated Cable Row', 'kg'], ['One-Arm DB Row', 'kg/DB']],
+    'static-split-squat': [['Bulgarian Split Squat', 'kg/DB'], ['Reverse Lunge', 'kg/DB']],
+    'reverse-incline-crunch': [['Hanging Knee Raise', 'reps/+kg'], ['Cable Crunch', 'kg']],
+    'rack-pull': [['DB Deadlift', 'kg/DB'], ['Barbell RDL', 'kg', true]],
+    'machine-chest-press': [['Push-Ups', 'reps/+kg'], ['DB Bench Press', 'kg/DB']],
+    'single-arm-row': [['Assisted Pull-Up Machine', 'kg assist', false, true], ['Chest-Supported Row', 'kg']],
+    'slow-step-up': [['Static Split Squat', 'kg/DB'], ['Reverse Lunge', 'kg/DB']],
+    'suitcase-carry': [['Farmer Carry', 'kg/DB'], ['Single-Arm DB Hold', 'kg/DB']],
 };
 
 let swapSlot = null;
@@ -2906,8 +3211,8 @@ function closeSwap() {
 }
 
 function chooseSwap(i) {
-    const [name, unit, bar] = SWAPS[swapSlot][i];
-    applySwap({ name, unit, bar: !!bar });
+    const [name, unit, bar, assist] = SWAPS[swapSlot][i];
+    applySwap({ name, unit, bar: !!bar, assist: !!assist });
 }
 
 function swapCustom(event) {
