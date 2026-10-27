@@ -3,7 +3,7 @@
 // - Libraries and fonts from CDNs: cached copy first, refreshed in the background.
 // - Supabase (login + data) is never cached; the page keeps its own offline copy of your data.
 // Bump CACHE when changing this file's caching rules.
-const CACHE = 'workout-tracker-v1';
+const CACHE = 'workout-tracker-v2';
 const APP_SHELL = ['./', 'index.html', 'manifest.webmanifest', 'icons/icon-180.png', 'icons/icon-192.png', 'icons/icon-512.png'];
 const CDN_HOSTS = ['cdnjs.cloudflare.com', 'cdn.jsdelivr.net', 'fonts.googleapis.com', 'fonts.gstatic.com'];
 
@@ -35,7 +35,8 @@ self.addEventListener('fetch', event => {
 async function networkFirst(request) {
     const cache = await caches.open(CACHE);
     try {
-        const response = await fetch(request);
+        // no-cache: always ask GitHub Pages for the newest page instead of the browser's 10-minute copy
+        const response = await fetch(request.mode === 'navigate' ? request.url : request, { cache: 'no-cache' });
         if (response.ok) cache.put(request, response.clone());
         return response;
     } catch (error) {
