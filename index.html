@@ -762,6 +762,13 @@
         .cardio-week-bar span { display:block; height:100%; border-radius:999px; background:linear-gradient(90deg,#8fbbd9,#86d6a8); transition:width 0.6s ease; }
         .cardio-today { font-size:0.72rem; color:var(--green); margin-top:10px; }
         .zone-list-head { display:flex; justify-content:space-between; font-size:0.62rem; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; color:var(--text-muted); margin:0 18px 8px; }
+        .zone-card.solo summary { display:none; }
+        .zone-card.solo .zone-meta { margin:14px 0 4px; }
+        .zone-card.solo .zone-session { padding-left:0; }
+        .other-zones { margin-top:14px; }
+        .other-zones > summary { list-style:none; cursor:pointer; text-align:center; font-size:0.78rem; color:var(--text-muted); padding:8px 0 12px; }
+        .other-zones > summary::-webkit-details-marker { display:none; }
+        .other-zones[open] > summary { color:var(--text-dim); }
         .zone-card { border-radius:16px; background:var(--card); border:1px solid var(--border); margin-bottom:8px; padding:0 16px; overflow:hidden; }
         .zone-card[open] { padding-bottom:12px; }
         .zone-card.recommended { border-color:color-mix(in srgb, var(--zone) 45%, transparent); }
@@ -1359,7 +1366,7 @@
 
 // Shown at the bottom of Settings so you can tell which version a phone is running.
 // Bump it with every deploy.
-const APP_VERSION = '1.9 · 28 Oct';
+const APP_VERSION = '1.10 · 28 Oct';
 
 const SUPABASE_URL = 'https://hcwbcxhblfjpdlkwykez.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_mEe_5g2UITyp5O-F9YRhRg_wTQWuOtf';
@@ -2209,6 +2216,8 @@ const PROGRAMS = {
         powerUnlockKg: 108.862,        // 240 lb: add low box jumps or sled pushes
         // 0 = Sunday … 6 = Saturday; numbers are lifting days (index into `days`)
         weekPlan: { 1: 0, 2: 'cardio', 3: 1, 4: 'cardio', 5: 2, 6: 'rest', 0: 'rest' },
+        // Joint-friendly fat loss: easy Zone 2 on cardio days, Zone 1 walks on rest days
+        cardioZones: { cardio: [2], rest: [1] },
         warmup: {
             common: [['Bike or incline walk', '4 min'], ['Couch stretch', '30 s per side']],
             days: [
@@ -3003,7 +3012,7 @@ function renderCardioView(plan, showingLift) {
         return;
     }
     const hrMax = estimatedMaxHr();
-    const recommended = plan === 'cardio' ? 2 : 1;
+    const recommended = ((PROGRAMS[currentProgram].cardioZones || {})[plan] || [plan === 'cardio' ? 2 : 1])[0];
     const week = cardioWeek();
     const todayMinutes = programSessions()
         .filter(s => s.type === 'cardio' && s.date === todayStr())
@@ -3013,10 +3022,11 @@ function renderCardioView(plan, showingLift) {
     const rec = CARDIO_ZONES.find(z => z.zone === recommended);
 
     // Details (why, technique, evidence) live in the log sheet and "The science"; the page stays scannable
-    const zones = CARDIO_ZONES.map(z => {
+    // solo: the only zone shown, so its title row would repeat the headline
+    const zoneCard = (z, solo) => {
         const isRec = z.zone === recommended;
         return `
-            <details class="zone-card${isRec ? ' recommended' : ''}" style="--zone:${z.color}" ${isRec ? 'open' : ''}>
+            <details class="zone-card${isRec ? ' recommended' : ''}${solo ? ' solo' : ''}" style="--zone:${z.color}" ${isRec || solo ? 'open' : ''}>
                 <summary>
                     <span class="zone-num">Z${z.zone}</span>
                     <span class="zone-name">${escapeHtml(z.name)}</span>
@@ -3029,7 +3039,11 @@ function renderCardioView(plan, showingLift) {
                         <span class="zone-log" aria-label="Log">+</span>
                     </button>`).join('')}
             </details>`;
-    }).join('');
+    };
+    // Programs list the zones that fit their goal; the rest stay out of the way under "Other zones"
+    const fits = (PROGRAMS[currentProgram].cardioZones || {})[plan] || CARDIO_ZONES.map(z => z.zone);
+    const shown = CARDIO_ZONES.filter(z => fits.includes(z.zone));
+    const others = CARDIO_ZONES.filter(z => !fits.includes(z.zone));
 
     el.innerHTML = `
         <div class="cardio-head">
@@ -3045,8 +3059,13 @@ function renderCardioView(plan, showingLift) {
             <div class="cardio-week-bar"><span style="width:${pct}%"></span></div>
             ${todayMinutes ? `<div class="cardio-today">${todayMinutes} min logged today</div>` : ''}
         </div>
-        <div class="zone-list-head"><span>All zones</span><span>bpm</span></div>
-        ${zones}
+        <div class="zone-list-head"><span>${shown.length > 1 ? 'Your zones' : 'Pick a session'}</span><span>${shown.length > 1 ? 'bpm' : ''}</span></div>
+        ${shown.map(z => zoneCard(z, shown.length === 1)).join('')}
+        ${others.length ? `
+            <details class="other-zones">
+                <summary>Other zones</summary>
+                ${others.map(z => zoneCard(z, false)).join('')}
+            </details>` : ''}
         <details class="mobility-card evidence-card">
             <summary><h3>The science</h3><span class="warmup-hint">Tap to open</span></summary>
             <ul>
