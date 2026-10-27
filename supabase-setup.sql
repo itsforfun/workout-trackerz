@@ -43,3 +43,6 @@ CREATE POLICY "Users can delete own data"
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.user_data TO authenticated;
 
 -- (user_id is UNIQUE, which already gives it an index for fast lookups)
+
+-- Make the API see the new table immediately
+NOTIFY pgrst, 'reload schema';
