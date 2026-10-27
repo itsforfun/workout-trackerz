@@ -1036,7 +1036,12 @@
         @media (max-width:900px) {
             .topbar { position:relative; background:transparent; border-bottom:none; }
         }
-        body::before { content:''; position:fixed; top:0; left:0; right:0; height:env(safe-area-inset-top); background:var(--bg); z-index:300; pointer-events:none; }
+        /* iOS blurs whatever scrolls under the status bar; fade content out just before it gets there */
+        body::before { content:''; position:fixed; top:0; left:0; right:0; height:env(safe-area-inset-top); z-index:300; pointer-events:none; background:var(--bg); }
+        @media (max-width:900px) {
+            body.scrolled:has(#mainApp.active)::before { height:calc(env(safe-area-inset-top) + 28px);
+                background:linear-gradient(to bottom, var(--bg) 0, var(--bg) env(safe-area-inset-top), rgba(19,16,14,0) 100%); }
+        }
     </style>
 </head>
 <body>
@@ -1561,7 +1566,7 @@
 
 // Shown at the bottom of Settings so you can tell which version a phone is running.
 // Bump it with every deploy.
-const APP_VERSION = '1.13 · 28 Oct';
+const APP_VERSION = '1.14 · 28 Oct';
 
 const SUPABASE_URL = 'https://hcwbcxhblfjpdlkwykez.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_mEe_5g2UITyp5O-F9YRhRg_wTQWuOtf';
@@ -1740,6 +1745,9 @@ const SCREENS = {
     workout: 'workoutScreen',
     builder: 'builderScreen',
 };
+
+// Marks the page as scrolled, which turns on the fade under the status bar (see body::before)
+window.addEventListener('scroll', () => document.body.classList.toggle('scrolled', window.scrollY > 8), { passive: true });
 
 function showScreen(name) {
     if (name === 'selector') renderCustomProgramCards();
