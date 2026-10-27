@@ -6,10 +6,11 @@
     <title>Workout Tracker</title>
     <!-- Installable app (PWA): add to iPhone home screen via Share → Add to Home Screen -->
     <link rel="manifest" href="manifest.webmanifest">
-    <meta name="theme-color" content="#1a1612">
+    <meta name="theme-color" content="#13100e">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <!-- "black", not "black-translucent": iOS blurs page content drawn under a translucent status bar -->
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name="apple-mobile-web-app-title" content="Workout">
     <link rel="apple-touch-icon" href="icons/icon-180.png">
     <link rel="icon" type="image/png" href="icons/icon-192.png">
@@ -1566,7 +1567,7 @@
 
 // Shown at the bottom of Settings so you can tell which version a phone is running.
 // Bump it with every deploy.
-const APP_VERSION = '1.14 · 28 Oct';
+const APP_VERSION = '1.15 · 28 Oct';
 
 const SUPABASE_URL = 'https://hcwbcxhblfjpdlkwykez.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_mEe_5g2UITyp5O-F9YRhRg_wTQWuOtf';
