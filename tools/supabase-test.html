@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supabase Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body { font-family: monospace; padding: 20px; background: #1a1612; color: #f0e8d8; }
+        .log { background: #25201c; border: 1px solid #3d342c; padding: 10px; margin: 10px 0; }
+        .error { color: #e8734a; }
+        .success { color: #7fd9a8; }
+    </style>
+</head>
+<body>
+    <h1>Supabase Connection Test</h1>
+    <div id="output"></div>
+
+    <script>
+        const output = document.getElementById('output');
+        
+        function log(message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = `log ${type}`;
+            div.textContent = message;
+            output.appendChild(div);
+            console.log(message);
+        }
+
+        // Test 1: Check if Supabase library loaded
+        log('Test 1: Checking if Supabase library loaded...');
+        if (typeof window.supabase !== 'undefined') {
+            log('✓ Supabase library loaded successfully', 'success');
+            log('Available: ' + Object.keys(window.supabase).join(', '));
+        } else {
+            log('✗ Supabase library NOT loaded', 'error');
+        }
+
+        // Test 2: Try to initialize Supabase
+        setTimeout(() => {
+            log('\nTest 2: Attempting to initialize Supabase...');
+            
+            try {
+                const SUPABASE_URL = 'https://nwmquradhhvfnanfmyjd.supabase.co';
+                const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im53bXF1cmFkaGh2Zm5hbmZteWpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcyMTM1OTgsImV4cCI6MjA5Mjc4OTU5OH0.yHhpKv11DieDjGhGf8ckJIVvneh51OzWGhdX3yciUT0';
+                
+                if (window.supabase && window.supabase.createClient) {
+                    const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                    log('✓ Supabase client created successfully', 'success');
+                    log('Client: ' + typeof client);
+                    
+                    // Test 3: Try to get session
+                    log('\nTest 3: Attempting to get session...');
+                    client.auth.getSession().then(({ data, error }) => {
+                        if (error) {
+                            log('✗ Session error: ' + error.message, 'error');
+                        } else {
+                            log('✓ Session check successful', 'success');
+                            log('Session data: ' + (data.session ? 'Logged in' : 'Not logged in'));
+                        }
+                    }).catch(err => {
+                        log('✗ Session check failed: ' + err.message, 'error');
+                    });
+                    
+                } else {
+                    log('✗ window.supabase.createClient not found', 'error');
+                }
+            } catch (error) {
+                log('✗ Error: ' + error.message, 'error');
+                log('Stack: ' + error.stack, 'error');
+            }
+        }, 500);
+    </script>
+</body>
+</html>

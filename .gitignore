@@ -1,0 +1,4 @@
+# Private / not needed for the website
+reference/
+.claude/
+.DS_Store
