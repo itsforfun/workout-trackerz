@@ -750,34 +750,41 @@
         }
 
         /* Cardio zones */
-        .cardio-head h2 { font-family:var(--font-display); font-size:2.4rem; letter-spacing:0.04em; line-height:1; margin:2px 0 8px; }
-        .cardio-head p { font-size:0.85rem; color:var(--text-dim); line-height:1.6; margin-bottom:16px; }
-        .cardio-logged { font-size:0.8rem; color:var(--green); background:rgba(134,214,168,0.08); border:1px solid rgba(134,214,168,0.35); border-radius:14px; padding:10px 14px; margin-bottom:12px; }
-        .cardio-week { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:14px; margin-bottom:12px; }
-        .cardio-week-top { display:flex; justify-content:space-between; font-size:0.8rem; color:var(--text-dim); margin-bottom:8px; }
-        .cardio-week-top strong { color:var(--text); font-family:var(--font-num); font-weight:500; }
-        .cardio-week-bar { height:8px; border-radius:999px; background:rgba(255,255,255,0.06); overflow:hidden; }
+        .cardio-head h2 { font-family:var(--font-display); font-size:2.6rem; letter-spacing:0.04em; line-height:1; margin:4px 0 6px; }
+        .cardio-head h2 span { color:var(--text-dim); }
+        .cardio-target { font-size:0.85rem; color:var(--text-dim); margin-bottom:18px; }
+        .cardio-target strong { font-family:var(--font-num); font-weight:500; color:var(--green); }
+        .cardio-week { background:var(--card); border:1px solid var(--border); border-radius:18px; padding:16px; margin-bottom:22px; }
+        .cardio-week-top { display:flex; justify-content:space-between; align-items:baseline; font-size:0.8rem; color:var(--text-dim); margin-bottom:10px; }
+        .cardio-week-top strong { color:var(--text); font-family:var(--font-num); font-size:1.15rem; font-weight:500; }
+        .cardio-week-top strong small { font-size:0.75rem; color:var(--text-muted); }
+        .cardio-week-bar { height:6px; border-radius:999px; background:rgba(255,255,255,0.06); overflow:hidden; }
         .cardio-week-bar span { display:block; height:100%; border-radius:999px; background:linear-gradient(90deg,#8fbbd9,#86d6a8); transition:width 0.6s ease; }
-        .cardio-week small { display:block; font-size:0.68rem; color:var(--text-muted); margin-top:8px; line-height:1.5; }
-        .zone-hrmax { font-size:0.78rem; color:var(--text-dim); margin:16px 2px 10px; }
-        .zone-hrmax strong { color:var(--text); font-family:var(--font-num); font-weight:500; }
-        .zone-card { border-radius:18px; background:var(--card); border:1px solid var(--border); border-left:3px solid var(--zone); margin-bottom:10px; padding:0 16px; overflow:hidden; }
-        .zone-card[open] { padding-bottom:14px; }
-        .zone-card.recommended { box-shadow:var(--shadow), 0 0 0 1px color-mix(in srgb, var(--zone) 35%, transparent); }
-        .zone-card summary { display:flex; align-items:center; gap:10px; padding:14px 0; cursor:pointer; list-style:none; }
+        .cardio-today { font-size:0.72rem; color:var(--green); margin-top:10px; }
+        .zone-list-head { display:flex; justify-content:space-between; font-size:0.62rem; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; color:var(--text-muted); margin:0 18px 8px; }
+        .zone-card { border-radius:16px; background:var(--card); border:1px solid var(--border); margin-bottom:8px; padding:0 16px; overflow:hidden; }
+        .zone-card[open] { padding-bottom:12px; }
+        .zone-card.recommended { border-color:color-mix(in srgb, var(--zone) 45%, transparent); }
+        .zone-card summary { display:flex; align-items:center; gap:12px; padding:13px 0; cursor:pointer; list-style:none; }
         .zone-card summary::-webkit-details-marker { display:none; }
-        .zone-num { font-size:0.62rem; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--zone); }
-        .zone-name { font-size:0.95rem; font-weight:600; flex:1; }
+        .zone-num { width:26px; height:26px; flex:none; display:grid; place-items:center; border-radius:8px; font-family:var(--font-num); font-size:0.68rem; color:var(--zone); background:color-mix(in srgb, var(--zone) 14%, transparent); }
+        .zone-name { font-size:0.92rem; font-weight:500; flex:1; }
         .zone-bpm { font-family:var(--font-num); font-size:0.78rem; color:var(--text-dim); }
-        .zone-rec { font-size:0.6rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:#13100e; background:var(--zone); border-radius:999px; padding:3px 8px; }
-        .zone-meta { font-size:0.74rem; color:var(--text-dim); margin-bottom:6px; }
-        .zone-why { font-size:0.8rem; color:var(--text-dim); line-height:1.55; margin-bottom:10px; }
-        .zone-session { display:flex; align-items:center; justify-content:space-between; gap:12px; width:100%; text-align:left; background:rgba(255,255,255,0.025); border:1px solid var(--border-bright); border-radius:14px; padding:12px 14px; margin-top:8px; color:var(--text); font-family:var(--font-ui); cursor:pointer; transition:border-color 0.2s, transform 0.15s; }
-        .zone-session:hover { border-color:var(--zone); }
-        .zone-session:active { transform:scale(0.98); }
-        .zone-session strong { display:block; font-size:0.86rem; font-weight:600; }
-        .zone-session small { display:block; font-size:0.72rem; color:var(--text-muted); margin-top:3px; line-height:1.45; }
-        .zone-log { flex:none; font-size:0.72rem; font-weight:600; color:var(--zone); border:1px solid var(--zone); border-radius:999px; padding:5px 12px; }
+        .zone-meta { font-size:0.72rem; color:var(--text-muted); margin:0 0 4px 38px; }
+        .zone-session { display:flex; align-items:center; justify-content:space-between; gap:12px; width:100%; text-align:left; background:none; border:none; border-top:1px solid var(--border); padding:12px 0 2px 38px; margin-top:8px; color:var(--text); font-family:var(--font-ui); cursor:pointer; }
+        .zone-session:active { opacity:0.6; }
+        .zone-session strong { display:block; font-size:0.86rem; font-weight:500; }
+        .zone-session small { display:block; font-size:0.72rem; color:var(--text-muted); margin-top:2px; }
+        .zone-log { flex:none; width:30px; height:30px; display:grid; place-items:center; border-radius:50%; font-size:1.1rem; line-height:1; color:var(--zone); border:1px solid color-mix(in srgb, var(--zone) 60%, transparent); }
+        .habits-card summary { display:block; cursor:pointer; list-style:none; }
+        .habits-row { display:flex; justify-content:space-between; align-items:center; }
+        .habits-card summary::-webkit-details-marker { display:none; }
+        .habits-card h3 { margin-bottom:0; }
+        .habits-count { font-family:var(--font-num); font-size:0.85rem; color:var(--text-dim); }
+        .habits-count.all { color:var(--green); }
+        .habits-bar { height:4px; border-radius:999px; background:rgba(255,255,255,0.06); overflow:hidden; margin:12px 0 2px; }
+        .habits-card[open] .habits-bar { margin-bottom:10px; }
+        .habits-bar span { display:block; height:100%; background:var(--green); border-radius:999px; transition:width 0.4s ease; }
         .evidence-card ul { margin:6px 0 0 18px; }
         .evidence-card li { font-size:0.76rem; color:var(--text-dim); line-height:1.6; margin-bottom:8px; }
         .evidence-card summary, .setup-card summary { display:flex; justify-content:space-between; align-items:center; cursor:pointer; list-style:none; }
@@ -1352,7 +1359,7 @@
 
 // Shown at the bottom of Settings so you can tell which version a phone is running.
 // Bump it with every deploy.
-const APP_VERSION = '1.8 · 27 Oct';
+const APP_VERSION = '1.9 · 28 Oct';
 
 const SUPABASE_URL = 'https://hcwbcxhblfjpdlkwykez.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_mEe_5g2UITyp5O-F9YRhRg_wTQWuOtf';
@@ -2818,7 +2825,9 @@ function powerUnlockHtml() {
     return `<div class="power-unlock"><span>Power unlock at ${kgToDisplay(prog.powerUnlockKg)} ${unit}</span><strong>${toGo} ${unit} to go</strong></div>`;
 }
 
-// Daily habit checklist, saved per date
+// Daily habit checklist, saved per date; collapsed to a progress row until opened
+let habitsOpen = false;
+
 function renderHabits() {
     const el = document.getElementById('habitsCard');
     const prog = PROGRAMS[currentProgram];
@@ -2830,17 +2839,21 @@ function renderHabits() {
     // The steps habit (first in the list) counts as done once 8,000 steps are synced today
     const stepsAuto = /steps/i.test(prog.habits[0]) && stepsOn(todayStr()) >= 8000;
     if (stepsAuto) checked.add(0);
+    const done = checked.size;
+    const total = prog.habits.length;
     el.innerHTML = `
-        <div class="mobility-card">
-            <h3>Daily habits</h3>
-            <p>${checked.size} of ${prog.habits.length} done today</p>
+        <details class="mobility-card habits-card" ${habitsOpen ? 'open' : ''} ontoggle="habitsOpen = this.open">
+            <summary>
+                <div class="habits-row"><h3>Daily habits</h3><span class="habits-count${done === total ? ' all' : ''}">${done}/${total}</span></div>
+                <div class="habits-bar"><span style="width:${Math.round((done / total) * 100)}%"></span></div>
+            </summary>
             ${prog.habits.map((habit, i) => `
                 <label class="mobility-item">
                     <input type="checkbox" ${checked.has(i) ? 'checked' : ''} onchange="toggleHabit(${i}, this.checked)">
                     ${escapeHtml(habit)}
                 </label>
             `).join('')}
-        </div>
+        </details>
     `;
 }
 
@@ -2992,50 +3005,56 @@ function renderCardioView(plan, showingLift) {
     const hrMax = estimatedMaxHr();
     const recommended = plan === 'cardio' ? 2 : 1;
     const week = cardioWeek();
-    const loggedToday = programSessions().filter(s => s.type === 'cardio' && s.date === todayStr());
+    const todayMinutes = programSessions()
+        .filter(s => s.type === 'cardio' && s.date === todayStr())
+        .reduce((sum, s) => sum + (s.minutes || 0), 0);
     const pct = Math.min(100, Math.round((week.moderate / 150) * 100));
+    const bpm = z => `${Math.round(hrMax * z.pct[0] / 100)}–${Math.round(hrMax * z.pct[1] / 100)}`;
+    const rec = CARDIO_ZONES.find(z => z.zone === recommended);
 
+    // Details (why, technique, evidence) live in the log sheet and "The science"; the page stays scannable
     const zones = CARDIO_ZONES.map(z => {
-        const low = Math.round(hrMax * z.pct[0] / 100);
-        const high = Math.round(hrMax * z.pct[1] / 100);
         const isRec = z.zone === recommended;
         return `
             <details class="zone-card${isRec ? ' recommended' : ''}" style="--zone:${z.color}" ${isRec ? 'open' : ''}>
                 <summary>
-                    <span class="zone-num">Zone ${z.zone}</span>
+                    <span class="zone-num">Z${z.zone}</span>
                     <span class="zone-name">${escapeHtml(z.name)}</span>
-                    <span class="zone-bpm">${low}–${high} bpm</span>
-                    ${isRec ? '<span class="zone-rec">Today</span>' : ''}
+                    <span class="zone-bpm">${bpm(z)}</span>
                 </summary>
-                <div class="zone-meta">${z.pct[0]}–${z.pct[1]}% of max · effort ${z.rpe}/10 · ${escapeHtml(z.talk)}</div>
-                <p class="zone-why">${escapeHtml(z.why)}</p>
-                ${z.sessions.map(([name, , dose, how], i) => `
+                <div class="zone-meta">Effort ${z.rpe} · ${escapeHtml(z.talk)}</div>
+                ${z.sessions.map(([name, , dose], i) => `
                     <button class="zone-session" onclick="openCardioLog(${z.zone}, ${i})">
-                        <span><strong>${escapeHtml(name)}</strong><small>${escapeHtml(dose)} · ${escapeHtml(how)}</small></span>
-                        <span class="zone-log">Log</span>
+                        <span><strong>${escapeHtml(name)}</strong><small>${escapeHtml(dose)}</small></span>
+                        <span class="zone-log" aria-label="Log">+</span>
                     </button>`).join('')}
             </details>`;
     }).join('');
 
     el.innerHTML = `
         <div class="cardio-head">
-            <div class="kicker">${plan === 'cardio' ? 'Cardio day' : 'Walk or rest day'}</div>
-            <h2>${plan === 'cardio' ? 'Pick your cardio' : 'Easy movement'}</h2>
-            <p>${plan === 'cardio'
-                ? 'Your plan calls for easy cardio: Zone 2 is the one to pick. The harder zones are here for when you want them.'
-                : 'A day off lifting. A Zone 1 walk helps recovery and your step count.'}</p>
+            <div class="kicker">${plan === 'cardio' ? 'Cardio day' : 'Recovery day'}</div>
+            <h2>Zone ${rec.zone} <span>${escapeHtml(rec.name)}</span></h2>
+            <div class="cardio-target"><strong>${bpm(rec)}</strong> bpm · ${escapeHtml(rec.sessions[0][2])}</div>
         </div>
-        ${loggedToday.length ? `<div class="cardio-logged"><strong>Logged today:</strong> ${loggedToday.map(s => `${escapeHtml(s.name || 'Cardio')} · ${s.minutes} min`).join(', ')}</div>` : ''}
         <div class="cardio-week">
-            <div class="cardio-week-top"><span>This week</span><strong>${week.moderate} of 150 min</strong></div>
+            <div class="cardio-week-top">
+                <span>This week</span>
+                <strong>${week.moderate}<small> / 150 min</small></strong>
+            </div>
             <div class="cardio-week-bar"><span style="width:${pct}%"></span></div>
-            <small>WHO minimum for moderate activity. Zone 4–5 minutes count double; Zone 1 doesn't count.</small>
+            ${todayMinutes ? `<div class="cardio-today">${todayMinutes} min logged today</div>` : ''}
         </div>
-        <div class="zone-hrmax">Your estimated max heart rate: <strong>${hrMax} bpm</strong> (age ${userProfile && userProfile.age ? userProfile.age : '—'})</div>
+        <div class="zone-list-head"><span>All zones</span><span>bpm</span></div>
         ${zones}
         <details class="mobility-card evidence-card">
             <summary><h3>The science</h3><span class="warmup-hint">Tap to open</span></summary>
-            <ul>${CARDIO_EVIDENCE.map(t => `<li>${escapeHtml(t)}</li>`).join('')}</ul>
+            <ul>
+                <li>Your estimated max heart rate is ${hrMax} bpm (age ${userProfile && userProfile.age ? userProfile.age : '—'}).</li>
+                ${CARDIO_ZONES.map(z => `<li><strong>Zone ${z.zone}, ${escapeHtml(z.name)}</strong> (${z.pct[0]}–${z.pct[1]}% of max): ${escapeHtml(z.why)}</li>`).join('')}
+                ${CARDIO_EVIDENCE.map(t => `<li>${escapeHtml(t)}</li>`).join('')}
+                <li>The weekly bar counts toward the WHO minimum of 150 min: Zone 4–5 minutes count double and Zone 1 doesn't count.</li>
+            </ul>
         </details>
         <button class="back-link" onclick="setTodayMode('lift')">Lift today instead →</button>
     `;
@@ -3046,10 +3065,10 @@ let cardioDraft = null;
 function openCardioLog(zone, i) {
     haptic();
     const z = CARDIO_ZONES.find(c => c.zone === zone);
-    const [name, minutes, dose] = z.sessions[i];
+    const [name, minutes, dose, how] = z.sessions[i];
     cardioDraft = { zone, name };
     document.getElementById('cardioModalTitle').textContent = name;
-    document.getElementById('cardioModalSub').textContent = `Zone ${zone} · ${z.name} · ${dose}`;
+    document.getElementById('cardioModalSub').textContent = `Zone ${zone} · ${dose}. ${how}.`;
     document.getElementById('cardioMinutes').value = minutes;
     document.getElementById('cardioHr').value = '';
     document.getElementById('cardioModal').classList.add('active');
