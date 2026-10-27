@@ -974,6 +974,7 @@
         /* ── Signature: focused workout mode ── */
         .workout-top { position:sticky; display:grid; grid-template-columns:40px 1fr auto; align-items:center; border-bottom:none; box-shadow:0 1px 0 var(--hairline); }
         .workout-title { text-align:center; }
+        .builder-screen .workout-top { grid-template-columns:auto 1fr auto; }
         .workout-sub { font-family:var(--font-ui); font-size:0.74rem; color:var(--text-muted); margin-top:4px; }
         .wo-close { width:36px; height:36px; display:grid; place-items:center; border-radius:50%; border:none; background:rgba(255,255,255,0.05); color:var(--text-dim); cursor:pointer; }
         .workout-progress { position:absolute; left:0; right:0; bottom:-1px; height:2px; background:transparent; }
@@ -1045,7 +1046,11 @@
         @media (max-width:900px) {
             .topbar { padding-top:calc(env(safe-area-inset-top) + var(--ios-blur-band) + 6px); }
             .workout-top { padding-top:calc(env(safe-area-inset-top) + var(--ios-blur-band) + 6px); }
-            body.scrolled:has(#mainApp.active)::before { height:calc(env(safe-area-inset-top) + var(--ios-blur-band) + 12px);
+            .program-selector, .auth-screen, .profile-screen {
+                padding-top:calc(env(safe-area-inset-top) + var(--ios-blur-band) + 20px);
+                padding-bottom:calc(env(safe-area-inset-bottom) + 20px);
+            }
+            body.scrolled:not(:has(.workout-screen.active))::before { height:calc(env(safe-area-inset-top) + var(--ios-blur-band) + 12px);
                 background:linear-gradient(to bottom, var(--bg) 0, var(--bg) env(safe-area-inset-top), rgba(19,16,14,0) 100%); }
         }
     </style>
@@ -1572,7 +1577,7 @@
 
 // Shown at the bottom of Settings so you can tell which version a phone is running.
 // Bump it with every deploy.
-const APP_VERSION = '1.16 · 28 Oct';
+const APP_VERSION = '1.17 · 28 Oct';
 
 const SUPABASE_URL = 'https://hcwbcxhblfjpdlkwykez.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_mEe_5g2UITyp5O-F9YRhRg_wTQWuOtf';
