@@ -254,3 +254,5 @@ reference/debug-screenshots/  ← Supabase key page, "Script error" console, Git
 - Keys: VAPID public key is in `index.html` (`VAPID_PUBLIC_KEY`); the VAPID private key and cron secret live only in the DB table `push_config` (RLS, no policies). `supabase-push-setup.sql` in the repo has placeholders; the filled-in copy was given to the owner via clipboard and is not in git.
 - `push_log` (anon-readable status codes + push host) is for troubleshooting: `GET /rest/v1/push_log?order=at.desc`.
 - iPhone: only works when the app is installed to the Home Screen (iOS 16.4+), then Settings → Rest Alerts → Turn on.
+
+- `APP_VERSION` (top of the script in index.html) is shown at the bottom of Settings; bump it on every deploy so the owner can confirm their phone updated.

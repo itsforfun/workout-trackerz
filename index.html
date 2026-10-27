@@ -467,6 +467,7 @@
         .settings-actions { display:flex; gap:10px; flex-wrap:wrap; margin-top:14px; }
         .settings-actions .btn { flex:1; min-width:150px; }
         .settings-note { font-size:0.82rem; color:var(--text-dim); line-height:1.6; }
+        .app-version { text-align:center; font-size:0.7rem; color:var(--text-muted); margin-top:40px; }
 
         /* Forms */
         .form-label { font-size:0.78rem; font-weight:500; letter-spacing:0; text-transform:none; color:var(--text-dim); margin-bottom:8px; }
@@ -690,19 +691,7 @@
 
         /* Motion */
         .screen.active { animation:screenIn 0.32s ease both; }
-        .main-app .page.active { animation:pageIn 0.42s cubic-bezier(.2,.8,.2,1) both; }
-        /* Browsers with View Transitions crossfade tabs instead (see switchTab) */
-        @supports (view-transition-name: none) {
-            .main-app .page.active { animation:none; }
-            .topbar { view-transition-name:topbar; }
-            .bottom-nav { view-transition-name:tabbar; }
-            ::view-transition-group(topbar), ::view-transition-group(tabbar) { animation:none; }
-            ::view-transition-old(topbar), ::view-transition-new(topbar), ::view-transition-old(tabbar), ::view-transition-new(tabbar) { animation:none; }
-            ::view-transition-old(root) { animation:vtOut 0.2s ease both; }
-            ::view-transition-new(root) { animation:vtIn 0.42s cubic-bezier(.2,.8,.2,1) both; }
-        }
-        @keyframes vtOut { to { opacity:0; transform:translateY(-6px); } }
-        @keyframes vtIn { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:none; } }
+        /* Tab changes are animated in JS (switchTab) */
         .today-item { animation:rise 0.4s cubic-bezier(.2,.8,.2,1) both; animation-delay:calc(var(--i, 0) * 45ms); }
         .set-row.pop .set-check { animation:checkPop 0.4s cubic-bezier(.2,1.7,.4,1); }
         .set-row.pop { animation:rowFlash 0.6s ease; }
@@ -716,7 +705,6 @@
         .toast { transition:opacity 0.3s ease, transform 0.35s cubic-bezier(.2,1.4,.4,1); }
         .rest-bar.done .rest-time { animation:pulse 0.9s ease 3; }
         @keyframes screenIn { from { opacity:0; } to { opacity:1; } }
-        @keyframes pageIn { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:none; } }
         @keyframes rise { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
         @keyframes checkPop { 0% { transform:scale(0.7); } 60% { transform:scale(1.12); } 100% { transform:scale(1); } }
         @keyframes rowFlash { from { background:rgba(134,214,168,0.22); } to { background:rgba(134,214,168,0.08); } }
@@ -1089,6 +1077,7 @@
                         Delete my data
                     </button>
                 </div>
+                <p class="app-version" id="appVersion"></p>
             </div>
         </div>
     </div>
@@ -1161,6 +1150,10 @@
 // ════════════════════════════════════════════
 //  SUPABASE INITIALIZATION
 // ════════════════════════════════════════════
+
+// Shown at the bottom of Settings so you can tell which version a phone is running.
+// Bump it with every deploy.
+const APP_VERSION = '1.5 · 27 Oct';
 
 const SUPABASE_URL = 'https://hcwbcxhblfjpdlkwykez.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_mEe_5g2UITyp5O-F9YRhRg_wTQWuOtf';
@@ -1640,6 +1633,7 @@ function loadSettingsForm() {
     renderBodyweight();
     renderCycleInfo();
     renderPushStatus();
+    document.getElementById('appVersion').textContent = `Version ${APP_VERSION}`;
 }
 
 function updateStandardsDisplay() {
@@ -3696,17 +3690,37 @@ function confirmImport() {
 //  UI HELPERS
 // ════════════════════════════════════════════
 
-// Crossfade between tabs with the View Transitions API (Safari 18+, Chrome); the top bar and
-// tab bar have their own transition names so they stay still while only the page changes.
+// Tab change: the old page fades out quickly, then the new one rises in. Done with the Web
+// Animations API so it behaves the same on every iPhone. The tab bar highlights immediately.
+let tabSwitchId = 0;
+
 function switchTab(tab) {
     haptic();
     const current = document.querySelector('.main-app .page.active');
-    const animate = document.startViewTransition
+    const target = document.getElementById('page-' + tab);
+    document.querySelectorAll('.main-app .page').forEach(p => p.getAnimations().forEach(a => a.cancel()));
+    const animate = current && current !== target && target.animate
         && document.getElementById('mainApp').classList.contains('active')
-        && current && current.id !== 'page-' + tab
         && !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (animate) document.startViewTransition(() => showTab(tab));
-    else showTab(tab);
+    if (!animate) {
+        showTab(tab);
+        return;
+    }
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.getAttribute('onclick') === `switchTab('${tab}')`));
+    const id = ++tabSwitchId;
+    current.animate(
+        [{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'translateY(-6px)' }],
+        { duration: 140, easing: 'ease-in', fill: 'forwards' }
+    ).finished.then(() => {
+        if (id !== tabSwitchId) return; // a newer tap took over
+        current.getAnimations().forEach(a => a.cancel());
+        showTab(tab);
+        window.scrollTo(0, 0);
+        target.animate(
+            [{ opacity: 0, transform: 'translateY(18px)' }, { opacity: 1, transform: 'none' }],
+            { duration: 420, easing: 'cubic-bezier(.2,.8,.2,1)' }
+        );
+    }).catch(() => { /* cancelled by a newer tap */ });
 }
 
 function showTab(tab) {
