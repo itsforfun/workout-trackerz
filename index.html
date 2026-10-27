@@ -922,7 +922,7 @@
         .wp-day.done { border-color:transparent; box-shadow:var(--lift), inset 0 0 0 1px rgba(134,214,168,0.35); }
         .power-unlock { border:none; background:var(--raised); box-shadow:var(--lift); }
         .power-unlock strong { color:var(--text); }
-        .power-unlock.unlocked { box-shadow:var(--lift), inset 0 0 0 1px rgba(217,178,95,0.28); }
+        .power-unlock.unlocked { border:none; box-shadow:var(--lift), inset 0 0 0 1px rgba(217,178,95,0.28); }
         .power-unlock.unlocked strong { color:var(--accent); }
         .form-input:focus { border-color:rgba(240,232,216,0.45); box-shadow:0 0 0 4px rgba(240,232,216,0.06); }
         .week-input-wrap input:focus { border-bottom-color:var(--text-dim); }
@@ -951,6 +951,82 @@
         .bottom-nav .tab-btn:active { transform:scale(0.92); }
         @media (prefers-reduced-motion: reduce) {
             button:active, .btn:active, .bottom-nav .tab-btn:active { transform:none; }
+        }
+
+        /* ── Signature: Today hero rings ── */
+        .today-hero { display:grid; grid-template-columns:minmax(120px,42%) 1fr; gap:var(--s5); align-items:center; padding:var(--s5) var(--s5) var(--s4); background:var(--raised); box-shadow:var(--lift); border-radius:var(--r-card); margin-bottom:var(--s4); }
+        .hero-rings svg { display:block; width:100%; height:auto; transform:rotate(-90deg); }
+        .hr-bg { fill:none; stroke:var(--c); stroke-opacity:0.1; stroke-width:15; }
+        .hr-fg { fill:none; stroke:var(--c); stroke-width:15; stroke-linecap:round; transition:stroke-dashoffset 1.2s var(--ease); }
+        .hr-fg.closed { stroke:url(#heroGold); filter:drop-shadow(0 0 6px rgba(217,178,95,0.45)); }
+        .hero-legend { display:flex; flex-direction:column; gap:var(--s3); }
+        .hl-row { display:flex; flex-direction:column; gap:2px; }
+        .hl-label { display:flex; align-items:center; gap:7px; font-size:0.62rem; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; color:var(--text-muted); }
+        .hl-label::before { content:''; width:7px; height:7px; border-radius:50%; background:var(--c); }
+        .hl-row.closed .hl-label::before { background:var(--gold); }
+        .hl-value { font-weight:300; font-size:1.45rem; letter-spacing:-0.02em; line-height:1.1; }
+        .hl-value small { font-size:0.75rem; color:var(--text-muted); letter-spacing:0; margin-left:2px; }
+        .hl-row.closed .hl-value { color:var(--accent); }
+        .hero-foot { grid-column:1 / -1; display:flex; justify-content:space-between; padding-top:var(--s3); border-top:1px solid var(--hairline); font-size:0.74rem; color:var(--text-muted); }
+        .hero-foot strong { color:var(--text); font-weight:500; }
+        @media (prefers-reduced-motion: reduce) { .hr-fg { transition:none; } }
+
+        /* ── Signature: focused workout mode ── */
+        .workout-top { position:sticky; display:grid; grid-template-columns:40px 1fr auto; align-items:center; border-bottom:none; box-shadow:0 1px 0 var(--hairline); }
+        .workout-title { text-align:center; }
+        .workout-sub { font-family:var(--font-ui); font-size:0.74rem; color:var(--text-muted); margin-top:4px; }
+        .wo-close { width:36px; height:36px; display:grid; place-items:center; border-radius:50%; border:none; background:rgba(255,255,255,0.05); color:var(--text-dim); cursor:pointer; }
+        .workout-progress { position:absolute; left:0; right:0; bottom:-1px; height:2px; background:transparent; }
+        .workout-progress span { display:block; height:100%; width:0; background:linear-gradient(90deg,rgba(240,232,216,0.25),rgba(240,232,216,0.8)); transition:width 0.6s var(--ease); }
+        .wo-card { transition:opacity 0.35s var(--ease), box-shadow 0.35s var(--ease), transform 0.35s var(--ease); }
+        .wo-card.current { box-shadow:var(--lift), inset 0 0 0 1px rgba(240,232,216,0.14); }
+        .wo-card.upcoming { opacity:0.5; }
+        .wo-card.upcoming:focus-within { opacity:1; }
+        .wo-card.complete { box-shadow:var(--lift); }
+        .wo-card.complete:not(.expanded) { cursor:pointer; }
+        .wo-card.complete:not(.expanded) .set-row, .wo-card.complete:not(.expanded) .wo-add,
+        .wo-card.complete:not(.expanded) .plates, .wo-card.complete:not(.expanded) .wo-sub,
+        .wo-card.complete:not(.expanded) .wo-tip, .wo-card.complete:not(.expanded) .swap-btn { display:none; }
+        .wo-summary:empty { display:none; }
+        .wo-summary { display:flex; align-items:center; gap:8px; font-size:0.78rem; color:var(--green); margin-top:4px; }
+        .wo-summary::before { content:''; width:16px; height:16px; border-radius:50%; background:var(--green) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2310241a' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E") center/10px no-repeat; }
+        .wo-card.expanded .wo-summary { display:none; }
+        .wo-banner { background:var(--raised); border:none; box-shadow:var(--lift); }
+
+        /* Rest: the countdown takes the stage */
+        .rest-content { display:grid; grid-template-columns:1fr auto; grid-template-areas:"info time" "actions actions"; row-gap:var(--s3); padding:var(--s4) var(--s4) var(--s3); }
+        .rest-info { grid-area:info; display:flex; flex-direction:column; gap:3px; min-width:0; }
+        .rest-label { font-size:0.62rem; color:var(--text-muted); }
+        .rest-next { font-size:0.82rem; color:var(--text-dim); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .rest-time { grid-area:time; font-size:2.6rem; font-weight:200; line-height:1; }
+        .rest-actions { grid-area:actions; display:grid; grid-template-columns:repeat(3,1fr); gap:var(--s2); }
+        .rest-btn { padding:10px 0; background:rgba(255,255,255,0.05); border:none; color:var(--text); }
+        .rest-fill { height:2px; background:linear-gradient(90deg,rgba(240,232,216,0.3),rgba(240,232,216,0.85)); }
+
+        /* ── Signature: new record ── */
+        .record { position:fixed; inset:0; z-index:520; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:var(--s2);
+            background:radial-gradient(circle at 50% 42%,rgba(217,178,95,0.12),rgba(10,8,6,0.94) 62%); -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px);
+            opacity:0; visibility:hidden; transition:opacity 0.35s var(--ease), visibility 0s linear 0.35s; }
+        .record.show { opacity:1; visibility:visible; transition:opacity 0.35s var(--ease); }
+        .record-ring { position:relative; width:min(240px,64vw); margin-bottom:var(--s4); }
+        .record-ring svg { display:block; width:100%; height:auto; transform:rotate(-90deg); }
+        .rr-bg { fill:none; stroke:rgba(217,178,95,0.12); stroke-width:3; }
+        .rr-fg { fill:none; stroke:url(#recordGold); stroke-width:3; stroke-linecap:round; stroke-dasharray:578; stroke-dashoffset:578; filter:drop-shadow(0 0 8px rgba(217,178,95,0.6)); }
+        .record.show .rr-fg { animation:recordRing 1.3s var(--ease) 0.15s forwards; }
+        .record-center { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+        .record-kicker { font-size:0.62rem; font-weight:600; letter-spacing:0.24em; text-transform:uppercase; color:var(--accent); }
+        .record-value { font-weight:200; font-size:4.4rem; letter-spacing:-0.04em; line-height:1; margin-top:6px; color:var(--text); }
+        .record-unit { font-size:0.8rem; color:var(--text-dim); margin-top:2px; }
+        .record-name { font-size:1.05rem; font-weight:500; }
+        .record-prev { font-size:0.8rem; color:var(--text-muted); }
+        .record.show .record-center, .record.show .record-name, .record.show .record-prev { animation:recordRise 0.7s var(--ease) both; }
+        .record.show .record-name { animation-delay:0.25s; }
+        .record.show .record-prev { animation-delay:0.4s; }
+        @keyframes recordRing { to { stroke-dashoffset:0; } }
+        @keyframes recordRise { from { opacity:0; transform:translateY(10px) scale(0.97); } to { opacity:1; transform:none; } }
+        @media (prefers-reduced-motion: reduce) {
+            .record.show .rr-fg { animation:none; stroke-dashoffset:0; }
+            .record.show .record-center, .record.show .record-name, .record.show .record-prev { animation:none; }
         }
     </style>
 </head>
@@ -1169,7 +1245,7 @@
     <!-- TODAY PAGE -->
     <div class="page active" id="page-today">
         <div class="container today-container">
-            <div class="streak-row" id="streakRow"></div>
+            <div class="today-hero" id="todayHero"></div>
             <div id="weekPlan"></div>
             <div id="powerUnlock"></div>
             <div id="cardioView"></div>
@@ -1358,24 +1434,47 @@
 <!-- WORKOUT MODE -->
 <div class="screen workout-screen" id="workoutScreen">
     <div class="workout-top">
-        <button class="btn-switch" onclick="cancelWorkout()">Cancel</button>
+        <button class="wo-close" onclick="cancelWorkout()" aria-label="Cancel workout"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
         <div class="workout-title">
             <div id="workoutTitle"></div>
             <div class="workout-sub" id="workoutSub"></div>
         </div>
         <button class="btn btn-primary" onclick="finishWorkout()">Finish</button>
+        <div class="workout-progress"><span id="workoutProgress"></span></div>
     </div>
     <div class="workout-body" id="workoutBody"></div>
     <div class="rest-bar" id="restBar">
         <div class="rest-fill" id="restFill"></div>
         <div class="rest-content">
-            <span class="rest-label">REST</span>
+            <div class="rest-info"><span class="rest-label">REST</span><span class="rest-next" id="restNext"></span></div>
             <span class="rest-time" id="restTime">0:00</span>
-            <button class="rest-btn" onclick="adjustRest(-15)">−15s</button>
-            <button class="rest-btn" onclick="adjustRest(15)">+15s</button>
-            <button class="rest-btn" onclick="stopRest()">Skip</button>
+            <div class="rest-actions">
+                <button class="rest-btn" onclick="adjustRest(-15)">−15s</button>
+                <button class="rest-btn" onclick="adjustRest(15)">+15s</button>
+                <button class="rest-btn" onclick="stopRest()">Skip</button>
+            </div>
         </div>
     </div>
+</div>
+
+<!-- NEW RECORD (during a workout) -->
+<div class="record" id="recordMoment" onclick="closeRecord()">
+    <div class="record-ring">
+        <svg viewBox="0 0 200 200" aria-hidden="true">
+            <defs><linearGradient id="recordGold" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#f2d891"/><stop offset="1" stop-color="#b38636"/>
+            </linearGradient></defs>
+            <circle class="rr-bg" cx="100" cy="100" r="92"/>
+            <circle class="rr-fg" cx="100" cy="100" r="92"/>
+        </svg>
+        <div class="record-center">
+            <div class="record-kicker">New record</div>
+            <div class="record-value" id="recordValue"></div>
+            <div class="record-unit" id="recordUnit"></div>
+        </div>
+    </div>
+    <div class="record-name" id="recordName"></div>
+    <div class="record-prev" id="recordPrev"></div>
 </div>
 
 <!-- CELEBRATION -->
@@ -1453,7 +1552,7 @@
 
 // Shown at the bottom of Settings so you can tell which version a phone is running.
 // Bump it with every deploy.
-const APP_VERSION = '1.11 · 28 Oct';
+const APP_VERSION = '1.12 · 28 Oct';
 
 const SUPABASE_URL = 'https://hcwbcxhblfjpdlkwykez.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_mEe_5g2UITyp5O-F9YRhRg_wTQWuOtf';
@@ -2765,17 +2864,80 @@ function getStreakStats() {
     return { thisWeek, streak, total: dates.length };
 }
 
+// ── Today hero: this week's lifting and cardio, and today's steps, as three rings ──
+// A ring turns gold once it closes; gold is kept for goals reached.
+const HERO_RING_RADII = [84, 63, 42];
+let heroStepsRequested = false;
+
+function weeklyLiftTarget(prog) {
+    if (prog.weekPlan) return Object.values(prog.weekPlan).filter(p => typeof p === 'number').length;
+    return prog.days.length === 1 ? 2 : prog.days.length;
+}
+
+function compactNum(n) {
+    return n >= 1000 ? `${formatNum(Math.round(n / 100) / 10)}k` : String(n);
+}
+
+function renderTodayHero() {
+    const el = document.getElementById('todayHero');
+    const stats = getStreakStats();
+    const liftTarget = weeklyLiftTarget(PROGRAMS[currentProgram]);
+    const cardio = cardioWeek().moderate;
+    const steps = stepsOn(todayStr());
+    const goal = stepGoal();
+    const rings = [
+        { label: 'Lift', color: '#f3ece0', value: stats.thisWeek, target: liftTarget, text: `${stats.thisWeek}<small>/${liftTarget}</small>`, unit: 'this week' },
+        { label: 'Cardio', color: '#86d6a8', value: cardio, target: 150, text: `${cardio}<small>/150 min</small>`, unit: 'this week' },
+        { label: 'Steps', color: '#8fbbd9', value: steps, target: goal, text: `${compactNum(steps)}<small>/${compactNum(goal)}</small>`, unit: 'today' },
+    ];
+    const circles = rings.map((ring, i) => {
+        const r = HERO_RING_RADII[i];
+        const c = 2 * Math.PI * r;
+        const ratio = Math.min(1, ring.value / ring.target);
+        return `
+            <circle class="hr-bg" cx="100" cy="100" r="${r}" style="--c:${ring.color}"/>
+            <circle class="hr-fg${ratio >= 1 ? ' closed' : ''}" cx="100" cy="100" r="${r}" style="--c:${ring.color}"
+                stroke-dasharray="${c}" stroke-dashoffset="${c}" data-offset="${c * (1 - ratio)}"/>`;
+    }).join('');
+    el.innerHTML = `
+        <div class="hero-rings">
+            <svg viewBox="0 0 200 200" aria-hidden="true">
+                <defs><linearGradient id="heroGold" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0" stop-color="#f2d891"/><stop offset="1" stop-color="#b38636"/>
+                </linearGradient></defs>
+                ${circles}
+            </svg>
+        </div>
+        <div class="hero-legend">
+            ${rings.map(ring => `
+                <div class="hl-row${ring.value >= ring.target ? ' closed' : ''}" style="--c:${ring.color}">
+                    <span class="hl-label">${ring.label}</span>
+                    <span class="hl-value">${ring.text}</span>
+                </div>`).join('')}
+        </div>
+        <div class="hero-foot">
+            <span><strong>${stats.streak}</strong> ${stats.streak === 1 ? 'week' : 'weeks'} in a row</span>
+            <span><strong>${stats.total}</strong> workouts</span>
+        </div>
+    `;
+    // Rings sweep in from empty
+    el.getBoundingClientRect();
+    setTimeout(() => el.querySelectorAll('.hr-fg').forEach(circle => { circle.style.strokeDashoffset = circle.dataset.offset; }), 30);
+
+    // Steps live on the Steps tab; fetch today's count once so the ring is right on first open
+    if (!heroStepsRequested && currentUser) {
+        heroStepsRequested = true;
+        loadSteps().then(ok => { if (ok) renderTodayHero(); });
+    }
+}
+
 function renderToday() {
     const prog = PROGRAMS[currentProgram];
     const nextDay = getNextDay();
     if (todayDay === null || todayDay >= prog.days.length) todayDay = nextDay;
     const week = todayWeek !== null ? todayWeek : getCurrentWeek();
 
-    const stats = getStreakStats();
-    document.getElementById('streakRow').innerHTML =
-        statTile('This week', String(stats.thisWeek), stats.thisWeek === 1 ? 'workout' : 'workouts') +
-        statTile('Streak', String(stats.streak), stats.streak === 1 ? 'week in a row' : 'weeks in a row') +
-        statTile('Total', String(stats.total), 'workouts');
+    renderTodayHero();
     renderWeekPlan();
     document.getElementById('powerUnlock').innerHTML = powerUnlockHtml();
 
@@ -3847,7 +4009,7 @@ function renderWorkout() {
         const complete = rows.length && rows.every(r => r.done);
         return `
             <div class="wo-card${complete ? ' complete' : ''}" id="wo_${exId}">
-                <div class="wo-head">
+                <div class="wo-head" onclick="toggleDoneCard('${exId}', event)">
                     <div class="wo-name">
                         <span>${escapeHtml(exerciseDisplayName(ex, w.week))}</span>
                         <span class="wo-name-side">${progressionBadge(progression)}<button class="swap-btn" onclick="openSwap('${exId}')">Swap</button></span>
@@ -3857,6 +4019,7 @@ function renderWorkout() {
                     ${ex.note && !ex.alternates ? `<div class="wo-sub" style="font-style:italic;">${escapeHtml(ex.note)}</div>` : ''}
                     ${progression ? `<div class="wo-tip prog-badge ${progression.type}" style="white-space:normal;"><span>${escapeHtml(progression.text)}</span></div>` : ''}
                     ${!ex.swappedFrom && upgradeText(ex, w.week) ? `<div class="wo-sub swapped">${escapeHtml(upgradeText(ex, w.week))}</div>` : ''}
+                    <div class="wo-summary" id="wosum_${exId}"></div>
                 </div>
                 <div class="plates" id="plates_${exId}">${platesHtml(exId)}</div>
                 ${rows.map((row, i) => setRowHtml(ex, i, row, exId)).join('')}
@@ -3864,6 +4027,38 @@ function renderWorkout() {
             </div>
         `;
     }).join('');
+    updateWorkoutFocus();
+}
+
+// One exercise at a time: the first unfinished one is in focus, finished ones fold to a summary line,
+// later ones wait dimmed. A finished card opens again on tap.
+function updateWorkoutFocus() {
+    if (!activeWorkout) return;
+    let current = null;
+    Object.entries(activeWorkout.rows).forEach(([exId, rows]) => {
+        const card = document.getElementById(`wo_${exId}`);
+        if (!card) return;
+        const complete = rows.length > 0 && rows.every(r => r.done);
+        const isCurrent = !complete && current === null;
+        if (isCurrent) current = exId;
+        card.classList.toggle('complete', complete);
+        card.classList.toggle('current', isCurrent);
+        card.classList.toggle('upcoming', !complete && !isCurrent);
+        if (!complete) card.classList.remove('expanded');
+        const ex = workoutExercise(exId);
+        const done = rows.filter(r => r.done);
+        const top = Math.max(0, ...done.map(r => parseFloat(isRepsBased(ex) ? r.reps : r.kg) || 0));
+        document.getElementById(`wosum_${exId}`).textContent = complete
+            ? `${done.length} sets · ${isRepsBased(ex) ? `best ${top} reps` : `top ${formatNum(top)} ${setWeightUnit(ex)}`}`
+            : '';
+    });
+    return current;
+}
+
+function toggleDoneCard(exId, event) {
+    const card = document.getElementById(`wo_${exId}`);
+    if (!card.classList.contains('complete') || event.target.closest('button')) return;
+    card.classList.toggle('expanded');
 }
 
 // `key` is the workout slot (the program's exercise id), which stays the same when an exercise is swapped
@@ -3909,7 +4104,69 @@ function toggleSetDone(exId, i) {
         const rowEl = document.getElementById(`set_${exId}_${i}`);
         if (rowEl) rowEl.classList.add('pop');
         startRest(getPrescription(workoutExercise(exId)).restSec, nextUpLabel(exId));
+        checkRecord(exId, i);
     }
+}
+
+// ── New record: a set beyond the best ever logged for this exercise ──
+// Shown once per exercise per workout (again only if a later set goes even higher).
+function checkRecord(slot, i) {
+    const ex = workoutExercise(slot);
+    if (ex.assist) return;
+    const row = activeWorkout.rows[slot][i];
+    if (!(parseInt(row.reps) > 0)) return;
+    const value = isRepsBased(ex) ? parseInt(row.reps) : displayToKg(row.kg);
+    const prev = getBestKg(ex.id);
+    if (!(value > 0) || prev === null) return;   // nothing logged before: nothing to beat yet
+    const records = activeWorkout.records || (activeWorkout.records = {});
+    if (value <= Math.max(prev, records[slot] || 0)) return;
+    records[slot] = value;
+    persistActiveWorkout();
+    showRecord(ex, value, prev);
+}
+
+let recordTimer = null;
+
+function showRecord(ex, value, prev) {
+    const repsBased = isRepsBased(ex);
+    document.getElementById('recordValue').textContent = repsBased ? String(value) : kgToDisplay(value);
+    document.getElementById('recordUnit').textContent = repsBased ? 'reps' : setWeightUnit(ex);
+    document.getElementById('recordName').textContent = exerciseDisplayName(ex, activeWorkout.week);
+    const gain = repsBased ? `+${value - prev} reps` : `+${kgToDisplay(value - prev)} ${unitLabel('kg')}`;
+    document.getElementById('recordPrev').textContent =
+        `Previous best ${repsBased ? `${prev} reps` : `${kgToDisplay(prev)} ${setWeightUnit(ex)}`} · ${gain}`;
+    const el = document.getElementById('recordMoment');
+    el.classList.remove('show');
+    void el.offsetWidth;   // restart the animation
+    el.classList.add('show');
+    chime();
+    haptic();
+    if (navigator.vibrate) navigator.vibrate([18, 90, 30]);
+    clearTimeout(recordTimer);
+    recordTimer = setTimeout(closeRecord, 3400);
+}
+
+function closeRecord() {
+    clearTimeout(recordTimer);
+    document.getElementById('recordMoment').classList.remove('show');
+}
+
+// Two soft rising notes, quieter than the rest-timer beep
+function chime() {
+    if (!audioCtx) return;
+    [[659.3, 0], [987.8, 0.14]].forEach(([freq, offset]) => {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.value = freq;
+        const t = audioCtx.currentTime + offset;
+        gain.gain.setValueAtTime(0.0001, t);
+        gain.gain.exponentialRampToValueAtTime(0.16, t + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.9);
+        osc.connect(gain).connect(audioCtx.destination);
+        osc.start(t);
+        osc.stop(t + 0.95);
+    });
 }
 
 // What the rest alert says is coming next: another set of this exercise, or the next exercise
@@ -3941,18 +4198,33 @@ function renderWorkoutCard(exId) {
     card.querySelectorAll('.set-row').forEach(el => el.remove());
     const addBtn = card.querySelector('.wo-add');
     [...temp.children].forEach(el => card.insertBefore(el, addBtn));
-    card.classList.toggle('complete', rows.length > 0 && rows.every(r => r.done));
     window.scrollTo(0, scroll);
+    const before = document.querySelector('.wo-card.current');
+    const current = updateWorkoutFocus();
+    // Finished an exercise: glide to the next one
+    if (current && before && before.id !== `wo_${current}`) {
+        const next = document.getElementById(`wo_${current}`);
+        const top = next.getBoundingClientRect().top + window.scrollY - 96;
+        window.scrollTo({ top, behavior: prefersReducedMotion() ? 'auto' : 'smooth' });
+    }
+}
+
+function prefersReducedMotion() {
+    return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 }
 
 function updateWorkoutClock() {
     if (!activeWorkout) return;
-    const mins = Math.floor((Date.now() - activeWorkout.startedAt) / 60000);
+    const secs = Math.floor((Date.now() - activeWorkout.startedAt) / 1000);
+    const clock = secs >= 3600
+        ? `${Math.floor(secs / 3600)}:${String(Math.floor(secs / 60) % 60).padStart(2, '0')}:${String(secs % 60).padStart(2, '0')}`
+        : `${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, '0')}`;
     const done = Object.values(activeWorkout.rows).flat().filter(r => r.done).length;
     const total = Object.values(activeWorkout.rows).flat().length;
-    document.getElementById('workoutSub').textContent = `Week ${activeWorkout.week + 1} · ${done}/${total} sets · ${mins} min`;
+    document.getElementById('workoutSub').textContent = `${clock} · ${done}/${total} sets`;
+    document.getElementById('workoutProgress').style.width = `${total ? (done / total) * 100 : 0}%`;
 }
-setInterval(updateWorkoutClock, 15000);
+setInterval(updateWorkoutClock, 1000);
 
 function cancelWorkout() {
     if (!confirm('Discard this workout? Sets you checked off will not be saved.')) return;
@@ -4038,6 +4310,7 @@ function startRest(seconds, label = '') {
     rest.endAt = Date.now() + seconds * 1000;
     rest.beeped = false;
     rest.label = label;
+    document.getElementById('restNext').textContent = label;
     scheduleRestPush();
     clearInterval(rest.interval);
     rest.interval = setInterval(tickRest, 250);
