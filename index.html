@@ -664,6 +664,57 @@
             .exercise-header { flex-direction:column; align-items:flex-start; }
         }
 
+        /* Swap exercise */
+        .wo-name { align-items:flex-start; }
+        .wo-name-side { display:inline-flex; align-items:center; gap:10px; flex:none; }
+        .swap-btn { font-family:var(--font-ui); font-size:0.72rem; font-weight:500; color:var(--text-dim); background:rgba(255,255,255,0.04); border:1px solid var(--border-bright); border-radius:999px; padding:5px 11px; cursor:pointer; }
+        .swap-btn:hover { color:var(--text); border-color:rgba(240,232,216,0.3); }
+        .wo-sub.swapped { color:var(--accent); font-weight:500; }
+        .swap-list { display:grid; gap:8px; margin-bottom:14px; }
+        .swap-option { display:flex; justify-content:space-between; align-items:center; gap:10px; width:100%; text-align:left; padding:13px 14px; border-radius:14px; border:1px solid var(--border-bright); background:rgba(255,255,255,0.02); color:var(--text); font-family:var(--font-ui); font-size:0.88rem; font-weight:500; cursor:pointer; transition:border-color 0.2s, background 0.2s; }
+        .swap-option small { font-size:0.68rem; color:var(--text-muted); font-weight:400; }
+        .swap-option:hover, .swap-option.active { border-color:rgba(217,178,95,0.55); background:rgba(217,178,95,0.06); }
+        .swap-custom { display:flex; gap:8px; margin-bottom:16px; }
+        .swap-custom .form-input { flex:1; }
+
+        /* Plate calculator */
+        .plates:empty { display:none; }
+        .plates { display:flex; align-items:center; gap:14px; padding:4px 16px 12px; }
+        .plates-visual { display:flex; align-items:center; gap:2px; height:48px; flex:none; }
+        .bar-sleeve { width:26px; height:8px; border-radius:2px; background:linear-gradient(180deg,#cfc8bc,#8d867b); }
+        .bar-collar { width:5px; height:16px; border-radius:2px; background:#8d867b; margin-left:1px; }
+        .plate { width:9px; border-radius:3px; box-shadow:inset 0 0 0 1px rgba(255,255,255,0.12), inset -2px 0 0 rgba(0,0,0,0.25); animation:plateIn 0.25s ease both; }
+        .plates-text { font-size:0.78rem; color:var(--text-dim); line-height:1.45; }
+        .plates-text strong { color:var(--text); font-family:var(--font-num); font-weight:500; }
+        .plates-text small { color:var(--text-muted); font-size:0.68rem; }
+
+        /* Motion */
+        .screen.active { animation:screenIn 0.32s ease both; }
+        .main-app .page.active { animation:pageIn 0.3s cubic-bezier(.2,.8,.2,1) both; }
+        .today-item { animation:rise 0.4s cubic-bezier(.2,.8,.2,1) both; animation-delay:calc(var(--i, 0) * 45ms); }
+        .set-row.pop .set-check { animation:checkPop 0.4s cubic-bezier(.2,1.7,.4,1); }
+        .set-row.pop { animation:rowFlash 0.6s ease; }
+        .wo-card { transition:border-color 0.4s ease, box-shadow 0.4s ease; }
+        .wo-card.complete { box-shadow:var(--shadow), 0 0 0 1px rgba(134,214,168,0.25), 0 18px 40px -26px rgba(134,214,168,0.45); }
+        .btn, .btn-switch, .swap-btn, .swap-option, .set-check, .rest-btn, .tab-btn, .day-tab, .program-card { transition:transform 0.15s ease, background 0.2s, border-color 0.2s, color 0.2s, box-shadow 0.3s; }
+        .btn:active, .btn-switch:active, .swap-btn:active, .swap-option:active, .set-check:active, .rest-btn:active, .day-tab:active, .auth-btn:active { transform:scale(0.96); }
+        .bottom-nav .tab-btn svg { transition:transform 0.25s cubic-bezier(.2,1.6,.4,1); }
+        .bottom-nav .tab-btn.active svg { transform:translateY(-1px) scale(1.08); }
+        .modal-overlay.active .modal { animation:sheetUp 0.32s cubic-bezier(.2,.9,.25,1) both; }
+        .toast { transition:opacity 0.3s ease, transform 0.35s cubic-bezier(.2,1.4,.4,1); }
+        .rest-bar.done .rest-time { animation:pulse 0.9s ease 3; }
+        @keyframes screenIn { from { opacity:0; } to { opacity:1; } }
+        @keyframes pageIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:none; } }
+        @keyframes rise { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+        @keyframes checkPop { 0% { transform:scale(0.7); } 60% { transform:scale(1.12); } 100% { transform:scale(1); } }
+        @keyframes rowFlash { from { background:rgba(134,214,168,0.22); } to { background:rgba(134,214,168,0.08); } }
+        @keyframes sheetUp { from { opacity:0; transform:translateY(24px) scale(0.98); } to { opacity:1; transform:none; } }
+        @keyframes plateIn { from { opacity:0; transform:scaleY(0.6); } to { opacity:1; transform:none; } }
+        @keyframes pulse { 50% { opacity:0.45; } }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important; }
+        }
+
         /* SCREENS: exactly one .screen has .active at a time (see showScreen) */
         .screen:not(.active) { display:none !important; }
         .loading-screen { display:flex; align-items:center; justify-content:center; min-height:100vh; }
@@ -998,6 +1049,13 @@
                     <button class="btn" onclick="handleLogout()">Log out</button>
                 </div>
 
+                <!-- Rest alerts -->
+                <div class="day-label" style="margin-bottom:24px; margin-top:48px;">
+                    <span class="day-name" style="font-size:1.3rem;">Rest Alerts</span>
+                </div>
+                <p class="settings-note" id="pushStatus"></p>
+                <div class="settings-actions" id="pushActions"></div>
+
                 <!-- Backup -->
                 <div class="day-label" style="margin-bottom:24px; margin-top:48px;">
                     <span class="day-name" style="font-size:1.3rem;">Backup</span>
@@ -1060,6 +1118,19 @@
 </div>
 
 <!-- MODALS -->
+<div class="modal-overlay" id="swapModal">
+    <div class="modal">
+        <h2>Swap exercise</h2>
+        <p id="swapIntro"></p>
+        <div class="swap-list" id="swapList"></div>
+        <form class="swap-custom" onsubmit="swapCustom(event)">
+            <input class="form-input" id="swapCustomName" placeholder="Other exercise…" maxlength="40" autocomplete="off">
+            <button class="btn" type="submit">Use</button>
+        </form>
+        <div class="modal-actions"><button class="btn" onclick="closeSwap()">Cancel</button></div>
+    </div>
+</div>
+
 <div class="modal-overlay" id="importModal">
     <div class="modal">
         <h2>Load Progress</h2>
@@ -1556,6 +1627,7 @@ function loadSettingsForm() {
     updateStandardsDisplay();
     renderBodyweight();
     renderCycleInfo();
+    renderPushStatus();
 }
 
 function updateStandardsDisplay() {
@@ -1836,10 +1908,10 @@ const PROGRAMS = {
             { id:'seated-db-incline-curl', day:1, name:'Seated DB Incline Curl', meta:'3×10-12, 1.5min (SS w/ #2)', unit:'kg/DB', thresholds:[8,12,16,20,26,32], note:'Arms hang behind the body, no swinging' },
             { id:'leg-extension', day:1, name:'Leg Extension', meta:'3×10, 2min', unit:'kg', thresholds:[40,60,80,100,125,150], note:'Pause and squeeze at the top' },
             // Legs
-            { id:'back-squat', day:2, name:'Barbell Back Squat', meta:'4×8-10, 3min', unit:'kg', thresholds:[80,115,155,195,240,285], note:'Brace hard and hit depth; leg press is a fine swap' },
-            { id:'barbell-rdl', day:2, name:'Barbell RDL', meta:'4×8-12, 2-3min', unit:'kg', thresholds:[60,90,120,155,195,235], note:'Hips back, bar close to the legs, soft knees' },
+            { id:'back-squat', bar:true, day:2, name:'Barbell Back Squat', meta:'4×8-10, 3min', unit:'kg', thresholds:[80,115,155,195,240,285], note:'Brace hard and hit depth; leg press is a fine swap' },
+            { id:'barbell-rdl', bar:true, day:2, name:'Barbell RDL', meta:'4×8-12, 2-3min', unit:'kg', thresholds:[60,90,120,155,195,235], note:'Hips back, bar close to the legs, soft knees' },
             { id:'lying-leg-curl', day:2, name:'Lying Leg Curl', meta:'4×10-12, 2min', unit:'kg', thresholds:[30,45,60,78,96,115], note:'Hips down on the pad, slow on the way down' },
-            { id:'hip-thrust', day:2, name:'Barbell Hip Thrust', meta:'4×10, 2min', unit:'kg', thresholds:[60,100,140,180,220,260], note:'Chin tucked, full lockout, pause at the top' },
+            { id:'hip-thrust', bar:true, day:2, name:'Barbell Hip Thrust', meta:'4×10, 2min', unit:'kg', thresholds:[60,100,140,180,220,260], note:'Chin tucked, full lockout, pause at the top' },
             { id:'single-leg-calf-raise', day:2, name:'Single-Leg Calf Raise', meta:'3×12-15, 1.5min', unit:'kg/DB', thresholds:[16,24,32,42,54,70], note:'Full stretch at the bottom, pause at the top' },
             { id:'cable-crunch', day:2, name:'Cable Crunch', meta:'3×12, 1min', unit:'kg', thresholds:[15,22,30,40,52,65], note:'Curl ribs to hips; don\'t pull with the arms' },
         ]
@@ -1853,15 +1925,15 @@ const PROGRAMS = {
         days: ['Workout A', 'Workout B', 'Workout C'],
         exercises: [
             // Workout A
-            { id:'kas-glute-bridge', day:0, name:'KAS Glute Bridge', meta:'3×8-12, 2-4min', unit:'kg', thresholds:[30,50,70,95,120,145], note:'Full hip extension, pause at the top' },
-            { id:'rdl', day:0, name:'RDLs', meta:'2×8-12, 3-4min', unit:'kg', thresholds:[35,55,75,100,130,160], note:'Push hips back, slight knee bend' },
+            { id:'kas-glute-bridge', bar:true, day:0, name:'KAS Glute Bridge', meta:'3×8-12, 2-4min', unit:'kg', thresholds:[30,50,70,95,120,145], note:'Full hip extension, pause at the top' },
+            { id:'rdl', bar:true, day:0, name:'RDLs', meta:'2×8-12, 3-4min', unit:'kg', thresholds:[35,55,75,100,130,160], note:'Push hips back, slight knee bend' },
             { id:'hack-squat', day:0, name:'Hack Squat', meta:'3×8-10, 3-4min', unit:'kg', thresholds:[50,75,105,140,180,220], note:'Feet low, shoulder width' },
             { id:'leg-extension', day:0, name:'Leg Extension', meta:'3×8-10, 2-4min', unit:'kg', thresholds:[25,40,55,72,90,110], note:'Pause at the top' },
             { id:'hyperextensions', day:0, name:'Hyperextensions', meta:'3×8-10, 2-3min', unit:'kg+', thresholds:[0,5,12,20,30,42], note:'Tuck chin, hips into the pad (log added kg)' },
             { id:'standing-calf-raise-a', day:0, name:'Standing Calf Raises', meta:'3×8-10, 2-3min', unit:'kg', thresholds:[40,60,85,115,145,180], note:'Pause at the top and bottom' },
             // Workout B
             { id:'lat-pulldown-wide', day:1, name:'Lat Pulldown - Wide', meta:'3×8-10, 2-3min', unit:'kg', thresholds:[25,38,52,68,86,105], note:'Full stretch, hands over the bar' },
-            { id:'barbell-row', day:1, name:'Barbell Row', meta:'3×8-10, 2-4min', unit:'kg', thresholds:[25,38,52,68,88,108], note:'Elbows flare, pull to lower chest' },
+            { id:'barbell-row', bar:true, day:1, name:'Barbell Row', meta:'3×8-10, 2-4min', unit:'kg', thresholds:[25,38,52,68,88,108], note:'Elbows flare, pull to lower chest' },
             { id:'cable-lateral-raise', day:1, name:'Cable Lateral Raise', meta:'3×8-12, 2-3min', unit:'kg/side', thresholds:[3,5,8,12,16,22], note:'Pause at the top' },
             { id:'seated-shoulder-press', day:1, name:'Seated Shoulder Press', meta:'2×8-12, 2-3min', unit:'kg/DB', thresholds:[8,12,18,24,32,40], note:'Slight elbow flare' },
             { id:'chest-press-machine', day:1, name:'Chest Press Machine', meta:'3×8-10, 2-3min', unit:'kg/side', thresholds:[15,22,32,42,54,68], note:'Stretch at the bottom' },
@@ -1883,11 +1955,11 @@ const PROGRAMS = {
         heroSubtitle: 'Complete · Efficient · Effective',
         days: ['Full Body'],
         exercises: [
-            { id:'back-squat', day:0, name:'Barbell Back Squat', meta:'3×6-8, 3min', unit:'kg', thresholds:[80,115,155,195,240,285], note:'Brace hard and hit depth' },
-            { id:'bench-press', day:0, name:'Barbell Bench Press', meta:'3×6-8, 3min', unit:'kg', thresholds:[60,85,110,140,170,200], note:'Shoulder blades pinned, touch mid-chest' },
-            { id:'barbell-row', day:0, name:'Barbell Row (Bent-Over)', meta:'3×8-10, 2-3min', unit:'kg', thresholds:[50,70,95,120,150,180], note:'Flat back, pull to lower chest' },
-            { id:'barbell-rdl', day:0, name:'Barbell RDL', meta:'3×8-10, 2-3min', unit:'kg', thresholds:[60,90,120,155,195,235], note:'Hips back, bar close to the legs' },
-            { id:'overhead-press', day:0, name:'Barbell Overhead Press', meta:'3×6-8, 2min', unit:'kg', thresholds:[40,55,72,92,112,132], note:'Squeeze glutes, bar path close to the face' },
+            { id:'back-squat', bar:true, day:0, name:'Barbell Back Squat', meta:'3×6-8, 3min', unit:'kg', thresholds:[80,115,155,195,240,285], note:'Brace hard and hit depth' },
+            { id:'bench-press', bar:true, day:0, name:'Barbell Bench Press', meta:'3×6-8, 3min', unit:'kg', thresholds:[60,85,110,140,170,200], note:'Shoulder blades pinned, touch mid-chest' },
+            { id:'barbell-row', bar:true, day:0, name:'Barbell Row (Bent-Over)', meta:'3×8-10, 2-3min', unit:'kg', thresholds:[50,70,95,120,150,180], note:'Flat back, pull to lower chest' },
+            { id:'barbell-rdl', bar:true, day:0, name:'Barbell RDL', meta:'3×8-10, 2-3min', unit:'kg', thresholds:[60,90,120,155,195,235], note:'Hips back, bar close to the legs' },
+            { id:'overhead-press', bar:true, day:0, name:'Barbell Overhead Press', meta:'3×6-8, 2min', unit:'kg', thresholds:[40,55,72,92,112,132], note:'Squeeze glutes, bar path close to the face' },
             { id:'pull-ups', day:0, name:'Pull-Ups', meta:'3×AMRAP, 2min', unit:'reps/+kg', thresholds:[5,8,12,20,30,45], note:'As many clean reps as possible each set' },
         ]
     },
@@ -1899,12 +1971,12 @@ const PROGRAMS = {
         heroSubtitle: 'Complete · Sculpted · Strong',
         days: ['Full Body'],
         exercises: [
-            { id:'hip-thrust', day:0, name:'Barbell Hip Thrust', meta:'3×8-10, 3min', unit:'kg', thresholds:[60,100,140,180,220,260], note:'Chin tucked, full lockout, pause at the top' },
-            { id:'barbell-rdl', day:0, name:'Barbell RDL', meta:'3×10-12, 2-3min', unit:'kg', thresholds:[35,55,75,100,130,160], note:'Push hips back, slight knee bend' },
+            { id:'hip-thrust', bar:true, day:0, name:'Barbell Hip Thrust', meta:'3×8-10, 3min', unit:'kg', thresholds:[60,100,140,180,220,260], note:'Chin tucked, full lockout, pause at the top' },
+            { id:'barbell-rdl', bar:true, day:0, name:'Barbell RDL', meta:'3×10-12, 2-3min', unit:'kg', thresholds:[35,55,75,100,130,160], note:'Push hips back, slight knee bend' },
             { id:'goblet-squat', day:0, name:'Dumbbell Goblet Squat', meta:'3×10-12, 2min', unit:'kg', thresholds:[16,24,32,42,54,68], note:'Elbows inside the knees, chest up' },
             { id:'lat-pulldown-wide', day:0, name:'Lat Pulldown (Wide Grip)', meta:'3×10-12, 2min', unit:'kg', thresholds:[25,38,52,68,86,105], note:'Full stretch, pull to upper chest' },
             { id:'db-shoulder-press', day:0, name:'Dumbbell Shoulder Press', meta:'3×10-12, 2min', unit:'kg/DB', thresholds:[8,12,18,24,32,40], note:'Slight elbow flare' },
-            { id:'barbell-row', day:0, name:'Barbell Row', meta:'3×10-12, 2min', unit:'kg', thresholds:[25,38,52,68,88,108], note:'Elbows flare, pull to lower chest' },
+            { id:'barbell-row', bar:true, day:0, name:'Barbell Row', meta:'3×10-12, 2min', unit:'kg', thresholds:[25,38,52,68,88,108], note:'Elbows flare, pull to lower chest' },
         ]
     }
 };
@@ -1964,6 +2036,7 @@ function tierName(tier) {
 // ════════════════════════════════════════════
 
 function selectProgram(programId) {
+    haptic();
     currentProgram = programId;
     openProgram();
     scheduleSave(); // remember the choice
@@ -2334,13 +2407,13 @@ function renderToday() {
     `;
 
     let readyToProgress = 0;
-    document.getElementById('todayList').innerHTML = exercises.map(ex => {
+    document.getElementById('todayList').innerHTML = exercises.map((ex, idx) => {
         const p = getPrescription(ex);
         const progression = getProgression(ex);
         if (progression && progression.type === 'kg') readyToProgress++;
         const target = progression ? ` · ${formatSetWeight(ex, progression.kg)}` : '';
         return `
-            <div class="today-item">
+            <div class="today-item" style="--i:${idx}">
                 <div class="today-item-main">
                     <div class="today-item-name">${escapeHtml(exerciseDisplayName(ex, week))}</div>
                     <div class="today-item-sub">${escapeHtml(prescriptionText(ex))}${p.restText ? ` · ${escapeHtml(p.restText)} rest` : ''}${escapeHtml(target)}</div>
@@ -2369,6 +2442,7 @@ function renderToday() {
 }
 
 function selectTodayDay(day) {
+    haptic();
     todayDay = day;
     renderToday();
 }
@@ -2464,17 +2538,33 @@ function startWorkout() {
     const week = todayWeek !== null ? todayWeek : getCurrentWeek();
     const rows = {};
     prog.exercises.filter(ex => ex.day === todayDay).forEach(ex => {
-        const p = getPrescription(ex);
-        const progression = getProgression(ex);
-        const lastKg = progression ? progression.kg : parseFloat(entryKg((progData()[ex.id] || {})[highestWeekFor(ex.id)]));
-        // Pull-ups' tracked number is reps, so only prefill their added weight from logged sets
-        const kg = progression ? kgToDisplay(progression.kg) : (!isRepsBased(ex) && !isNaN(lastKg) ? kgToDisplay(lastKg) : '');
-        const target = progression ? progression.reps : (p.repMax || '');
-        rows[ex.id] = Array.from({ length: p.sets }, () => ({ kg, reps: '', target: String(target), done: false }));
+        const { kg, target } = workoutPrefill(ex);
+        rows[ex.id] = Array.from({ length: getPrescription(ex).sets }, () => ({ kg, reps: '', target, done: false }));
     });
-    activeWorkout = { program: currentProgram, day: todayDay, week, startedAt: Date.now(), rows };
+    activeWorkout = { program: currentProgram, day: todayDay, week, startedAt: Date.now(), rows, swaps: {} };
     persistActiveWorkout();
+    haptic();
     resumeWorkout();
+}
+
+// Starting weight (display units) and target reps for an exercise's sets
+function workoutPrefill(ex) {
+    const p = getPrescription(ex);
+    const progression = getProgression(ex);
+    const lastKg = progression ? progression.kg : parseFloat(entryKg((progData()[ex.id] || {})[highestWeekFor(ex.id)]));
+    // Pull-ups' tracked number is reps, so only prefill their added weight from logged sets
+    const kg = progression ? kgToDisplay(progression.kg) : (!isRepsBased(ex) && !isNaN(lastKg) ? kgToDisplay(lastKg) : '');
+    const target = progression ? progression.reps : (p.repMax || '');
+    return { kg, target: String(target) };
+}
+
+// The exercise shown for a workout slot: the program's, or the one swapped in for today.
+// A swap keeps its own history under "<exerciseId>~<slug>", so the original's log and tiers stay untouched.
+function workoutExercise(exId) {
+    const ex = getExercise(exId);
+    const swap = activeWorkout && activeWorkout.swaps && activeWorkout.swaps[exId];
+    if (!swap) return ex;
+    return { ...ex, id: swap.id, name: swap.name, unit: swap.unit || ex.unit, bar: !!swap.bar, note: '', alternates: null, swappedFrom: ex.name };
 }
 
 function highestWeekFor(exId) {
@@ -2497,40 +2587,46 @@ function renderWorkout() {
     const body = document.getElementById('workoutBody');
 
     body.innerHTML = Object.entries(w.rows).map(([exId, rows]) => {
-        const ex = getExercise(exId);
+        const ex = workoutExercise(exId);
         const p = getPrescription(ex);
         const progression = getProgression(ex);
         const complete = rows.length && rows.every(r => r.done);
         return `
             <div class="wo-card${complete ? ' complete' : ''}" id="wo_${exId}">
                 <div class="wo-head">
-                    <div class="wo-name">${escapeHtml(exerciseDisplayName(ex, w.week))} ${progressionBadge(progression)}</div>
+                    <div class="wo-name">
+                        <span>${escapeHtml(exerciseDisplayName(ex, w.week))}</span>
+                        <span class="wo-name-side">${progressionBadge(progression)}<button class="swap-btn" onclick="openSwap('${exId}')">Swap</button></span>
+                    </div>
+                    ${ex.swappedFrom ? `<div class="wo-sub swapped">Swapped in for ${escapeHtml(ex.swappedFrom)} today</div>` : ''}
                     <div class="wo-sub">${escapeHtml(prescriptionText(ex))}${p.restText ? ` · ${escapeHtml(p.restText)} rest` : ''}</div>
                     ${ex.note && !ex.alternates ? `<div class="wo-sub" style="font-style:italic;">${escapeHtml(ex.note)}</div>` : ''}
                     ${progression ? `<div class="wo-tip prog-badge ${progression.type}" style="white-space:normal;"><span>${escapeHtml(progression.text)}</span></div>` : ''}
                 </div>
-                ${rows.map((row, i) => setRowHtml(ex, i, row)).join('')}
+                <div class="plates" id="plates_${exId}">${platesHtml(exId)}</div>
+                ${rows.map((row, i) => setRowHtml(ex, i, row, exId)).join('')}
                 <button class="wo-add" onclick="addSet('${exId}')">+ Add set</button>
             </div>
         `;
     }).join('');
 }
 
-function setRowHtml(ex, i, row) {
+// `key` is the workout slot (the program's exercise id), which stays the same when an exercise is swapped
+function setRowHtml(ex, i, row, key = ex.id) {
     return `
-        <div class="set-row${row.done ? ' done' : ''}" id="set_${ex.id}_${i}">
+        <div class="set-row${row.done ? ' done' : ''}" id="set_${key}_${i}">
             <div class="set-num">${i + 1}</div>
             <div class="set-field">
                 <input type="text" inputmode="decimal" value="${escapeHtml(row.kg)}" placeholder="${isRepsBased(ex) ? '0' : '—'}"
-                    oninput="updateSet('${ex.id}',${i},'kg',this.value)">
+                    oninput="updateSet('${key}',${i},'kg',this.value)">
                 <span>${escapeHtml(setWeightUnit(ex))}</span>
             </div>
             <div class="set-field">
                 <input type="text" inputmode="numeric" value="${escapeHtml(row.reps)}" placeholder="${escapeHtml(row.target || 'reps')}"
-                    oninput="updateSet('${ex.id}',${i},'reps',this.value)">
+                    oninput="updateSet('${key}',${i},'reps',this.value)">
                 <span>reps</span>
             </div>
-            <button class="set-check" onclick="toggleSetDone('${ex.id}',${i})" aria-label="Mark set ${i + 1} done">${CHECK_ICON}</button>
+            <button class="set-check" onclick="toggleSetDone('${key}',${i})" aria-label="Mark set ${i + 1} done">${CHECK_ICON}</button>
         </div>
     `;
 }
@@ -2538,6 +2634,7 @@ function setRowHtml(ex, i, row) {
 function updateSet(exId, i, field, value) {
     activeWorkout.rows[exId][i][field] = value.trim();
     persistActiveWorkout();
+    if (field === 'kg') updatePlates(exId);
 }
 
 function toggleSetDone(exId, i) {
@@ -2552,7 +2649,21 @@ function toggleSetDone(exId, i) {
     persistActiveWorkout();
     renderWorkoutCard(exId);
     updateWorkoutClock();
-    if (row.done) startRest(getPrescription(getExercise(exId)).restSec);
+    haptic();
+    if (row.done) {
+        const rowEl = document.getElementById(`set_${exId}_${i}`);
+        if (rowEl) rowEl.classList.add('pop');
+        startRest(getPrescription(workoutExercise(exId)).restSec, nextUpLabel(exId));
+    }
+}
+
+// What the rest alert says is coming next: another set of this exercise, or the next exercise
+function nextUpLabel(exId) {
+    const ids = Object.keys(activeWorkout.rows);
+    const left = activeWorkout.rows[exId].filter(r => !r.done).length;
+    if (left) return `${workoutExercise(exId).name} · ${left} set${left === 1 ? '' : 's'} left`;
+    const nextId = ids.slice(ids.indexOf(exId) + 1).concat(ids).find(id => activeWorkout.rows[id].some(r => !r.done));
+    return nextId ? `Next up: ${workoutExercise(nextId).name}` : 'Last set done — finish your workout';
 }
 
 function addSet(exId) {
@@ -2567,10 +2678,11 @@ function renderWorkoutCard(exId) {
     // Re-render one card in place (keeps scroll position)
     const scroll = window.scrollY;
     const temp = document.createElement('div');
-    const ex = getExercise(exId);
+    const ex = workoutExercise(exId);
     const rows = activeWorkout.rows[exId];
     const card = document.getElementById(`wo_${exId}`);
-    temp.innerHTML = rows.map((row, i) => setRowHtml(ex, i, row)).join('');
+    temp.innerHTML = rows.map((row, i) => setRowHtml(ex, i, row, exId)).join('');
+    updatePlates(exId);
     card.querySelectorAll('.set-row').forEach(el => el.remove());
     const addBtn = card.querySelector('.wo-add');
     [...temp.children].forEach(el => card.insertBefore(el, addBtn));
@@ -2607,8 +2719,11 @@ function finishWorkout() {
     const tierUps = [];
     const prs = [];
 
-    Object.entries(w.rows).forEach(([exId, rows]) => {
-        const ex = getExercise(exId);
+    Object.entries(w.rows).forEach(([slot, rows]) => {
+        // A swapped-in exercise logs under its own id and doesn't count toward the original's tiers
+        const ex = workoutExercise(slot);
+        const exId = ex.id;
+        const swapped = exId !== slot;
         const done = rows.filter(r => r.done && parseInt(r.reps) > 0);
         if (!done.length) return;
 
@@ -2626,15 +2741,18 @@ function finishWorkout() {
         data[exId][w.week] = { kg: String(Math.max(value, isNaN(existing) ? 0 : existing)), sets, date };
 
         if (prevBest !== null && value > prevBest) prs.push(exerciseDisplayName(ex, w.week));
+        if (swapped) return;
         const newTier = getTier(ex, getBestKg(exId));
         if (newTier > prevTier) tierUps.push({ ex, tier: newTier });
     });
 
     ensureCycleStart(w.week);
     const minutes = Math.max(1, Math.round((Date.now() - w.startedAt) / 60000));
-    programSessions().push({ date, day: w.day, week: w.week, type: 'workout', minutes, sets: doneSets });
+    const swaps = Object.entries(w.swaps || {}).map(([slot, swap]) => ({ from: slot, to: swap.name }));
+    programSessions().push({ date, day: w.day, week: w.week, type: 'workout', minutes, sets: doneSets, ...(swaps.length ? { swaps } : {}) });
 
     clearActiveWorkout();
+    haptic();
     todayDay = null;
     todayWeek = null;
     scheduleSave();
@@ -2659,10 +2777,12 @@ function finishWorkout() {
 // ── Rest timer (time-based, so it stays right if the phone sleeps) ──
 let rest = { endAt: 0, total: 0, interval: null, beeped: false };
 
-function startRest(seconds) {
+function startRest(seconds, label = '') {
     rest.total = seconds;
     rest.endAt = Date.now() + seconds * 1000;
     rest.beeped = false;
+    rest.label = label;
+    scheduleRestPush();
     clearInterval(rest.interval);
     rest.interval = setInterval(tickRest, 250);
     const bar = document.getElementById('restBar');
@@ -2675,6 +2795,8 @@ function adjustRest(delta) {
     if (!rest.interval) return;
     rest.endAt += delta * 1000;
     rest.total = Math.max(1, rest.total + delta);
+    haptic();
+    scheduleRestPush();
     if (rest.endAt > Date.now()) {
         rest.beeped = false;
         document.getElementById('restBar').classList.remove('done');
@@ -2683,6 +2805,7 @@ function adjustRest(delta) {
 }
 
 function stopRest() {
+    if (rest.interval) cancelRestPush();
     clearInterval(rest.interval);
     rest.interval = null;
     const bar = document.getElementById('restBar');
@@ -2699,8 +2822,315 @@ function tickRest() {
         document.getElementById('restTime').textContent = 'GO!';
         beep();
         if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+        // Seen on screen already, so skip the lock-screen alert
+        if (document.visibilityState === 'visible') cancelRestPush();
         setTimeout(() => { if (rest.beeped) stopRest(); }, 5000);
     }
+}
+
+// ── Swap an exercise for today (machine taken, sore joint…) ──
+
+// Alternatives per exercise: [name, unit, barbell?]
+const SWAPS = {
+    'db-bench': [['Barbell Bench Press', 'kg', true], ['Machine Chest Press', 'kg'], ['Smith Machine Bench', 'kg']],
+    'bench-press': [['DB Bench Press', 'kg/DB'], ['Machine Chest Press', 'kg'], ['Smith Machine Bench', 'kg']],
+    'chest-press-machine': [['DB Bench Press', 'kg/DB'], ['Smith Machine Bench', 'kg']],
+    'seated-db-shoulder-press': [['Machine Shoulder Press', 'kg'], ['Barbell Overhead Press', 'kg', true], ['Arnold Press', 'kg/DB']],
+    'seated-shoulder-press': [['Machine Shoulder Press', 'kg'], ['Arnold Press', 'kg/DB']],
+    'db-shoulder-press': [['Machine Shoulder Press', 'kg'], ['Arnold Press', 'kg/DB']],
+    'overhead-press': [['Seated DB Shoulder Press', 'kg/DB'], ['Machine Shoulder Press', 'kg']],
+    'db-incline-press': [['Incline Barbell Press', 'kg', true], ['Incline Machine Press', 'kg'], ['Low-to-High Cable Fly', 'kg']],
+    'lying-cable-lateral-raise': [['Cable Lateral Raise', 'kg/side'], ['DB Lateral Raise', 'kg/DB'], ['Machine Lateral Raise', 'kg']],
+    'cable-lateral-raise': [['DB Lateral Raise', 'kg/DB'], ['Machine Lateral Raise', 'kg']],
+    'cable-overhead-tri-ext': [['Rope Pressdown', 'kg'], ['DB Overhead Extension', 'kg/DB'], ['EZ-Bar Skull Crusher', 'kg']],
+    'pull-ups': [['Lat Pulldown', 'kg'], ['Assisted Pull-Up Machine', 'kg'], ['Chin-Ups', 'reps/+kg']],
+    'lat-pulldown-wide': [['Assisted Pull-Up Machine', 'kg'], ['Single-Arm Cable Pulldown', 'kg'], ['Pull-Ups', 'reps/+kg']],
+    'db-incline-row': [['Chest-Supported Machine Row', 'kg'], ['Seated Cable Row', 'kg'], ['One-Arm DB Row', 'kg/DB']],
+    'barbell-row': [['Chest-Supported Machine Row', 'kg'], ['Seated Cable Row', 'kg'], ['DB Incline Row', 'kg/DB']],
+    'seated-cable-high-row': [['Face Pull', 'kg'], ['Machine High Row', 'kg']],
+    'cable-straight-arm-pulldown': [['DB Pullover', 'kg/DB'], ['Lat Pulldown', 'kg']],
+    'seated-db-incline-curl': [['Cable Curl', 'kg'], ['EZ-Bar Curl', 'kg'], ['Preacher Curl Machine', 'kg']],
+    'arm-isolation': [['DB Curl', 'kg/DB'], ['Overhead Cable Extension', 'kg']],
+    'leg-extension': [['Single-Leg Extension', 'kg'], ['Goblet Squat', 'kg/DB']],
+    'back-squat': [['Leg Press', 'kg'], ['Hack Squat', 'kg'], ['Smith Machine Squat', 'kg']],
+    'hack-squat': [['Leg Press (feet low)', 'kg'], ['Smith Machine Squat', 'kg'], ['Barbell Back Squat', 'kg', true]],
+    'quad-leg-press': [['Hack Squat', 'kg'], ['Smith Machine Squat', 'kg']],
+    'goblet-squat': [['Leg Press', 'kg'], ['Smith Machine Squat', 'kg']],
+    'barbell-rdl': [['DB Romanian Deadlift', 'kg/DB'], ['Smith Machine RDL', 'kg'], ['45° Back Extension', 'kg+']],
+    'rdl': [['DB Romanian Deadlift', 'kg/DB'], ['Smith Machine RDL', 'kg'], ['45° Back Extension', 'kg+']],
+    'lying-leg-curl': [['Seated Leg Curl', 'kg'], ['Stability Ball Leg Curl', 'kg+']],
+    'seated-leg-curl': [['Lying Leg Curl', 'kg'], ['Stability Ball Leg Curl', 'kg+']],
+    'hip-thrust': [['Machine Hip Thrust', 'kg'], ['Smith Machine Hip Thrust', 'kg'], ['Barbell Glute Bridge', 'kg', true]],
+    'kas-glute-bridge': [['Barbell Hip Thrust', 'kg', true], ['Machine Hip Thrust', 'kg'], ['Smith Machine Glute Bridge', 'kg']],
+    'hyperextensions': [['Reverse Hyperextension', 'kg+'], ['Cable Pull-Through', 'kg']],
+    'reverse-lunge': [['Bulgarian Split Squat', 'kg/DB'], ['Walking Lunge', 'kg/DB'], ['Smith Machine Reverse Lunge', 'kg']],
+    'glute-med-kickback': [['Cable Hip Abduction', 'kg'], ['Machine Hip Abduction', 'kg']],
+    'single-leg-calf-raise': [['Standing Calf Raise Machine', 'kg'], ['Leg Press Calf Raise', 'kg']],
+    'standing-calf-raise-a': [['Seated Calf Raise', 'kg'], ['Leg Press Calf Raise', 'kg'], ['Single-Leg Calf Raise', 'kg/DB']],
+    'standing-calf-raise-c': [['Seated Calf Raise', 'kg'], ['Leg Press Calf Raise', 'kg'], ['Single-Leg Calf Raise', 'kg/DB']],
+    'cable-crunch': [['Machine Crunch', 'kg'], ['Hanging Knee Raise', 'kg+']],
+};
+
+let swapSlot = null;
+
+function slugify(name) {
+    return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40) || 'custom';
+}
+
+function openSwap(slot) {
+    swapSlot = slot;
+    const original = getExercise(slot);
+    const current = workoutExercise(slot);
+    document.getElementById('swapIntro').textContent = `Today only. ${original.name}'s own history and tier stay untouched.`;
+    const options = (SWAPS[slot] || []).map(([name, unit], i) => `
+        <button class="swap-option${current.name === name ? ' active' : ''}" onclick="chooseSwap(${i})">
+            <span>${escapeHtml(name)}</span><small>${escapeHtml(unitLabel(unit))}</small>
+        </button>`).join('');
+    const back = current.swappedFrom
+        ? `<button class="swap-option" onclick="applySwap(null)"><span>Back to ${escapeHtml(original.name)}</span><small>original</small></button>`
+        : '';
+    document.getElementById('swapList').innerHTML = back + options;
+    document.getElementById('swapCustomName').value = '';
+    document.getElementById('swapModal').classList.add('active');
+}
+
+function closeSwap() {
+    document.getElementById('swapModal').classList.remove('active');
+    swapSlot = null;
+}
+
+function chooseSwap(i) {
+    const [name, unit, bar] = SWAPS[swapSlot][i];
+    applySwap({ name, unit, bar: !!bar });
+}
+
+function swapCustom(event) {
+    event.preventDefault();
+    const name = document.getElementById('swapCustomName').value.trim();
+    if (name) applySwap({ name, unit: getExercise(swapSlot).unit, bar: false });
+}
+
+function applySwap(alt) {
+    const slot = swapSlot;
+    if (!activeWorkout.swaps) activeWorkout.swaps = {};
+    if (alt) activeWorkout.swaps[slot] = { id: `${slot}~${slugify(alt.name)}`, ...alt };
+    else delete activeWorkout.swaps[slot];
+    // Sets not done yet start from the new exercise's own last weight
+    const { kg, target } = workoutPrefill(workoutExercise(slot));
+    activeWorkout.rows[slot].forEach(row => {
+        if (!row.done) {
+            row.kg = kg;
+            row.target = target;
+        }
+    });
+    persistActiveWorkout();
+    closeSwap();
+    haptic();
+    const scroll = window.scrollY;
+    renderWorkout();
+    window.scrollTo(0, scroll);
+}
+
+// ── Plate calculator for barbell lifts ──
+const PLATES = { kg: [25, 20, 15, 10, 5, 2.5, 1.25], lb: [45, 35, 25, 10, 5, 2.5] };
+const PLATE_STYLE = {
+    kg: { 25: ['#b8433b', 46], 20: ['#3c69ad', 42], 15: ['#cfa33a', 36], 10: ['#4d9460', 30], 5: ['#e6e0d4', 24], 2.5: ['#3a342e', 19], 1.25: ['#9a9184', 15] },
+    lb: { 45: ['#3c69ad', 46], 35: ['#cfa33a', 40], 25: ['#4d9460', 34], 10: ['#e6e0d4', 27], 5: ['#3a342e', 21], 2.5: ['#9a9184', 16] },
+};
+
+// Plates per side for a total bar weight (display units): { bar, unit, plates, left }, { under } or null
+function platesFor(total) {
+    const unit = usesLb() ? 'lb' : 'kg';
+    const bar = unit === 'lb' ? 45 : 20;
+    if (!(total > 0)) return null;
+    if (total < bar) return { under: true, bar, unit };
+    let side = (total - bar) / 2;
+    const plates = [];
+    PLATES[unit].forEach(p => {
+        while (side >= p - 1e-9) {
+            plates.push(p);
+            side -= p;
+        }
+    });
+    return { bar, unit, plates, left: Math.round(side * 2 * 100) / 100 };
+}
+
+function platesHtml(slot) {
+    const ex = workoutExercise(slot);
+    if (!ex.bar) return '';
+    const rows = activeWorkout.rows[slot];
+    const row = rows.find(r => !r.done) || rows[rows.length - 1];
+    const result = platesFor(parseFloat(row && row.kg));
+    if (!result) return '<div class="plates-text">Enter a weight to see the plates</div>';
+    if (result.under) return `<div class="plates-text">Lighter than the ${result.bar} ${result.unit} bar</div>`;
+    const visual = result.plates.map(p => {
+        const [color, height] = PLATE_STYLE[result.unit][p];
+        return `<span class="plate" style="background:${color}; height:${height}px;" title="${p} ${result.unit}"></span>`;
+    }).join('');
+    const text = result.plates.length
+        ? `Each side: <strong>${result.plates.map(String).join(' + ')}</strong> ${result.unit}`
+        : 'Empty bar';
+    return `
+        <div class="plates-visual"><span class="bar-sleeve"></span>${visual}<span class="bar-collar"></span></div>
+        <div class="plates-text">${text}<br><small>on a ${result.bar} ${result.unit} bar${result.left ? ` · ${result.left} ${result.unit} can't be loaded` : ''}</small></div>
+    `;
+}
+
+function updatePlates(slot) {
+    const el = document.getElementById(`plates_${slot}`);
+    if (el) el.innerHTML = platesHtml(slot);
+}
+
+// ── Haptics ──
+// Android: vibrate. iPhone has no vibrate API, but toggling a hidden switch-style checkbox
+// gives a light haptic tick (iOS 18+). Only works inside a tap, which is when we call it.
+let hapticSwitch = null;
+
+function haptic() {
+    try {
+        if (navigator.vibrate) {
+            navigator.vibrate(12);
+            return;
+        }
+        if (!hapticSwitch) {
+            hapticSwitch = document.createElement('label');
+            hapticSwitch.style.display = 'none';
+            const input = document.createElement('input');
+            input.type = 'checkbox';
+            input.setAttribute('switch', '');
+            hapticSwitch.appendChild(input);
+            document.body.appendChild(hapticSwitch);
+        }
+        hapticSwitch.click();
+    } catch (e) { /* haptics are a nice-to-have */ }
+}
+
+// ── Lock-screen rest alerts (Web Push) ──
+// While resting, the app stores "alert me at <time>" in Supabase (rest_timers). A Supabase
+// scheduler checks every 5 seconds and the rest-push function sends the notification, so it
+// arrives even with the phone locked. On iPhone this needs the app added to the Home Screen.
+const VAPID_PUBLIC_KEY = 'BNHDAXYVLgIfxo_MejG0KQR_osA7hCFEgpRu8K4YZjYSPy0bKu4fZFGQmEHfZ6_Ot6IWQSPsZ3hOChnG3K015g4';
+
+function pushKey() {
+    return currentUser ? `wt_push_${currentUser.id}` : null;
+}
+
+function pushSupported() {
+    return 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
+}
+
+function isIOS() {
+    return /iPhone|iPad|iPod/.test(navigator.userAgent);
+}
+
+function isStandalone() {
+    return window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+}
+
+function restAlertsOn() {
+    try {
+        return pushSupported() && Notification.permission === 'granted' && localStorage.getItem(pushKey()) === '1';
+    } catch (e) {
+        return false;
+    }
+}
+
+function base64UrlToBytes(value) {
+    const padded = (value + '='.repeat((4 - value.length % 4) % 4)).replace(/-/g, '+').replace(/_/g, '/');
+    return Uint8Array.from(atob(padded), c => c.charCodeAt(0));
+}
+
+function renderPushStatus() {
+    const status = document.getElementById('pushStatus');
+    const actions = document.getElementById('pushActions');
+    let text;
+    let buttons = '';
+    if (!pushSupported()) {
+        text = isIOS() && !isStandalone()
+            ? 'Get a notification when rest is over, even with your phone locked. On iPhone this needs the app on your Home Screen: tap Share → Add to Home Screen, then open it from the new icon and come back here.'
+            : 'This browser can\'t show rest alerts.';
+    } else if (Notification.permission === 'denied') {
+        text = 'Notifications are blocked for this app. Allow them in your phone\'s Settings → Notifications, then come back here.';
+    } else if (restAlertsOn()) {
+        text = 'On. You\'ll get a notification when rest is over, even with your phone locked.';
+        buttons = '<button class="btn" onclick="testRestAlert()">Send a test alert</button><button class="btn" onclick="disableRestAlerts()">Turn off</button>';
+    } else {
+        text = 'Get a notification when rest is over, even with your phone locked.';
+        buttons = '<button class="btn btn-primary" onclick="enableRestAlerts()">Turn on rest alerts</button>';
+    }
+    status.textContent = text;
+    actions.innerHTML = buttons;
+}
+
+async function enableRestAlerts() {
+    haptic();
+    try {
+        const permission = await Notification.requestPermission();
+        if (permission !== 'granted') {
+            renderPushStatus();
+            return;
+        }
+        const registration = await navigator.serviceWorker.ready;
+        const subscription = await registration.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: base64UrlToBytes(VAPID_PUBLIC_KEY),
+        });
+        const { endpoint, keys } = subscription.toJSON();
+        const { error } = await sb.from('push_subscriptions').upsert(
+            { endpoint, user_id: currentUser.id, p256dh: keys.p256dh, auth: keys.auth },
+            { onConflict: 'endpoint' }
+        );
+        if (error) throw error;
+        localStorage.setItem(pushKey(), '1');
+        showToast('Rest alerts on');
+    } catch (error) {
+        console.error('Rest alerts:', error);
+        showSettingsError('Could not turn on rest alerts: ' + (error.message || error));
+    }
+    renderPushStatus();
+}
+
+async function disableRestAlerts() {
+    try {
+        const registration = await navigator.serviceWorker.ready;
+        const subscription = await registration.pushManager.getSubscription();
+        if (subscription) {
+            await sb.from('push_subscriptions').delete().eq('endpoint', subscription.endpoint);
+            await subscription.unsubscribe();
+        }
+    } catch (error) {
+        console.warn('Rest alerts off:', error);
+    }
+    localStorage.removeItem(pushKey());
+    renderPushStatus();
+}
+
+async function testRestAlert() {
+    haptic();
+    const { error } = await sb.from('rest_timers').upsert({
+        user_id: currentUser.id,
+        fire_at: new Date(Date.now() + 10000).toISOString(),
+        title: 'Test alert',
+        body: 'Rest alerts work. Lock your phone during rest and this is what you\'ll see.',
+    }, { onConflict: 'user_id' });
+    showToast(error ? 'Could not schedule the test: ' + error.message : 'Test alert in about 10 seconds. Lock your phone to try it.');
+}
+
+// Fire-and-forget: a missed alert must never block the workout
+function scheduleRestPush() {
+    if (!restAlertsOn() || !currentUser) return;
+    sb.from('rest_timers').upsert({
+        user_id: currentUser.id,
+        fire_at: new Date(rest.endAt).toISOString(),
+        title: 'Rest over',
+        body: rest.label || 'Time for your next set',
+    }, { onConflict: 'user_id' }).then(({ error }) => { if (error) console.warn('Rest alert not scheduled:', error.message); });
+}
+
+function cancelRestPush() {
+    if (!restAlertsOn() || !currentUser) return;
+    sb.from('rest_timers').delete().eq('user_id', currentUser.id)
+        .then(({ error }) => { if (error) console.warn('Rest alert not cancelled:', error.message); });
 }
 
 // iPhones only allow sound after a tap, so the audio context is created on the first one
@@ -3255,6 +3685,7 @@ function confirmImport() {
 // ════════════════════════════════════════════
 
 function switchTab(tab) {
+    haptic();
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
     document.getElementById('page-'+tab).classList.add('active');

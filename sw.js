@@ -2,8 +2,9 @@
 // - The app page itself: network first (so updates show up), cached copy when offline.
 // - Libraries and fonts from CDNs: cached copy first, refreshed in the background.
 // - Supabase (login + data) is never cached; the page keeps its own offline copy of your data.
+// - Push: shows the "rest over" notification sent by the rest-push Supabase function.
 // Bump CACHE when changing this file's caching rules.
-const CACHE = 'workout-tracker-v2';
+const CACHE = 'workout-tracker-v3';
 const APP_SHELL = ['./', 'index.html', 'manifest.webmanifest', 'icons/icon-180.png', 'icons/icon-192.png', 'icons/icon-512.png'];
 const CDN_HOSTS = ['cdnjs.cloudflare.com', 'cdn.jsdelivr.net', 'fonts.googleapis.com', 'fonts.gstatic.com'];
 
@@ -58,3 +59,30 @@ async function staleWhileRevalidate(request) {
         .catch(() => cached);
     return cached || refresh;
 }
+
+// Lock-screen rest alert from the rest-push function (see supabase/functions/rest-push)
+self.addEventListener('push', event => {
+    let data = {};
+    try {
+        data = event.data ? event.data.json() : {};
+    } catch (error) {
+        data = { body: event.data && event.data.text() };
+    }
+    event.waitUntil(self.registration.showNotification(data.title || 'Rest over', {
+        body: data.body || 'Time for your next set',
+        icon: 'icons/icon-192.png',
+        badge: 'icons/icon-192.png',
+        tag: 'rest-timer',
+        renotify: true,
+        vibrate: [200, 100, 200],
+    }));
+});
+
+// Tapping the notification brings the app back to the front
+self.addEventListener('notificationclick', event => {
+    event.notification.close();
+    event.waitUntil(
+        self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(windows =>
+            windows.length ? windows[0].focus() : self.clients.openWindow('./'))
+    );
+});
