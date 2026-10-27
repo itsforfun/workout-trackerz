@@ -668,7 +668,7 @@
         /* Swap exercise */
         .wo-name { align-items:flex-start; }
         .wo-name-side { display:inline-flex; align-items:center; gap:10px; flex:none; }
-        .swap-btn { font-family:var(--font-ui); font-size:0.72rem; font-weight:500; color:var(--text-dim); background:rgba(255,255,255,0.04); border:1px solid var(--border-bright); border-radius:999px; padding:5px 11px; cursor:pointer; }
+        .swap-btn { white-space:nowrap; flex:none; font-family:var(--font-ui); font-size:0.72rem; font-weight:500; color:var(--text-dim); background:rgba(255,255,255,0.04); border:1px solid var(--border-bright); border-radius:999px; padding:5px 11px; cursor:pointer; }
         .swap-btn:hover { color:var(--text); border-color:rgba(240,232,216,0.3); }
         .wo-sub.swapped { color:var(--accent); font-weight:500; }
         .swap-list { display:grid; gap:8px; margin-bottom:14px; }
@@ -748,6 +748,97 @@
             .wp-day { padding:8px 0; }
             .wp-label { font-size:0.62rem; }
         }
+
+        /* Cardio zones */
+        .cardio-head h2 { font-family:var(--font-display); font-size:2.4rem; letter-spacing:0.04em; line-height:1; margin:2px 0 8px; }
+        .cardio-head p { font-size:0.85rem; color:var(--text-dim); line-height:1.6; margin-bottom:16px; }
+        .cardio-logged { font-size:0.8rem; color:var(--green); background:rgba(134,214,168,0.08); border:1px solid rgba(134,214,168,0.35); border-radius:14px; padding:10px 14px; margin-bottom:12px; }
+        .cardio-week { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:14px; margin-bottom:12px; }
+        .cardio-week-top { display:flex; justify-content:space-between; font-size:0.8rem; color:var(--text-dim); margin-bottom:8px; }
+        .cardio-week-top strong { color:var(--text); font-family:var(--font-num); font-weight:500; }
+        .cardio-week-bar { height:8px; border-radius:999px; background:rgba(255,255,255,0.06); overflow:hidden; }
+        .cardio-week-bar span { display:block; height:100%; border-radius:999px; background:linear-gradient(90deg,#8fbbd9,#86d6a8); transition:width 0.6s ease; }
+        .cardio-week small { display:block; font-size:0.68rem; color:var(--text-muted); margin-top:8px; line-height:1.5; }
+        .zone-hrmax { font-size:0.78rem; color:var(--text-dim); margin:16px 2px 10px; }
+        .zone-hrmax strong { color:var(--text); font-family:var(--font-num); font-weight:500; }
+        .zone-card { border-radius:18px; background:var(--card); border:1px solid var(--border); border-left:3px solid var(--zone); margin-bottom:10px; padding:0 16px; overflow:hidden; }
+        .zone-card[open] { padding-bottom:14px; }
+        .zone-card.recommended { box-shadow:var(--shadow), 0 0 0 1px color-mix(in srgb, var(--zone) 35%, transparent); }
+        .zone-card summary { display:flex; align-items:center; gap:10px; padding:14px 0; cursor:pointer; list-style:none; }
+        .zone-card summary::-webkit-details-marker { display:none; }
+        .zone-num { font-size:0.62rem; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--zone); }
+        .zone-name { font-size:0.95rem; font-weight:600; flex:1; }
+        .zone-bpm { font-family:var(--font-num); font-size:0.78rem; color:var(--text-dim); }
+        .zone-rec { font-size:0.6rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:#13100e; background:var(--zone); border-radius:999px; padding:3px 8px; }
+        .zone-meta { font-size:0.74rem; color:var(--text-dim); margin-bottom:6px; }
+        .zone-why { font-size:0.8rem; color:var(--text-dim); line-height:1.55; margin-bottom:10px; }
+        .zone-session { display:flex; align-items:center; justify-content:space-between; gap:12px; width:100%; text-align:left; background:rgba(255,255,255,0.025); border:1px solid var(--border-bright); border-radius:14px; padding:12px 14px; margin-top:8px; color:var(--text); font-family:var(--font-ui); cursor:pointer; transition:border-color 0.2s, transform 0.15s; }
+        .zone-session:hover { border-color:var(--zone); }
+        .zone-session:active { transform:scale(0.98); }
+        .zone-session strong { display:block; font-size:0.86rem; font-weight:600; }
+        .zone-session small { display:block; font-size:0.72rem; color:var(--text-muted); margin-top:3px; line-height:1.45; }
+        .zone-log { flex:none; font-size:0.72rem; font-weight:600; color:var(--zone); border:1px solid var(--zone); border-radius:999px; padding:5px 12px; }
+        .evidence-card ul { margin:6px 0 0 18px; }
+        .evidence-card li { font-size:0.76rem; color:var(--text-dim); line-height:1.6; margin-bottom:8px; }
+        .evidence-card summary, .setup-card summary { display:flex; justify-content:space-between; align-items:center; cursor:pointer; list-style:none; }
+        .evidence-card summary::-webkit-details-marker, .setup-card summary::-webkit-details-marker { display:none; }
+        .evidence-card[open] .warmup-hint, .setup-card[open] .warmup-hint { display:none; }
+        .back-link { display:block; width:100%; background:none; border:none; color:var(--accent); font-family:var(--font-ui); font-size:0.85rem; font-weight:600; padding:14px 0; cursor:pointer; text-align:center; }
+
+        /* Steps */
+        .steps-ring { position:relative; width:min(260px, 72vw); margin:0 auto 22px; }
+        .steps-ring svg { width:100%; height:auto; transform:rotate(-90deg); }
+        .ring-bg { fill:none; stroke:rgba(255,255,255,0.06); stroke-width:14; }
+        .ring-fg { fill:none; stroke:url(#ringGold); stroke-width:14; stroke-linecap:round; transition:stroke-dashoffset 0.9s cubic-bezier(.2,.8,.2,1); }
+        .steps-ring.reached .ring-fg { filter:drop-shadow(0 0 10px rgba(217,178,95,0.45)); }
+        .ring-center { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; }
+        .ring-steps { font-family:var(--font-display); font-size:3.4rem; letter-spacing:0.03em; line-height:1; }
+        .ring-goal { font-size:0.8rem; color:var(--text-dim); margin-top:4px; }
+        .ring-sync { font-size:0.66rem; color:var(--text-muted); margin-top:8px; }
+        .steps-panel { border-radius:22px; background:var(--card); border:1px solid var(--border); box-shadow:var(--shadow); padding:18px; margin-bottom:18px; }
+        .steps-chart { height:200px; }
+        .steps-row { display:flex; flex-wrap:wrap; gap:12px; align-items:center; justify-content:space-between; margin:14px 0 6px; }
+        .steps-goal { font-size:0.8rem; color:var(--text-dim); display:flex; align-items:center; gap:8px; }
+        .steps-manual { display:flex; gap:8px; flex:1; min-width:220px; }
+        .steps-manual .form-input { flex:1; }
+        .setup-steps { margin:8px 0 0 20px; }
+        .setup-steps li { font-size:0.8rem; color:var(--text-dim); line-height:1.6; margin-bottom:10px; }
+        .setup-steps li strong { color:var(--text); }
+        .setup-steps ul { margin:6px 0 0 16px; }
+        .setup-steps code, .copy-row code { font-family:var(--font-num); font-size:0.72rem; color:var(--text); background:rgba(0,0,0,0.3); border-radius:6px; padding:2px 6px; word-break:break-all; }
+        .copy-row { display:flex; align-items:center; gap:8px; margin:6px 0; }
+        .copy-row code { flex:1; }
+
+        /* Program builder + your programs */
+        .selector-section { margin-top:40px; }
+        .custom-card .program-index { font-family:var(--font-ui); font-weight:600; letter-spacing:0.1em; text-transform:uppercase; font-size:0.66rem; }
+        .program-edit { margin-left:auto; font-size:0.75rem; font-weight:500; color:var(--text-dim); border:1px solid var(--border-bright); border-radius:999px; padding:5px 12px; }
+        .program-edit:hover { color:var(--text); }
+        .build-card { border-style:dashed; border-color:rgba(217,178,95,0.4); background:rgba(217,178,95,0.03); display:flex; flex-direction:column; justify-content:center; min-height:200px; }
+        .build-plus { width:44px; height:44px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.6rem; color:#1b1408; background:var(--gold); margin-bottom:18px; }
+        .bd-day { background:var(--card); border:1px solid var(--border); border-radius:22px; margin-top:16px; overflow:hidden; box-shadow:var(--shadow); }
+        .bd-day-head { display:flex; gap:10px; align-items:center; padding:14px; }
+        .bd-day-name { font-family:var(--font-display); font-size:1.3rem !important; letter-spacing:0.04em; }
+        .bd-empty { font-size:0.8rem; color:var(--text-muted); padding:4px 16px 12px; }
+        .bd-ex { border-top:1px solid var(--border); padding:12px 16px; }
+        .bd-ex-head { display:flex; justify-content:space-between; gap:10px; align-items:flex-start; margin-bottom:10px; }
+        .bd-ex-name { font-size:0.9rem; font-weight:600; }
+        .bd-ex-sub { font-size:0.68rem; color:var(--text-muted); margin-top:2px; }
+        .bd-ex-tools { display:flex; gap:6px; flex:none; }
+        .icon-btn { width:32px; height:32px; display:flex; align-items:center; justify-content:center; border-radius:10px; border:1px solid var(--border-bright); background:transparent; color:var(--text-dim); cursor:pointer; }
+        .icon-btn:disabled { opacity:0.3; cursor:default; }
+        .bd-fields { display:grid; grid-template-columns:repeat(4, auto); gap:10px; }
+        .bd-fields label { display:flex; flex-direction:column; gap:4px; font-size:0.62rem; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-muted); }
+        .bd-fields select { font-family:var(--font-ui); font-size:0.85rem; color:var(--text); background:rgba(0,0,0,0.28); border:1px solid var(--border-bright); border-radius:10px; padding:8px; max-width:100%; }
+        .bd-range { display:flex; align-items:center; gap:4px; color:var(--text-dim); }
+        .bd-add-day, .bd-delete { width:100%; margin-top:16px; }
+        .picker-list { max-height:46vh; overflow-y:auto; margin-top:12px; }
+        @media (max-width:600px) {
+            .bd-fields { grid-template-columns:repeat(2, 1fr); }
+            .bottom-nav { grid-template-columns:repeat(5,1fr) !important; }
+            .ring-steps { font-size:3rem; }
+        }
+        @media (max-width:900px) { .bottom-nav { grid-template-columns:repeat(5,1fr); } }
 
         /* SCREENS: exactly one .screen has .active at a time (see showScreen) */
         .screen:not(.active) { display:none !important; }
@@ -922,7 +1013,21 @@
                 <div class="program-cta">Select program <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
             </button>
         </div>
+        <div class="selector-section">
+            <div class="kicker">Your programs</div>
+            <div class="program-grid" id="customProgramGrid"></div>
+        </div>
     </div>
+</div>
+
+<!-- PROGRAM BUILDER -->
+<div class="screen workout-screen builder-screen" id="builderScreen">
+    <div class="workout-top">
+        <button class="btn-switch" onclick="cancelBuilder()">Cancel</button>
+        <div class="workout-title"><div id="builderTitle">New program</div></div>
+        <button class="btn btn-primary" onclick="saveBuilder()">Save</button>
+    </div>
+    <div class="workout-body" id="builderBody"></div>
 </div>
 
 <!-- MAIN APP -->
@@ -937,6 +1042,7 @@
         <div class="tab-nav">
             <button class="tab-btn active" onclick="switchTab('today')">Today</button>
             <button class="tab-btn" onclick="switchTab('tracker')">Tracker</button>
+            <button class="tab-btn" onclick="switchTab('steps')">Steps</button>
             <button class="tab-btn" onclick="switchTab('progress')">Progress</button>
             <button class="tab-btn" onclick="switchTab('settings')">Settings</button>
         </div>
@@ -950,6 +1056,7 @@
     <nav class="bottom-nav">
         <button class="tab-btn active" onclick="switchTab('today')"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M10 8.5l5 3.5-5 3.5z"/></svg><span>Today</span></button>
         <button class="tab-btn" onclick="switchTab('tracker')"><svg viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></svg><span>Tracker</span></button>
+        <button class="tab-btn" onclick="switchTab('steps')"><svg viewBox="0 0 24 24"><path d="M7.5 3.5c1.6 0 2.6 1.9 2.6 4.4 0 2.3-.8 4.1-2.3 4.1S5.2 10.8 5.2 8.6C5.2 5.6 6 3.5 7.5 3.5z"/><path d="M5.6 14.5l4.2-.6.4 2.6c.2 1.3-.7 2.4-2 2.5s-2.3-.8-2.4-2z"/><path d="M16.5 7.5c1.5 0 2.3 2.1 2.3 5.1 0 2.2-1 3.4-2.6 3.4s-2.3-1.8-2.3-4.1c0-2.5 1-4.4 2.6-4.4z"/><path d="M14.2 18.5l4.2.6-.2 1.9c-.1 1.2-1.1 2-2.4 2s-2-1.1-1.9-2.4z"/></svg><span>Steps</span></button>
         <button class="tab-btn" onclick="switchTab('progress')"><svg viewBox="0 0 24 24"><path d="M3 20h18"/><path d="M5 16l5-5 4 3 6-7"/></svg><span>Progress</span></button>
         <button class="tab-btn" onclick="switchTab('settings')"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg><span>Settings</span></button>
     </nav>
@@ -960,12 +1067,15 @@
             <div class="streak-row" id="streakRow"></div>
             <div id="weekPlan"></div>
             <div id="powerUnlock"></div>
+            <div id="cardioView"></div>
+            <div id="liftView">
             <div class="day-strip" id="dayStrip"></div>
             <div class="today-meta" id="todayMeta"></div>
             <div id="warmupCard"></div>
             <div class="today-list" id="todayList"></div>
             <div class="today-hint" id="todayHint"></div>
             <button class="start-btn" id="startWorkoutBtn" onclick="startWorkout()"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l13-7.5z"/></svg> Start workout</button>
+            </div>
             <div id="mobilityCard"></div>
             <div id="habitsCard"></div>
         </div>
@@ -1002,6 +1112,21 @@
             </div>
 
             <div class="progress-list" id="progressList"></div>
+        </div>
+    </div>
+
+    <!-- STEPS PAGE -->
+    <div class="page" id="page-steps">
+        <div class="container today-container">
+            <div class="hero">
+                <h1>STEPS</h1>
+                <p>From Apple Health, updated through your Shortcut</p>
+            </div>
+            <div id="stepsRing"></div>
+            <div class="streak-row" id="stepsStats"></div>
+            <div class="steps-panel"><div class="chart-wrap steps-chart"><canvas id="stepsChart"></canvas></div></div>
+            <div id="stepsActions"></div>
+            <div id="stepsSetup"></div>
         </div>
     </div>
 
@@ -1164,6 +1289,34 @@
 </div>
 
 <!-- MODALS -->
+<div class="modal-overlay" id="pickerModal">
+    <div class="modal picker-modal">
+        <h2>Add exercise</h2>
+        <input class="form-input" id="pickerSearch" placeholder="Search exercises" autocomplete="off" oninput="renderPickerList()">
+        <div class="swap-list picker-list" id="pickerList"></div>
+        <form class="swap-custom" onsubmit="addCustomExercise(event)">
+            <input class="form-input" id="pickerCustom" placeholder="Or type your own…" maxlength="40" autocomplete="off">
+            <button class="btn" type="submit">Add</button>
+        </form>
+        <div class="modal-actions"><button class="btn btn-primary" onclick="closePicker()">Done</button></div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="cardioModal">
+    <div class="modal">
+        <h2 id="cardioModalTitle">Log cardio</h2>
+        <p id="cardioModalSub"></p>
+        <label class="form-label" for="cardioMinutes">Minutes</label>
+        <input class="form-input" id="cardioMinutes" type="number" inputmode="numeric" min="1" max="300">
+        <label class="form-label" for="cardioHr" style="margin-top:14px;">Average heart rate (optional)</label>
+        <input class="form-input" id="cardioHr" type="number" inputmode="numeric" min="60" max="220" placeholder="bpm">
+        <div class="modal-actions" style="margin-top:18px;">
+            <button class="btn" onclick="closeCardioLog()">Cancel</button>
+            <button class="btn btn-primary" onclick="saveCardioLog()">Log session</button>
+        </div>
+    </div>
+</div>
+
 <div class="modal-overlay" id="swapModal">
     <div class="modal">
         <h2>Swap exercise</h2>
@@ -1198,7 +1351,7 @@
 
 // Shown at the bottom of Settings so you can tell which version a phone is running.
 // Bump it with every deploy.
-const APP_VERSION = '1.6 · 27 Oct';
+const APP_VERSION = '1.7 · 27 Oct';
 
 const SUPABASE_URL = 'https://hcwbcxhblfjpdlkwykez.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_mEe_5g2UITyp5O-F9YRhRg_wTQWuOtf';
@@ -1355,11 +1508,12 @@ function getStrengthMultiplier(gender) {
 }
 
 function getThresholds(exercise) {
+    if (!exercise.thresholds) return null;
     if (!userProfile || !userProfile.weight || UNSCALED_UNITS.includes(exercise.unit)) {
         return exercise.thresholds;
     }
-    // Scale against the program's reference lifter, since its thresholds were written for them
-    const multiplier = getStrengthMultiplier(PROGRAMS[currentProgram].gender);
+    // Scale against the reference lifter the thresholds were written for (custom programs keep the source program's)
+    const multiplier = getStrengthMultiplier(exercise.standardGender || PROGRAMS[currentProgram].gender);
     return exercise.thresholds.map(t => Math.round(t * multiplier * 10) / 10);
 }
 
@@ -1374,9 +1528,11 @@ const SCREENS = {
     selector: 'programSelector',
     app: 'mainApp',
     workout: 'workoutScreen',
+    builder: 'builderScreen',
 };
 
 function showScreen(name) {
+    if (name === 'selector') renderCustomProgramCards();
     Object.entries(SCREENS).forEach(([key, id]) => {
         document.getElementById(id).classList.toggle('active', key === name);
     });
@@ -1774,6 +1930,7 @@ function clearLocalCache(userId) {
 function applyCache(cache) {
     allData = cache.allData || {};
     userProfile = cache.userProfile || null;
+    registerCustomPrograms();
     currentProgram = PROGRAMS[cache.currentProgram] ? cache.currentProgram : null;
 }
 
@@ -1831,6 +1988,7 @@ async function loadUserData() {
         return true;
     }
 
+    registerCustomPrograms(row.workout_data && row.workout_data._customPrograms);
     currentProgram = PROGRAMS[row.selected_program] ? row.selected_program : null;
     userProfile = row.profile && Object.keys(row.profile).length ? row.profile : null;
 
@@ -2153,6 +2311,7 @@ function openProgram() {
 
     todayDay = null;
     todayWeek = null;
+    todayMode = null;
     buildTracker();
     switchTab('today');
     setSaveStatus(offlineMode ? 'offline' : savePending ? 'pending' : 'saved');
@@ -2434,6 +2593,7 @@ function updateWeekHints(exId) {
 function getTier(exercise, kg) {
     if (!kg || isNaN(kg) || kg <= 0) return 0;
     const thresholds = getThresholds(exercise);
+    if (!thresholds) return 0;
     for (let i = thresholds.length - 1; i >= 0; i--) {
         if (kg >= thresholds[i]) return i + 1;
     }
@@ -2450,6 +2610,7 @@ function updateBadge(exId) {
     const color = TIERS[tier].color;
     const badge = document.getElementById(`badge_${exId}`);
     if (badge) {
+        badge.style.display = getExercise(exId).thresholds ? '' : 'none';
         badge.innerHTML = tierBadgeHtml(tier);
         badge.style.color = color;
         badge.style.borderColor = color;
@@ -2513,6 +2674,12 @@ function renderToday() {
         statTile('Total', String(stats.total), 'workouts');
     renderWeekPlan();
     document.getElementById('powerUnlock').innerHTML = powerUnlockHtml();
+
+    // Cardio and rest days of a week plan show cardio zones instead of the lifting days
+    const plan = prog.weekPlan ? prog.weekPlan[new Date().getDay()] : null;
+    const offDay = plan === 'cardio' || plan === 'rest' ? plan : null;
+    renderCardioView(offDay, todayMode === 'lift');
+    document.getElementById('liftView').style.display = offDay && todayMode !== 'lift' ? 'none' : '';
 
     document.getElementById('dayStrip').innerHTML = prog.days.map((name, i) => `
         <button class="day-tab${i === todayDay ? ' active' : ''}" onclick="selectTodayDay(${i})">
@@ -2604,27 +2771,7 @@ function renderWeekPlan() {
             </div>`;
     }).join('');
 
-    const todayPlan = prog.weekPlan[new Date().getDay()];
-    let note = '';
-    if (todayPlan === 'cardio') {
-        const logged = sessions.some(s => s.date === today && s.type === 'cardio');
-        note = `
-            <div class="wp-note">
-                <strong>Cardio day.</strong> 20–30 min easy bike or incline walk, at a pace where you can still talk.
-                ${logged ? '<span class="wp-done">Logged today</span>' : '<button class="btn" onclick="logCardio()">Log cardio</button>'}
-            </div>`;
-    } else if (todayPlan === 'rest') {
-        note = '<div class="wp-note"><strong>Walk or rest day.</strong> An easy walk keeps the steps up and helps recovery.</div>';
-    }
-    el.innerHTML = `<div class="week-plan">${days}</div>${note}`;
-}
-
-function logCardio() {
-    haptic();
-    programSessions().push({ date: todayStr(), day: null, week: getCurrentWeek(), type: 'cardio', minutes: 25 });
-    scheduleSave();
-    renderToday();
-    showToast('Cardio logged');
+    el.innerHTML = `<div class="week-plan">${days}</div>`;
 }
 
 // Warm-up for the selected day, plus the effort and pain rules
@@ -2679,6 +2826,9 @@ function renderHabits() {
         return;
     }
     const checked = new Set((metaFor('_habits')[todayStr()]) || []);
+    // The steps habit (first in the list) counts as done once 8,000 steps are synced today
+    const stepsAuto = /steps/i.test(prog.habits[0]) && stepsOn(todayStr()) >= 8000;
+    if (stepsAuto) checked.add(0);
     el.innerHTML = `
         <div class="mobility-card">
             <h3>Daily habits</h3>
@@ -2765,6 +2915,701 @@ function logMobility(day) {
     scheduleSave();
     renderToday();
     showToast('Mobility session logged');
+}
+
+// ════════════════════════════════════════════
+//  CARDIO ZONES (cardio and rest days of programs with a week plan)
+// ════════════════════════════════════════════
+
+// Five heart-rate zones as % of estimated max heart rate, with RPE (effort 0–10) and the talk
+// test for training without a heart-rate monitor. Sessions favour low-impact machines.
+const CARDIO_ZONES = [
+    { zone: 1, name: 'Recovery', pct: [50, 60], rpe: '2–3', color: '#8fbbd9', talk: 'You could sing',
+        why: 'Active recovery: gets blood moving without adding fatigue. Ideal on walk days and after hard lifting.',
+        sessions: [['Easy walk', 30, '30–45 min', 'Flat or a slight incline, relaxed pace'], ['Easy bike spin', 20, '20–30 min', 'Light resistance, smooth pedalling']] },
+    { zone: 2, name: 'Aerobic base', pct: [60, 70], rpe: '3–4', color: '#86d6a8', talk: 'You can talk in full sentences',
+        why: 'Builds the aerobic base (heart, mitochondria, fat use) with little stress on joints or recovery. Most weekly cardio should be here.',
+        sessions: [['Incline treadmill walk', 30, '30–45 min', '8–12% incline, 4.5–5.5 km/h, hands off the rails'], ['Steady bike', 30, '30–45 min', 'A resistance you could hold for an hour'], ['Elliptical', 30, '30 min', 'Low impact, easy on knees and ankles'], ['Easy rowing', 20, '20–30 min', 'Smooth strokes, about 20 per minute']] },
+    { zone: 3, name: 'Tempo', pct: [70, 80], rpe: '5–6', color: '#d4a843', talk: 'Short sentences only',
+        why: 'Comfortably hard. Useful in small doses once the base is built; lots of it adds fatigue without the benefits of easy or hard work.',
+        sessions: [['Bike tempo', 33, '3 × 8 min, 3 min easy between', 'Steady, controlled effort']] },
+    { zone: 4, name: 'Threshold', pct: [80, 90], rpe: '7–8', color: '#e8734a', talk: 'A few words at a time',
+        why: 'Raises the pace you can sustain. One session a week at most, and only after a few weeks of base work.',
+        sessions: [['4 × 4 min intervals', 28, '4 × 4 min hard, 3 min easy', 'The "Norwegian 4×4": build to 85–95% of max by the end of each rep. Bike or incline walk']] },
+    { zone: 5, name: 'Max effort', pct: [90, 100], rpe: '9–10', color: '#c45fc4', talk: 'You can\'t talk',
+        why: 'Short sprints raise fitness (VO₂max) quickly in little time but are hard to recover from. Once a week at most, on a bike.',
+        sessions: [['Bike sprints', 20, '6–8 × 30 s all-out, 2 min easy', 'Seated, high resistance; stop if form or joints suffer']] },
+];
+
+const CARDIO_EVIDENCE = [
+    'Max heart rate is estimated as 208 − 0.7 × age (Tanaka et al., 2001), which fits adults better than 220 − age. Any formula can be 10+ beats off for one person, so check it against the talk test.',
+    'The talk test (the point where talking gets hard) closely tracks the first ventilatory threshold, the top of Zone 2 (Persinger et al., 2004).',
+    'WHO guidelines (2020): 150–300 minutes a week of moderate activity, or 75–150 of vigorous activity. A minute in Zone 4–5 counts as two.',
+    'For fat loss in people with overweight, interval training and steady cardio work about equally well (Wewege et al., 2017). Steady Zone 2 is easier to recover from alongside lifting.',
+    'The 4 × 4 interval protocol improved VO₂max more than steady training in a controlled trial (Helgerud et al., 2007).',
+];
+
+// null = follow the week plan; 'lift' = show the lifting days on a cardio/rest day
+let todayMode = null;
+
+function estimatedMaxHr() {
+    const age = userProfile && userProfile.age ? userProfile.age : 30;
+    return Math.round(208 - 0.7 * age);
+}
+
+// Cardio minutes this week, as WHO "moderate-equivalent" (Zone 2–3 count once, Zone 4–5 twice)
+function cardioWeek() {
+    const monday = mondayOf(todayStr());
+    let total = 0;
+    let moderate = 0;
+    Object.values(metaFor('_sessions')).forEach(list => (list || []).forEach(s => {
+        if (s.type !== 'cardio' || mondayOf(s.date) !== monday) return;
+        total += s.minutes || 0;
+        if (s.zone >= 4) moderate += 2 * (s.minutes || 0);
+        else if (s.zone >= 2 || !s.zone) moderate += s.minutes || 0;
+    }));
+    return { total, moderate };
+}
+
+function setTodayMode(mode) {
+    haptic();
+    todayMode = mode;
+    renderToday();
+    window.scrollTo(0, 0);
+}
+
+function renderCardioView(plan, showingLift) {
+    const el = document.getElementById('cardioView');
+    if (!plan) {
+        el.innerHTML = '';
+        return;
+    }
+    if (showingLift) {
+        el.innerHTML = `<button class="back-link" onclick="setTodayMode(null)">← Back to today's ${plan === 'cardio' ? 'cardio' : 'walk'} plan</button>`;
+        return;
+    }
+    const hrMax = estimatedMaxHr();
+    const recommended = plan === 'cardio' ? 2 : 1;
+    const week = cardioWeek();
+    const loggedToday = programSessions().filter(s => s.type === 'cardio' && s.date === todayStr());
+    const pct = Math.min(100, Math.round((week.moderate / 150) * 100));
+
+    const zones = CARDIO_ZONES.map(z => {
+        const low = Math.round(hrMax * z.pct[0] / 100);
+        const high = Math.round(hrMax * z.pct[1] / 100);
+        const isRec = z.zone === recommended;
+        return `
+            <details class="zone-card${isRec ? ' recommended' : ''}" style="--zone:${z.color}" ${isRec ? 'open' : ''}>
+                <summary>
+                    <span class="zone-num">Zone ${z.zone}</span>
+                    <span class="zone-name">${escapeHtml(z.name)}</span>
+                    <span class="zone-bpm">${low}–${high} bpm</span>
+                    ${isRec ? '<span class="zone-rec">Today</span>' : ''}
+                </summary>
+                <div class="zone-meta">${z.pct[0]}–${z.pct[1]}% of max · effort ${z.rpe}/10 · ${escapeHtml(z.talk)}</div>
+                <p class="zone-why">${escapeHtml(z.why)}</p>
+                ${z.sessions.map(([name, , dose, how], i) => `
+                    <button class="zone-session" onclick="openCardioLog(${z.zone}, ${i})">
+                        <span><strong>${escapeHtml(name)}</strong><small>${escapeHtml(dose)} · ${escapeHtml(how)}</small></span>
+                        <span class="zone-log">Log</span>
+                    </button>`).join('')}
+            </details>`;
+    }).join('');
+
+    el.innerHTML = `
+        <div class="cardio-head">
+            <div class="kicker">${plan === 'cardio' ? 'Cardio day' : 'Walk or rest day'}</div>
+            <h2>${plan === 'cardio' ? 'Pick your cardio' : 'Easy movement'}</h2>
+            <p>${plan === 'cardio'
+                ? 'Your plan calls for easy cardio: Zone 2 is the one to pick. The harder zones are here for when you want them.'
+                : 'A day off lifting. A Zone 1 walk helps recovery and your step count.'}</p>
+        </div>
+        ${loggedToday.length ? `<div class="cardio-logged"><strong>Logged today:</strong> ${loggedToday.map(s => `${escapeHtml(s.name || 'Cardio')} · ${s.minutes} min`).join(', ')}</div>` : ''}
+        <div class="cardio-week">
+            <div class="cardio-week-top"><span>This week</span><strong>${week.moderate} of 150 min</strong></div>
+            <div class="cardio-week-bar"><span style="width:${pct}%"></span></div>
+            <small>WHO minimum for moderate activity. Zone 4–5 minutes count double; Zone 1 doesn't count.</small>
+        </div>
+        <div class="zone-hrmax">Your estimated max heart rate: <strong>${hrMax} bpm</strong> (age ${userProfile && userProfile.age ? userProfile.age : '—'})</div>
+        ${zones}
+        <details class="mobility-card evidence-card">
+            <summary><h3>The science</h3><span class="warmup-hint">Tap to open</span></summary>
+            <ul>${CARDIO_EVIDENCE.map(t => `<li>${escapeHtml(t)}</li>`).join('')}</ul>
+        </details>
+        <button class="back-link" onclick="setTodayMode('lift')">Lift today instead →</button>
+    `;
+}
+
+let cardioDraft = null;
+
+function openCardioLog(zone, i) {
+    haptic();
+    const z = CARDIO_ZONES.find(c => c.zone === zone);
+    const [name, minutes, dose] = z.sessions[i];
+    cardioDraft = { zone, name };
+    document.getElementById('cardioModalTitle').textContent = name;
+    document.getElementById('cardioModalSub').textContent = `Zone ${zone} · ${z.name} · ${dose}`;
+    document.getElementById('cardioMinutes').value = minutes;
+    document.getElementById('cardioHr').value = '';
+    document.getElementById('cardioModal').classList.add('active');
+}
+
+function closeCardioLog() {
+    document.getElementById('cardioModal').classList.remove('active');
+    cardioDraft = null;
+}
+
+function saveCardioLog() {
+    const minutes = parseInt(document.getElementById('cardioMinutes').value);
+    if (!(minutes > 0)) {
+        showToast('Enter how many minutes');
+        return;
+    }
+    const hr = parseInt(document.getElementById('cardioHr').value);
+    programSessions().push({
+        date: todayStr(), day: null, week: getCurrentWeek(), type: 'cardio',
+        zone: cardioDraft.zone, name: cardioDraft.name, minutes, ...(hr > 0 ? { avgHr: hr } : {}),
+    });
+    closeCardioLog();
+    haptic();
+    scheduleSave();
+    renderToday();
+    showToast(`${minutes} min logged`);
+}
+
+// ════════════════════════════════════════════
+//  STEPS TAB
+// ════════════════════════════════════════════
+
+// Web apps can't read Apple Health, so an iPhone Shortcut ("Workout Steps") reads today's steps
+// and posts them with the user's private step token to the steps-ingest Edge Function, which
+// writes public.step_counts. The tab reads that table and refreshes every minute while open.
+const STEPS_SHORTCUT_NAME = 'Workout Steps';
+const STEPS_INGEST_URL = `${SUPABASE_URL}/functions/v1/steps-ingest`;
+const STEP_GOALS = [6000, 7000, 8000, 10000, 12000, 15000];
+
+let stepData = {};      // date → { steps, updated_at, source }
+let stepToken = null;
+let stepsChart = null;
+
+function stepGoal() {
+    return (userProfile && userProfile.stepGoal) || 10000;
+}
+
+async function loadSteps() {
+    if (!currentUser || !sb) return false;
+    try {
+        const { data, error } = await sb.from('step_counts')
+            .select('date, steps, updated_at, source')
+            .gte('date', addDays(todayStr(), -30));
+        if (error) throw error;
+        stepData = Object.fromEntries(data.map(row => [row.date, row]));
+        return true;
+    } catch (error) {
+        console.warn('Steps not loaded:', error.message || error);
+        return false;
+    }
+}
+
+function stepsOn(date) {
+    return stepData[date] ? stepData[date].steps : 0;
+}
+
+async function renderSteps() {
+    drawSteps();            // draw what we have straight away
+    if (await loadSteps()) {
+        drawSteps();
+        renderHabits();     // the steps habit ticks itself
+    }
+}
+
+function drawSteps() {
+    const today = todayStr();
+    const goal = stepGoal();
+    const steps = stepsOn(today);
+    const ratio = Math.min(1, steps / goal);
+    const circumference = 2 * Math.PI * 88;
+    const entry = stepData[today];
+    const synced = entry
+        ? `Updated ${new Date(entry.updated_at).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}${entry.source === 'manual' ? ' · typed in' : ''}`
+        : 'No steps synced today';
+
+    document.getElementById('stepsRing').innerHTML = `
+        <div class="steps-ring${steps >= goal ? ' reached' : ''}">
+            <svg viewBox="0 0 200 200" aria-hidden="true">
+                <defs><linearGradient id="ringGold" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0" stop-color="#f2d891"/><stop offset="1" stop-color="#b38636"/>
+                </linearGradient></defs>
+                <circle class="ring-bg" cx="100" cy="100" r="88"/>
+                <circle class="ring-fg" cx="100" cy="100" r="88" stroke-dasharray="${circumference}" stroke-dashoffset="${circumference * (1 - ratio)}"/>
+            </svg>
+            <div class="ring-center">
+                <div class="ring-steps">${steps.toLocaleString()}</div>
+                <div class="ring-goal">of ${goal.toLocaleString()} steps</div>
+                <div class="ring-sync">${escapeHtml(synced)}</div>
+            </div>
+        </div>
+    `;
+
+    // Last 7 days average, goal streak, best of the last 30 days
+    const last7 = Array.from({ length: 7 }, (_, i) => stepsOn(addDays(today, -i)));
+    const average = Math.round(last7.reduce((a, b) => a + b, 0) / 7);
+    let streak = 0;
+    let day = steps >= goal ? today : addDays(today, -1);
+    while (stepsOn(day) >= goal) {
+        streak++;
+        day = addDays(day, -1);
+    }
+    const best = Math.max(0, ...Object.values(stepData).map(r => r.steps));
+    document.getElementById('stepsStats').innerHTML =
+        statTile('7-day average', average.toLocaleString(), 'steps a day') +
+        statTile('Goal streak', String(streak), streak === 1 ? 'day' : 'days') +
+        statTile('Best day', best.toLocaleString(), 'last 30 days');
+
+    drawStepsChart(goal);
+
+    const goalOptions = STEP_GOALS.map(g => `<option value="${g}"${g === goal ? ' selected' : ''}>${g.toLocaleString()} steps</option>`).join('');
+    document.getElementById('stepsActions').innerHTML = `
+        <button class="start-btn" onclick="runStepsShortcut()">Sync from Apple Health</button>
+        <div class="steps-row">
+            <label class="steps-goal">Daily goal <select class="week-select" onchange="setStepGoal(this.value)">${goalOptions}</select></label>
+            <form class="steps-manual" onsubmit="saveManualSteps(event)">
+                <input class="form-input" id="manualSteps" type="number" inputmode="numeric" min="0" max="200000" placeholder="Type today's steps">
+                <button class="btn" type="submit">Save</button>
+            </form>
+        </div>
+    `;
+
+    const everSynced = Object.values(stepData).some(r => r.source === 'shortcut');
+    renderStepsSetup(!everSynced);
+}
+
+function drawStepsChart(goal) {
+    if (stepsChart) {
+        stepsChart.destroy();
+        stepsChart = null;
+    }
+    if (typeof Chart === 'undefined') return;
+    const days = Array.from({ length: 14 }, (_, i) => addDays(todayStr(), i - 13));
+    const values = days.map(stepsOn);
+    stepsChart = new Chart(document.getElementById('stepsChart'), {
+        type: 'bar',
+        data: {
+            labels: days.map(d => parseDate(d).toLocaleDateString(undefined, { weekday: 'narrow' })),
+            datasets: [
+                { label: 'Steps', data: values, backgroundColor: values.map(v => (v >= goal ? '#d9b25f' : 'rgba(217,178,95,0.35)')), borderRadius: 6, maxBarThickness: 22 },
+                { type: 'line', label: 'Goal', data: days.map(() => goal), borderColor: 'rgba(134,214,168,0.8)', borderDash: [5, 4], borderWidth: 1.5, pointRadius: 0 },
+            ],
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: { duration: 300 },
+            plugins: {
+                legend: { display: false },
+                tooltip: { callbacks: { title: items => prettyDate(days[items[0].dataIndex]), label: c => `${c.dataset.label}: ${c.parsed.y.toLocaleString()}` } },
+            },
+            scales: {
+                x: { ticks: CHART_TICKS, grid: { display: false } },
+                y: { ticks: { ...CHART_TICKS, callback: v => (v >= 1000 ? `${v / 1000}k` : v) }, grid: CHART_GRID, beginAtZero: true },
+            },
+        },
+    });
+}
+
+async function renderStepsSetup(open) {
+    const el = document.getElementById('stepsSetup');
+    if (!stepToken) {
+        try {
+            stepToken = await getOrCreateStepToken();
+        } catch (error) {
+            el.innerHTML = `<p class="settings-note">Step syncing isn't set up on the server yet (${escapeHtml(error.message || String(error))}).</p>`;
+            return;
+        }
+    }
+    el.innerHTML = `
+        <details class="mobility-card setup-card" ${open ? 'open' : ''}>
+            <summary><h3>Set up Apple Health sync</h3><span class="warmup-hint">One time · 5 min</span></summary>
+            <p class="warmup-note">On your iPhone, in the <strong>Shortcuts</strong> app:</p>
+            <ol class="setup-steps">
+                <li>Tap <strong>+</strong> to make a new shortcut and rename it exactly <strong>${STEPS_SHORTCUT_NAME}</strong>.</li>
+                <li>Add <strong>Find Health Samples</strong>. Set Type to <strong>Steps</strong> and add the filter <strong>Start Date is today</strong>. If you wear an Apple Watch, also add <strong>Source is</strong> your Watch so steps aren't counted twice.</li>
+                <li>Add <strong>Calculate Statistics</strong> and set it to <strong>Sum</strong> of Health Samples.</li>
+                <li>Add <strong>Format Date</strong>: Current Date, format <strong>Custom</strong>, then type <code>yyyy-MM-dd</code>.</li>
+                <li>Add <strong>Get Contents of URL</strong> with this address:
+                    <span class="copy-row"><code>${escapeHtml(STEPS_INGEST_URL)}</code><button class="swap-btn" onclick="copyText('${escapeHtml(STEPS_INGEST_URL)}')">Copy</button></span>
+                    Tap <strong>Show More</strong>: Method <strong>POST</strong>, Request Body <strong>JSON</strong>, and add three fields:
+                    <ul>
+                        <li><code>token</code> (Text): your private key
+                            <span class="copy-row"><code>${escapeHtml(stepToken)}</code><button class="swap-btn" onclick="copyText('${escapeHtml(stepToken)}')">Copy</button></span></li>
+                        <li><code>steps</code> (Number): the <strong>Statistics</strong> variable</li>
+                        <li><code>date</code> (Text): the <strong>Formatted Date</strong> variable</li>
+                    </ul>
+                </li>
+                <li>Tap <strong>Done</strong>, then run it once and allow access to Health when asked.</li>
+                <li>For automatic updates: <strong>Automation</strong> tab → <strong>+</strong> → <strong>Time of Day</strong> → pick a time, Daily, <strong>Run Immediately</strong> → choose ${STEPS_SHORTCUT_NAME}. Add a few (e.g. 9:00, 12:00, 15:00, 18:00, 21:00). iPhones can't repeat a shortcut every hour on their own.</li>
+            </ol>
+            <p class="warmup-note">Keep your key private: anyone with it can send step counts to your account. The <strong>Sync from Apple Health</strong> button above runs the same shortcut on demand.</p>
+        </details>
+    `;
+}
+
+// Each user gets a random key that only the Shortcut uses; it can only write step counts
+async function getOrCreateStepToken() {
+    const { data, error } = await sb.from('step_tokens').select('token').eq('user_id', currentUser.id).maybeSingle();
+    if (error) throw error;
+    if (data) return data.token;
+    const bytes = crypto.getRandomValues(new Uint8Array(18));
+    const token = Array.from(bytes, b => b.toString(16).padStart(2, '0')).join('');
+    const { error: insertError } = await sb.from('step_tokens').insert({ user_id: currentUser.id, token });
+    if (insertError) throw insertError;
+    return token;
+}
+
+function runStepsShortcut() {
+    haptic();
+    window.location.href = `shortcuts://run-shortcut?name=${encodeURIComponent(STEPS_SHORTCUT_NAME)}`;
+}
+
+async function saveManualSteps(event) {
+    event.preventDefault();
+    const steps = parseInt(document.getElementById('manualSteps').value);
+    if (!(steps >= 0)) return;
+    const { error } = await sb.from('step_counts').upsert({
+        user_id: currentUser.id, date: todayStr(), steps, source: 'manual', updated_at: new Date().toISOString(),
+    }, { onConflict: 'user_id,date' });
+    if (error) {
+        showToast('Could not save: ' + error.message);
+        return;
+    }
+    haptic();
+    showToast('Steps saved');
+    renderSteps();
+}
+
+function setStepGoal(value) {
+    userProfile = { ...userProfile, stepGoal: Number(value) };
+    scheduleSave();
+    drawSteps();
+}
+
+async function copyText(text) {
+    try {
+        await navigator.clipboard.writeText(text);
+        haptic();
+        showToast('Copied');
+    } catch (error) {
+        prompt('Copy this:', text);
+    }
+}
+
+// "Live": refresh every minute while the Steps tab is on screen
+setInterval(() => {
+    const page = document.getElementById('page-steps');
+    if (currentUser && document.visibilityState === 'visible' && page && page.classList.contains('active')) renderSteps();
+}, 60000);
+
+// ════════════════════════════════════════════
+//  PROGRAM BUILDER (your own programs)
+// ════════════════════════════════════════════
+
+// Saved in workout_data._customPrograms[id] = { name, days: [names], exercises: [{ id, day, name,
+// sets, repMin, repMax, rest, unit, thresholds?, standardGender?, bar?, swapKey?, note? }] }.
+// registerCustomPrograms() turns them into normal PROGRAMS entries, so tracking, workout mode,
+// progression, charts, swaps and plates all work the same as for the built-in programs.
+
+const UNIT_CHOICES = [
+    ['kg', 'Machine or barbell'],
+    ['kg/DB', 'Dumbbells (per hand)'],
+    ['kg/side', 'Per side / per arm'],
+    ['reps/+kg', 'Bodyweight (reps)'],
+    ['kg+', 'Added weight on bodyweight'],
+];
+const REP_CHOICES = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 18, 20, 25, 30];
+const REST_CHOICES = [0.5, 1, 1.5, 2, 2.5, 3, 4];
+const ARROW_ICON = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+const CHEVRON_UP = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg>';
+const CHEVRON_DOWN = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>';
+
+function randomId(length = 6) {
+    return Array.from(crypto.getRandomValues(new Uint8Array(length)), b => (b % 36).toString(36)).join('');
+}
+
+function registerCustomPrograms(defs = allData._customPrograms) {
+    Object.keys(PROGRAMS).forEach(id => { if (PROGRAMS[id].custom) delete PROGRAMS[id]; });
+    Object.entries(defs || {}).forEach(([id, def]) => { PROGRAMS[id] = buildCustomProgram(def); });
+}
+
+function buildCustomProgram(def) {
+    const days = def.days.length;
+    return {
+        name: def.name,
+        subtitle: `Your program · ${days} day${days === 1 ? '' : 's'}`,
+        gender: (userProfile && userProfile.gender) || 'male',
+        heroTitle: escapeHtml(def.name.toUpperCase()),
+        heroSubtitle: 'Built by you',
+        days: def.days,
+        custom: true,
+        exercises: def.exercises.map(e => ({
+            id: e.id,
+            day: e.day,
+            name: e.name,
+            meta: `${e.sets}×${e.repMin}${e.repMax > e.repMin ? '-' + e.repMax : ''}${e.per ? '/' + e.per : ''}, ${e.rest}min`,
+            unit: e.unit,
+            thresholds: e.thresholds || null,
+            standardGender: e.standardGender,
+            bar: !!e.bar,
+            swapKey: e.swapKey,
+            note: e.note || '',
+            per: e.per,
+            repLabel: e.repLabel,
+        })),
+    };
+}
+
+// Every exercise the app knows: built-in program exercises (with strength standards, preferring
+// the user's gender) plus the swap alternatives (no standards)
+function exerciseLibrary() {
+    const gender = (userProfile && userProfile.gender) || 'male';
+    const byName = new Map();
+    Object.values(PROGRAMS)
+        .filter(prog => !prog.custom)
+        .sort((a, b) => (a.gender === gender ? 0 : 1) - (b.gender === gender ? 0 : 1))
+        .forEach(prog => prog.exercises.forEach(ex => {
+            if (byName.has(ex.name)) return;
+            const p = getPrescription(ex);
+            byName.set(ex.name, {
+                name: ex.name, unit: ex.unit, thresholds: ex.thresholds, standardGender: prog.gender,
+                bar: !!ex.bar, swapKey: ex.id, note: ex.alternates ? '' : (ex.note || ''), per: ex.per, repLabel: ex.repLabel,
+                sets: p.sets, repMin: p.repMin || 8, repMax: p.repMax || 12, rest: Math.max(0.5, Math.round(p.restSec / 30) / 2),
+            });
+        }));
+    Object.values(SWAPS).flat().forEach(([name, unit, bar, assist]) => {
+        if (!byName.has(name) && !assist) byName.set(name, { name, unit, bar: !!bar, sets: 3, repMin: 8, repMax: 12, rest: 2 });
+    });
+    return [...byName.values()].sort((a, b) => a.name.localeCompare(b.name));
+}
+
+// ── Program menu: your programs + "build your own" ──
+function renderCustomProgramCards() {
+    const defs = allData._customPrograms || {};
+    const cards = Object.entries(defs).map(([id, def]) => `
+        <button class="program-card custom-card" onclick="selectProgram('${id}')">
+            <div class="program-top"><span class="program-index">Yours</span><span class="program-tag">${def.days.length} day${def.days.length === 1 ? '' : 's'} · ${def.exercises.length} exercises</span></div>
+            <div class="program-title">${escapeHtml(def.name)}</div>
+            <div class="program-desc">${def.days.map(escapeHtml).join(' · ')}</div>
+            <div class="program-cta">Open program ${ARROW_ICON}<span class="program-edit" onclick="event.stopPropagation(); openBuilder('${id}')">Edit</span></div>
+        </button>`).join('');
+    document.getElementById('customProgramGrid').innerHTML = cards + `
+        <button class="program-card build-card" onclick="openBuilder()">
+            <div class="build-plus">+</div>
+            <div class="program-title">Build your own</div>
+            <div class="program-desc">Pick days and exercises from the library or add your own. Tracking, rest timer, progression hints and charts all work the same.</div>
+        </button>`;
+}
+
+// ── Builder screen ──
+let builder = null;   // { id, isNew, name, days: [{ name, exercises: [...] }] }
+let pickerDay = 0;
+let pickerResults = [];
+
+function openBuilder(id) {
+    haptic();
+    const def = id && allData._customPrograms && allData._customPrograms[id];
+    builder = def
+        ? { id, isNew: false, name: def.name, days: def.days.map((name, d) => ({ name, exercises: def.exercises.filter(e => e.day === d).map(e => ({ ...e })) })) }
+        : { id: `custom-${randomId()}`, isNew: true, name: '', days: [{ name: 'Day A', exercises: [] }] };
+    renderBuilder();
+    showScreen('builder');
+}
+
+function renderBuilder() {
+    const b = builder;
+    const scroll = window.scrollY;
+    document.getElementById('builderTitle').textContent = b.isNew ? 'New program' : 'Edit program';
+    document.getElementById('builderBody').innerHTML = `
+        <label class="form-label" for="builderName">Program name</label>
+        <input class="form-input" id="builderName" maxlength="40" value="${escapeHtml(b.name)}" placeholder="e.g. Summer Shred" oninput="builder.name = this.value">
+        ${b.days.map((day, d) => `
+            <div class="bd-day">
+                <div class="bd-day-head">
+                    <input class="form-input bd-day-name" maxlength="24" value="${escapeHtml(day.name)}" aria-label="Day name" oninput="builder.days[${d}].name = this.value">
+                    ${b.days.length > 1 ? `<button class="swap-btn" onclick="removeBuilderDay(${d})">Remove day</button>` : ''}
+                </div>
+                ${day.exercises.length
+                    ? day.exercises.map((ex, i) => builderExerciseHtml(d, i, ex)).join('')
+                    : '<p class="bd-empty">No exercises yet.</p>'}
+                <button class="wo-add" onclick="openExercisePicker(${d})">+ Add exercise</button>
+            </div>`).join('')}
+        ${b.days.length < 7 ? '<button class="btn bd-add-day" onclick="addBuilderDay()">+ Add day</button>' : ''}
+        ${!b.isNew ? '<button class="btn btn-danger bd-delete" onclick="deleteCustomProgram()">Delete program</button>' : ''}
+    `;
+    window.scrollTo(0, scroll);
+}
+
+function builderExerciseHtml(d, i, ex) {
+    const count = builder.days[d].exercises.length;
+    const options = (values, current, label = v => v) =>
+        values.map(v => `<option value="${v}"${String(v) === String(current) ? ' selected' : ''}>${label(v)}</option>`).join('');
+    const field = name => `onchange="setBuilderField(${d}, ${i}, '${name}', this.value)"`;
+    return `
+        <div class="bd-ex">
+            <div class="bd-ex-head">
+                <div>
+                    <div class="bd-ex-name">${escapeHtml(ex.name)}</div>
+                    <div class="bd-ex-sub">${ex.thresholds ? 'Strength tiers included' : 'No strength tiers'}</div>
+                </div>
+                <div class="bd-ex-tools">
+                    <button class="icon-btn" ${i === 0 ? 'disabled' : ''} onclick="moveBuilderExercise(${d}, ${i}, -1)" aria-label="Move up">${CHEVRON_UP}</button>
+                    <button class="icon-btn" ${i === count - 1 ? 'disabled' : ''} onclick="moveBuilderExercise(${d}, ${i}, 1)" aria-label="Move down">${CHEVRON_DOWN}</button>
+                    <button class="icon-btn" onclick="removeBuilderExercise(${d}, ${i})" aria-label="Remove">${CLOSE_ICON}</button>
+                </div>
+            </div>
+            <div class="bd-fields">
+                <label>Sets<select ${field('sets')}>${options([1, 2, 3, 4, 5, 6], ex.sets)}</select></label>
+                <label>Reps<span class="bd-range"><select ${field('repMin')}>${options(REP_CHOICES, ex.repMin)}</select>–<select ${field('repMax')}>${options(REP_CHOICES, ex.repMax)}</select></span></label>
+                <label>Rest<select ${field('rest')}>${options(REST_CHOICES, ex.rest, v => `${v} min`)}</select></label>
+                <label>Weight<select ${field('unit')}>${UNIT_CHOICES.map(([v, l]) => `<option value="${v}"${v === ex.unit ? ' selected' : ''}>${l}</option>`).join('')}</select></label>
+            </div>
+        </div>
+    `;
+}
+
+function setBuilderField(d, i, name, value) {
+    const ex = builder.days[d].exercises[i];
+    ex[name] = name === 'unit' ? value : Number(value);
+    if (name === 'repMin' && ex.repMax < ex.repMin) ex.repMax = ex.repMin;
+    if (name === 'repMax' && ex.repMin > ex.repMax) ex.repMin = ex.repMax;
+    // Strength standards only make sense in the unit they were written for
+    if (name === 'unit') ex.thresholds = null;
+    renderBuilder();
+}
+
+function moveBuilderExercise(d, i, delta) {
+    haptic();
+    const list = builder.days[d].exercises;
+    [list[i], list[i + delta]] = [list[i + delta], list[i]];
+    renderBuilder();
+}
+
+function removeBuilderExercise(d, i) {
+    haptic();
+    builder.days[d].exercises.splice(i, 1);
+    renderBuilder();
+}
+
+function addBuilderDay() {
+    haptic();
+    builder.days.push({ name: `Day ${String.fromCharCode(65 + builder.days.length)}`, exercises: [] });
+    renderBuilder();
+}
+
+function removeBuilderDay(d) {
+    if (builder.days[d].exercises.length && !confirm(`Remove ${builder.days[d].name || 'this day'} and its exercises?`)) return;
+    builder.days.splice(d, 1);
+    renderBuilder();
+}
+
+function cancelBuilder() {
+    if (!confirm('Leave without saving?')) return;
+    builder = null;
+    renderCustomProgramCards();
+    showScreen('selector');
+}
+
+function saveBuilder() {
+    const b = builder;
+    const name = b.name.trim();
+    if (!name) {
+        showToast('Give your program a name');
+        document.getElementById('builderName').focus();
+        return;
+    }
+    if (b.days.some(day => !day.exercises.length)) {
+        showToast('Every day needs at least one exercise');
+        return;
+    }
+    metaFor('_customPrograms')[b.id] = {
+        name,
+        days: b.days.map((day, i) => day.name.trim() || `Day ${i + 1}`),
+        exercises: b.days.flatMap((day, d) => day.exercises.map(e => ({ ...e, day: d }))),
+    };
+    registerCustomPrograms();
+    builder = null;
+    haptic();
+    scheduleSave();
+    if (b.isNew || currentProgram !== b.id) {
+        selectProgram(b.id);
+    } else {
+        openProgram();
+    }
+    showToast(b.isNew ? 'Program created' : 'Program saved');
+}
+
+function deleteCustomProgram() {
+    const b = builder;
+    if (!confirm(`Delete "${b.name}" and all the numbers logged in it? This can't be undone.`)) return;
+    delete metaFor('_customPrograms')[b.id];
+    delete allData[b.id];
+    registerCustomPrograms();
+    if (currentProgram === b.id) currentProgram = null;
+    builder = null;
+    scheduleSave();
+    renderCustomProgramCards();
+    showScreen('selector');
+    showToast('Program deleted');
+}
+
+// ── Exercise picker ──
+function openExercisePicker(d) {
+    haptic();
+    pickerDay = d;
+    document.getElementById('pickerSearch').value = '';
+    document.getElementById('pickerCustom').value = '';
+    renderPickerList();
+    document.getElementById('pickerModal').classList.add('active');
+}
+
+function closePicker() {
+    document.getElementById('pickerModal').classList.remove('active');
+}
+
+function renderPickerList() {
+    const query = document.getElementById('pickerSearch').value.trim().toLowerCase();
+    pickerResults = exerciseLibrary().filter(e => !query || e.name.toLowerCase().includes(query)).slice(0, 60);
+    document.getElementById('pickerList').innerHTML = pickerResults.length
+        ? pickerResults.map((e, i) => `
+            <button class="swap-option" onclick="addLibraryExercise(${i})">
+                <span>${escapeHtml(e.name)}</span><small>${escapeHtml(unitLabel(e.unit))}${e.thresholds ? ' · tiers' : ''}</small>
+            </button>`).join('')
+        : '<p class="bd-empty">Nothing found. Type it below to add your own.</p>';
+}
+
+function addToBuilderDay(entry) {
+    const list = builder.days[pickerDay].exercises;
+    const taken = new Set(builder.days.flatMap(day => day.exercises.map(e => e.id)));
+    let id;
+    do { id = `${slugify(entry.name)}-${randomId(4)}`; } while (taken.has(id));
+    list.push({
+        id, name: entry.name, unit: entry.unit || 'kg', sets: entry.sets || 3, repMin: entry.repMin || 8, repMax: entry.repMax || 12,
+        rest: entry.rest || 2, thresholds: entry.thresholds || null, standardGender: entry.standardGender,
+        bar: !!entry.bar, swapKey: entry.swapKey, note: entry.note || '', per: entry.per, repLabel: entry.repLabel,
+    });
+    haptic();
+    renderBuilder();
+    showToast(`Added ${entry.name}`);
+}
+
+function addLibraryExercise(i) {
+    addToBuilderDay(pickerResults[i]);
+}
+
+function addCustomExercise(event) {
+    event.preventDefault();
+    const name = document.getElementById('pickerCustom').value.trim();
+    if (!name) return;
+    addToBuilderDay({ name });
+    document.getElementById('pickerCustom').value = '';
 }
 
 // ════════════════════════════════════════════
@@ -3193,7 +4038,7 @@ function openSwap(slot) {
     const original = getExercise(slot);
     const current = workoutExercise(slot);
     document.getElementById('swapIntro').textContent = `Today only. ${original.name}'s own history and tier stay untouched.`;
-    const options = (SWAPS[slot] || []).map(([name, unit], i) => `
+    const options = (SWAPS[original.swapKey || slot] || []).map(([name, unit], i) => `
         <button class="swap-option${current.name === name ? ' active' : ''}" onclick="chooseSwap(${i})">
             <span>${escapeHtml(name)}</span><small>${escapeHtml(unitLabel(unit))}</small>
         </button>`).join('');
@@ -3211,7 +4056,7 @@ function closeSwap() {
 }
 
 function chooseSwap(i) {
-    const [name, unit, bar, assist] = SWAPS[swapSlot][i];
+    const [name, unit, bar, assist] = SWAPS[getExercise(swapSlot).swapKey || swapSlot][i];
     applySwap({ name, unit, bar: !!bar, assist: !!assist });
 }
 
@@ -3549,16 +4394,18 @@ function renderProgress() {
     }
 
     // Program summary
-    const tiers = prog.exercises.map(ex => getTier(ex, getBestKg(ex.id)));
-    const tested = tiers.filter(t => t > 0).length;
+    const ranked = prog.exercises.filter(ex => ex.thresholds);
+    const tiers = ranked.map(ex => getTier(ex, getBestKg(ex.id)));
+    const tested = prog.exercises.filter(ex => getLoggedWeeks(ex.id).length).length;
     const weeksLogged = new Set(prog.exercises.flatMap(ex => getLoggedWeeks(ex.id).map(l => l.week))).size;
-    const topTier = Math.max(...tiers);
-    const avgTier = tested ? tiers.filter(t => t > 0).reduce((a, b) => a + b, 0) / tested : 0;
+    const topTier = tiers.length ? Math.max(...tiers) : 0;
+    const rankedTiers = tiers.filter(t => t > 0);
+    const avgTier = rankedTiers.length ? rankedTiers.reduce((a, b) => a + b, 0) / rankedTiers.length : 0;
     document.getElementById('progressSummary').innerHTML =
         statTile('Exercises tested', `${tested}/${prog.exercises.length}`) +
         statTile('Weeks logged', `${weeksLogged}/${WEEKS}`) +
         statTile('Top tier', tierName(topTier), topTier ? `Level ${ROMAN[topTier]} of VI` : '', TIERS[topTier].color) +
-        statTile('Average tier', tested ? tierName(Math.round(avgTier)) : '—', tested ? `${avgTier.toFixed(1)} / 6` : '');
+        statTile('Average tier', rankedTiers.length ? tierName(Math.round(avgTier)) : '—', rankedTiers.length ? `${avgTier.toFixed(1)} / 6` : (ranked.length ? '' : 'no tiers in this program'));
 
     // Exercise picker, grouped by day
     document.getElementById('progressExercise').innerHTML = prog.days.map((dayName, dayIdx) => `
@@ -3581,7 +4428,7 @@ function renderProgress() {
                     <div class="row-day">${escapeHtml(prog.days[ex.day])}</div>
                 </div>
                 <div class="row-best">${best ? `${trackerToDisplay(ex, best)} ${escapeHtml(trackerUnit(ex))}` : '—'}</div>
-                <span class="tier-badge" style="color:${color};border-color:${color};">${tierBadgeHtml(tier)}</span>
+                ${ex.thresholds ? `<span class="tier-badge" style="color:${color};border-color:${color};">${tierBadgeHtml(tier)}</span>` : '<span></span>'}
             </button>
         `;
     }).join('');
@@ -3620,10 +4467,12 @@ function renderProgressDetail() {
             statTile('Start', show(start.value), `${unit} · W${start.week + 1}`) +
             statTile('Best', show(best), `${unit} · W${bestEntry.week + 1}`) +
             statTile('Change', `${change >= 0 ? '+' : ''}${formatNum(Math.round(changeShown * 10) / 10)}`, `${pct >= 0 ? '+' : ''}${pct.toFixed(0)}%`, change > 0 ? 'var(--green)' : '') +
-            statTile('Tier', tierName(tier), TIERS[tier].pop === '—' ? '' : `top ${TIERS[tier].pop} of lifters`, TIERS[tier].color);
+            (thresholds
+                ? statTile('Tier', tierName(tier), TIERS[tier].pop === '—' ? '' : `top ${TIERS[tier].pop} of lifters`, TIERS[tier].color)
+                : statTile('Sessions', String(logged.length), 'weeks logged'));
     } else {
         statsHtml = statTile('Start', '—') + statTile('Best', '—') + statTile('Change', '—') +
-            statTile('Tier', tierName(0), '', TIERS[0].color);
+            (thresholds ? statTile('Tier', tierName(0), '', TIERS[0].color) : statTile('Sessions', '0'));
     }
     document.getElementById('progressStats').innerHTML = statsHtml;
     document.querySelector('.progress-panel').classList.toggle('empty', !logged.length);
@@ -3680,7 +4529,7 @@ function renderProgressChart(ex, logged, thresholds, tier) {
         });
     }
     // Dashed line at the next tier to aim for
-    if (tier < 6) {
+    if (thresholds && tier < 6) {
         datasets.push({
             label: `${tierName(tier + 1)} (${trackerToDisplay(ex, thresholds[tier])} ${trackerUnit(ex)})`,
             data: Array(WEEKS).fill(show(thresholds[tier])),
@@ -3727,6 +4576,12 @@ function renderProgressChart(ex, logged, thresholds, tier) {
 
 // Horizontal bar from 0 to past the God/Goddess threshold, with a marker at each tier
 function renderTierTrack(ex, best, thresholds, tier) {
+    const track = document.getElementById('tierTrack');
+    track.style.display = thresholds ? '' : 'none';
+    if (!thresholds) {
+        document.getElementById('tierTrackLabel').textContent = 'Custom exercises have no strength standard, so there are no tiers to chase. Your chart and best are above.';
+        return;
+    }
     const max = Math.max(thresholds[5] * 1.08, best || 0);
     const pct = v => Math.min(100, (v / max) * 100);
     const show = v => trackerToDisplay(ex, v);
@@ -4038,6 +4893,8 @@ function showTab(tab) {
         renderToday();
     } else if (tab === 'tracker') {
         buildTracker();
+    } else if (tab === 'steps') {
+        renderSteps();
     } else if (tab === 'progress') {
         renderProgress();
     } else if (tab === 'settings') {
@@ -4058,6 +4915,7 @@ document.getElementById('importModal').addEventListener('click', function(e) {
 // Don't lose the last few keystrokes when the phone locks or the tab closes
 document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'hidden') flushSave();
+    else if (currentUser && document.getElementById('page-steps').classList.contains('active')) renderSteps();
     else if (activeWorkout && rest.interval) tickRest();
 });
 

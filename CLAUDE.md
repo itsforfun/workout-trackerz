@@ -260,3 +260,8 @@ reference/debug-screenshots/  ← Supabase key page, "Script error" console, Git
 - iPhone: only works when the app is installed to the Home Screen (iOS 16.4+), then Settings → Rest Alerts → Turn on.
 
 - `APP_VERSION` (top of the script in index.html) is shown at the bottom of Settings; bump it on every deploy so the owner can confirm their phone updated.
+
+## 13. Cardio zones, Steps tab, program builder (added 2026-10-27, v1.7)
+- **Cardio days** (programs with `weekPlan`): Today shows `CARDIO_ZONES` (5 zones, % of max HR via Tanaka 208 − 0.7×age, RPE + talk test, cited evidence in `CARDIO_EVIDENCE`) instead of the lifting days; "Lift today instead" sets `todayMode = 'lift'`. Cardio sessions: `_sessions[program]` entries `{type:'cardio', zone, name, minutes, avgHr?}`; weekly WHO moderate-equivalent shown (Z4–5 count double, Z1 not counted).
+- **Steps tab**: web apps can't read Apple Health, so an iPhone Shortcut "Workout Steps" posts `{token, steps, date}` to Edge Function `steps-ingest` (JWT verification OFF). Tables `step_counts` (user/date) and `step_tokens` (per-user private key) from `supabase-steps-setup.sql`. The tab refreshes every 60 s while open; manual entry upserts `step_counts` directly. `userProfile.stepGoal` (default 10,000). The steps habit auto-ticks at 8,000.
+- **Program builder**: `workout_data._customPrograms[id]` (ids `custom-…`) → `registerCustomPrograms()` adds them to `PROGRAMS` (called in `loadUserData` and `applyCache`). Exercises from the library keep `thresholds`, `standardGender` and `swapKey`; custom ones have `thresholds: null`, so tiers are optional everywhere (`getThresholds` returns null).
