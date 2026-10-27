@@ -1028,6 +1028,15 @@
             .record.show .rr-fg { animation:none; stroke-dashoffset:0; }
             .record.show .record-center, .record.show .record-name, .record.show .record-prev { animation:none; }
         }
+
+        /* ── Top bars (v1.13) ──
+           iOS Safari renders a sticky bar with backdrop-filter blurred and stuck, so pinned bars are solid.
+           On phones the app's top bar scrolls away with the page; a strip behind the status bar keeps the clock readable. */
+        .topbar, .workout-top { -webkit-backdrop-filter:none; backdrop-filter:none; background:var(--bg); }
+        @media (max-width:900px) {
+            .topbar { position:relative; background:transparent; border-bottom:none; }
+        }
+        body::before { content:''; position:fixed; top:0; left:0; right:0; height:env(safe-area-inset-top); background:var(--bg); z-index:300; pointer-events:none; }
     </style>
 </head>
 <body>
@@ -1552,7 +1561,7 @@
 
 // Shown at the bottom of Settings so you can tell which version a phone is running.
 // Bump it with every deploy.
-const APP_VERSION = '1.12 · 28 Oct';
+const APP_VERSION = '1.13 · 28 Oct';
 
 const SUPABASE_URL = 'https://hcwbcxhblfjpdlkwykez.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_mEe_5g2UITyp5O-F9YRhRg_wTQWuOtf';
