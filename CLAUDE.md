@@ -284,3 +284,9 @@ reference/debug-screenshots/  ← Supabase key page, "Script error" console, Git
 - **Placeholders:** `.sk` shimmer blocks (loading screen, steps ring until `stepsLoaded`). **Empty states:** `.empty-state` (Progress with nothing logged, steps chart with no steps).
 - **Pull to refresh** on Steps (`initPullToRefresh`, reloads synced steps). **Tab icons:** shapes with class `f` fill and `cut` knock out when the tab is active; Progress uses an `area` path.
 
+## 17. Levels + tiered badges (v1.20, 2026-10-28) — replaces the flat achievements of v1.18
+- `playerStats()` measures everything from the saved log (all programs); steps history now loads 730 days.
+- **XP / levels** (`playerXp`): workout 100, set 5, record 50, strength tier 40 per lift, cardio 1/min (Zone 4–5 ×2, Zone 1 ×0.5), steps 1 per 100 (max 150/day), habit 10 (+30 perfect day), weigh-in 10, badge tiers 50/100/200/400/800, specials 250. Level n needs `100·(n−1)^1.7` XP, max 100; ranks Rookie → Apprentice (5) → Contender (10) → Athlete (15) → Competitor (20) → Veteran (30) → Elite (40) → Master (50) → Grandmaster (65) → Legend (80) → Mythic (100). XP is recomputed from data (retroactive), not a ledger.
+- **Badges:** 17 tracks (`badgeTracks()`), five tiers each (Bronze, Silver, Gold, Platinum, Diamond), plus 7 specials (`specialBadges()`). Stored in `workout_data._badges` ({track: tier}), `_specials` ({id: date}) and `_level`, so they never go down. The first run stores the existing ones quietly (and drops the old `_achievements`); later tier-ups, specials and level-ups each get a moment (badge moments are tinted in the tier colour).
+- UI: level strip at the top of the Today hero (gold bar), level card at the top of Progress (ring, rank, XP breakdown), badge grid + specials at the bottom of Progress.
+
