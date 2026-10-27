@@ -26,7 +26,8 @@ Build a **real multi-user workout-tracking app** that:
 
 - **Single file app:** `index.html` (HTML + CSS + vanilla JS, ~1,300 lines). Was `workout-tracker-app.html` in the chat; renamed for GitHub Pages.
 - **Backend:** Supabase (auth + Postgres). Table created with `supabase-setup.sql`.
-- **NOT deployed yet.** It was only ever tested inside the Claude mobile app's file preview, which showed `Uncaught Error: Script error.` (see `reference/debug-screenshots/`). It has never been confirmed working in a real browser.
+- **Deployed (2026-10-27):** https://itsforfun.github.io/workout-trackerz/ — GitHub Pages from `main` / root of the public repo `itsforfun/workout-trackerz`. Pushing to `main` redeploys in ~1 min. GitHub CLI is at `~/.local/bin/gh` (signed in as itsforfun). `reference/` is git-ignored (private screenshots / paid program photos).
+- Previously (before Oct 27 2026): It was only ever tested inside the Claude mobile app's file preview, which showed `Uncaught Error: Script error.` (see `reference/debug-screenshots/`). It has never been confirmed working in a real browser.
 - **Libraries via CDN:** `@supabase/supabase-js@2` (jsDelivr), Chart.js 4.4.1 (cdnjs), Google Fonts (Bebas Neue, DM Mono, Playfair Display).
 
 ### Supabase config
