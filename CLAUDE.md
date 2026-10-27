@@ -31,9 +31,10 @@ Build a **real multi-user workout-tracking app** that:
 - **Libraries via CDN:** `@supabase/supabase-js@2` (jsDelivr), Chart.js 4.4.1 (cdnjs), Google Fonts (Bebas Neue, DM Mono, Playfair Display).
 
 ### Supabase config
-- Project URL: `https://nwmquradhhvfnanfmyjd.supabase.co`
-- Anon/public key (safe in frontend, already in `index.html`):
-  `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im53bXF1cmFkaGh2Zm5hbmZteWpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcyMTM1OTgsImV4cCI6MjA5Mjc4OTU5OH0.yHhpKv11DieDjGhGf8ckJIVvneh51OzWGhdX3yciUT0`
+- Project URL: `https://hcwbcxhblfjpdlkwykez.supabase.co` (project "kevinwandji55@gmail.com's Project", org "kind", free plan)
+- Publishable key (safe in frontend, already in `index.html`): `sb_publishable_mEe_5g2UITyp5O-F9YRhRg_wTQWuOtf`
+- The original project (`nwmquradhhvfnanfmyjd`) no longer exists (DNS NXDOMAIN on 2026-10-27); the app was switched to the project above.
+- Auth → URL Configuration: Site URL and Redirect URL set to `https://itsforfun.github.io/workout-trackerz/`. Email confirmation is ON.
 - ⚠️ The owner pasted the **secret key** (`sb_secret_…`) into the old chat. **It must be rotated** in Supabase → Project Settings → API keys. Never put a secret key in this repo.
 - Unknown: whether the owner re-ran the SQL after the `profile` column was added. If the table is missing the column run:
   `ALTER TABLE user_data ADD COLUMN IF NOT EXISTS profile JSONB DEFAULT '{}'::jsonb;`
