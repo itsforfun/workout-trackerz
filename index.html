@@ -9,8 +9,7 @@
     <meta name="theme-color" content="#13100e">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
-    <!-- "black", not "black-translucent": iOS blurs page content drawn under a translucent status bar -->
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Workout">
     <link rel="apple-touch-icon" href="icons/icon-180.png">
     <link rel="icon" type="image/png" href="icons/icon-192.png">
@@ -1038,9 +1037,15 @@
             .topbar { position:relative; background:transparent; border-bottom:none; }
         }
         /* iOS blurs whatever scrolls under the status bar; fade content out just before it gets there */
+        /* iOS (home-screen app) also blurs a band ~44px below the status bar, so nothing rests there:
+           the top bars start below it, and scrolled content fades out across it. */
+        :root { --ios-blur-band:0px; }
+        @media (display-mode: standalone) { :root { --ios-blur-band:44px; } }
         body::before { content:''; position:fixed; top:0; left:0; right:0; height:env(safe-area-inset-top); z-index:300; pointer-events:none; background:var(--bg); }
         @media (max-width:900px) {
-            body.scrolled:has(#mainApp.active)::before { height:calc(env(safe-area-inset-top) + 28px);
+            .topbar { padding-top:calc(env(safe-area-inset-top) + var(--ios-blur-band) + 6px); }
+            .workout-top { padding-top:calc(env(safe-area-inset-top) + var(--ios-blur-band) + 6px); }
+            body.scrolled:has(#mainApp.active)::before { height:calc(env(safe-area-inset-top) + var(--ios-blur-band) + 12px);
                 background:linear-gradient(to bottom, var(--bg) 0, var(--bg) env(safe-area-inset-top), rgba(19,16,14,0) 100%); }
         }
     </style>
@@ -1567,7 +1572,7 @@
 
 // Shown at the bottom of Settings so you can tell which version a phone is running.
 // Bump it with every deploy.
-const APP_VERSION = '1.15 · 28 Oct';
+const APP_VERSION = '1.16 · 28 Oct';
 
 const SUPABASE_URL = 'https://hcwbcxhblfjpdlkwykez.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_mEe_5g2UITyp5O-F9YRhRg_wTQWuOtf';
