@@ -1268,20 +1268,31 @@
         .science-disclaimer { font-size:0.74rem; line-height:1.55; color:var(--text-muted); margin-top:var(--s4); padding-top:var(--s3); border-top:1px solid var(--hairline); }
         .science-link { display:block; margin-top:var(--s3); padding:0; border:none; background:none; font:inherit; font-size:0.78rem; color:var(--text-dim); cursor:pointer; text-align:left; }
 
-        /* ── Opening quote (v1.25) ── */
+        /* ── Opening quote (v1.27): weekday + gold hairline, words rise one by one, page-turn exit ── */
         .splash { position:fixed; inset:0; z-index:700; display:flex; align-items:center; justify-content:center; padding:48px 36px;
             background:radial-gradient(700px 420px at 50% 38%, rgba(217,178,95,0.08), transparent 70%), var(--bg);
-            transition:opacity 0.8s cubic-bezier(.2,.8,.2,1), visibility 0s linear 0.8s; cursor:pointer; }
+            transition:opacity 0.9s cubic-bezier(.2,.8,.2,1) 0.1s, visibility 0s linear 1s; cursor:pointer; }
         .splash.hide { opacity:0; visibility:hidden; pointer-events:none; }
-        .splash-inner { max-width:420px; text-align:center; transition:transform 0.8s cubic-bezier(.2,.8,.2,1); }
-        .splash.hide .splash-inner { transform:scale(1.03); }
+        .splash-inner { max-width:420px; text-align:center; transition:transform 0.9s cubic-bezier(.4,0,.2,1), filter 0.9s cubic-bezier(.4,0,.2,1), opacity 0.7s ease; }
+        .splash.hide .splash-inner { transform:translateY(-18px); filter:blur(8px); opacity:0; }
         .splash-kicker { font-family:var(--font-ui); font-size:0.62rem; font-weight:600; letter-spacing:0.26em; text-transform:uppercase; color:var(--accent); opacity:0; animation:splashIn 0.9s 0.1s cubic-bezier(.2,.8,.2,1) forwards; }
-        .splash-quote { font-family:'Instrument Serif', Georgia, serif; font-weight:400; font-size:clamp(1.9rem, 8.4vw, 2.6rem); line-height:1.12; letter-spacing:-0.005em; color:var(--text); margin-top:20px; opacity:0; animation:splashIn 1.1s 0.3s cubic-bezier(.2,.8,.2,1) forwards; }
+        .splash-line { display:block; width:36px; height:1px; margin:14px auto 0; background:linear-gradient(90deg, transparent, #d9b25f 20%, #f2d891 50%, #d9b25f 80%, transparent);
+            transform:scaleX(0); animation:lineDraw 1.1s 0.3s cubic-bezier(.65,0,.35,1) forwards; }
+        .splash-quote { font-family:'Instrument Serif', Georgia, serif; font-weight:400; font-size:clamp(1.9rem, 8.4vw, 2.6rem); line-height:1.12; letter-spacing:-0.005em; color:var(--text); margin-top:18px; }
+        .splash-quote .w { display:inline-block; opacity:0; animation:wordIn 0.95s calc(0.5s + var(--i) * 75ms) cubic-bezier(.2,.8,.2,1) forwards; }
         @keyframes splashIn { from { opacity:0; transform:translateY(10px); filter:blur(6px); } to { opacity:1; transform:none; filter:none; } }
+        @keyframes wordIn { from { opacity:0; transform:translateY(0.35em); filter:blur(8px); } to { opacity:1; transform:none; filter:none; } }
+        @keyframes lineDraw { to { transform:scaleX(1); } }
         @keyframes splashFade { to { opacity:1; } }
+        /* The app rises gently into place as the quote leaves (pages only, so fixed bars don't move) */
+        .app-enter #mainApp .page.active, .app-enter .auth-screen.active > *, .app-enter .program-selector.active > *, .app-enter .profile-screen.active > * {
+            animation:appRise 1s cubic-bezier(.2,.8,.2,1) both; }
+        @keyframes appRise { from { opacity:0; transform:translateY(22px); } to { opacity:1; transform:none; } }
         @media (prefers-reduced-motion: reduce) {
-            .splash-kicker, .splash-quote { animation:splashFade 0.4s ease forwards; }
-            .splash.hide .splash-inner { transform:none; }
+            .splash-kicker, .splash-quote .w { animation:splashFade 0.4s ease forwards; }
+            .splash-line { animation:none; transform:none; }
+            .splash.hide .splash-inner { transform:none; filter:none; }
+            .app-enter #mainApp .page.active, .app-enter .auth-screen.active > *, .app-enter .program-selector.active > *, .app-enter .profile-screen.active > * { animation:none; }
         }
     </style>
 </head>
@@ -1291,6 +1302,7 @@
 <div class="splash" id="splash" onclick="hideSplash()">
     <div class="splash-inner">
         <div class="splash-kicker" id="splashKicker"></div>
+        <i class="splash-line" aria-hidden="true"></i>
         <p class="splash-quote" id="splashQuote"></p>
     </div>
 </div>
@@ -1349,6 +1361,14 @@ const QUOTES = [
     'Trust the process. Log the reps.',
     'Every day you choose yourself counts.',
 ];
+// Writes the weekday and the quote, one span per word so each word can rise in turn
+function renderSplash(text) {
+    document.getElementById('splashKicker').textContent = new Date().toLocaleDateString(undefined, { weekday: 'long' });
+    const quote = document.getElementById('splashQuote');
+    quote.setAttribute('aria-label', text);
+    quote.innerHTML = text.split(' ').map((word, i) =>
+        `<span class="w" style="--i:${i}" aria-hidden="true">${word.replace(/&/g, '&amp;').replace(/</g, '&lt;')}</span>`).join(' ');
+}
 (function () {
     const splash = document.getElementById('splash');
     let off = false;
@@ -1370,8 +1390,7 @@ const QUOTES = [
     }
     const index = deck.shift();
     try { localStorage.setItem('wt_quote_deck', JSON.stringify(deck)); } catch (e) { /* private mode */ }
-    document.getElementById('splashKicker').textContent = new Date().toLocaleDateString(undefined, { weekday: 'long' });
-    document.getElementById('splashQuote').textContent = QUOTES[index];
+    renderSplash(QUOTES[index]);
     window.__splashAt = Date.now();
 })();
 </script>
@@ -1989,7 +2008,7 @@ const QUOTES = [
 
 // Shown at the bottom of Settings so you can tell which version a phone is running.
 // Bump it with every deploy.
-const APP_VERSION = '1.26 · 28 Oct';
+const APP_VERSION = '1.27 · 28 Oct';
 
 const SUPABASE_URL = 'https://hcwbcxhblfjpdlkwykez.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_mEe_5g2UITyp5O-F9YRhRg_wTQWuOtf';
@@ -7343,7 +7362,7 @@ initSheets();
 initPullToRefresh();
 
 // ── Opening quote (see the #splash block at the top of <body>) ──
-const SPLASH_MIN_MS = 2400;
+const SPLASH_MIN_MS = 2800;
 const SPLASH_MAX_MS = 5000;
 let hiddenAt = null;
 
@@ -7351,6 +7370,8 @@ function hideSplash() {
     const splash = document.getElementById('splash');
     if (!splash || splash.classList.contains('hide')) return;
     splash.classList.add('hide');
+    document.body.classList.add('app-enter');
+    setTimeout(() => document.body.classList.remove('app-enter'), 1100);
 }
 
 // Leave once the app has finished loading, but keep the quote up long enough to read
@@ -7376,11 +7397,10 @@ function showSplashAgain() {
     if (!deck.length) deck = QUOTES.map((_, i) => i).sort(() => Math.random() - 0.5);
     const index = deck.shift();
     try { localStorage.setItem('wt_quote_deck', JSON.stringify(deck)); } catch (e) { /* private mode */ }
-    document.getElementById('splashKicker').textContent = new Date().toLocaleDateString(undefined, { weekday: 'long' });
-    document.getElementById('splashQuote').textContent = QUOTES[index];
+    renderSplash(QUOTES[index]);
     // Replay the entrance animation
     splash.classList.remove('hide');
-    splash.querySelectorAll('.splash-kicker, .splash-quote').forEach(el => {
+    splash.querySelectorAll('.splash-kicker, .splash-line').forEach(el => {
         el.style.animation = 'none';
         void el.offsetWidth;
         el.style.animation = '';
