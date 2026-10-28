@@ -18,6 +18,20 @@ import { createClient } from 'npm:@supabase/supabase-js@2';
 // Both are provided automatically to every Supabase Edge Function
 const sb = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
 
+// Steps reminder text, in the language the app saved in profile.lang
+const STEPS_TEXT: Record<string, { title: (left: number) => string; body: (steps: number) => string; start: string }> = {
+    en: {
+        title: left => `${left.toLocaleString('en-US')} steps to your goal`,
+        body: steps => `You're at ${steps.toLocaleString('en-US')}. An evening walk closes the ring.`,
+        start: 'An evening walk gets you going.',
+    },
+    fr: {
+        title: left => `Encore ${left.toLocaleString('fr-FR')} pas avant votre objectif`,
+        body: steps => `Vous en êtes à ${steps.toLocaleString('fr-FR')}. Une marche ce soir ferme l’anneau.`,
+        start: 'Une marche ce soir pour vous lancer.',
+    },
+};
+
 const json = (body: unknown, status = 200) =>
     new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } });
 
@@ -57,7 +71,8 @@ Deno.serve(async (req) => {
             const goal = Number(user?.profile?.stepGoal) || 10000;
             const steps = count?.steps ?? 0;
             if (steps >= goal) continue;
-            due.push({ user_id: r.user_id, title: `${(goal - steps).toLocaleString('en-US')} steps to your goal`, body: steps ? `You're at ${steps.toLocaleString('en-US')}. An evening walk closes the ring.` : 'An evening walk gets you going.', ttl: 3600, tag: 'reminder-steps' });
+            const text = STEPS_TEXT[user?.profile?.lang] ?? STEPS_TEXT.en;
+            due.push({ user_id: r.user_id, title: text.title(goal - steps), body: steps ? text.body(steps) : text.start, ttl: 3600, tag: 'reminder-steps' });
         } else {
             due.push({ user_id: r.user_id, title: r.title, body: r.body, ttl: 3600, tag: `reminder-${r.kind}` });
         }

@@ -924,6 +924,8 @@
         .power-unlock strong { color:var(--text); }
         .power-unlock.unlocked { border:none; box-shadow:var(--lift), inset 0 0 0 1px rgba(217,178,95,0.28); }
         .power-unlock.unlocked strong { color:var(--accent); }
+        .power-unlock.unlocked { display:block; }
+        .power-unlock.unlocked strong { display:block; margin-bottom:2px; }
         .form-input:focus { border-color:rgba(240,232,216,0.45); box-shadow:0 0 0 4px rgba(240,232,216,0.06); }
         .week-input-wrap input:focus { border-bottom-color:var(--text-dim); }
         .bottom-nav .tab-btn.active { color:var(--text); }
@@ -1484,8 +1486,151 @@
     </symbol>
 </svg>
 
+<script src="lang/fr.js"></script>
+<script>
+// ════════════════════════════════════════════
+//  LANGUAGE: the app is written in English; other languages live in lang/<code>.js.
+//  Every piece of text the app puts on screen is looked up as it appears (a MutationObserver),
+//  so screens need no special markup. Keys are the English text; "{}" in a key matches a value, "{#}" a number.
+//  Mark an element data-no-i18n to leave it untouched (user content, the opening quote).
+// ════════════════════════════════════════════
+const LANGUAGES = { en: 'English', fr: 'Français' };
+function storedLang() {
+    try { return localStorage.getItem('odyr_lang') || ''; } catch (e) { return ''; }
+}
+function phoneLang() {
+    const prefs = navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || 'en'];
+    for (const tag of prefs) {
+        const code = String(tag).slice(0, 2).toLowerCase();
+        if (LANGUAGES[code]) return code;
+    }
+    return 'en';
+}
+const LANG = LANGUAGES[storedLang()] ? storedLang() : phoneLang();
+const PACK = LANG !== 'en' && window.I18N_PACKS ? window.I18N_PACKS[LANG] : null;
+// Dates and numbers follow the chosen language; English keeps the phone's own regional format
+const LOCALE = PACK ? PACK.locale : ((navigator.language || 'en').startsWith('en') ? undefined : 'en-GB');
+document.documentElement.lang = PACK ? LANG : 'en';
+
+const I18N = { exact: new Map(), patterns: [], cache: new Map(), outputs: new Set(), missing: new Set() };  // missing: text seen with no translation (for checking coverage)
+if (PACK) {
+    const escapeRe = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    // Collapse layout whitespace but keep non-breaking spaces (French puts them before : ? ! and %)
+    const norm = s => s.replace(/[^\S\u00a0\u202f]+/g, ' ').trim();
+    Object.entries(PACK.strings).forEach(([en, out]) => {
+        const key = norm(en);
+        I18N.outputs.add(norm(out));
+        const slots = key.match(/\{#?\}/g);
+        if (!slots) { I18N.exact.set(key, out); return; }
+        // {} matches any value, {#} only a number
+        const parts = key.split(/\{#?\}/);
+        I18N.patterns.push({
+            re: new RegExp('^' + parts.map((part, i) => escapeRe(part) + (i < slots.length ? (slots[i] === '{#}' ? '([\\d.,]+)' : '(.*?)') : '')).join('') + '$'),
+            literal: parts.join('').length,
+            out,
+        });
+    });
+    // When two patterns fit, the one with more fixed text is the more specific
+    I18N.patterns.sort((a, b) => b.literal - a.literal);
+}
+
+// Translate one piece of text (whitespace around it is kept). Unknown text comes back unchanged.
+function tr(text, depth = 0) {
+    if (!PACK || text == null) return text;
+    text = String(text);
+    if (!/[A-Za-z]/.test(text)) return text;
+    const lead = text.match(/^[^\S\u00a0\u202f]*/)[0];
+    const trail = text.slice(lead.length).match(/[^\S\u00a0\u202f]*$/)[0];
+    const key = text.slice(lead.length, text.length - trail.length).replace(/[^\S\u00a0\u202f]+/g, ' ');
+    // Text this function already produced is left alone, so translating twice never changes it again
+    if (I18N.outputs.has(key)) return text;
+    let out = I18N.cache.get(key);
+    if (out === undefined) {
+        out = I18N.exact.get(key);
+        if (out === undefined && depth < 3) {
+            for (const p of I18N.patterns) {
+                const m = key.match(p.re);
+                if (!m) continue;
+                const values = m.slice(1).map(v => tr(v, depth + 1));
+                let i = 0;
+                out = p.out.replace(/\{(\d*)\}/g, (_, n) => values[n === '' ? i++ : Number(n)] ?? '');
+                break;
+            }
+        }
+        if (out === undefined) {
+            out = key;
+            if (depth === 0 && !I18N.outputs.has(key)) I18N.missing.add(key);
+        }
+        if (depth === 0) {
+            I18N.cache.set(key, out);
+            I18N.outputs.add(out);
+        }
+    }
+    return out === key ? text : lead + out + trail;
+}
+
+const I18N_ATTRS = ['placeholder', 'title', 'aria-label'];
+const I18N_SKIP = new Set(['SCRIPT', 'STYLE', 'TEXTAREA', 'CODE']);
+function i18nText(node) {
+    const next = tr(node.nodeValue);
+    if (next !== node.nodeValue) node.nodeValue = next;
+}
+function i18nAttrs(el) {
+    for (const name of I18N_ATTRS) {
+        const value = el.getAttribute(name);
+        if (value) {
+            const next = tr(value);
+            if (next !== value) el.setAttribute(name, next);
+        }
+    }
+}
+function i18nTree(root) {
+    if (root.nodeType === 3) return i18nText(root);
+    if (root.nodeType !== 1 || I18N_SKIP.has(root.tagName) || root.hasAttribute('data-no-i18n')) return;
+    i18nAttrs(root);
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT, {
+        acceptNode(n) {
+            if (n.nodeType === 3) return NodeFilter.FILTER_ACCEPT;
+            if (I18N_SKIP.has(n.tagName) || n.hasAttribute('data-no-i18n')) return NodeFilter.FILTER_REJECT;
+            i18nAttrs(n);
+            return NodeFilter.FILTER_SKIP;
+        },
+    });
+    while (walker.nextNode()) i18nText(walker.currentNode);
+}
+function i18nSkipped(node) {
+    const el = node.nodeType === 1 ? node : node.parentElement;
+    return !el || !!el.closest('[data-no-i18n], script, style, textarea, code');
+}
+if (PACK) {
+    new MutationObserver(records => {
+        for (const r of records) {
+            if (i18nSkipped(r.target)) continue;
+            if (r.type === 'childList') r.addedNodes.forEach(i18nTree);
+            else if (r.type === 'characterData') i18nText(r.target);
+            else i18nAttrs(r.target);
+        }
+    }).observe(document.documentElement, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: I18N_ATTRS });
+    // Native dialogs are not part of the page, so their text is translated on the way in
+    const nativeConfirm = window.confirm.bind(window);
+    const nativeAlert = window.alert.bind(window);
+    const nativePrompt = window.prompt.bind(window);
+    window.confirm = message => nativeConfirm(tr(message));
+    window.alert = message => nativeAlert(tr(message));
+    window.prompt = (message, value) => nativePrompt(tr(message), value);
+    // Charts draw on a canvas, so their labels are translated before each draw
+    if (window.Chart) Chart.register({
+        id: 'i18n',
+        beforeUpdate(chart) {
+            const data = chart.data;
+            if (data.labels) data.labels = data.labels.map(l => (typeof l === 'string' ? tr(l) : l));
+            data.datasets.forEach(ds => { if (typeof ds.label === 'string') ds.label = tr(ds.label); });
+        },
+    });
+}
+</script>
 <!-- OPENING QUOTE: shown on every launch, then dissolves into the app (tap to skip) -->
-<div class="splash" id="splash" onclick="hideSplash()">
+<div class="splash" id="splash" onclick="hideSplash()" data-no-i18n>
     <div class="splash-inner">
         <div class="splash-kicker" id="splashKicker"></div>
         <i class="splash-line" aria-hidden="true"></i>
@@ -1580,10 +1725,15 @@ const QUOTES = [
     ['Far and away the best prize that life offers is the chance to work hard at work worth doing.', 'Theodore Roosevelt'],
     ['If you can fill the unforgiving minute with sixty seconds’ worth of distance run, yours is the Earth.', 'Rudyard Kipling'],
 ];
+// The quote in the app's language (lang/<code>.js keeps the same order as QUOTES)
+function quoteAt(index) {
+    return (PACK && PACK.quotes && PACK.quotes[index]) || QUOTES[index];
+}
+
 // Writes the weekday and the quote, one span per word so each word can rise in turn
 function renderSplash(entry) {
     const [text, by] = Array.isArray(entry) ? entry : [entry, ''];
-    document.getElementById('splashKicker').textContent = new Date().toLocaleDateString(undefined, { weekday: 'long' });
+    document.getElementById('splashKicker').textContent = new Date().toLocaleDateString(LOCALE, { weekday: 'long' });
     const quote = document.getElementById('splashQuote');
     quote.setAttribute('aria-label', by ? `${text} (${by})` : text);
     const words = text.split(' ');
@@ -1618,7 +1768,7 @@ function renderSplash(entry) {
     }
     const index = deck.shift();
     try { localStorage.setItem('wt_quote_deck', JSON.stringify(deck)); } catch (e) { /* private mode */ }
-    renderSplash(QUOTES[index]);
+    renderSplash(quoteAt(index));
     window.__splashAt = Date.now();
 })();
 </script>
@@ -2044,6 +2194,14 @@ function renderSplash(entry) {
                     <span><strong>Opening quote</strong><small>A new motivational line each time you open the app</small></span>
                     <input type="checkbox" class="toggle" id="splashToggle" onchange="setSplash(this.checked)">
                 </label>
+                <div class="form-group line-fields" style="margin-top:20px;">
+                    <label class="form-label" for="settingsLang">Language</label>
+                    <select class="form-input" id="settingsLang" onchange="setLanguage(this.value)">
+                        <option value="">Automatic (phone language)</option>
+                        <option value="en" data-no-i18n>English</option>
+                        <option value="fr" data-no-i18n>Français</option>
+                    </select>
+                </div>
 
                 <!-- Help -->
                 <div class="day-label" style="margin-bottom:24px; margin-top:48px;">
@@ -2260,7 +2418,7 @@ function renderSplash(entry) {
 
 // Shown at the bottom of Settings so you can tell which version a phone is running.
 // Bump it with every deploy.
-const APP_VERSION = '1.34 · 28 Oct';
+const APP_VERSION = '1.35 · 28 Oct';
 
 const SUPABASE_URL = 'https://hcwbcxhblfjpdlkwykez.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_mEe_5g2UITyp5O-F9YRhRg_wTQWuOtf';
@@ -2357,7 +2515,7 @@ function mondayOf(s) {
     return todayStr(d);
 }
 function prettyDate(s) {
-    return parseDate(s).toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
+    return parseDate(s).toLocaleDateString(LOCALE, { day: 'numeric', month: 'short' });
 }
 
 // ── Units: everything is stored in kg; lb is display only ──
@@ -2658,7 +2816,7 @@ async function handleProfileSave(event) {
     const weight = parseFloat(document.getElementById('profileWeight').value);
     const height = parseInt(document.getElementById('profileHeight').value);
 
-    userProfile = { gender, age, weight, height, units: 'kg' };
+    userProfile = { gender, age, weight, height, units: 'kg', lang: LANG };
     logBodyweight(weight);
     // First login: no program chosen yet, so this saves selected_program: null
 
@@ -2741,7 +2899,7 @@ function loadSettingsForm() {
     document.getElementById('settingsWeight').value = userProfile.weight ? kgToDisplay(userProfile.weight) : '';
     document.getElementById('settingsHeight').value = userProfile.height || '';
     document.getElementById('userEmail').textContent = currentUser.email;
-    document.getElementById('userCreated').textContent = currentUser.created_at ? new Date(currentUser.created_at).toLocaleDateString() : '—';
+    document.getElementById('userCreated').textContent = currentUser.created_at ? new Date(currentUser.created_at).toLocaleDateString(LOCALE) : '—';
 
     updateStandardsDisplay();
     renderBodyweight();
@@ -2904,6 +3062,10 @@ async function loadUserData() {
     registerCustomPrograms(row.workout_data && row.workout_data._customPrograms);
     currentProgram = PROGRAMS[row.selected_program] ? row.selected_program : null;
     userProfile = row.profile && Object.keys(row.profile).length ? row.profile : null;
+    if (userProfile && userProfile.lang !== LANG) {
+        userProfile = { ...userProfile, lang: LANG };
+        scheduleSave();
+    }
 
     const { data, migrated } = migrateWorkoutData(row.workout_data || {}, currentProgram);
     allData = data;
@@ -3640,7 +3802,7 @@ function renderTodayHero() {
         <button class="hero-level" onclick="openLevel()">
             <span class="hlv-num">Level <strong data-count="${xp.level}" data-key="hero-level"></strong></span>
             <span class="hlv-rank">${escapeHtml(xp.rank)}</span>
-            <span class="hlv-xp">${xp.level < MAX_LEVEL ? `${xp.toNext.toLocaleString()} XP to go` : 'Max level'}</span>
+            <span class="hlv-xp">${xp.level < MAX_LEVEL ? `${xp.toNext.toLocaleString(LOCALE)} XP to go` : 'Max level'}</span>
             <span class="hlv-bar"><span style="width:${xp.span ? Math.round((xp.into / xp.span) * 100) : 100}%"></span></span>
         </button>
         <div class="hero-rings">
@@ -4178,7 +4340,7 @@ function drawSteps() {
     const circumference = 2 * Math.PI * 88;
     const entry = stepData[today];
     const synced = entry
-        ? `Updated ${new Date(entry.updated_at).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}${entry.source === 'manual' ? ' · typed in' : ''}`
+        ? `Updated ${new Date(entry.updated_at).toLocaleTimeString(LOCALE, { hour: 'numeric', minute: '2-digit' })}${entry.source === 'manual' ? ' · typed in' : ''}`
         : 'No steps synced today';
 
     document.getElementById('stepsRing').innerHTML = `
@@ -4196,7 +4358,7 @@ function drawSteps() {
                 ${stepsLoaded
                     ? `<div class="ring-steps" data-count="${steps}" data-key="steps-today" data-format="locale"></div>`
                     : '<div class="sk sk-num"></div>'}
-                <div class="ring-goal">of ${goal.toLocaleString()} steps</div>
+                <div class="ring-goal">of ${goal.toLocaleString(LOCALE)} steps</div>
                 <div class="ring-sync">${stepsLoaded ? escapeHtml(synced) : 'Loading…'}</div>
             </div>
         </div>
@@ -4215,13 +4377,13 @@ function drawSteps() {
     const monthAgo = addDays(today, -29);
     const best = Math.max(0, ...Object.entries(stepData).filter(([d]) => d >= monthAgo).map(([, r]) => r.steps));
     document.getElementById('stepsStats').innerHTML =
-        statTile('Average', average.toLocaleString(), 'per day, 7 days') +
+        statTile('Average', average.toLocaleString(LOCALE), 'per day, 7 days') +
         statTile('Streak', String(streak), streak === 1 ? 'day at goal' : 'days at goal') +
-        statTile('Best', best.toLocaleString(), 'last 30 days');
+        statTile('Best', best.toLocaleString(LOCALE), 'last 30 days');
 
     drawStepsChart(goal);
 
-    const goalOptions = STEP_GOALS.map(g => `<option value="${g}"${g === goal ? ' selected' : ''}>${g.toLocaleString()} steps</option>`).join('');
+    const goalOptions = STEP_GOALS.map(g => `<option value="${g}"${g === goal ? ' selected' : ''}>${g.toLocaleString(LOCALE)} steps</option>`).join('');
     document.getElementById('stepsActions').innerHTML = `
         <button class="start-btn" onclick="runStepsShortcut()">Sync from Apple Health</button>
         <div class="steps-row">
@@ -4251,7 +4413,7 @@ function drawStepsChart(goal) {
     stepsChart = new Chart(document.getElementById('stepsChart'), {
         type: 'bar',
         data: {
-            labels: days.map(d => parseDate(d).toLocaleDateString(undefined, { weekday: 'narrow' })),
+            labels: days.map(d => parseDate(d).toLocaleDateString(LOCALE, { weekday: 'narrow' })),
             datasets: [
                 { label: 'Steps', data: values, backgroundColor: values.map(v => (v >= goal ? '#d9b25f' : 'rgba(240,232,216,0.16)')), borderRadius: 6, maxBarThickness: 22 },
                 { type: 'line', label: 'Goal', data: days.map(() => goal), borderColor: 'rgba(134,214,168,0.8)', borderDash: [5, 4], borderWidth: 1.5, pointRadius: 0 },
@@ -4263,7 +4425,7 @@ function drawStepsChart(goal) {
             animation: { duration: 300 },
             plugins: {
                 legend: { display: false },
-                tooltip: { callbacks: { title: items => prettyDate(days[items[0].dataIndex]), label: c => `${c.dataset.label}: ${c.parsed.y.toLocaleString()}` } },
+                tooltip: { callbacks: { title: items => prettyDate(days[items[0].dataIndex]), label: c => `${c.dataset.label}: ${c.parsed.y.toLocaleString(LOCALE)}` } },
             },
             scales: {
                 x: { ticks: CHART_TICKS, grid: { display: false } },
@@ -5412,6 +5574,8 @@ function renderPushStatus() {
     renderNudgeSettings();
     const splashToggle = document.getElementById('splashToggle');
     if (splashToggle) splashToggle.checked = !splashOff();
+    const langSelect = document.getElementById('settingsLang');
+    if (langSelect) langSelect.value = LANGUAGES[storedLang()] ? storedLang() : '';
 }
 
 async function enableRestAlerts() {
@@ -5462,8 +5626,8 @@ async function testRestAlert() {
     const { error } = await sb.from('rest_timers').upsert({
         user_id: currentUser.id,
         fire_at: new Date(Date.now() + 10000).toISOString(),
-        title: 'Test alert',
-        body: 'Rest alerts work. Lock your phone during rest and this is what you\'ll see.',
+        title: tr('Test alert'),
+        body: tr('Rest alerts work. Lock your phone during rest and this is what you\'ll see.'),
     }, { onConflict: 'user_id' });
     showToast(error ? 'Could not schedule the test: ' + error.message : 'Test alert in about 10 seconds. Lock your phone to try it.');
 }
@@ -5474,8 +5638,8 @@ function scheduleRestPush() {
     sb.from('rest_timers').upsert({
         user_id: currentUser.id,
         fire_at: new Date(rest.endAt).toISOString(),
-        title: 'Rest over',
-        body: rest.label || 'Time for your next set',
+        title: tr('Rest over'),
+        body: tr(rest.label || 'Time for your next set'),
     }, { onConflict: 'user_id' }).then(({ error }) => { if (error) console.warn('Rest alert not scheduled:', error.message); });
 }
 
@@ -5572,7 +5736,7 @@ function consistencyScore(end = todayStr()) {
     if (Object.keys(stepData).length) {
         const days = Array.from({ length: 7 }, (_, i) => addDays(today, -i));
         const avg = days.reduce((sum, d) => sum + stepsOn(d), 0) / 7;
-        parts.push({ key: 'steps', label: 'Steps', weight: 20, ratio: Math.min(1, avg / stepGoal()), text: `${Math.round(avg).toLocaleString()} a day` });
+        parts.push({ key: 'steps', label: 'Steps', weight: 20, ratio: Math.min(1, avg / stepGoal()), text: `${Math.round(avg).toLocaleString(LOCALE)} a day` });
     }
 
     if (prog.habits && prog.habits.length) {
@@ -5849,7 +6013,7 @@ function badgeGoalText(track, value) {
     if (track.label) return track.label(value);
     // "1 workout", "1 personal record", "1 weigh-in": singular for one
     const unit = value === 1 ? track.unit.replace(/(\w+?)s\b/, '$1') : track.unit;
-    return `${value.toLocaleString()} ${unit}`;
+    return `${value.toLocaleString(LOCALE)} ${unit}`;
 }
 
 // Progress toward the next tier: { tier, next, ratio, remaining }
@@ -6051,7 +6215,7 @@ function showLevelMoment(xp) {
         valueHtml: escapeHtml(String(xp.level)),
         unit: xp.rank,
         name: `Level ${xp.level}`,
-        sub: xp.level < MAX_LEVEL ? `${xp.toNext.toLocaleString()} XP to level ${xp.level + 1}` : 'Maximum level',
+        sub: xp.level < MAX_LEVEL ? `${xp.toNext.toLocaleString(LOCALE)} XP to level ${xp.level + 1}` : 'Maximum level',
     });
 }
 
@@ -6084,13 +6248,13 @@ function renderLevel() {
             <div class="level-info">
                 <div class="level-rank">${escapeHtml(xp.rank)}</div>
                 <div class="level-xp"><strong data-count="${xp.total}" data-key="xp-total" data-format="locale"></strong> XP</div>
-                <div class="level-next">${xp.level < MAX_LEVEL ? `${xp.toNext.toLocaleString()} XP to level ${xp.level + 1}` : 'Maximum level'}</div>
+                <div class="level-next">${xp.level < MAX_LEVEL ? `${xp.toNext.toLocaleString(LOCALE)} XP to level ${xp.level + 1}` : 'Maximum level'}</div>
                 ${nextRank ? `<div class="level-next">${escapeHtml(nextRank[1])} at level ${nextRank[0]}</div>` : ''}
             </div>
         </div>
         <details class="level-sources">
             <summary>Where your XP comes from</summary>
-            ${xp.sources.filter(([, v]) => v > 0).map(([name, v]) => `<div class="ls-row"><span>${name}</span><span>${v.toLocaleString()} XP</span></div>`).join('') || '<div class="ls-row"><span>Finish a workout to earn your first XP</span></div>'}
+            ${xp.sources.filter(([, v]) => v > 0).map(([name, v]) => `<div class="ls-row"><span>${name}</span><span>${v.toLocaleString(LOCALE)} XP</span></div>`).join('') || '<div class="ls-row"><span>Finish a workout to earn your first XP</span></div>'}
             <p>Workout 100 · set 5 · record 50 · strength tier 40 per lift · cardio 1 per minute (Zone 4–5 double) · steps 1 per 100 (150 a day max) · habit 10, perfect day +30 · weigh-in 10 · badge tiers 25 to 3,000 · signature badges 250 · secret badges 500.</p>
         </details>
     `;
@@ -6158,7 +6322,7 @@ function renderTrophyRoom() {
                 <span class="badge-pips">${pips}</span>
                 ${p.next !== null
                     ? `<span class="badge-bar"><span style="width:${Math.round(p.ratio * 100)}%"></span></span>
-                       <span class="badge-next">${track.label ? `Next: ${escapeHtml(track.label(p.next))}` : `${Math.min(p.value, p.next).toLocaleString()} / ${p.next.toLocaleString()}`}</span>`
+                       <span class="badge-next">${track.label ? `Next: ${escapeHtml(track.label(p.next))}` : `${Math.min(p.value, p.next).toLocaleString(LOCALE)} / ${p.next.toLocaleString(LOCALE)}`}</span>`
                     : '<span class="badge-next max">Every tier earned</span>'}
             </button>`;
     };
@@ -6238,7 +6402,7 @@ function renderBadgeDetail() {
         <div class="bd-tier" style="${current ? `color:${current.color}` : ''}">${current ? `${current.name} · ${ROMAN8[p.tier]}` : 'Not earned yet'}</div>
         ${nextTier ? `
             <div class="bd-progress">
-                <div class="bd-progress-top"><span>Next: ${nextTier.name}</span><strong>${track.label ? escapeHtml(track.label(p.next)) : `${Math.min(p.value, p.next).toLocaleString()} / ${p.next.toLocaleString()}`}</strong></div>
+                <div class="bd-progress-top"><span>Next: ${nextTier.name}</span><strong>${track.label ? escapeHtml(track.label(p.next)) : `${Math.min(p.value, p.next).toLocaleString(LOCALE)} / ${p.next.toLocaleString(LOCALE)}`}</strong></div>
                 <div class="badge-bar wide"><span style="width:${Math.round(p.ratio * 100)}%; background:${nextTier.color}"></span></div>
                 <p>${escapeHtml(track.tip)}</p>
             </div>` : '<p class="bd-done">Every tier earned. Few people ever get here.</p>'}
@@ -6318,7 +6482,7 @@ function nearestBadgeText(stats) {
     if (!near) return null;
     const { track, p } = near;
     const tier = BADGE_TIERS[p.tier];
-    const togo = p.remaining === 1 ? 'one more to go' : `${p.remaining.toLocaleString()} ${track.unit} to go`;
+    const togo = p.remaining === 1 ? 'one more to go' : `${p.remaining.toLocaleString(LOCALE)} ${track.unit} to go`;
     return { key: `near-${track.id}-${p.tier + 1}`, track, text: `${tier.name} ${track.name} is close: ${togo}.` };
 }
 
@@ -7631,7 +7795,7 @@ function recapHtml(monday) {
         .concat(specialBadges().filter(sp => (allData._specials || {})[sp.id] >= monday && (allData._specials || {})[sp.id] <= sunday).map(sp => sp.name));
     const weakest = parts.reduce((a, b) => (b.ratio < a.ratio ? b : a));
     const focus = weakest.ratio >= 0.9 ? 'Every part of your week was strong. Repeat it.' : RECAP_FOCUS[weakest.key];
-    const range = `${parseDate(monday).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} – ${parseDate(sunday).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}`;
+    const range = `${parseDate(monday).toLocaleDateString(LOCALE, { month: 'short', day: 'numeric' })} – ${parseDate(sunday).toLocaleDateString(LOCALE, { month: 'short', day: 'numeric' })}`;
     const tile = (label, value, sub) => `<div class="rc-tile"><span>${label}</span><strong>${value}</strong>${sub ? `<small>${sub}</small>` : ''}</div>`;
     return `
         <div class="recap-kicker">Your week · ${escapeHtml(range)}</div>
@@ -7641,7 +7805,7 @@ function recapHtml(monday) {
             ${tile('Cardio', cardio, 'minutes')}
             ${tile('Steps', compactNum(stepAvg), 'a day')}
             ${tile('Records', records.length)}
-            ${tile('XP', `+${weekXp(monday).toLocaleString()}`)}
+            ${tile('XP', `+${weekXp(monday).toLocaleString(LOCALE)}`)}
             ${tile('Badges', badges.length)}
         </div>
         ${records.length || badges.length ? `<div class="recap-list">
@@ -7738,7 +7902,7 @@ async function planNudges() {
     const today = todayStr();
     const rows = [];
     const add = (kind, at, title, body = '', day = null) => {
-        if (at > now) rows.push({ user_id: currentUser.id, kind, fire_at: at.toISOString(), title, body, day });
+        if (at > now) rows.push({ user_id: currentUser.id, kind, fire_at: at.toISOString(), title: tr(title), body: tr(body), day });
     };
 
     if (prefs.workout) {
@@ -7848,7 +8012,7 @@ const shownCounts = {};
 function formatCount(value, format) {
     const n = Math.round(value);
     if (format === 'compact') return compactNum(n);
-    if (format === 'locale') return n.toLocaleString();
+    if (format === 'locale') return n.toLocaleString(LOCALE);
     return String(n);
 }
 
@@ -7953,7 +8117,7 @@ function showSplashAgain() {
     if (!deck.length) deck = QUOTES.map((_, i) => i).sort(() => Math.random() - 0.5);
     const index = deck.shift();
     try { localStorage.setItem('wt_quote_deck', JSON.stringify(deck)); } catch (e) { /* private mode */ }
-    renderSplash(QUOTES[index]);
+    renderSplash(quoteAt(index));
     // Replay the entrance animation
     splash.classList.remove('hide');
     splash.querySelectorAll('.splash-kicker, .splash-line, .splash-by').forEach(el => {
@@ -7969,6 +8133,21 @@ document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'hidden') hiddenAt = Date.now();
     else if (hiddenAt && Date.now() - hiddenAt >= 15 * 60000 && !activeWorkout) showSplashAgain();
 });
+
+// Language: '' follows the phone. The page reloads so every screen is rebuilt in the new language.
+// profile.lang tells the server which language to write reminders in.
+async function setLanguage(code) {
+    haptic();
+    try {
+        if (code) localStorage.setItem('odyr_lang', code);
+        else localStorage.removeItem('odyr_lang');
+    } catch (e) { /* private mode */ }
+    if (userProfile && currentUser) {
+        userProfile = { ...userProfile, lang: code || phoneLang() };
+        await saveToCloud();
+    }
+    location.reload();
+}
 
 function splashOff() {
     try { return localStorage.getItem('wt_splash_off') === '1'; } catch (e) { return false; }
