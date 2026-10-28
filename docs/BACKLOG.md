@@ -18,7 +18,6 @@ Status: **Done** · **Check** (built, still needs a look on the iPhone or a smal
 | "Delete my data" | Deletes the data but not the login; a real account deletion needs a small server function |
 | Backup download | Exports one program's log; a full "Export all my data" is still missing |
 | Name "Odyr" | Formal trademark search before charging money |
-| Error reports (v1.38) | Run `supabase-errors-setup.sql` in Supabase so reports are stored |
 | Summary and share cards (v1.38) | Try them after a real workout on the iPhone |
 
 ## Next — not started
@@ -100,5 +99,5 @@ Status: **Done** · **Check** (built, still needs a look on the iPhone or a smal
 | 1.29 | 8-tier medals, trophy room, badge sheet, minting moment, signature and secret badges, "almost there" nudges |
 | 1.30–1.34 | Brand: Odyra, then Odyr; new icon; sign-in redesign; design carried across the app; thinker quotes |
 | 1.35–1.36 | French (whole app, reminders, quotes), Language setting, French review pass, decimal comma typing |
-| 1.38 | Post-workout summary, share cards (workout, weekly recap), code split into organised files, automated checks run by GitHub on every push, error reports |
+| 1.38 | Post-workout summary, share cards (workout, weekly recap), code split into organised files, automated checks run by GitHub on every push (first run green), error reports (table set up and tested) |
 | 1.37 | Trophy room and Progress level ring in the Odyr-mark style, gold-dot section labels everywhere, quotes capped at ~14 words |
