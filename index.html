@@ -1569,6 +1569,13 @@ function tr(text, depth = 0) {
     return out === key ? text : lead + out + trail;
 }
 
+// Number keypads in many regions (France included) type a decimal comma; the app stores numbers with a dot.
+// Runs in the capture phase, before each field's own oninput handler.
+document.addEventListener('input', e => {
+    const field = e.target;
+    if (field.inputMode === 'decimal' && field.value.includes(',')) field.value = field.value.replace(/,/g, '.');
+}, true);
+
 const I18N_ATTRS = ['placeholder', 'title', 'aria-label'];
 const I18N_SKIP = new Set(['SCRIPT', 'STYLE', 'TEXTAREA', 'CODE']);
 function i18nText(node) {
@@ -2418,7 +2425,7 @@ function renderSplash(entry) {
 
 // Shown at the bottom of Settings so you can tell which version a phone is running.
 // Bump it with every deploy.
-const APP_VERSION = '1.35 · 28 Oct';
+const APP_VERSION = '1.36 · 28 Oct';
 
 const SUPABASE_URL = 'https://hcwbcxhblfjpdlkwykez.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_mEe_5g2UITyp5O-F9YRhRg_wTQWuOtf';
@@ -3772,7 +3779,7 @@ function weeklyLiftTarget(prog) {
 }
 
 function compactNum(n) {
-    return n >= 1000 ? `${formatNum(Math.round(n / 100) / 10)}k` : String(n);
+    return n >= 1000 ? `${(Math.round(n / 100) / 10).toLocaleString(LOCALE)}k` : String(n);
 }
 
 function renderTodayHero() {
