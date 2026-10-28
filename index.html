@@ -1294,6 +1294,76 @@
             .splash.hide .splash-inner { transform:none; filter:none; }
             .app-enter #mainApp .page.active, .app-enter .auth-screen.active > *, .app-enter .program-selector.active > *, .app-enter .profile-screen.active > * { animation:none; }
         }
+
+        /* ── Trophy room + eight-tier medals (v1.29) ── */
+        .medal { display:block; overflow:visible; }
+        .medal.t7, .medal.t8 { filter:drop-shadow(0 0 10px rgba(163,188,255,0.25)); }
+        .medal.t8 { filter:drop-shadow(0 0 12px rgba(217,178,95,0.3)); }
+        .badge-card.gleam .medal, .medal.gleam { animation:gleam 6s ease-in-out infinite; }
+        @keyframes gleam { 0%, 86%, 100% { filter:drop-shadow(0 0 8px rgba(242,216,145,0.18)) brightness(1); } 92% { filter:drop-shadow(0 0 16px rgba(242,216,145,0.5)) brightness(1.25); } }
+        .badge-pips { gap:3px; }
+        .badge-pips i { width:5px; height:5px; }
+        .trophy-screen .workout-body { padding-bottom:calc(48px + env(safe-area-inset-bottom)); }
+        .trophy-hero { display:flex; align-items:center; gap:var(--s4); padding:var(--s5); border-radius:var(--r-card); background:var(--raised); box-shadow:var(--lift); }
+        .th-level { width:72px; height:72px; flex:none; border-radius:50%; display:flex; flex-direction:column; align-items:center; justify-content:center; box-shadow:inset 0 0 0 2px rgba(217,178,95,0.6); }
+        .th-level span { font-size:0.52rem; font-weight:600; letter-spacing:0.16em; text-transform:uppercase; color:var(--text-muted); }
+        .th-level strong { font-weight:200; font-size:1.9rem; line-height:1; }
+        .th-rank { font-family:var(--font-display); font-size:1.8rem; letter-spacing:0.04em; color:var(--accent); line-height:1; }
+        .th-sub { font-size:0.76rem; color:var(--text-muted); margin-top:6px; }
+        .showcase { display:grid; grid-template-columns:repeat(3,1fr); gap:var(--s2); margin-top:var(--s4); }
+        .sc-slot { display:flex; flex-direction:column; align-items:center; gap:8px; padding:var(--s4) var(--s2); border:none; border-radius:var(--r-inner); background:linear-gradient(180deg,rgba(217,178,95,0.07),rgba(217,178,95,0.01)); box-shadow:var(--lift), inset 0 1px 0 rgba(242,216,145,0.12); color:var(--text); font-family:var(--font-ui); cursor:pointer; }
+        .sc-slot span { font-size:0.72rem; color:var(--text-dim); text-align:center; line-height:1.25; }
+        .sc-slot.empty { cursor:default; background:rgba(255,255,255,0.015); box-shadow:inset 0 0 0 1px rgba(240,232,216,0.08); }
+        .sc-plus { width:66px; height:66px; display:grid; place-items:center; margin:17px 0; border-radius:50%; border:1px dashed rgba(240,232,216,0.2); color:var(--text-muted); font-size:1.4rem; }
+        .sc-hint { font-size:0.72rem; color:var(--text-muted); text-align:center; margin-top:var(--s2); }
+        .achievement.secret .achievement-icon { background:rgba(0,0,0,0.3); }
+        .secret-q { font-family:'Instrument Serif', Georgia, serif; font-size:1.6rem; color:var(--text-muted); }
+        .trophy-door { display:flex; align-items:center; gap:var(--s4); width:100%; margin-top:var(--s6); padding:var(--s4) var(--s5); border:none; border-radius:var(--r-card); background:var(--raised); box-shadow:var(--lift); color:var(--text); font-family:var(--font-ui); text-align:left; cursor:pointer; }
+        .td-medals { display:flex; }
+        .td-medals .medal + .medal { margin-left:-14px; }
+        .td-text { flex:1; display:flex; flex-direction:column; gap:3px; }
+        .td-text strong { font-family:var(--font-display); font-size:1.35rem; font-weight:400; letter-spacing:0.04em; }
+        .td-text span { font-size:0.74rem; color:var(--text-muted); }
+        .td-arrow { font-size:1.6rem; color:var(--text-muted); }
+
+        .badge-modal { text-align:center; }
+        .bd-stage { perspective:700px; display:flex; justify-content:center; padding:var(--s4) 0 var(--s2); touch-action:none; }
+        .bd-tilt { position:relative; transform-style:preserve-3d; transition:transform 0.5s var(--ease); }
+        .bd-shine { position:absolute; inset:0; border-radius:50%; pointer-events:none; mix-blend-mode:screen; transition:background 0.3s ease; }
+        .bd-title { font-family:var(--font-display); font-size:2rem; letter-spacing:0.04em; margin-top:var(--s2); }
+        .bd-tier { font-size:0.68rem; font-weight:600; letter-spacing:0.16em; text-transform:uppercase; color:var(--text-muted); margin-top:4px; }
+        .bd-progress { text-align:left; margin-top:var(--s5); padding:var(--s4); border-radius:var(--r-inner); background:rgba(255,255,255,0.03); }
+        .bd-progress-top { display:flex; justify-content:space-between; align-items:baseline; font-size:0.8rem; color:var(--text-dim); margin-bottom:var(--s2); }
+        .bd-progress-top strong { font-weight:500; color:var(--text); }
+        .badge-bar.wide { width:100%; height:4px; }
+        .bd-progress p { font-size:0.78rem; color:var(--text-muted); line-height:1.5; margin-top:var(--s3); }
+        .bd-done { font-size:0.84rem; color:var(--accent); margin-top:var(--s4); }
+        .bd-ladder { margin-top:var(--s5); text-align:left; }
+        .bd-step { display:flex; align-items:center; gap:var(--s3); padding:8px 0; border-top:1px solid var(--hairline); }
+        .bd-step-text { flex:1; display:flex; flex-direction:column; gap:2px; }
+        .bd-step-text strong { font-size:0.82rem; font-weight:500; color:var(--text-muted); }
+        .bd-step-text span { font-size:0.72rem; color:var(--text-muted); }
+        .bd-step.got .bd-step-text span { color:var(--text-dim); }
+        .bd-step-meta { font-size:0.7rem; color:var(--text-muted); white-space:nowrap; }
+        .bd-rarity { font-size:0.68rem; color:var(--text-muted); margin-top:var(--s3); text-align:left; }
+        .bd-pin { width:100%; margin-top:var(--s4); }
+
+        /* Minting: a blank coin is stamped into the new medal, then light sweeps across */
+        .mint { position:relative; display:grid; place-items:center; width:150px; height:150px; margin:0 auto -4px; }
+        .mint .medal { position:absolute; inset:0; }
+        .record.show .mint-blank { animation:mintBlank 0.9s 0.2s cubic-bezier(.4,0,.2,1) both; }
+        .record.show .mint-medal { animation:mintStamp 0.9s 0.75s cubic-bezier(.34,1.56,.64,1) both; }
+        .mint-shine { position:absolute; inset:-10px; pointer-events:none; mix-blend-mode:screen;
+            background:linear-gradient(115deg, transparent 38%, rgba(255,255,255,0.45) 50%, transparent 62%); background-size:260% 100%; background-position:120% 0;
+            -webkit-mask:radial-gradient(circle, #000 52%, transparent 54%); mask:radial-gradient(circle, #000 52%, transparent 54%); }
+        .record.show .mint-shine { animation:mintSweep 1.2s 1.5s ease-out both; }
+        @keyframes mintBlank { 0% { opacity:0; transform:scale(0.7); } 35% { opacity:1; transform:scale(1); } 75% { opacity:1; transform:scale(0.96); } 100% { opacity:0; transform:scale(1.15); } }
+        @keyframes mintStamp { from { opacity:0; transform:scale(1.35); } to { opacity:1; transform:scale(1); } }
+        @keyframes mintSweep { from { background-position:120% 0; } to { background-position:-20% 0; } }
+        @media (prefers-reduced-motion: reduce) {
+            .record.show .mint-blank { animation:none; opacity:0; }
+            .record.show .mint-medal, .record.show .mint-shine, .badge-card.gleam .medal, .medal.gleam { animation:none; }
+        }
     </style>
 </head>
 <body>
@@ -1569,6 +1639,16 @@ function renderSplash(text) {
             <div class="program-grid" id="customProgramGrid"></div>
         </div>
     </div>
+</div>
+
+<!-- TROPHY ROOM -->
+<div class="screen workout-screen trophy-screen" id="trophyScreen">
+    <div class="workout-top">
+        <button class="wo-close" onclick="closeTrophyRoom()" aria-label="Close trophy room"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 6l-6 6 6 6"/></svg></button>
+        <div class="workout-title"><div>Trophy room</div></div>
+        <span></span>
+    </div>
+    <div class="workout-body" id="trophyBody"></div>
 </div>
 
 <!-- PROGRAM BUILDER -->
@@ -1982,6 +2062,12 @@ function renderSplash(text) {
     </div>
 </div>
 
+<div class="modal-overlay" id="badgeModal">
+    <div class="modal badge-modal">
+        <div id="badgeBody"></div>
+    </div>
+</div>
+
 <div class="modal-overlay" id="recapModal">
     <div class="modal recap-modal">
         <div id="recapBody"></div>
@@ -2010,7 +2096,7 @@ function renderSplash(text) {
 
 // Shown at the bottom of Settings so you can tell which version a phone is running.
 // Bump it with every deploy.
-const APP_VERSION = '1.28 · 28 Oct';
+const APP_VERSION = '1.29 · 28 Oct';
 
 const SUPABASE_URL = 'https://hcwbcxhblfjpdlkwykez.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_mEe_5g2UITyp5O-F9YRhRg_wTQWuOtf';
@@ -2188,6 +2274,7 @@ const SCREENS = {
     app: 'mainApp',
     workout: 'workoutScreen',
     builder: 'builderScreen',
+    trophy: 'trophyScreen',
 };
 
 // Marks the page as scrolled, which turns on the fade under the status bar (see body::before)
@@ -4639,6 +4726,7 @@ function toggleSetDone(exId, i) {
         if (rowEl) rowEl.classList.add('pop');
         startRest(getPrescription(workoutExercise(exId)).restSec, nextUpLabel(exId));
         checkRecord(exId, i);
+        setBadgeNudge();
     }
 }
 
@@ -4827,7 +4915,7 @@ function finishWorkout() {
     const minutes = Math.max(1, Math.round((Date.now() - w.startedAt) / 60000));
     const swaps = Object.entries(w.swaps || {}).map(([slot, swap]) => ({ from: slot, to: swap.name }));
     const efforts = Object.values(w.rows).flat().filter(r => r.done && r.rir !== undefined).map(r => Number(r.rir));
-    programSessions().push({ date, day: w.day, week: w.week, type: 'workout', minutes, sets: doneSets,
+    programSessions().push({ date, day: w.day, week: w.week, type: 'workout', minutes, sets: doneSets, startHour: new Date(w.startedAt).getHours(),
         ...(swaps.length ? { swaps } : {}), ...(efforts.length ? { efforts } : {}),
         ...(w.deload ? { deload: true } : {}), ...(w.readiness ? { readiness: w.readiness.level } : {}) });
     checkDeload();
@@ -5380,7 +5468,8 @@ function playerStats() {
     const st = { workouts: 0, sets: 0, bestStreak: 0, comebacks: 0, records: 0, bestPrDay: 0, topTier: 0, liftsRanked: 0,
         tierPoints: 0, volume: 0, cycles: 0, cardioTotal: 0, cardioXp: 0, intervals: 0, whoWeeks: 0, doubleDays: 0,
         fullHouseWeeks: 0, stepGoalDays: 0, bestStepStreak: 0, marathonDays: 0, stepXp: 0, habitTicks: 0, perfectDays: 0,
-        bestScore: 0, weighIns: 0, swaps: 0 };
+        bestScore: 0, weighIns: 0, swaps: 0, weeksLogged: 0, maxWeeksLogged: 0, perfectWeeks: 0, lowReadinessWorkouts: 0,
+        deloadWorkouts: 0, honestWorkouts: 0, dawnWorkouts: 0, nightWorkouts: 0, allInDays: 0 };
     const sessions = Object.values(metaFor('_sessions')).flat().filter(Boolean);
 
     // Workouts, sets, week streaks, comebacks (back after 14+ days off), swaps
@@ -5390,6 +5479,11 @@ function playerStats() {
         st.workouts++;
         st.sets += s.sets || 0;
         st.swaps += (s.swaps || []).length;
+        if (s.readiness === 'low') st.lowReadinessWorkouts++;
+        if (s.deload) st.deloadWorkouts++;
+        if (s.sets && (s.efforts || []).length >= s.sets) st.honestWorkouts++;
+        if (s.startHour !== undefined && s.startHour < 7) st.dawnWorkouts++;
+        if (s.startHour !== undefined && s.startHour >= 21) st.nightWorkouts++;
         workoutDates.push(s.date);
     });
     workoutDates.sort();
@@ -5428,8 +5522,13 @@ function playerStats() {
             }
         });
         if (loggedWeeks.size >= WEEKS) st.cycles++;
+        st.weeksLogged += loggedWeeks.size;
+        st.maxWeeksLogged = Math.max(st.maxWeeksLogged, loggedWeeks.size);
     });
-    Object.values(metaFor('_archive')).forEach(list => { st.cycles += (list || []).length; });
+    Object.values(metaFor('_archive')).forEach(list => {
+        st.cycles += (list || []).length;
+        st.weeksLogged += (list || []).length * WEEKS;
+    });
     st.bestPrDay = Math.max(0, ...Object.values(prsByDate));
     st.volume = Math.round(st.volume);
 
@@ -5487,43 +5586,79 @@ function playerStats() {
         if (prog.habits && done >= prog.habits.length) st.perfectDays++;
     });
     st.weighIns = Array.isArray(allData._bodyweight) ? allData._bodyweight.length : 0;
+
+    // Perfect week: lifting plan, 150 cardio minutes and the step goal on average, all in one Monday–Sunday
+    const allWeeks = new Set(workoutDates.map(mondayOf));
+    allWeeks.forEach(monday => {
+        const sunday = addDays(monday, 6);
+        const lifts = workoutDates.filter(d => d >= monday && d <= sunday).length;
+        const cardio = cardioMinutes(d => d >= monday && d <= sunday);
+        const stepAvg = Array.from({ length: 7 }, (_, i) => stepsOn(addDays(monday, i))).reduce((a, b) => a + b, 0) / 7;
+        if (lifts >= liftTarget && cardio >= 150 && stepAvg >= goal) st.perfectWeeks++;
+    });
+    // All in: lifted, hit the step goal and ticked every habit on the same day
+    if (prog.habits && prog.habits.length) {
+        st.allInDays = new Set(workoutDates.filter(d => stepsOn(d) >= goal && habitsDone(d) >= prog.habits.length)).size;
+    }
     st.bestScore = Math.max(allData._bestScore || 0, consistencyScore().score);
     return st;
 }
 
-// ── Badges: 17 tracks with five tiers each, plus one-off specials ──
+// ── Badges: 17 tracks with eight tiers each (Iron → Obsidian), plus signature and secret badges ──
+// Tier pacing for every track: Iron on the first try, Bronze in the first week or two, Silver ~1 month,
+// Gold ~3 months, Platinum ~6 months, Sapphire ~1 year, Diamond ~2 years, Obsidian for the few who stay.
 const BADGE_TIERS = [
-    { name: 'Bronze', color: '#c48b57', xp: 50 },
-    { name: 'Silver', color: '#c9ced6', xp: 100 },
-    { name: 'Gold', color: '#d9b25f', xp: 200 },
-    { name: 'Platinum', color: '#a8dccf', xp: 400 },
-    { name: 'Diamond', color: '#a3bcff', xp: 800 },
+    { name: 'Iron', color: '#b5b1ab', xp: 25, rarity: 95 },
+    { name: 'Bronze', color: '#c48b57', xp: 50, rarity: 75 },
+    { name: 'Silver', color: '#c9ced6', xp: 100, rarity: 50 },
+    { name: 'Gold', color: '#d9b25f', xp: 200, rarity: 25 },
+    { name: 'Platinum', color: '#a8dccf', xp: 400, rarity: 12 },
+    { name: 'Sapphire', color: '#5b8def', xp: 800, rarity: 5 },
+    { name: 'Diamond', color: '#a3bcff', xp: 1500, rarity: 2 },
+    { name: 'Obsidian', color: '#f2d891', xp: 3000, rarity: 0.5 },
+];
+const ROMAN8 = ['', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII'];
+// The old five tiers (Bronze, Silver, Gold, Platinum, Diamond) map onto the new eight
+const OLD_TIER_MAP = [0, 2, 3, 4, 5, 7];
+
+const BADGE_GROUPS = [
+    { name: 'Strength', tracks: ['records', 'strength', 'allround', 'volume', 'sets'] },
+    { name: 'Consistency', tracks: ['workouts', 'streak', 'weeks', 'comeback', 'score'] },
+    { name: 'Cardio', tracks: ['cardio', 'who', 'intervals'] },
+    { name: 'Steps', tracks: ['stepdays', 'stepstreak'] },
+    { name: 'Habits', tracks: ['habits', 'weighins'] },
 ];
 
 function badgeTracks() {
     return [
-        { id: 'workouts', icon: 'lift', name: 'Iron Regular', unit: 'workouts', stat: 'workouts', goals: [5, 25, 50, 100, 250] },
-        { id: 'streak', icon: 'streak', name: 'Unbroken', unit: 'weeks in a row', stat: 'bestStreak', goals: [2, 4, 8, 12, 26] },
-        { id: 'records', icon: 'record', name: 'Record Breaker', unit: 'personal records', stat: 'records', goals: [1, 10, 25, 50, 100] },
-        { id: 'strength', icon: 'tier', name: 'Strength Standard', unit: '', stat: 'topTier', goals: [2, 3, 4, 5, 6], label: v => tierName(v) },
-        { id: 'allround', icon: 'tier', name: 'All-Rounder', unit: 'lifts at Novice or above', stat: 'liftsRanked', goals: [3, 6, 10, 15, 20] },
-        { id: 'volume', icon: 'lift', name: 'Heavy Lifter', unit: 'kg lifted in total', stat: 'volume', goals: [10000, 50000, 150000, 500000, 1000000] },
-        { id: 'sets', icon: 'lift', name: 'Set Machine', unit: 'sets', stat: 'sets', goals: [50, 250, 750, 1500, 3000] },
-        { id: 'cycles', icon: 'lift', name: 'Cycle Finisher', unit: '12-week cycles', stat: 'cycles', goals: [1, 2, 3, 5, 8] },
-        { id: 'comeback', icon: 'streak', name: 'Comeback', unit: 'returns after 2+ weeks off', stat: 'comebacks', goals: [1, 3, 5, 8, 12] },
-        { id: 'cardio', icon: 'cardio', name: 'Cardio Engine', unit: 'cardio minutes', stat: 'cardioTotal', goals: [60, 300, 1000, 2500, 5000] },
-        { id: 'who', icon: 'cardio', name: 'Heart Healthy', unit: 'weeks with 150 cardio min', stat: 'whoWeeks', goals: [1, 4, 8, 16, 26] },
-        { id: 'intervals', icon: 'cardio', name: 'Interval Hunter', unit: 'Zone 4–5 sessions', stat: 'intervals', goals: [1, 5, 15, 30, 60] },
-        { id: 'stepdays', icon: 'steps', name: 'Step Counter', unit: 'days at step goal', stat: 'stepGoalDays', goals: [1, 10, 30, 60, 120] },
-        { id: 'stepstreak', icon: 'steps', name: 'Stride Streak', unit: 'goal days in a row', stat: 'bestStepStreak', goals: [3, 7, 14, 30, 60] },
-        { id: 'habits', icon: 'habit', name: 'Daily Discipline', unit: 'perfect habit days', stat: 'perfectDays', goals: [1, 7, 21, 50, 100] },
-        { id: 'score', icon: 'score', name: 'Consistency', unit: 'best score', stat: 'bestScore', goals: [50, 70, 80, 90, 100] },
-        { id: 'weighins', icon: 'scale', name: 'Check-In', unit: 'weigh-ins', stat: 'weighIns', goals: [1, 5, 15, 30, 60] },
+        { id: 'workouts', icon: 'lift', name: 'Iron Regular', unit: 'workouts', stat: 'workouts', goals: [1, 5, 15, 40, 80, 150, 300, 500], tip: 'Finish workouts. Every session counts, however short.' },
+        { id: 'streak', icon: 'streak', name: 'Unbroken', unit: 'weeks in a row', stat: 'bestStreak', goals: [1, 2, 4, 8, 12, 26, 52, 104], tip: 'Train at least once every week. One session keeps the streak alive.' },
+        { id: 'records', icon: 'record', name: 'Record Breaker', unit: 'personal records', stat: 'records', goals: [1, 3, 10, 25, 50, 100, 200, 400], tip: 'Beat your best on any lift. Follow the +kg suggestions on Today.' },
+        { id: 'strength', icon: 'tier', name: 'Strength Standard', unit: '', stat: 'topTier', goals: [1, 2, 3, 4, 4, 5, 5, 6], label: v => tierName(v), tip: 'Raise your best lift to the next strength standard for your bodyweight.' },
+        { id: 'allround', icon: 'tier', name: 'All-Rounder', unit: 'lifts at Novice or above', stat: 'liftsRanked', goals: [1, 2, 4, 6, 9, 12, 16, 20], tip: 'Bring more of your lifts up to Novice, not just your favourites.' },
+        { id: 'volume', icon: 'lift', name: 'Heavy Lifter', unit: 'kg lifted in total', stat: 'volume', goals: [1000, 10000, 40000, 100000, 250000, 500000, 1000000, 2000000], tip: 'Total weight × reps across every set you log.' },
+        { id: 'sets', icon: 'lift', name: 'Set Machine', unit: 'sets', stat: 'sets', goals: [3, 30, 100, 300, 600, 1200, 2500, 5000], tip: 'Tick off sets in workout mode.' },
+        { id: 'weeks', icon: 'lift', name: 'Long Game', unit: 'program weeks logged', stat: 'weeksLogged', goals: [1, 4, 8, 12, 24, 48, 96, 156], tip: 'Log at least one lift in each week of your program.' },
+        { id: 'comeback', icon: 'streak', name: 'Comeback', unit: 'returns after 2+ weeks off', stat: 'comebacks', goals: [1, 2, 3, 5, 8, 12, 16, 20], tip: 'Life happens. Coming back is what counts.' },
+        { id: 'score', icon: 'score', name: 'Consistency', unit: 'best consistency score', stat: 'bestScore', goals: [30, 50, 60, 70, 80, 90, 95, 100], tip: 'Lift, cardio, steps and habits over 7 days, all in balance.' },
+        { id: 'cardio', icon: 'cardio', name: 'Cardio Engine', unit: 'cardio minutes', stat: 'cardioTotal', goals: [10, 60, 300, 800, 1500, 3000, 6000, 10000], tip: 'Log cardio sessions, or let Apple Health exercise minutes count.' },
+        { id: 'who', icon: 'cardio', name: 'Heart Healthy', unit: 'weeks with 150 cardio min', stat: 'whoWeeks', goals: [1, 2, 4, 8, 12, 26, 52, 104], tip: 'Reach 150 moderate minutes in a week (Zone 4–5 count double).' },
+        { id: 'intervals', icon: 'cardio', name: 'Interval Hunter', unit: 'Zone 4–5 sessions', stat: 'intervals', goals: [1, 3, 8, 15, 30, 50, 80, 120], tip: 'Log a threshold or max-effort cardio session.' },
+        { id: 'stepdays', icon: 'steps', name: 'Step Counter', unit: 'days at step goal', stat: 'stepGoalDays', goals: [1, 7, 21, 45, 90, 180, 365, 730], tip: 'Hit your daily step goal.' },
+        { id: 'stepstreak', icon: 'steps', name: 'Stride Streak', unit: 'goal days in a row', stat: 'bestStepStreak', goals: [1, 3, 7, 21, 45, 90, 180, 365], tip: 'Hit your step goal day after day.' },
+        { id: 'habits', icon: 'habit', name: 'Daily Discipline', unit: 'perfect habit days', stat: 'perfectDays', goals: [1, 3, 7, 21, 45, 90, 180, 365], tip: 'Tick every daily habit in one day.' },
+        { id: 'weighins', icon: 'scale', name: 'Check-In', unit: 'weigh-ins', stat: 'weighIns', goals: [1, 3, 8, 15, 30, 52, 104, 200], tip: 'Log your bodyweight in Settings.' },
     ];
 }
 
+// One-off badges. Signature ones reward training smart; secret ones stay hidden until earned.
 function specialBadges() {
     return [
+        { id: 'perfect-week', icon: 'score', name: 'Perfect Week', desc: 'Close all three rings in one week: lifting plan, 150 cardio minutes and your step goal', stat: 'perfectWeeks' },
+        { id: 'listened', icon: 'habit', name: 'Listened to Your Body', desc: 'Train on a low-readiness day, at the lighter weights the coach set', stat: 'lowReadinessWorkouts' },
+        { id: 'deload', icon: 'streak', name: 'Deload Done Right', desc: 'Finish two workouts during a deload week instead of skipping it', stat: 'deloadWorkouts', goal: 2 },
+        { id: 'honest', icon: 'record', name: 'Honest Effort', desc: 'Rate every set in 10 workouts', stat: 'honestWorkouts', goal: 10 },
+        { id: 'dawn', icon: 'streak', name: 'Dawn Patrol', desc: 'Start 5 workouts before 7 AM', stat: 'dawnWorkouts', goal: 5 },
         { id: 'full-house', icon: 'score', name: 'Full House', desc: 'Hit your lifting plan and 150 cardio minutes in the same week', stat: 'fullHouseWeeks' },
         { id: 'double-day', icon: 'cardio', name: 'Double Day', desc: 'Lift and do cardio on the same day', stat: 'doubleDays' },
         { id: 'record-day', icon: 'record', name: 'Record Day', desc: 'Set 3 personal records in one workout', stat: 'bestPrDay', goal: 3 },
@@ -5531,12 +5666,16 @@ function specialBadges() {
         { id: 'adaptable', icon: 'lift', name: 'Adaptable', desc: 'Swap an exercise 5 times', stat: 'swaps', goal: 5 },
         { id: 'flawless', icon: 'score', name: 'Flawless', desc: 'Reach a consistency score of 100', stat: 'bestScore', goal: 100 },
         { id: 'summit', icon: 'tier', name: 'Summit', desc: `Reach ${tierName(6)} on any lift`, stat: 'topTier', goal: 6 },
+        { id: 'night-owl', icon: 'streak', name: 'Night Owl', desc: 'Start 3 workouts after 9 PM', stat: 'nightWorkouts', goal: 3, secret: true },
+        { id: 'full-cycle', icon: 'lift', name: 'The Full Cycle', desc: 'Log all 12 weeks of a program', stat: 'maxWeeksLogged', goal: 12, secret: true },
+        { id: 'all-in', icon: 'score', name: 'All In', desc: 'Lift, hit your step goal and tick every habit on the same day', stat: 'allInDays', secret: true },
     ];
 }
 
 const SPECIAL_XP = 250;
+const SECRET_XP = 500;
 
-// Highest tier reached on a track (0–5); stored tiers never go back down
+// Highest tier reached on a track (0–8); stored tiers never go back down
 function badgeTier(track, stats) {
     const reached = track.goals.filter(g => (stats[track.stat] || 0) >= g).length;
     return Math.max(reached, (allData._badges || {})[track.id] || 0);
@@ -5544,7 +5683,19 @@ function badgeTier(track, stats) {
 
 function badgeGoalText(track, value) {
     if (track.label) return track.label(value);
-    return `${value.toLocaleString()} ${track.unit}`;
+    // "1 workout", "1 personal record", "1 weigh-in": singular for one
+    const unit = value === 1 ? track.unit.replace(/(\w+?)s\b/, '$1') : track.unit;
+    return `${value.toLocaleString()} ${unit}`;
+}
+
+// Progress toward the next tier: { tier, next, ratio, remaining }
+function badgeProgress(track, stats) {
+    const tier = badgeTier(track, stats);
+    const value = stats[track.stat] || 0;
+    const next = track.goals[tier];
+    if (next === undefined) return { tier, next: null, ratio: 1, remaining: 0, value };
+    const prev = tier && !track.label ? track.goals[tier - 1] : 0;
+    return { tier, next, value, ratio: Math.max(0, Math.min(1, (value - prev) / Math.max(1, next - prev))), remaining: Math.max(0, next - value) };
 }
 
 // ── Levels: XP from everything you do, levels 1–100 on a rising curve, rank titles by level ──
@@ -5567,8 +5718,9 @@ function rankFor(level) {
 }
 
 function playerXp(stats) {
+    const specials = allData._specials || {};
     const badgeXp = badgeTracks().reduce((sum, t) => sum + BADGE_TIERS.slice(0, badgeTier(t, stats)).reduce((a, b) => a + b.xp, 0), 0)
-        + Object.keys(allData._specials || {}).length * SPECIAL_XP;
+        + specialBadges().filter(sp => specials[sp.id]).reduce((sum, sp) => sum + (sp.secret ? SECRET_XP : SPECIAL_XP), 0);
     const sources = [
         ['Workouts', stats.workouts * 100],
         ['Sets', stats.sets * 5],
@@ -5603,24 +5755,48 @@ function achievementIcon(icon, size = 22) {
     return `<svg viewBox="0 0 24 24" width="${size}" height="${size}" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ACHIEVEMENT_ICONS[icon]}</svg>`;
 }
 
-// Hexagonal medal in the tier's colour (tier 0 = locked), glyph in the middle
-function badgeMedal(icon, tier, size = 56) {
-    const color = tier ? BADGE_TIERS[tier - 1].color : 'rgba(240,232,216,0.3)';
-    return `
-        <svg class="badge-medal${tier ? '' : ' locked'}" viewBox="0 0 48 48" width="${size}" height="${size}" style="--medal:${color}" aria-hidden="true">
-            <polygon class="bm-fill" points="24,2.5 42.6,13.25 42.6,34.75 24,45.5 5.4,34.75 5.4,13.25"/>
-            <polygon class="bm-ring" points="24,6.5 39.1,15.25 39.1,32.75 24,41.5 8.9,32.75 8.9,15.25"/>
-            <svg x="13" y="13" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${ACHIEVEMENT_ICONS[icon]}</svg>
-        </svg>`;
+// ── Medal art: each tier has its own silhouette (tier 0 = locked outline) ──
+function medalGlyph(icon, color, y = 0, size = 30) {
+    return `<svg x="${-size / 2}" y="${y - size / 2}" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${ACHIEVEMENT_ICONS[icon]}</svg>`;
+}
+
+function medalSvg(tier, icon, size = 64, extraClass = '') {
+    const beads = Array.from({ length: 12 }, (_, i) => {
+        const a = (i / 12) * Math.PI * 2;
+        return `<circle cx="${(Math.sin(a) * 40).toFixed(1)}" cy="${(-Math.cos(a) * 40).toFixed(1)}" r="2"/>`;
+    }).join('');
+    const leaves = [[-44, 8, -30], [-48, -8, -10], [-44, -24, 15], [-36, 22, -55]]
+        .map(([x, y, r]) => `<ellipse cx="${x}" cy="${y}" rx="5" ry="10" transform="rotate(${r} ${x} ${y})"/><ellipse cx="${-x}" cy="${y}" rx="5" ry="10" transform="rotate(${-r} ${-x} ${y})"/>`).join('');
+    const art = [
+        // 0 · locked
+        `<circle r="42" fill="rgba(255,255,255,0.02)" stroke="rgba(240,232,216,0.18)" stroke-width="1.5" stroke-dasharray="3 5"/>${medalGlyph(icon, 'rgba(240,232,216,0.28)')}`,
+        // I · Iron: plain coin
+        `<circle r="42" fill="#2a2928" stroke="#8a8784" stroke-width="2"/>${medalGlyph(icon, '#b5b1ab')}`,
+        // II · Bronze: coin with an inner ring
+        `<circle r="44" fill="#3a2a1c" stroke="#c48b57" stroke-width="2.5"/><circle r="34" fill="none" stroke="#c48b57" stroke-opacity="0.5" stroke-width="1"/>${medalGlyph(icon, '#e0aa78')}`,
+        // III · Silver: beaded rim
+        `<circle r="46" fill="#2a2c30" stroke="#c9ced6" stroke-width="2"/><g fill="#c9ced6">${beads}</g><circle r="31" fill="#34373c" stroke="#c9ced6" stroke-opacity="0.6" stroke-width="1"/>${medalGlyph(icon, '#eef1f5')}`,
+        // IV · Gold: laurel crest around a hexagon
+        `<g fill="#d9b25f">${leaves}</g><polygon points="0,-40 34.6,-20 34.6,20 0,40 -34.6,20 -34.6,-20" fill="#3d3015" stroke="#f2d891" stroke-width="2.5"/><polygon points="0,-31 26.8,-15.5 26.8,15.5 0,31 -26.8,15.5 -26.8,-15.5" fill="none" stroke="#d9b25f" stroke-opacity="0.6" stroke-width="1"/>${medalGlyph(icon, '#f2d891')}`,
+        // V · Platinum: star rosette with ribbons
+        `<path d="M-16 34 L-24 68 L-12 60 L-4 70 L0 38 Z" fill="#5e8f86"/><path d="M16 34 L24 68 L12 60 L4 70 L0 38 Z" fill="#7fb8ad"/><polygon points="0,-50 11,-27 35,-35 27,-11 50,0 27,11 35,35 11,27 0,50 -11,27 -35,35 -27,11 -50,0 -27,-11 -35,-35 -11,-27" fill="#24332f" stroke="#a8dccf" stroke-width="2"/><circle r="28" fill="#2c3f3a" stroke="#a8dccf" stroke-width="1.5"/>${medalGlyph(icon, '#dff5ef')}`,
+        // VI · Sapphire: shield set with a gem
+        `<path d="M0 -50 L40 -36 L40 6 C40 30 22 44 0 54 C-22 44 -40 30 -40 6 L-40 -36 Z" fill="#14213d" stroke="#5b8def" stroke-width="2.2"/><path d="M0 -42 L32 -30 L32 5 C32 25 18 37 0 45 C-18 37 -32 25 -32 5 L-32 -30 Z" fill="none" stroke="#5b8def" stroke-opacity="0.5" stroke-width="1"/><polygon points="0,-60 9,-50 0,-38 -9,-50" fill="#5b8def" stroke="#b9cdfb" stroke-width="1"/>${medalGlyph(icon, '#b9cdfb', 6)}`,
+        // VII · Diamond: cut gem with rays
+        `<g stroke="#a3bcff" stroke-width="1.5" stroke-linecap="round" opacity="0.8"><path d="M0 -60v-10"/><path d="M42 -42l7 -7"/><path d="M-42 -42l-7 -7"/><path d="M56 4h10"/><path d="M-56 4h-10"/></g><polygon points="-44,-16 -25,-42 25,-42 44,-16 0,50" fill="#1f2840" stroke="#c6d4ff" stroke-width="2.2"/><path d="M-44 -16H44M-25 -42L-13 -16L0 -42L13 -16L25 -42M-13 -16L0 50M13 -16L0 50" fill="none" stroke="#a3bcff" stroke-opacity="0.55" stroke-width="1"/>${medalGlyph(icon, '#eef2ff', 2, 26)}<path d="M30 -56l2 5 5 2-5 2-2 5-2-5-5-2 5-2z" fill="#eef2ff"/>`,
+        // VIII · Obsidian: black crowned gem with a gold halo
+        `<circle r="58" fill="none" stroke="#d9b25f" stroke-opacity="0.35" stroke-width="1"/><circle r="64" fill="none" stroke="#d9b25f" stroke-opacity="0.18" stroke-width="1" stroke-dasharray="2 5"/><path d="M-30 -30 L-18 -50 L-6 -34 L0 -54 L6 -34 L18 -50 L30 -30 Z" fill="#0b0a0a" stroke="#f2d891" stroke-width="1.6" stroke-linejoin="round"/><polygon points="-42,-26 42,-26 30,26 0,50 -30,26" fill="#0b0a0a" stroke="#f2d891" stroke-width="2.2" stroke-linejoin="round"/><path d="M-42 -26L0 50L42 -26M-30 26L0 -26L30 26" fill="none" stroke="#d9b25f" stroke-opacity="0.4" stroke-width="1"/>${medalGlyph(icon, '#f2d891', 2, 26)}`,
+    ][tier];
+    return `<svg class="medal t${tier} ${extraClass}" viewBox="-70 -75 140 150" width="${size}" height="${size}" aria-hidden="true">${art}</svg>`;
 }
 
 function badgeCount() {
     return Object.values(allData._badges || {}).reduce((a, b) => a + b, 0) + Object.keys(allData._specials || {}).length;
 }
 
-// Badge tiers, specials and the level are stored in workout_data (_badges { track: tier }, _specials { id: date },
-// _level) so they never go backwards. The first run stores what was already earned quietly; after that each
-// new tier, special or level gets a gold moment.
+// Badge tiers (_badges { track: tier }), the day each tier was earned (_badgeDates { track: { tier: date } }),
+// specials (_specials { id: date }) and the level (_level) are stored so they never go backwards.
+// The first run stores what was already earned quietly; after that each new tier, special or level gets a moment.
 function checkAchievements() {
     if (!currentUser || !currentProgram) return [];
     const stats = playerStats();
@@ -5629,21 +5805,36 @@ function checkAchievements() {
         allData._bestScore = stats.bestScore;
         changed = true;
     }
-    const firstRun = !allData._badges;
-    if (firstRun) {
+    // The first run, and the switch to eight tiers, award what was already earned quietly
+    let quiet = !allData._badges;
+    if (!allData._badges) {
         allData._badges = {};
         delete allData._achievements;   // replaced by badges (v1.20)
         changed = true;
+    } else if ((allData._badgeVersion || 1) < 2) {
+        quiet = true;
+        // v1.29: five tiers became eight; keep what was earned at the matching new tier
+        Object.keys(allData._badges).forEach(id => { allData._badges[id] = OLD_TIER_MAP[allData._badges[id]] || 0; });
+        (allData._badgeLog || []).forEach(entry => { entry.tier = OLD_TIER_MAP[entry.tier] || entry.tier; });
+        changed = true;
+    }
+    if (allData._badgeVersion !== 2) {
+        allData._badgeVersion = 2;
+        changed = true;
     }
     const badges = allData._badges;
+    const dates = allData._badgeDates || (allData._badgeDates = {});
     const specials = allData._specials || (allData._specials = {});
     const moments = [];
 
     badgeTracks().forEach(track => {
         const tier = track.goals.filter(g => (stats[track.stat] || 0) >= g).length;
-        if (tier > (badges[track.id] || 0)) {
+        const had = badges[track.id] || 0;
+        if (tier > had) {
             badges[track.id] = tier;
-            if (!firstRun) (allData._badgeLog || (allData._badgeLog = [])).push({ track: track.id, tier, date: todayStr() });
+            const trackDates = dates[track.id] || (dates[track.id] = {});
+            for (let t = had + 1; t <= tier; t++) if (!trackDates[t] && !quiet) trackDates[t] = todayStr();
+            if (!quiet) (allData._badgeLog || (allData._badgeLog = [])).push({ track: track.id, tier, date: todayStr() });
             moments.push(() => showBadgeMoment(track, tier));
             changed = true;
         }
@@ -5659,19 +5850,20 @@ function checkAchievements() {
     if (xp.level > (allData._level || 0)) {
         const hadLevel = !!allData._level;
         allData._level = xp.level;
-        if (hadLevel) moments.push(() => showLevelMoment(xp));
+        if (hadLevel && !quiet) moments.push(() => showLevelMoment(xp));
         changed = true;
     }
     if (changed) scheduleSave();
-    if (!firstRun) moments.slice(0, 5).forEach(m => queueMoment(m));
+    if (!quiet) moments.slice(0, 5).forEach(m => queueMoment(m));
     return moments;
 }
 
+// New tier: a blank coin is "minted" into the new medal, then a light sweep passes over it
 function showBadgeMoment(track, tier) {
     const t = BADGE_TIERS[tier - 1];
     showMoment({
-        kicker: `${t.name} badge`,
-        valueHtml: `<span class="moment-badge">${badgeMedal(track.icon, tier, 96)}</span>`,
+        kicker: `${t.name} · ${ROMAN8[tier]}`,
+        valueHtml: `<span class="mint">${medalSvg(1, track.icon, 150, 'mint-blank')}${medalSvg(tier, track.icon, 150, 'mint-medal')}<i class="mint-shine"></i></span>`,
         unit: '',
         name: track.name,
         sub: `${badgeGoalText(track, track.goals[tier - 1])} · +${t.xp} XP`,
@@ -5681,11 +5873,11 @@ function showBadgeMoment(track, tier) {
 
 function showSpecialMoment(sp) {
     showMoment({
-        kicker: 'Special badge',
+        kicker: sp.secret ? 'Secret badge' : 'Signature badge',
         valueHtml: `<span class="moment-medal">${achievementIcon(sp.icon, 40)}</span>`,
         unit: '',
         name: sp.name,
-        sub: `${sp.desc} · +${SPECIAL_XP} XP`,
+        sub: `${sp.desc} · +${sp.secret ? SECRET_XP : SPECIAL_XP} XP`,
     });
 }
 
@@ -5700,15 +5892,11 @@ function showLevelMoment(xp) {
 }
 
 function openLevel() {
-    switchTab('progress');
+    openTrophyRoom();
 }
 
 function openAchievements() {
-    switchTab('progress');
-    setTimeout(() => {
-        const el = document.getElementById('achievementsCard');
-        if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 70, behavior: prefersReducedMotion() ? 'auto' : 'smooth' });
-    }, 650);
+    openTrophyRoom();
 }
 
 // Level card (top of Progress): level ring, rank, XP to next level and where XP came from
@@ -5739,56 +5927,248 @@ function renderLevel() {
         <details class="level-sources">
             <summary>Where your XP comes from</summary>
             ${xp.sources.filter(([, v]) => v > 0).map(([name, v]) => `<div class="ls-row"><span>${name}</span><span>${v.toLocaleString()} XP</span></div>`).join('') || '<div class="ls-row"><span>Finish a workout to earn your first XP</span></div>'}
-            <p>Workout 100 · set 5 · record 50 · strength tier 40 per lift · cardio 1 per minute (Zone 4–5 double) · steps 1 per 100 (150 a day max) · habit 10, perfect day +30 · weigh-in 10 · badges 50 to 800 by tier, specials 250.</p>
+            <p>Workout 100 · set 5 · record 50 · strength tier 40 per lift · cardio 1 per minute (Zone 4–5 double) · steps 1 per 100 (150 a day max) · habit 10, perfect day +30 · weigh-in 10 · badge tiers 25 to 3,000 · signature badges 250 · secret badges 500.</p>
         </details>
     `;
     rollNumbers(el);
 }
 
-// Badges on the Progress tab: one card per track (tier, progress to the next tier), then the specials
+// Progress tab: a doorway to the trophy room with the showcase (or best medals) in view
 function renderAchievements() {
     const el = document.getElementById('achievementsCard');
     if (!el) return;
     const stats = playerStats();
     const tracks = badgeTracks();
-    const specials = allData._specials || {};
     const earnedTiers = tracks.reduce((sum, t) => sum + badgeTier(t, stats), 0);
+    const shelf = showcaseTracks(stats);
     el.innerHTML = `
-        <div class="section-head"><h3>Badges</h3><span>${earnedTiers} / ${tracks.length * BADGE_TIERS.length} tiers</span></div>
-        <div class="badge-grid">
-            ${tracks.map(track => {
-                const tier = badgeTier(track, stats);
-                const value = stats[track.stat] || 0;
-                const next = track.goals[tier];
-                const prevGoal = tier ? track.goals[tier - 1] : 0;
-                const ratio = next ? Math.max(0, Math.min(1, (value - (track.label ? 0 : prevGoal)) / (next - (track.label ? 0 : prevGoal)))) : 1;
-                const pips = BADGE_TIERS.map((t, i) => `<i style="${i < tier ? `background:${t.color}` : ''}"></i>`).join('');
-                return `
-                    <button class="badge-card${tier ? '' : ' locked'}" onclick="showToast('${escapeHtml(`${track.name}: ${track.goals.map(g => badgeGoalText(track, g)).join(' → ')}`).replace(/'/g, '&#39;')}')">
-                        ${badgeMedal(track.icon, tier)}
-                        <span class="badge-name">${escapeHtml(track.name)}</span>
-                        <span class="badge-tier" style="${tier ? `color:${BADGE_TIERS[tier - 1].color}` : ''}">${tier ? `${BADGE_TIERS[tier - 1].name} · ${ROMAN[tier]}` : 'Locked'}</span>
-                        <span class="badge-pips">${pips}</span>
-                        ${next
-                            ? `<span class="badge-bar"><span style="width:${Math.round(ratio * 100)}%"></span></span>
-                               <span class="badge-next">${track.label ? `Next: ${escapeHtml(track.label(next))}` : `${Math.min(value, next).toLocaleString()} / ${next.toLocaleString()}`}</span>`
-                            : '<span class="badge-next max">All tiers earned</span>'}
-                    </button>`;
+        <button class="trophy-door" onclick="openTrophyRoom()">
+            <div class="td-medals">${shelf.map(t => medalSvg(badgeTier(t, stats), t.icon, 54)).join('')}</div>
+            <div class="td-text">
+                <strong>Trophy room</strong>
+                <span>${earnedTiers} of ${tracks.length * BADGE_TIERS.length} tiers · ${Object.keys(allData._specials || {}).length} special badges</span>
+            </div>
+            <span class="td-arrow">›</span>
+        </button>
+    `;
+}
+
+// ════════════════════════════════════════════
+//  TROPHY ROOM: showcase, badge groups, badge detail, nudges
+// ════════════════════════════════════════════
+
+// The three pinned badges (workout_data._showcase); empty slots fall back to your highest tiers
+function showcaseTracks(stats = playerStats()) {
+    const tracks = badgeTracks();
+    const pinned = (allData._showcase || []).map(id => tracks.find(t => t.id === id)).filter(Boolean);
+    const best = tracks.filter(t => !pinned.includes(t)).sort((a, b) => badgeTier(b, stats) - badgeTier(a, stats));
+    return pinned.concat(best).slice(0, 3);
+}
+
+function openTrophyRoom() {
+    haptic();
+    renderTrophyRoom();
+    showScreen('trophy');
+}
+
+function closeTrophyRoom() {
+    haptic();
+    showScreen('app');
+}
+
+function renderTrophyRoom() {
+    const stats = playerStats();
+    const xp = playerXp(stats);
+    const tracks = badgeTracks();
+    const specials = allData._specials || {};
+    const pinned = allData._showcase || [];
+    const earnedTiers = tracks.reduce((sum, t) => sum + badgeTier(t, stats), 0);
+    const card = track => {
+        const p = badgeProgress(track, stats);
+        const pips = BADGE_TIERS.map((t, i) => `<i style="${i < p.tier ? `background:${t.color}` : ''}"></i>`).join('');
+        return `
+            <button class="badge-card${p.tier ? '' : ' locked'}${p.tier >= 7 ? ' gleam' : ''}" onclick="openBadge('${track.id}')">
+                ${medalSvg(p.tier, track.icon, 92)}
+                <span class="badge-name">${escapeHtml(track.name)}</span>
+                <span class="badge-tier" style="${p.tier ? `color:${BADGE_TIERS[p.tier - 1].color}` : ''}">${p.tier ? `${BADGE_TIERS[p.tier - 1].name} · ${ROMAN8[p.tier]}` : 'Locked'}</span>
+                <span class="badge-pips">${pips}</span>
+                ${p.next !== null
+                    ? `<span class="badge-bar"><span style="width:${Math.round(p.ratio * 100)}%"></span></span>
+                       <span class="badge-next">${track.label ? `Next: ${escapeHtml(track.label(p.next))}` : `${Math.min(p.value, p.next).toLocaleString()} / ${p.next.toLocaleString()}`}</span>`
+                    : '<span class="badge-next max">Every tier earned</span>'}
+            </button>`;
+    };
+    // Within each group, the badges you're closest to levelling up come first; maxed-out ones last
+    const sortKey = track => {
+        const p = badgeProgress(track, stats);
+        return p.next === null ? -1 : p.ratio;
+    };
+    document.getElementById('trophyBody').innerHTML = `
+        <div class="trophy-hero">
+            <div class="th-level"><span>Level</span><strong>${xp.level}</strong></div>
+            <div>
+                <div class="th-rank">${escapeHtml(xp.rank)}</div>
+                <div class="th-sub">${earnedTiers} of ${tracks.length * BADGE_TIERS.length} tiers · ${Object.keys(specials).length} of ${specialBadges().length} special</div>
+            </div>
+        </div>
+        <div class="showcase">
+            ${[0, 1, 2].map(i => {
+                const id = pinned[i];
+                const track = id && tracks.find(t => t.id === id);
+                return track
+                    ? `<button class="sc-slot" onclick="openBadge('${track.id}')">${medalSvg(badgeTier(track, stats), track.icon, 100)}<span>${escapeHtml(track.name)}</span></button>`
+                    : `<div class="sc-slot empty"><div class="sc-plus">+</div><span>Pin a badge</span></div>`;
             }).join('')}
         </div>
-        <div class="section-head"><h3>Special</h3><span>${Object.keys(specials).length} / ${specialBadges().length}</span></div>
+        <p class="sc-hint">Open any badge and pin it to your showcase.</p>
+        ${BADGE_GROUPS.map(group => `
+            <div class="section-head"><h3>${group.name}</h3></div>
+            <div class="badge-grid">
+                ${group.tracks.map(id => tracks.find(t => t.id === id)).filter(Boolean).sort((a, b) => sortKey(b) - sortKey(a)).map(card).join('')}
+            </div>`).join('')}
+        <div class="section-head"><h3>Signature</h3><span>${Object.keys(specials).length} / ${specialBadges().length}</span></div>
         <div class="achievement-grid">
             ${specialBadges().map(sp => {
                 const got = specials[sp.id];
+                const hidden = sp.secret && !got;
                 return `
-                    <button class="achievement${got ? ' earned' : ''}" onclick="showToast('${escapeHtml(sp.desc).replace(/'/g, '&#39;')}')">
-                        <span class="achievement-icon">${achievementIcon(sp.icon)}</span>
-                        <span class="achievement-name">${escapeHtml(sp.name)}</span>
+                    <button class="achievement${got ? ' earned' : ''}${hidden ? ' secret' : ''}" onclick="showToast('${escapeHtml(hidden ? 'A secret badge. Keep training to discover it.' : sp.desc).replace(/'/g, '&#39;')}')">
+                        <span class="achievement-icon">${hidden ? '<span class="secret-q">?</span>' : achievementIcon(sp.icon)}</span>
+                        <span class="achievement-name">${hidden ? 'Secret' : escapeHtml(sp.name)}</span>
                         <span class="achievement-sub">${got ? escapeHtml(prettyDate(got)) : 'Locked'}</span>
                     </button>`;
             }).join('')}
         </div>
     `;
+}
+
+// ── Badge detail sheet: big medal you can tilt, tier ladder with dates, rarity, pin ──
+let openBadgeId = null;
+
+function openBadge(id) {
+    haptic();
+    openBadgeId = id;
+    renderBadgeDetail();
+    document.getElementById('badgeModal').classList.add('active');
+}
+
+function closeBadge() {
+    document.getElementById('badgeModal').classList.remove('active');
+    openBadgeId = null;
+}
+
+function renderBadgeDetail() {
+    const stats = playerStats();
+    const track = badgeTracks().find(t => t.id === openBadgeId);
+    if (!track) return;
+    const p = badgeProgress(track, stats);
+    const dates = (allData._badgeDates || {})[track.id] || {};
+    const pinned = (allData._showcase || []).includes(track.id);
+    const current = p.tier ? BADGE_TIERS[p.tier - 1] : null;
+    const nextTier = p.next !== null ? BADGE_TIERS[p.tier] : null;
+    document.getElementById('badgeBody').innerHTML = `
+        <div class="bd-stage" id="badgeStage">
+            <div class="bd-tilt" id="badgeTilt">${medalSvg(p.tier, track.icon, 210, p.tier >= 7 ? 'gleam' : '')}<i class="bd-shine" id="badgeShine"></i></div>
+        </div>
+        <div class="bd-title">${escapeHtml(track.name)}</div>
+        <div class="bd-tier" style="${current ? `color:${current.color}` : ''}">${current ? `${current.name} · ${ROMAN8[p.tier]}` : 'Not earned yet'}</div>
+        ${nextTier ? `
+            <div class="bd-progress">
+                <div class="bd-progress-top"><span>Next: ${nextTier.name}</span><strong>${track.label ? escapeHtml(track.label(p.next)) : `${Math.min(p.value, p.next).toLocaleString()} / ${p.next.toLocaleString()}`}</strong></div>
+                <div class="badge-bar wide"><span style="width:${Math.round(p.ratio * 100)}%; background:${nextTier.color}"></span></div>
+                <p>${escapeHtml(track.tip)}</p>
+            </div>` : '<p class="bd-done">Every tier earned. Few people ever get here.</p>'}
+        <div class="bd-ladder">
+            ${BADGE_TIERS.map((t, i) => {
+                const tier = i + 1;
+                const got = p.tier >= tier;
+                return `
+                    <div class="bd-step${got ? ' got' : ''}">
+                        ${medalSvg(got ? tier : 0, track.icon, 34)}
+                        <div class="bd-step-text">
+                            <strong style="${got ? `color:${t.color}` : ''}">${t.name} · ${ROMAN8[tier]}</strong>
+                            <span>${escapeHtml(badgeGoalText(track, track.goals[i]))}</span>
+                        </div>
+                        <div class="bd-step-meta">${got ? (dates[tier] ? escapeHtml(prettyDate(dates[tier])) : 'Earned') : `Top ${t.rarity}%`}</div>
+                    </div>`;
+            }).join('')}
+        </div>
+        <p class="bd-rarity">Rarity is estimated for now: the share of people expected to reach each tier.</p>
+        <button class="btn ${pinned ? '' : 'btn-primary'} bd-pin" onclick="togglePin('${track.id}')">${pinned ? 'Remove from showcase' : 'Pin to showcase'}</button>
+    `;
+    initBadgeTilt();
+}
+
+function togglePin(id) {
+    haptic();
+    const pinned = allData._showcase || (allData._showcase = []);
+    const i = pinned.indexOf(id);
+    if (i >= 0) pinned.splice(i, 1);
+    else {
+        pinned.push(id);
+        if (pinned.length > 3) pinned.shift();
+    }
+    scheduleSave();
+    renderBadgeDetail();
+    if (document.getElementById('trophyScreen').classList.contains('active')) renderTrophyRoom();
+    showToast(i >= 0 ? 'Removed from showcase' : 'Pinned to showcase');
+}
+
+// Drag across the medal to tilt it; a highlight follows your finger so the metal catches the light
+function initBadgeTilt() {
+    const stage = document.getElementById('badgeStage');
+    const tilt = document.getElementById('badgeTilt');
+    const shine = document.getElementById('badgeShine');
+    if (!stage || prefersReducedMotion()) return;
+    const move = (x, y) => {
+        const r = stage.getBoundingClientRect();
+        const dx = Math.max(-1, Math.min(1, (x - r.left) / r.width * 2 - 1));
+        const dy = Math.max(-1, Math.min(1, (y - r.top) / r.height * 2 - 1));
+        tilt.style.transform = `rotateY(${dx * 22}deg) rotateX(${-dy * 22}deg)`;
+        shine.style.background = `radial-gradient(circle at ${50 + dx * 40}% ${50 + dy * 40}%, rgba(255,255,255,0.32), transparent 55%)`;
+    };
+    const reset = () => {
+        tilt.style.transform = '';
+        shine.style.background = '';
+    };
+    stage.addEventListener('pointermove', e => move(e.clientX, e.clientY));
+    stage.addEventListener('touchmove', e => move(e.touches[0].clientX, e.touches[0].clientY), { passive: true });
+    stage.addEventListener('pointerleave', reset);
+    stage.addEventListener('touchend', reset);
+}
+
+// ── Nudges: the badge tier you're closest to (within ~10%, or one step away) ──
+function nearestBadge(stats = playerStats()) {
+    let best = null;
+    badgeTracks().forEach(track => {
+        const p = badgeProgress(track, stats);
+        if (p.next === null || track.label || !p.remaining) return;
+        const close = p.ratio >= 0.9 || p.remaining <= 1;
+        if (close && (!best || p.ratio > best.p.ratio)) best = { track, p };
+    });
+    return best;
+}
+
+function nearestBadgeText(stats) {
+    const near = nearestBadge(stats);
+    if (!near) return null;
+    const { track, p } = near;
+    const tier = BADGE_TIERS[p.tier];
+    const togo = p.remaining === 1 ? 'one more to go' : `${p.remaining.toLocaleString()} ${track.unit} to go`;
+    return { key: `near-${track.id}-${p.tier + 1}`, track, text: `${tier.name} ${track.name} is close: ${togo}.` };
+}
+
+// During a workout: a quiet note when one more set earns a Set Machine tier
+function setBadgeNudge() {
+    if (!activeWorkout) return;
+    const stats = playerStats();
+    const done = Object.values(activeWorkout.rows).flat().filter(r => r.done).length;
+    const track = badgeTracks().find(t => t.id === 'sets');
+    const tier = badgeTier(track, stats);
+    const next = track.goals[tier];
+    if (next !== undefined && next - (stats.sets + done) === 1) {
+        showToast(`1 set to ${BADGE_TIERS[tier].name} ${track.name}`);
+    }
 }
 
 // Consistency breakdown on the Progress tab
@@ -6906,6 +7286,8 @@ function coachInsight() {
             return { key: 'steps', icon: 'steps', text: `Steps are averaging ${compactNum(Math.round(avg))} a day. A 20-minute walk adds about 2,000.` };
         }
     }
+    const near = nearestBadgeText();
+    if (near) return { key: near.key, icon: near.track.icon, text: near.text };
     if (best) {
         return { key: `gain-${best.ex.id}`, icon: 'record', text: `${name(best.ex)} is up ${Math.round(best.gain * 100)}% this cycle. Keep the reps clean and it keeps climbing.` };
     }
@@ -7168,6 +7550,13 @@ function localTime(date, hour, minute) {
     return d;
 }
 
+// " One more workout earns Gold Iron Regular." when the next session reaches a tier
+function workoutBadgeTease() {
+    const track = badgeTracks().find(t => t.id === 'workouts');
+    const p = badgeProgress(track, playerStats());
+    return p.next !== null && p.remaining === 1 ? ` One more workout earns ${BADGE_TIERS[p.tier].name} ${track.name}.` : '';
+}
+
 // The next 7 days of reminders, replanned whenever Today renders (only rows that changed are rewritten)
 let lastNudgePlan = '';
 let nudgeTimer = null;
@@ -7195,7 +7584,7 @@ async function planNudges() {
                 const plan = prog.weekPlan[parseDate(date).getDay()];
                 if (typeof plan !== 'number' || allWorkoutDates().includes(date)) continue;
                 const count = prog.exercises.filter(ex => ex.day === plan).length;
-                add('workout', localTime(date, 8, 0), `${prog.days[plan]} today`, `${count} exercises are ready for you.`);
+                add('workout', localTime(date, 8, 0), `${prog.days[plan]} today`, `${count} exercises are ready for you.${workoutBadgeTease()}`);
             }
         } else {
             // Rolling programs: a nudge after two days off
@@ -7237,7 +7626,7 @@ async function planNudges() {
 //  POLISH: bottom sheets, rolling numbers, pull to refresh
 // ════════════════════════════════════════════
 
-const SHEET_CLOSE = { pickerModal: closePicker, cardioModal: closeCardioLog, swapModal: closeSwap, importModal: closeImport, recapModal: closeRecap, readinessModal: closeReadiness, genModal: closeGenerator, scienceModal: closeScience };
+const SHEET_CLOSE = { pickerModal: closePicker, cardioModal: closeCardioLog, swapModal: closeSwap, importModal: closeImport, recapModal: closeRecap, readinessModal: closeReadiness, genModal: closeGenerator, scienceModal: closeScience, badgeModal: closeBadge };
 
 function closeSheet(overlay) {
     const close = SHEET_CLOSE[overlay.id];
