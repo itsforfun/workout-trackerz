@@ -19,7 +19,7 @@ Status: **Done** · **Check** (built, still needs a look on the iPhone or a smal
 | Backup download | Exports one program's log; a full "Export all my data" is still missing |
 | Name "Odyr" | Formal trademark search before charging money |
 | Summary and share cards (v1.38) | Try them after a real workout on the iPhone |
-| Pro waitlist (v1.39) | Run `supabase-pro-waitlist-setup.sql`; then watch the answers come in |
+| Pro waitlist (v1.39) | Table is live; check Supabase → Table Editor → pro_waitlist after people have used the app for a few weeks |
 | Exercise guide (v1.39) | Look through the demos on the iPhone; flag any that look wrong |
 
 ## Next — not started
