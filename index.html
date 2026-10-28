@@ -1402,9 +1402,80 @@
             .auth-screen.active .am-ring, .auth-screen.active .am-dot, .auth-screen.active .auth-logo h1, .auth-screen.active .auth-logo p,
             .auth-screen.active .auth-tabs, .auth-screen.active .auth-form.active { animation:none; }
         }
+
+        /* ── The sign-in language across the app (v1.33): the mark, airy type, serif lines, line fields, gold dots ── */
+        .screen-mark { display:block; width:56px; height:56px; margin:0 auto 18px; }
+        .topbar-mark { width:28px; height:28px; flex:none; margin-right:10px; }
+        .topbar-left { align-items:center; }
+        .topbar-title { letter-spacing:0.12em; }
+        .btn-switch { border:none; background:rgba(255,255,255,0.04); color:var(--text-dim); padding:8px 14px; }
+        .btn-switch span { margin-left:2px; color:var(--text-muted); }
+
+        /* Profile setup, like sign-in: no card */
+        .profile-screen { background:radial-gradient(620px 420px at 50% 18%, rgba(217,178,95,0.08), transparent 70%), var(--bg); }
+        .profile-container { max-width:420px; width:100%; }
+        .profile-card { background:none; border:none; box-shadow:none; padding:0 6px; }
+        .profile-header { text-align:center; margin-bottom:36px; }
+        .profile-header h2 { font-family:var(--font-display); font-size:2.4rem; letter-spacing:0.26em; text-indent:0.26em; line-height:1; margin-bottom:12px; }
+        .profile-header p { font-family:'Instrument Serif', Georgia, serif; font-size:1.25rem; color:var(--text-dim); letter-spacing:0; text-transform:none; }
+        .profile-info { background:none; border:none; padding:0; font-size:0.78rem; line-height:1.6; color:var(--text-muted); margin-top:4px; }
+        .profile-screen.active .profile-header, .profile-screen.active form { animation:authRise 1.1s cubic-bezier(.2,.8,.2,1) both; }
+        .profile-screen.active form { animation-delay:0.25s; }
+
+        /* Line fields wherever a form carries .line-fields (profile, settings) */
+        .line-fields .form-label { font-size:0.62rem; font-weight:600; letter-spacing:0.16em; text-transform:uppercase; color:var(--text-muted); margin-bottom:6px; }
+        .line-fields .form-input { background-color:transparent; border:none; border-bottom:1px solid rgba(240,232,216,0.16); border-radius:0; padding:10px 2px 12px; font-size:1.02rem; box-shadow:none; transition:border-color 0.3s var(--ease); }
+        .line-fields select.form-input { background-position:right 2px center; padding-right:26px; }
+        .line-fields .form-input::placeholder { color:rgba(240,232,216,0.22); }
+        .line-fields .form-input:focus { border-bottom-color:rgba(240,232,216,0.7); box-shadow:none; }
+        .line-fields .form-group { margin-bottom:22px; }
+
+        /* Program menu: mark, airy heading, serif line, cards rising in turn */
+        .program-selector { background:radial-gradient(700px 460px at 50% 8%, rgba(217,178,95,0.08), transparent 70%), var(--bg); }
+        .selector-hero h1 { letter-spacing:0.12em; font-size:clamp(2.1rem, 8.6vw, 3.4rem); }
+        .selector-hero p { font-family:'Instrument Serif', Georgia, serif; font-size:1.3rem; color:var(--text-dim); }
+        .program-selector.active .selector-hero { animation:authRise 1.1s cubic-bezier(.2,.8,.2,1) both; }
+        .program-selector.active .program-card { animation:authRise 1s cubic-bezier(.2,.8,.2,1) both; }
+        .program-selector.active .program-card:nth-child(1) { animation-delay:0.15s; }
+        .program-selector.active .program-card:nth-child(2) { animation-delay:0.25s; }
+        .program-selector.active .program-card:nth-child(3) { animation-delay:0.35s; }
+        .program-selector.active .program-card:nth-child(4) { animation-delay:0.45s; }
+        .program-selector.active .program-card:nth-child(n+5) { animation-delay:0.55s; }
+        .program-index { color:var(--accent); }
+
+        /* Settings: section names as quiet labels with a gold dot, not big headings with rules */
+        #page-settings .day-label { border-bottom:none; padding-bottom:0; margin-bottom:14px !important; }
+        #page-settings .day-label .day-name { display:flex; align-items:center; gap:10px; font-family:var(--font-ui); font-size:0.66rem !important; font-weight:600; letter-spacing:0.18em; text-transform:uppercase; color:var(--text-muted); }
+        #page-settings .day-label .day-name::before { content:''; width:5px; height:5px; border-radius:50%; background:var(--accent); }
+        #page-settings .hero h1 { letter-spacing:0.12em; }
+
+        #page-settings .profile-info { background:none; border:none; padding:0; margin:4px 0 18px; font-size:0.8rem; line-height:1.7; color:var(--text-muted); }
+        #page-settings .profile-info strong { color:var(--text-dim); font-weight:500; }
+
+        /* Page titles a touch airier, like the wordmark */
+        .hero h1 { letter-spacing:0.08em; }
+
+        /* Tab bar: a small gold dot under the active tab, like the sign-in tabs */
+        @media (max-width:900px) {
+            .bottom-nav .tab-btn { position:relative; }
+            .bottom-nav .tab-btn::after { content:''; position:absolute; bottom:-1px; left:50%; width:4px; height:4px; margin-left:-2px; border-radius:50%; background:var(--accent); opacity:0; transform:scale(0.3); transition:opacity 0.3s var(--ease), transform 0.3s var(--ease); }
+            .bottom-nav .tab-btn.active::after { opacity:1; transform:none; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .profile-screen.active .profile-header, .profile-screen.active form, .program-selector.active .selector-hero, .program-selector.active .program-card { animation:none; }
+        }
     </style>
 </head>
 <body>
+
+<!-- The Odyr mark, reused across screens with <svg><use href="#odyrMark"/></svg> -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs><linearGradient id="odyrGold" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f2d891"/><stop offset="1" stop-color="#b38636"/></linearGradient></defs>
+    <symbol id="odyrMark" viewBox="0 0 100 100">
+        <path d="M68.6 21.6 A34 34 0 1 0 78.6 32.8" fill="none" stroke="url(#odyrGold)" stroke-width="6.5" stroke-linecap="round"/>
+        <circle cx="75.5" cy="25.8" r="4.6" fill="#f2d891"/>
+    </symbol>
+</svg>
 
 <!-- OPENING QUOTE: shown on every launch, then dissolves into the app (tap to skip) -->
 <div class="splash" id="splash" onclick="hideSplash()">
@@ -1591,13 +1662,14 @@ function renderSplash(text) {
     <div class="profile-container">
         <div class="profile-card">
             <div class="profile-header">
-                <h2>COMPLETE YOUR PROFILE</h2>
-                <p>Enter your body metrics for personalized strength standards</p>
+                <svg class="screen-mark" aria-hidden="true"><use href="#odyrMark"/></svg>
+                <h2>ABOUT YOU</h2>
+                <p>So every standard fits your body.</p>
             </div>
 
             <div class="auth-error" id="profileError"></div>
 
-            <form id="profileForm" onsubmit="handleProfileSave(event)">
+            <form id="profileForm" class="line-fields" onsubmit="handleProfileSave(event)">
                 <div class="form-group">
                     <label class="form-label">Gender</label>
                     <select class="form-input" id="profileGender" required>
@@ -1623,11 +1695,10 @@ function renderSplash(text) {
                 </div>
 
                 <div class="profile-info">
-                    <strong>Why we need this:</strong><br>
-                    Your strength standards are calculated based on your bodyweight. A 60kg person has different benchmarks than a 100kg person. This ensures accurate tier rankings!
+                    Standards scale with your bodyweight, so a 60 kg and a 100 kg lifter are measured fairly.
                 </div>
 
-                <button type="submit" class="auth-btn">SAVE & CONTINUE</button>
+                <button type="submit" class="auth-btn">Continue</button>
             </form>
         </div>
     </div>
@@ -1637,9 +1708,9 @@ function renderSplash(text) {
 <div class="screen program-selector" id="programSelector">
     <div class="selector-container">
         <div class="selector-hero">
-            <div class="kicker">Odyr</div>
+            <svg class="screen-mark" aria-hidden="true"><use href="#odyrMark"/></svg>
             <h1>CHOOSE YOUR PATH</h1>
-            <p>Pick a program. Every program keeps its own 12-week log.</p>
+            <p>Every program keeps its own twelve-week log.</p>
         </div>
         
         <div class="program-grid">
@@ -1710,6 +1781,7 @@ function renderSplash(text) {
 <div class="screen main-app" id="mainApp">
     <div class="topbar">
         <div class="topbar-left">
+            <svg class="topbar-mark" aria-hidden="true"><use href="#odyrMark"/></svg>
             <div>
                 <div class="topbar-title" id="programTitle">Odyr</div>
                 <div class="topbar-program" id="programSubtitle"></div>
@@ -1724,7 +1796,7 @@ function renderSplash(text) {
         </div>
         <div class="topbar-actions">
             <span class="save-status" id="saveStatus"></span>
-            <button class="btn-switch" onclick="switchProgram()">Switch program</button>
+            <button class="btn-switch" onclick="switchProgram()">Programs <span aria-hidden="true">›</span></button>
         </div>
     </div>
 
@@ -1831,7 +1903,7 @@ function renderSplash(text) {
 
                 <div class="auth-error" id="settingsError" style="margin-bottom:20px;"></div>
 
-                <form id="settingsProfileForm" onsubmit="handleSettingsUpdate(event)">
+                <form id="settingsProfileForm" class="line-fields" onsubmit="handleSettingsUpdate(event)">
                     <div class="form-group">
                         <label class="form-label">Gender</label>
                         <select class="form-input" id="settingsGender" required>
@@ -2141,7 +2213,7 @@ function renderSplash(text) {
 
 // Shown at the bottom of Settings so you can tell which version a phone is running.
 // Bump it with every deploy.
-const APP_VERSION = '1.32 · 28 Oct';
+const APP_VERSION = '1.33 · 28 Oct';
 
 const SUPABASE_URL = 'https://hcwbcxhblfjpdlkwykez.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_mEe_5g2UITyp5O-F9YRhRg_wTQWuOtf';
