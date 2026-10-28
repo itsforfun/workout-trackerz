@@ -1,4 +1,4 @@
-# CLAUDE.md — Workout Tracker App (handoff for Claude Code)
+# CLAUDE.md — Odyra (formerly "Workout Tracker") — handoff for Claude Code
 
 > Claude Code reads this file automatically. It is the single source of truth for this project.
 > Read it fully before changing code. Older long-form docs live in `docs/` (some details there are outdated — this file wins).
@@ -316,4 +316,10 @@ reference/debug-screenshots/  ← Supabase key page, "Script error" console, Git
 - **Trophy room** (`trophyScreen`, `openTrophyRoom`; from the Today level strip, the badges link and Progress): level hero, 3-slot showcase (`_showcase`), badges grouped, closest-to-next first. **Badge sheet** (`badgeModal`): tiltable medal, progress to next tier with a tip, tier ladder with dates/rarity, pin to showcase.
 - **Minting moment** (`showBadgeMoment`): blank coin stamped into the new medal, light sweep, ring tinted in the tier colour. Diamond/Obsidian medals gleam now and then.
 - **Nudges:** Today insight when a tier is within ~10% (`nearestBadgeText`), a toast one set before a Set Machine tier, and the 8 AM workout reminder mentions a tier the next workout earns.
+
+## 22. Brand: Odyra (v1.30, 2026-10-28)
+- Name **Odyra** (oh-DEER-ah), coined from the Greek *odysseia*: the endless journey. Tagline "Your odyssey, every day." Chosen after checking App Store / fitness-brand / trademark clashes (Aurum, Kintsu, Kalon, Elyra, Viora, Iduna were taken or crowded). Do a formal trademark search before charging money.
+- Icon: an open gold ring (the path never closes) with a small gold point at the opening (the traveller), on the app's dark warm background — generated to `icons/icon-{180,192,512}.png` with Pillow. Service-worker cache renamed `odyra-v5`.
+- Name appears in `<title>`, `apple-mobile-web-app-title`, the manifest, the sign-in card, the program picker kicker and the default top-bar title. The Apple Health shortcut keeps its name "Workout Steps".
+- Opening quotes (`QUOTES`, 50 lines written for the app) follow the brand themes: the endless journey, constant change, listening to the body, endurance, never yielding.
 

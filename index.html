@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Workout Tracker</title>
+    <title>Odyra</title>
     <!-- Installable app (PWA): add to iPhone home screen via Share → Add to Home Screen -->
     <link rel="manifest" href="manifest.webmanifest">
     <meta name="theme-color" content="#13100e">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Workout">
+    <meta name="apple-mobile-web-app-title" content="Odyra">
     <link rel="apple-touch-icon" href="icons/icon-180.png">
     <link rel="icon" type="image/png" href="icons/icon-192.png">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
@@ -1278,7 +1278,7 @@
         .splash-kicker { font-family:var(--font-ui); font-size:0.62rem; font-weight:600; letter-spacing:0.26em; text-transform:uppercase; color:var(--accent); opacity:0; animation:splashIn 1.3s 0.15s cubic-bezier(.2,.8,.2,1) forwards; }
         .splash-line { display:block; width:36px; height:1px; margin:14px auto 0; background:linear-gradient(90deg, transparent, #d9b25f 20%, #f2d891 50%, #d9b25f 80%, transparent);
             transform:scaleX(0); animation:lineDraw 1.7s 0.4s cubic-bezier(.65,0,.35,1) forwards; }
-        .splash-quote { font-family:'Instrument Serif', Georgia, serif; font-weight:400; font-size:clamp(1.9rem, 8.4vw, 2.6rem); line-height:1.12; letter-spacing:-0.005em; color:var(--text); margin-top:18px; }
+        .splash-quote { font-family:'Instrument Serif', Georgia, serif; font-weight:400; font-size:clamp(1.9rem, 8.4vw, 2.6rem); line-height:1.12; letter-spacing:-0.005em; color:var(--text); margin-top:18px; text-wrap:balance; }
         .splash-quote .w { display:inline-block; opacity:0; animation:wordIn 1.5s calc(0.7s + var(--i) * 140ms) cubic-bezier(.2,.8,.2,1) forwards; }
         @keyframes splashIn { from { opacity:0; transform:translateY(10px); filter:blur(6px); } to { opacity:1; transform:none; filter:none; } }
         @keyframes wordIn { from { opacity:0; transform:translateY(0.35em); filter:blur(8px); } to { opacity:1; transform:none; filter:none; } }
@@ -1378,58 +1378,58 @@
 </div>
 <script>
 // Runs before anything else so the quote is on screen at first paint.
-// Lines written for this app. Shuffled like a deck (kept on this device) so none repeats until all are seen.
+// Lines written for this app around Odyra's themes: the endless journey, constant change, listening to the body, never yielding. Shuffled like a deck (kept on this device) so none repeats until all are seen.
 const QUOTES = [
-    'Strength is built in the reps nobody sees.',
-    'You don’t need to be extreme. You need to keep showing up.',
-    'Show up today. Tomorrow’s version of you is counting on it.',
-    'The bar doesn’t care about your excuses. Neither should you.',
-    'Small steps, taken daily, become a different life.',
-    'Discipline is just remembering what you actually want.',
-    'Every record you set started as a rep you almost skipped.',
-    'Rest is part of the plan, not a break from it.',
-    'Slow progress is still progress. Stopping is the only setback.',
-    'You are one workout away from a better mood.',
-    'Consistency beats intensity, every single time.',
-    'The hardest part of the session is walking through the door.',
-    'Strong is a habit, not a trait.',
-    'Earn the feeling of the walk home.',
-    'Your body keeps the score of every day you showed up.',
-    'Today’s effort is tomorrow’s warm-up.',
-    'Nobody remembers the easy sets. Make this one count.',
-    'Be patient with results and impatient with effort.',
-    'Lift for the person you’re becoming.',
-    'Motivation fades. Routines don’t.',
-    'A good session beats a perfect plan you never start.',
-    'Breathe, brace, and own the next rep.',
-    'Progress hides in boring repetition.',
-    'You don’t find time to train. You make it.',
-    'Every step counts, even the slow ones.',
-    'Quiet work, loud results.',
-    'The weight you fear today is your warm-up next year.',
-    'Win the morning, then win the day.',
-    'Be the person who finishes the set.',
-    'Fitness is a promise you keep to yourself.',
-    'Strength grows in the space between comfortable and impossible.',
-    'Do it tired. Do it slowly. Just do it well.',
-    'The only bad workout is the one you skipped.',
-    'Build a body that carries your life with ease.',
-    'Your streak is a story. Write another chapter today.',
-    'Effort is the one thing you fully control.',
-    'Recovery is where the work turns into results.',
-    'Small wins stack. Keep stacking.',
-    'Today you train for every tomorrow.',
-    'Hard sessions build easy days.',
-    'Be proud of the reps, not just the results.',
-    'A little better than last week is the whole game.',
-    'Your pace is fine. Keep moving.',
-    'Show your future self what you’re made of.',
-    'Calm mind, strong body, steady steps.',
-    'Great days are built one ordinary session at a time.',
-    'Sweat now, smile later.',
-    'The work is simple. Doing it often is the art.',
-    'Trust the process. Log the reps.',
-    'Every day you choose yourself counts.',
+    'The road does not end. That is the gift.',
+    'You are not finishing a journey. You are becoming the one who walks it.',
+    'Every body you’ve had was a draft. Keep writing.',
+    'Nothing stays still. Move with it.',
+    'The body remembers every promise you keep.',
+    'Strength is what remains when quitting was an option.',
+    'You don’t arrive. You deepen.',
+    'Diamonds are only pressure that refused to give way.',
+    'Listen to your body. It has been speaking all along.',
+    'Each rep is a step on a path only you can walk.',
+    'Life keeps changing. Train to change with it.',
+    'You were never meant to be finished.',
+    'Yield to rest, never to doubt.',
+    'The path grows steeper because you are growing stronger.',
+    'Endure today. Tomorrow repays you in strength.',
+    'Discipline is a quiet form of self-respect.',
+    'Some days you train the body. Most days, the will.',
+    'The journey outward is also the journey inward.',
+    'Bend like water. Return like the tide.',
+    'Hold firm when it’s hard. That’s where you are made.',
+    'Your breath is the oldest training partner you have.',
+    'Every season of life asks for a new kind of strength.',
+    'The mountain does not move. You learn to climb.',
+    'Rest is not the end of the road. It is part of it.',
+    'Unbreakable is built, never born.',
+    'Move with intention, and the body follows the mind.',
+    'A setback is only a longer chapter.',
+    'You are the traveller and the road.',
+    'Strength is patience you can see.',
+    'Show up, especially when no one is watching.',
+    'Each morning, the odyssey begins again.',
+    'Be gentle with the body and relentless with the work.',
+    'You have outlasted every hard day so far. Keep the record.',
+    'Stillness and motion are both forms of training.',
+    'Your limits move every time you meet them.',
+    'Deep roots grow in silence.',
+    'Fall, rest, rise. Repeat for a lifetime.',
+    'Goals change. The path continues.',
+    'Tune in. Your body knows the way.',
+    'Every scar on the journey is proof you kept walking.',
+    'Courage is one more step when every reason says stop.',
+    'You are not behind. You are on your path.',
+    'Iron trains patience as much as muscle.',
+    'Let today be a quiet act of devotion to yourself.',
+    'The practice is the pilgrimage.',
+    'Never yield the ground you’ve earned.',
+    'An odyssey is measured in returns, not arrivals.',
+    'The strongest version of you is still on the way.',
+    'Hard roads make steady feet.',
+    'Begin again. That is the whole secret.',
 ];
 // Writes the weekday and the quote, one span per word so each word can rise in turn
 function renderSplash(text) {
@@ -1482,9 +1482,9 @@ function renderSplash(text) {
     <div class="auth-container">
         <div class="auth-card">
             <div class="auth-logo">
-                <div class="kicker">Strength · 12 weeks</div>
-                <h1>WORKOUT TRACKER</h1>
-                <p>Your strength journey starts here</p>
+                <div class="kicker">Your odyssey, every day</div>
+                <h1>ODYRA</h1>
+                <p>Train, track and grow stronger for life</p>
             </div>
 
             <div class="auth-tabs">
@@ -1592,7 +1592,7 @@ function renderSplash(text) {
 <div class="screen program-selector" id="programSelector">
     <div class="selector-container">
         <div class="selector-hero">
-            <div class="kicker">Workout Tracker</div>
+            <div class="kicker">Odyra</div>
             <h1>CHOOSE YOUR PATH</h1>
             <p>Pick a program. Every program keeps its own 12-week log.</p>
         </div>
@@ -1666,7 +1666,7 @@ function renderSplash(text) {
     <div class="topbar">
         <div class="topbar-left">
             <div>
-                <div class="topbar-title" id="programTitle">Workout Tracker</div>
+                <div class="topbar-title" id="programTitle">Odyra</div>
                 <div class="topbar-program" id="programSubtitle"></div>
             </div>
         </div>
@@ -2096,7 +2096,7 @@ function renderSplash(text) {
 
 // Shown at the bottom of Settings so you can tell which version a phone is running.
 // Bump it with every deploy.
-const APP_VERSION = '1.29 · 28 Oct';
+const APP_VERSION = '1.30 · 28 Oct';
 
 const SUPABASE_URL = 'https://hcwbcxhblfjpdlkwykez.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_mEe_5g2UITyp5O-F9YRhRg_wTQWuOtf';

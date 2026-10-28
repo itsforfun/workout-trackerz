@@ -1,7 +1,7 @@
 {
-  "name": "Workout Tracker",
-  "short_name": "Workout",
-  "description": "12-week strength tracker with tiers, progression hints and a rest timer.",
+  "name": "Odyra",
+  "short_name": "Odyra",
+  "description": "Odyra: your odyssey, every day. Strength training with an adaptive coach, levels and badges.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
