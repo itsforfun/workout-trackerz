@@ -18,12 +18,13 @@ Status: **Done** · **Check** (built, still needs a look on the iPhone or a smal
 | "Delete my data" | Deletes the data but not the login; a real account deletion needs a small server function |
 | Backup download | Exports one program's log; a full "Export all my data" is still missing |
 | Name "Odyr" | Formal trademark search before charging money |
+| Error reports (v1.38) | Run `supabase-errors-setup.sql` in Supabase so reports are stored |
+| Summary and share cards (v1.38) | Try them after a real workout on the iPhone |
 
 ## Next — not started
 
 **Sharing and motivation**
-- Post-workout summary screen: duration, volume, records, XP, medal earned
-- Share cards: weekly recap, new records and level-ups as Instagram-story images
+- Share cards for a single new record and for level-ups (the summary and weekly recap can be shared already)
 - Share button on the badge sheet (for the share cards)
 - Friends and weekly challenges (steps or workouts), small private groups
 - Read-only progress sharing with a coach or training partner
@@ -54,9 +55,7 @@ Status: **Done** · **Check** (built, still needs a look on the iPhone or a smal
 - Spanish, German, Portuguese (one language file each; see CLAUDE.md section 24)
 
 **Reliability and trust**
-- Split the single file into organised modules (Vite)
-- Automated tests for the coach, scoring and saving
-- Error monitoring
+- More automated checks as features are added (badges, steps sync, reminders)
 - Privacy policy
 - Move the data into proper tables if the saved log grows large
 
@@ -101,4 +100,5 @@ Status: **Done** · **Check** (built, still needs a look on the iPhone or a smal
 | 1.29 | 8-tier medals, trophy room, badge sheet, minting moment, signature and secret badges, "almost there" nudges |
 | 1.30–1.34 | Brand: Odyra, then Odyr; new icon; sign-in redesign; design carried across the app; thinker quotes |
 | 1.35–1.36 | French (whole app, reminders, quotes), Language setting, French review pass, decimal comma typing |
+| 1.38 | Post-workout summary, share cards (workout, weekly recap), code split into organised files, automated checks run by GitHub on every push, error reports |
 | 1.37 | Trophy room and Progress level ring in the Odyr-mark style, gold-dot section labels everywhere, quotes capped at ~14 words |

@@ -1,0 +1,554 @@
+// ════════════════════════════════════════════
+//  TODAY TAB
+// ════════════════════════════════════════════
+
+let todayDay = null;    // day index being viewed (null = next in the rotation)
+let todayWeek = null;   // week override (null = current week)
+const mobilityChecks = new Set();
+
+function workoutSessions() {
+    return programSessions().filter(s => s.type === 'workout');
+}
+
+// Rolling rotation: the day after the last one trained, regardless of weekday
+function getNextDay() {
+    const sessions = workoutSessions();
+    if (!sessions.length) return 0;
+    return (sessions[sessions.length - 1].day + 1) % PROGRAMS[currentProgram].days.length;
+}
+
+// Workouts across every program, for streaks
+function allWorkoutDates() {
+    const dates = [];
+    Object.values(metaFor('_sessions')).forEach(list => {
+        (list || []).forEach(s => { if (s.type === 'workout') dates.push(s.date); });
+    });
+    return dates;
+}
+
+function getStreakStats() {
+    const dates = allWorkoutDates();
+    const thisMonday = mondayOf(todayStr());
+    const weeksWithWorkouts = new Set(dates.map(mondayOf));
+    const thisWeek = dates.filter(d => mondayOf(d) === thisMonday).length;
+
+    // Consecutive weeks with at least one workout; this week only counts once it has one
+    let streak = 0;
+    let week = weeksWithWorkouts.has(thisMonday) ? thisMonday : addDays(thisMonday, -7);
+    while (weeksWithWorkouts.has(week)) {
+        streak++;
+        week = addDays(week, -7);
+    }
+    return { thisWeek, streak, total: dates.length };
+}
+
+// ── Today hero: this week's lifting and cardio, and today's steps, as three rings ──
+// A ring turns gold once it closes; gold is kept for goals reached.
+const HERO_RING_RADII = [84, 63, 42];
+let heroStepsRequested = false;
+
+function weeklyLiftTarget(prog) {
+    if (prog.weekPlan) return Object.values(prog.weekPlan).filter(p => typeof p === 'number').length;
+    return prog.days.length === 1 ? 2 : prog.days.length;
+}
+
+function compactNum(n) {
+    return n >= 1000 ? `${(Math.round(n / 100) / 10).toLocaleString(LOCALE)}k` : String(n);
+}
+
+function renderTodayHero() {
+    const el = document.getElementById('todayHero');
+    const stats = getStreakStats();
+    const liftTarget = weeklyLiftTarget(PROGRAMS[currentProgram]);
+    const cardio = cardioWeek().moderate;
+    const steps = stepsOn(todayStr());
+    const goal = stepGoal();
+    const consistency = consistencyScore();
+    const xp = playerXp(playerStats());
+    const rings = [
+        { label: 'Lift', color: '#f3ece0', value: stats.thisWeek, target: liftTarget, text: `<span data-count="${stats.thisWeek}" data-key="hero-lift"></span><small>/${liftTarget}</small>` },
+        { label: 'Cardio', color: '#86d6a8', value: cardio, target: 150, text: `<span data-count="${cardio}" data-key="hero-cardio"></span><small>/150 min</small>` },
+        { label: 'Steps', color: '#8fbbd9', value: steps, target: goal, text: `<span data-count="${steps}" data-key="hero-steps" data-format="compact"></span><small>/${compactNum(goal)}</small>` },
+    ];
+    const circles = rings.map((ring, i) => {
+        const r = HERO_RING_RADII[i];
+        const c = 2 * Math.PI * r;
+        const ratio = Math.min(1, ring.value / ring.target);
+        return `
+            <circle class="hr-bg" cx="100" cy="100" r="${r}" style="--c:${ring.color}"/>
+            <circle class="hr-fg${ratio >= 1 ? ' closed' : ''}" cx="100" cy="100" r="${r}" style="--c:${ring.color}"
+                stroke-dasharray="${c}" stroke-dashoffset="${c}" data-offset="${c * (1 - ratio)}"/>`;
+    }).join('');
+    el.innerHTML = `
+        <button class="hero-level" onclick="openLevel()">
+            <span class="hlv-num">Level <strong data-count="${xp.level}" data-key="hero-level"></strong></span>
+            <span class="hlv-rank">${escapeHtml(xp.rank)}</span>
+            <span class="hlv-xp">${xp.level < MAX_LEVEL ? `${xp.toNext.toLocaleString(LOCALE)} XP to go` : 'Max level'}</span>
+            <span class="hlv-bar"><span style="width:${xp.span ? Math.round((xp.into / xp.span) * 100) : 100}%"></span></span>
+        </button>
+        <div class="hero-rings">
+            <div class="hero-score"><strong data-count="${consistency.score}" data-key="hero-score"></strong><span>score</span></div>
+            <svg viewBox="0 0 200 200" aria-hidden="true">
+                <defs><linearGradient id="heroGold" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0" stop-color="#f2d891"/><stop offset="1" stop-color="#b38636"/>
+                </linearGradient></defs>
+                ${circles}
+            </svg>
+        </div>
+        <div class="hero-legend">
+            ${rings.map(ring => `
+                <div class="hl-row${ring.value >= ring.target ? ' closed' : ''}" style="--c:${ring.color}">
+                    <span class="hl-label">${ring.label}</span>
+                    <span class="hl-value">${ring.text}</span>
+                </div>`).join('')}
+        </div>
+        <div class="hero-foot">
+            <span><strong>${stats.streak}</strong> ${stats.streak === 1 ? 'week' : 'weeks'} in a row</span>
+            <button class="hero-link" onclick="openAchievements()"><strong>${badgeCount()}</strong> badges →</button>
+        </div>
+    `;
+    // Rings sweep in from empty
+    rollNumbers(el);
+    el.getBoundingClientRect();
+    setTimeout(() => el.querySelectorAll('.hr-fg').forEach(circle => { circle.style.strokeDashoffset = circle.dataset.offset; }), 30);
+
+    // Steps live on the Steps tab; fetch today's count once so the ring is right on first open
+    if (!heroStepsRequested && currentUser) {
+        heroStepsRequested = true;
+        loadSteps().then(ok => { if (ok) { checkAchievements(); renderTodayHero(); } });
+    }
+}
+
+function renderToday() {
+    const prog = PROGRAMS[currentProgram];
+    checkAchievements();
+    const nextDay = getNextDay();
+    if (todayDay === null || todayDay >= prog.days.length) todayDay = nextDay;
+    const week = todayWeek !== null ? todayWeek : getCurrentWeek();
+
+    renderTodayHero();
+    renderInsight();
+    renderDeloadCard();
+    renderWeekPlan();
+    maybeStartTour();
+    maybeShowRecap();
+    scheduleNudges();
+    document.getElementById('powerUnlock').innerHTML = powerUnlockHtml();
+
+    // Cardio and rest days of a week plan show cardio zones instead of the lifting days
+    const plan = prog.weekPlan ? prog.weekPlan[new Date().getDay()] : null;
+    const offDay = plan === 'cardio' || plan === 'rest' ? plan : null;
+    renderCardioView(offDay, todayMode === 'lift');
+    document.getElementById('liftView').style.display = offDay && todayMode !== 'lift' ? 'none' : '';
+
+    document.getElementById('dayStrip').innerHTML = prog.days.map((name, i) => `
+        <button class="day-tab${i === todayDay ? ' active' : ''}" onclick="selectTodayDay(${i})">
+            ${escapeHtml(name)}${i === nextDay && prog.days.length > 1 ? '<span class="up-next">UP NEXT</span>' : ''}
+        </button>
+    `).join('');
+    const activeTab = document.querySelector('.day-tab.active');
+    if (activeTab) activeTab.scrollIntoView({ block: 'nearest', inline: 'start' });
+
+    const exercises = prog.exercises.filter(ex => ex.day === todayDay);
+    const minutes = Math.round(exercises.reduce((sum, ex) => {
+        const p = getPrescription(ex);
+        return sum + p.sets * (p.restSec + 40);
+    }, 0) / 60) + 5;
+    const weekOptions = Array.from({ length: WEEKS }, (_, w) =>
+        `<option value="${w}"${w === week ? ' selected' : ''}>Week ${w + 1}</option>`).join('');
+    document.getElementById('todayMeta').innerHTML = `
+        ${exercises.length} exercises · ${minutes} min · <select class="week-select" onchange="selectTodayWeek(this.value)">${weekOptions}</select>
+    `;
+
+    renderWarmup(exercises);
+
+    let readyToProgress = 0;
+    document.getElementById('todayList').innerHTML = exercises.map((ex, idx) => {
+        // Rest, form notes and progression tips appear in workout mode; this list stays a glance
+        const progression = getProgression(ex);
+        if (progression && progression.type === 'kg') readyToProgress++;
+        const target = progression ? ` · ${formatSetWeight(ex, progression.kg)}` : '';
+        return `
+            <div class="today-item" style="--i:${idx}">
+                <div class="today-item-main">
+                    <div class="today-item-name">${escapeHtml(exerciseDisplayName(ex, week))}</div>
+                    <div class="today-item-sub">${escapeHtml(prescriptionText(ex))}${escapeHtml(target)}</div>
+                    ${upgradeText(ex, week) ? `<div class="today-item-note upgrade">${escapeHtml(upgradeText(ex, week))}</div>` : ''}
+                </div>
+                ${progressionBadge(progression)}
+            </div>
+        `;
+    }).join('');
+
+    const daysOff = prog.coachRules ? daysSinceLastWorkout() : null;
+    const hints = [];
+    if (daysOff !== null && daysOff >= 7) hints.push(`${daysOff} days since your last session, so the workout starts 10% lighter`);
+    if (readyToProgress) hints.push(`${readyToProgress} exercise${readyToProgress === 1 ? '' : 's'} ready to go up in weight`);
+    document.getElementById('todayHint').textContent = hints.join(' · ');
+
+    const btn = document.getElementById('startWorkoutBtn');
+    if (activeWorkout) {
+        btn.innerHTML = `${PLAY_ICON} Resume ${escapeHtml(prog.days[activeWorkout.day])} workout`;
+        btn.classList.remove('secondary');
+    } else {
+        btn.innerHTML = `${PLAY_ICON} ${todayDay === nextDay ? 'Start workout' : `Start ${escapeHtml(prog.days[todayDay])} instead`}`;
+        btn.classList.toggle('secondary', todayDay !== nextDay);
+    }
+
+    renderMobility();
+    renderHabits();
+}
+
+// ── Programs with a weekly plan, warm-up, daily habits and a power milestone (3-Day Full Body) ──
+
+const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+// Mon–Sun strip: what each day is for, with a tick once it's done this week
+function renderWeekPlan() {
+    const el = document.getElementById('weekPlan');
+    const prog = PROGRAMS[currentProgram];
+    if (!prog.weekPlan) {
+        el.innerHTML = '';
+        return;
+    }
+    const monday = mondayOf(todayStr());
+    const today = todayStr();
+    const sessions = programSessions();
+    const days = [1, 2, 3, 4, 5, 6, 0].map((weekday, i) => {
+        const date = addDays(monday, i);
+        const plan = prog.weekPlan[weekday];
+        const label = typeof plan === 'number' ? prog.days[plan].split(' ')[0] : plan === 'cardio' ? 'Cardio' : 'Walk';
+        const done = sessions.some(s => s.date === date && (s.type === 'workout' || s.type === 'cardio'));
+        return `
+            <div class="wp-day${date === today ? ' today' : ''}${done ? ' done' : ''}${typeof plan === 'number' ? ' lift' : ''}">
+                <span class="wp-name">${WEEKDAYS[weekday]}</span>
+                <span class="wp-label">${escapeHtml(label)}</span>
+            </div>`;
+    }).join('');
+
+    el.innerHTML = `<div class="week-plan">${days}</div>`;
+}
+
+// Warm-up for the selected day, plus the effort and pain rules
+function renderWarmup(exercises) {
+    const el = document.getElementById('warmupCard');
+    const prog = PROGRAMS[currentProgram];
+    if (!prog.warmup) {
+        el.innerHTML = '';
+        return;
+    }
+    // Two light build-up sets of the first lift, at about 50% and 75% of today's weight
+    const first = exercises[0];
+    const working = first ? parseFloat(workoutPrefill(first).kg) : NaN;
+    const unit = first ? setWeightUnit(first) : '';
+    const rampText = working > 0
+        ? `${formatNum(Math.round(working * 0.5))} ${unit} × 8, then ${formatNum(Math.round(working * 0.75))} ${unit} × 4`
+        : 'building to your working weight';
+    const items = [...prog.warmup.common, ...prog.warmup.days[todayDay],
+        [`2 light sets of ${first ? first.name : 'the first lift'}`, rampText]];
+    el.innerHTML = `
+        <details class="mobility-card warmup-card">
+            <summary><h3>Warm-up · ~6 min</h3><span class="warmup-hint">Tap to open</span></summary>
+            ${items.map(([name, dose]) => `
+                <label class="mobility-item"><input type="checkbox"> ${escapeHtml(name)} <small>${escapeHtml(dose)}</small></label>
+            `).join('')}
+            <p class="warmup-note">${escapeHtml(prog.warmup.note)}</p>
+            <p class="warmup-note"><strong>Effort:</strong> stop every set with 1–3 reps in reserve.
+                <strong>Pain:</strong> up to ~3/10 that settles by the next day is fine. Sharp pain, or pain that gets worse session to session, means back off that exercise.</p>
+            <p class="warmup-note">See a physio for back pain running down a leg, numbness or tingling, or an ankle that keeps giving way.</p>
+        </details>
+    `;
+}
+
+// Power work unlocks at the bodyweight milestone
+function powerUnlockHtml() {
+    const prog = PROGRAMS[currentProgram];
+    if (!prog.powerUnlockKg || !userProfile || !userProfile.weight) return '';
+    const unit = usesLb() ? 'lb' : 'kg';
+    if (userProfile.weight <= prog.powerUnlockKg) {
+        return `<div class="power-unlock unlocked"><strong>Power work unlocked.</strong> Add low box jumps or sled pushes after the warm-up.</div>`;
+    }
+    const toGo = kgToDisplay(userProfile.weight - prog.powerUnlockKg);
+    return `<div class="power-unlock"><span>Power unlock at ${kgToDisplay(prog.powerUnlockKg)} ${unit}</span><strong>${toGo} ${unit} to go</strong></div>`;
+}
+
+// Daily habit checklist, saved per date; collapsed to a progress row until opened
+let habitsOpen = false;
+
+function renderHabits() {
+    const el = document.getElementById('habitsCard');
+    const prog = PROGRAMS[currentProgram];
+    if (!prog.habits) {
+        el.innerHTML = '';
+        return;
+    }
+    const checked = new Set((metaFor('_habits')[todayStr()]) || []);
+    // The steps habit (first in the list) counts as done once 8,000 steps are synced today
+    const stepsAuto = /steps/i.test(prog.habits[0]) && stepsOn(todayStr()) >= 8000;
+    if (stepsAuto) checked.add(0);
+    const done = checked.size;
+    const total = prog.habits.length;
+    el.innerHTML = `
+        <details class="mobility-card habits-card" ${habitsOpen ? 'open' : ''} ontoggle="habitsOpen = this.open">
+            <summary>
+                <div class="habits-row"><h3>Daily habits</h3><span class="habits-count${done === total ? ' all' : ''}">${done}/${total}</span></div>
+                <div class="habits-bar"><span style="width:${Math.round((done / total) * 100)}%"></span></div>
+            </summary>
+            ${prog.habits.map((habit, i) => `
+                <label class="mobility-item">
+                    <input type="checkbox" ${checked.has(i) ? 'checked' : ''} onchange="toggleHabit(${i}, this.checked)">
+                    ${escapeHtml(habit)}
+                </label>
+            `).join('')}
+        </details>
+    `;
+}
+
+function toggleHabit(i, on) {
+    haptic();
+    const habits = metaFor('_habits');
+    const today = new Set(habits[todayStr()] || []);
+    if (on) today.add(i);
+    else today.delete(i);
+    habits[todayStr()] = [...today].sort((a, b) => a - b);
+    scheduleSave();
+    renderHabits();
+    checkAchievements();
+    renderTodayHero();
+}
+
+// Week 6+: suggest the harder version of an exercise once knees and balance are solid
+function upgradeText(ex, week) {
+    return ex.upgrade && week + 1 >= ex.upgrade.week
+        ? `Week ${ex.upgrade.week}+: if knees and balance feel solid, upgrade to ${ex.upgrade.to} (tap Swap during the workout).`
+        : '';
+}
+
+// Days since this program's last lifting session (null when there is none)
+function daysSinceLastWorkout() {
+    const sessions = workoutSessions();
+    return sessions.length ? daysBetween(sessions[sessions.length - 1].date, todayStr()) : null;
+}
+
+function selectTodayDay(day) {
+    haptic();
+    todayDay = day;
+    renderToday();
+}
+
+function selectTodayWeek(week) {
+    todayWeek = Number(week);
+    renderToday();
+}
+
+function renderMobility() {
+    const card = document.getElementById('mobilityCard');
+    const routines = MOBILITY[currentProgram];
+    const sessions = workoutSessions();
+    if (!routines || !sessions.length) {
+        card.innerHTML = '';
+        return;
+    }
+    const lastDay = sessions[sessions.length - 1].day;
+    const routine = routines[lastDay];
+    const doneToday = programSessions().some(s => s.type === 'mobility' && s.date === todayStr());
+    card.innerHTML = `
+        <div class="mobility-card">
+            <h3>Off-day mobility · ${escapeHtml(routine.title)}</h3>
+            <p>Optional · ~20 min · 2-3 rounds, 30-45 s each${doneToday ? ' · Done today' : ''}</p>
+            ${routine.items.map(([name, dose], i) => `
+                <label class="mobility-item">
+                    <input type="checkbox" ${mobilityChecks.has(i) ? 'checked' : ''} onchange="toggleMobility(${i}, this.checked)">
+                    ${escapeHtml(name)} <small>${escapeHtml(dose)}</small>
+                </label>
+            `).join('')}
+            <button class="start-btn secondary" style="margin-top:12px;" onclick="logMobility(${lastDay})">Log mobility session</button>
+        </div>
+    `;
+}
+
+function toggleMobility(i, checked) {
+    if (checked) mobilityChecks.add(i);
+    else mobilityChecks.delete(i);
+}
+
+function logMobility(day) {
+    programSessions().push({ date: todayStr(), day, week: getCurrentWeek(), type: 'mobility', minutes: 20 });
+    mobilityChecks.clear();
+    scheduleSave();
+    renderToday();
+    showToast('Mobility session logged');
+}
+
+// ════════════════════════════════════════════
+//  CARDIO ZONES (cardio and rest days of programs with a week plan)
+// ════════════════════════════════════════════
+
+// Five heart-rate zones as % of estimated max heart rate, with RPE (effort 0–10) and the talk
+// test for training without a heart-rate monitor. Sessions favour low-impact machines.
+const CARDIO_ZONES = [
+    { zone: 1, name: 'Recovery', pct: [50, 60], rpe: '2–3', color: '#8fbbd9', talk: 'You could sing',
+        why: 'Active recovery: gets blood moving without adding fatigue. Ideal on walk days and after hard lifting.',
+        sessions: [['Easy walk', 30, '30–45 min', 'Flat or a slight incline, relaxed pace'], ['Easy bike spin', 20, '20–30 min', 'Light resistance, smooth pedalling']] },
+    { zone: 2, name: 'Aerobic base', pct: [60, 70], rpe: '3–4', color: '#86d6a8', talk: 'You can talk in full sentences',
+        why: 'Builds the aerobic base (heart, mitochondria, fat use) with little stress on joints or recovery. Most weekly cardio should be here.',
+        sessions: [['Incline treadmill walk', 30, '30–45 min', '8–12% incline, 4.5–5.5 km/h, hands off the rails'], ['Steady bike', 30, '30–45 min', 'A resistance you could hold for an hour'], ['Elliptical', 30, '30 min', 'Low impact, easy on knees and ankles'], ['Easy rowing', 20, '20–30 min', 'Smooth strokes, about 20 per minute']] },
+    { zone: 3, name: 'Tempo', pct: [70, 80], rpe: '5–6', color: '#d4a843', talk: 'Short sentences only',
+        why: 'Comfortably hard. Useful in small doses once the base is built; lots of it adds fatigue without the benefits of easy or hard work.',
+        sessions: [['Bike tempo', 33, '3 × 8 min, 3 min easy between', 'Steady, controlled effort']] },
+    { zone: 4, name: 'Threshold', pct: [80, 90], rpe: '7–8', color: '#e8734a', talk: 'A few words at a time',
+        why: 'Raises the pace you can sustain. One session a week at most, and only after a few weeks of base work.',
+        sessions: [['4 × 4 min intervals', 28, '4 × 4 min hard, 3 min easy', 'The "Norwegian 4×4": build to 85–95% of max by the end of each rep. Bike or incline walk']] },
+    { zone: 5, name: 'Max effort', pct: [90, 100], rpe: '9–10', color: '#c45fc4', talk: 'You can\'t talk',
+        why: 'Short sprints raise fitness (VO₂max) quickly in little time but are hard to recover from. Once a week at most, on a bike.',
+        sessions: [['Bike sprints', 20, '6–8 × 30 s all-out, 2 min easy', 'Seated, high resistance; stop if form or joints suffer']] },
+];
+
+const CARDIO_EVIDENCE = [
+    'Max heart rate is estimated as 208 − 0.7 × age (Tanaka et al., 2001), which fits adults better than 220 − age. Any formula can be 10+ beats off for one person, so check it against the talk test.',
+    'The talk test (the point where talking gets hard) closely tracks the first ventilatory threshold, the top of Zone 2 (Persinger et al., 2004).',
+    'WHO guidelines (2020): 150–300 minutes a week of moderate activity, or 75–150 of vigorous activity. A minute in Zone 4–5 counts as two.',
+    'For fat loss in people with overweight, interval training and steady cardio work about equally well (Wewege et al., 2017). Steady Zone 2 is easier to recover from alongside lifting.',
+    'The 4 × 4 interval protocol improved VO₂max more than steady training in a controlled trial (Helgerud et al., 2007).',
+];
+
+// null = follow the week plan; 'lift' = show the lifting days on a cardio/rest day
+let todayMode = null;
+
+function estimatedMaxHr() {
+    const age = userProfile && userProfile.age ? userProfile.age : 30;
+    return Math.round(208 - 0.7 * age);
+}
+
+// Cardio minutes this week, as WHO "moderate-equivalent" (Zone 2–3 count once, Zone 4–5 twice)
+function cardioWeek() {
+    const monday = mondayOf(todayStr());
+    let total = 0;
+    Object.values(metaFor('_sessions')).forEach(list => (list || []).forEach(s => {
+        if (s.type === 'cardio' && mondayOf(s.date) === monday) total += s.minutes || 0;
+    }));
+    return { total, moderate: cardioMinutes(d => mondayOf(d) === monday) };
+}
+
+function setTodayMode(mode) {
+    haptic();
+    todayMode = mode;
+    renderToday();
+    window.scrollTo(0, 0);
+}
+
+function renderCardioView(plan, showingLift) {
+    const el = document.getElementById('cardioView');
+    if (!plan) {
+        el.innerHTML = '';
+        return;
+    }
+    if (showingLift) {
+        el.innerHTML = `<button class="back-link" onclick="setTodayMode(null)">← Back to today's ${plan === 'cardio' ? 'cardio' : 'walk'} plan</button>`;
+        return;
+    }
+    const hrMax = estimatedMaxHr();
+    const recommended = ((PROGRAMS[currentProgram].cardioZones || {})[plan] || [plan === 'cardio' ? 2 : 1])[0];
+    const week = cardioWeek();
+    const todayMinutes = programSessions()
+        .filter(s => s.type === 'cardio' && s.date === todayStr())
+        .reduce((sum, s) => sum + (s.minutes || 0), 0);
+    const pct = Math.min(100, Math.round((week.moderate / 150) * 100));
+    const bpm = z => `${Math.round(hrMax * z.pct[0] / 100)}–${Math.round(hrMax * z.pct[1] / 100)}`;
+    const rec = CARDIO_ZONES.find(z => z.zone === recommended);
+
+    // Details (why, technique, evidence) live in the log sheet and "The science"; the page stays scannable
+    // solo: the only zone shown, so its title row would repeat the headline
+    const zoneCard = (z, solo) => {
+        const isRec = z.zone === recommended;
+        return `
+            <details class="zone-card${isRec ? ' recommended' : ''}${solo ? ' solo' : ''}" style="--zone:${z.color}" ${isRec || solo ? 'open' : ''}>
+                <summary>
+                    <span class="zone-num">Z${z.zone}</span>
+                    <span class="zone-name">${escapeHtml(z.name)}</span>
+                    <span class="zone-bpm">${bpm(z)}</span>
+                </summary>
+                <div class="zone-meta">Effort ${z.rpe} · ${escapeHtml(z.talk)}</div>
+                ${z.sessions.map(([name, , dose], i) => `
+                    <button class="zone-session" onclick="openCardioLog(${z.zone}, ${i})">
+                        <span><strong>${escapeHtml(name)}</strong><small>${escapeHtml(dose)}</small></span>
+                        <span class="zone-log" aria-label="Log">+</span>
+                    </button>`).join('')}
+            </details>`;
+    };
+    // Programs list the zones that fit their goal; the rest stay out of the way under "Other zones"
+    const fits = (PROGRAMS[currentProgram].cardioZones || {})[plan] || CARDIO_ZONES.map(z => z.zone);
+    const shown = CARDIO_ZONES.filter(z => fits.includes(z.zone));
+    const others = CARDIO_ZONES.filter(z => !fits.includes(z.zone));
+
+    el.innerHTML = `
+        <div class="cardio-head">
+            <div class="kicker">${plan === 'cardio' ? 'Cardio day' : 'Recovery day'}</div>
+            <h2>Zone ${rec.zone} <span>${escapeHtml(rec.name)}</span></h2>
+            <div class="cardio-target"><strong>${bpm(rec)}</strong> bpm · ${escapeHtml(rec.sessions[0][2])}</div>
+        </div>
+        ${missedLiftDay() ? `<div class="coach-card compact"><div class="coach-kicker">Catch up</div><p>You missed a lifting day this week. ${escapeHtml(missedLiftDay())} fits in today instead of cardio.</p><button class="btn btn-primary" onclick="setTodayMode('lift')">Lift today</button></div>` : ''}
+        <div class="cardio-week">
+            <div class="cardio-week-top">
+                <span>This week</span>
+                <strong>${week.moderate}<small> / 150 min</small></strong>
+            </div>
+            <div class="cardio-week-bar"><span style="width:${pct}%"></span></div>
+            ${todayMinutes ? `<div class="cardio-today">${todayMinutes} min logged today</div>` : ''}
+        </div>
+        <div class="zone-list-head"><span>${shown.length > 1 ? 'Your zones' : 'Pick a session'}</span><span>${shown.length > 1 ? 'bpm' : ''}</span></div>
+        ${shown.map(z => zoneCard(z, shown.length === 1)).join('')}
+        ${others.length ? `
+            <details class="other-zones">
+                <summary>Other zones</summary>
+                ${others.map(z => zoneCard(z, false)).join('')}
+            </details>` : ''}
+        <details class="mobility-card evidence-card">
+            <summary><h3>The science</h3><span class="warmup-hint">Tap to open</span></summary>
+            <ul>
+                <li>Your estimated max heart rate is ${hrMax} bpm (age ${userProfile && userProfile.age ? userProfile.age : '—'}).</li>
+                ${CARDIO_ZONES.map(z => `<li><strong>Zone ${z.zone}, ${escapeHtml(z.name)}</strong> (${z.pct[0]}–${z.pct[1]}% of max): ${escapeHtml(z.why)}</li>`).join('')}
+                ${CARDIO_EVIDENCE.map(t => `<li>${escapeHtml(t)}</li>`).join('')}
+                <li>The weekly bar counts toward the WHO minimum of 150 min: Zone 4–5 minutes count double and Zone 1 doesn't count.</li>
+            </ul>
+        </details>
+        <button class="back-link" onclick="setTodayMode('lift')">Lift today instead →</button>
+    `;
+}
+
+let cardioDraft = null;
+
+function openCardioLog(zone, i) {
+    haptic();
+    const z = CARDIO_ZONES.find(c => c.zone === zone);
+    const [name, minutes, dose, how] = z.sessions[i];
+    cardioDraft = { zone, name };
+    document.getElementById('cardioModalTitle').textContent = name;
+    document.getElementById('cardioModalSub').textContent = `Zone ${zone} · ${dose}. ${how}.`;
+    document.getElementById('cardioMinutes').value = minutes;
+    document.getElementById('cardioHr').value = '';
+    document.getElementById('cardioModal').classList.add('active');
+}
+
+function closeCardioLog() {
+    document.getElementById('cardioModal').classList.remove('active');
+    cardioDraft = null;
+}
+
+function saveCardioLog() {
+    const minutes = parseInt(document.getElementById('cardioMinutes').value);
+    if (!(minutes > 0)) {
+        showToast('Enter how many minutes');
+        return;
+    }
+    const hr = parseInt(document.getElementById('cardioHr').value);
+    programSessions().push({
+        date: todayStr(), day: null, week: getCurrentWeek(), type: 'cardio',
+        zone: cardioDraft.zone, name: cardioDraft.name, minutes, ...(hr > 0 ? { avgHr: hr } : {}),
+    });
+    closeCardioLog();
+    haptic();
+    scheduleSave();
+    renderToday();
+    showToast(`${minutes} min logged`);
+}
