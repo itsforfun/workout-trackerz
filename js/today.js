@@ -169,13 +169,14 @@ function renderToday() {
         if (progression && progression.type === 'kg') readyToProgress++;
         const target = progression ? ` · ${formatSetWeight(ex, progression.kg)}` : '';
         return `
-            <div class="today-item" style="--i:${idx}">
+            <div class="today-item" style="--i:${idx}" role="button" tabindex="0" onclick="openGuide('${ex.id}')">
                 <div class="today-item-main">
                     <div class="today-item-name">${escapeHtml(exerciseDisplayName(ex, week))}</div>
                     <div class="today-item-sub">${escapeHtml(prescriptionText(ex))}${escapeHtml(target)}</div>
                     ${upgradeText(ex, week) ? `<div class="today-item-note upgrade">${escapeHtml(upgradeText(ex, week))}</div>` : ''}
                 </div>
                 ${progressionBadge(progression)}
+                <svg class="today-item-more" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
             </div>
         `;
     }).join('');

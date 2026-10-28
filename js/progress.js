@@ -548,8 +548,10 @@ function showTab(tab) {
         renderSteps();
     } else if (tab === 'progress') {
         renderProgress();
+        renderProCards();
     } else if (tab === 'settings') {
         loadSettingsForm();
+        renderProCards();
     }
 }
 

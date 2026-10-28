@@ -128,7 +128,7 @@ function renderWorkout() {
                 <div class="wo-head" onclick="toggleDoneCard('${exId}', event)">
                     <div class="wo-name">
                         <span>${escapeHtml(exerciseDisplayName(ex, w.week))}</span>
-                        <span class="wo-name-side">${progressionBadge(progression)}<button class="swap-btn" onclick="openSwap('${exId}')">Swap</button></span>
+                        <span class="wo-name-side">${progressionBadge(progression)}<button class="swap-btn" onclick="event.stopPropagation(); openGuide('${exId}', true)">Form</button><button class="swap-btn" onclick="openSwap('${exId}')">Swap</button></span>
                     </div>
                     ${ex.swappedFrom ? `<div class="wo-sub swapped">Swapped in for ${escapeHtml(ex.swappedFrom)} today</div>` : ''}
                     <div class="wo-sub">${escapeHtml(prescriptionText(ex))}${p.restText ? ` · ${escapeHtml(p.restText)} rest` : ''}</div>

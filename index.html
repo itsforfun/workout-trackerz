@@ -345,6 +345,7 @@
 
             <div class="progress-list" id="progressList"></div>
             <div id="achievementsCard"></div>
+            <div class="pro-card" data-pro-card></div>
         </div>
     </div>
 
@@ -369,6 +370,7 @@
             <div class="hero">
                 <h1>SETTINGS</h1>
             </div>
+            <div class="pro-card settings-pro" data-pro-card></div>
 
             <!-- Body Metrics Section -->
             <div style="max-width:600px; margin:0 auto;">
@@ -675,6 +677,13 @@
     </div>
 </div>
 
+<div class="modal-overlay" id="guideModal">
+    <div class="modal guide-modal">
+        <div id="guideBody"></div>
+        <div class="modal-actions"><button class="btn btn-primary" onclick="closeGuide()">Got it</button></div>
+    </div>
+</div>
+
 <div class="modal-overlay" id="shareModal">
     <div class="modal share-modal">
         <div class="share-frame"><img id="shareImage" alt="Share image preview"></div>
@@ -710,10 +719,12 @@
 <script src="js/steps.js"></script>
 <script src="js/builder.js"></script>
 <script src="js/workout.js"></script>
+<script src="js/guide.js"></script>
 <script src="js/summary.js"></script>
 <script src="js/rewards.js"></script>
 <script src="js/progress.js"></script>
 <script src="js/coach.js"></script>
+<script src="js/pro.js"></script>
 <script src="js/polish.js"></script>
 <script src="js/main.js"></script>
 <script>if (/[?&]test\b/.test(location.search)) document.write('<script src="tests/fixture.js"><\/script><script src="tests/tests.js"><\/script>');</script>

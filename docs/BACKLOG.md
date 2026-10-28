@@ -19,6 +19,8 @@ Status: **Done** · **Check** (built, still needs a look on the iPhone or a smal
 | Backup download | Exports one program's log; a full "Export all my data" is still missing |
 | Name "Odyr" | Formal trademark search before charging money |
 | Summary and share cards (v1.38) | Try them after a real workout on the iPhone |
+| Pro waitlist (v1.39) | Run `supabase-pro-waitlist-setup.sql`; then watch the answers come in |
+| Exercise guide (v1.39) | Look through the demos on the iPhone; flag any that look wrong |
 
 ## Next — not started
 
@@ -35,11 +37,10 @@ Status: **Done** · **Check** (built, still needs a look on the iPhone or a smal
 - Readiness from Apple Health sleep and resting heart rate (today it's a manual check-in)
 - Volume tuning: add or remove sets per muscle based on how you respond
 - Full week replanning when a day is missed (today: a catch-up offer on cardio days)
-- "Pro coming soon" waitlist button, to measure interest before building Pro
 - Selling it: Stripe payments, terms of service, privacy policy, health disclaimer review
 
 **Content**
-- Exercise guide: short demo, 3 form cues and common mistakes per exercise
+- Filmed or 3D exercise videos (today: drawn line-figure demos)
 - Copy pass so every label and message speaks in one voice
 
 **Feel and polish**
@@ -99,5 +100,6 @@ Status: **Done** · **Check** (built, still needs a look on the iPhone or a smal
 | 1.29 | 8-tier medals, trophy room, badge sheet, minting moment, signature and secret badges, "almost there" nudges |
 | 1.30–1.34 | Brand: Odyra, then Odyr; new icon; sign-in redesign; design carried across the app; thinker quotes |
 | 1.35–1.36 | French (whole app, reminders, quotes), Language setting, French review pass, decimal comma typing |
+| 1.39 | Exercise guide (animated demo, muscles, how-to, mistakes) for all 75 exercises; Odyr Pro waitlist with interests and fair price |
 | 1.38 | Post-workout summary, share cards (workout, weekly recap), code split into organised files, automated checks run by GitHub on every push (first run green), error reports (table set up and tested) |
 | 1.37 | Trophy room and Progress level ring in the Odyr-mark style, gold-dot section labels everywhere, quotes capped at ~14 words |

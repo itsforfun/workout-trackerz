@@ -4,8 +4,8 @@
 // - Supabase (login + data) is never cached; the page keeps its own offline copy of your data.
 // - Push: shows the "rest over" notification sent by the rest-push Supabase function.
 // Bump CACHE when changing this file's caching rules.
-const CACHE = 'odyr-v10';
-const APP_SHELL = ['./', 'index.html', 'manifest.webmanifest', 'css/app.css', 'lang/fr.js', 'js/i18n.js', 'js/splash.js', 'js/core.js', 'js/auth.js', 'js/sync.js', 'js/programs.js', 'js/today.js', 'js/steps.js', 'js/builder.js', 'js/workout.js', 'js/summary.js', 'js/rewards.js', 'js/progress.js', 'js/coach.js', 'js/polish.js', 'js/main.js', 'icons/icon-180.png', 'icons/icon-192.png', 'icons/icon-512.png'];
+const CACHE = 'odyr-v11';
+const APP_SHELL = ['./', 'index.html', 'manifest.webmanifest', 'css/app.css', 'lang/fr.js', 'js/i18n.js', 'js/splash.js', 'js/core.js', 'js/auth.js', 'js/sync.js', 'js/programs.js', 'js/today.js', 'js/steps.js', 'js/builder.js', 'js/workout.js', 'js/guide.js', 'js/summary.js', 'js/rewards.js', 'js/progress.js', 'js/coach.js', 'js/pro.js', 'js/polish.js', 'js/main.js', 'icons/icon-180.png', 'icons/icon-192.png', 'icons/icon-512.png'];
 const CDN_HOSTS = ['cdnjs.cloudflare.com', 'cdn.jsdelivr.net', 'fonts.googleapis.com', 'fonts.gstatic.com'];
 
 self.addEventListener('install', event => {

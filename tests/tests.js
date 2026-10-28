@@ -147,10 +147,53 @@
             () => switchTab('progress'), () => switchTab('settings'), () => openTrophyRoom(), () => openBadge(badgeTracks()[0].id),
             () => closeBadge(), () => closeTrophyRoom(), () => openRecap(), () => closeRecap(), () => openScience(), () => closeScience(),
             () => openGenerator(), () => closeGenerator(), () => openBuilder(), () => showScreen('selector'), () => showScreen('app'),
+            () => openGuide(PROGRAMS.fullBody3.exercises[0].id), () => closeGuide(), () => startPro(), () => cancelPro(),
         ];
         steps.forEach((step, i) => {
             try { step(); } catch (error) { throw new Error(`step ${i + 1}: ${error.message}`); }
         });
+    });
+
+    // ── Exercise guide ──
+    await check('Every exercise in the app has a guide with a demo', () => {
+        const names = new Set();
+        Object.values(PROGRAMS).forEach(p => p.exercises.forEach(e => { names.add(e.name); (e.alternates || []).forEach(a => names.add(a)); }));
+        Object.values(SWAPS).forEach(list => list.forEach(([name]) => names.add(name)));
+        Object.values(GEN_PATTERNS).forEach(list => list.forEach(([name]) => names.add(name)));
+        names.forEach(name => {
+            const move = guideMove(name);
+            assert(move, `no movement for "${name}"`);
+            assert(GUIDE_TEXT[move] && GUIDE_DEMOS[move], `"${move}" is missing its text or demo`);
+        });
+    });
+
+    await check('The guide opens for every exercise of every program', () => {
+        Object.keys(PROGRAMS).filter(id => !id.startsWith('custom-')).forEach(id => {
+            currentProgram = id;
+            PROGRAMS[id].exercises.forEach(e => {
+                openGuide(e.id);
+                assert(document.querySelector('#guideBody .guide-demo line'), `no demo drawn for ${e.name}`);
+                assert(document.querySelectorAll('#guideBody .guide-cues li').length === 3, `cues missing for ${e.name}`);
+            });
+        });
+        currentProgram = 'fullBody3';
+        closeGuide();
+    });
+
+    // ── Pro waitlist ──
+    await check('Joining the Pro waitlist saves one row per user', async () => {
+        window.__sbCalls.length = 0;
+        userProfile.pro = undefined;
+        startPro();
+        toggleProInterest('coach');
+        setProPrice('8');
+        await joinPro();
+        const call = window.__sbCalls.find(c => c.table === 'pro_waitlist');
+        assert(call, 'pro_waitlist was written');
+        equal(call.options && call.options.onConflict, 'user_id', 'conflict column');
+        equal(call.row.price, '8', 'price answer');
+        assert(call.row.interests.includes('coach'), 'interest answer');
+        assert(userProfile.pro && userProfile.pro.joined, 'joined date kept in the profile');
     });
 
     // ── Opening quotes ──
@@ -184,6 +227,8 @@
             renderStepsSetup(true);
             openTrophyRoom(); openBadge(badgeTracks()[0].id); closeBadge(); closeTrophyRoom();
             openRecap(); closeRecap(); openScience(); closeScience(); openGenerator(); closeGenerator();
+            PROGRAMS.fullBody3.exercises.forEach(e => openGuide(e.id)); closeGuide();
+            switchTab('settings'); startPro(); cancelPro();
             return new Promise(resolve => setTimeout(resolve, 50)).then(() => {
                 const keep = new Set(['Workout Steps', 'XP', 'bpm', 'Odyr', 'ODYR', 'test@example.com']);
                 Object.values(PROGRAMS).forEach(p => keep.add(p.name));
