@@ -1,0 +1,23 @@
+# Runs Odyr's automated checks on every push and pull request.
+# A red ✗ next to a commit on GitHub means a check failed; the log lists which one.
+name: Tests
+
+on: [push, pull_request]
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install headless Chrome
+        run: |
+          npm install --no-save playwright@1.48.2
+          npx playwright install --with-deps chromium
+      - name: Serve the app
+        run: python3 -m http.server 8000 &
+      - name: Run the checks
+        run: node tests/ci.mjs
