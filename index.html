@@ -1183,6 +1183,51 @@
         .badge-next.max { color:var(--accent); }
         .badge-card.locked .badge-name { color:var(--text-dim); }
         .moment-badge { display:grid; place-items:center; margin:6px 0 2px; }
+
+        /* ── Coaching (v1.21): insight, walkthrough, weekly recap, reminder toggles ── */
+        .insight { display:grid; grid-template-columns:auto 1fr auto; align-items:start; gap:var(--s3); padding:var(--s4); margin-bottom:var(--s4); border-radius:var(--r-card); background:var(--raised); box-shadow:var(--lift); }
+        .insight-icon { width:32px; height:32px; display:grid; place-items:center; border-radius:50%; color:var(--text); background:rgba(240,232,216,0.06); }
+        .insight p { font-size:0.84rem; line-height:1.5; color:var(--text-dim); margin-top:5px; }
+        .insight-close { width:28px; height:28px; border:none; border-radius:50%; background:none; color:var(--text-muted); font-size:1.2rem; line-height:1; cursor:pointer; }
+
+        .tour { position:fixed; inset:0; z-index:540; display:none; }
+        .tour.show { display:block; }
+        .tour-spot { position:fixed; border-radius:20px; box-shadow:0 0 0 9999px rgba(10,8,6,0.78), 0 0 0 1px rgba(240,232,216,0.25); transition:all 0.35s var(--ease); pointer-events:none; }
+        .tour-card { position:fixed; left:16px; right:16px; max-width:420px; margin:0 auto; padding:var(--s5); border-radius:var(--r-card); background:var(--surface3); box-shadow:0 24px 60px -20px rgba(0,0,0,0.9); animation:recordRise 0.4s var(--ease) both; }
+        .tour-card h3 { font-family:var(--font-display); font-size:1.5rem; letter-spacing:0.04em; font-weight:400; margin-bottom:6px; }
+        .tour-card p { font-size:0.86rem; line-height:1.55; color:var(--text-dim); }
+        .tour-foot { display:flex; align-items:center; gap:var(--s2); margin-top:var(--s5); }
+        .tour-dots { display:flex; gap:5px; flex:1; }
+        .tour-dots i { width:6px; height:6px; border-radius:50%; background:rgba(240,232,216,0.18); }
+        .tour-dots i.on { background:var(--text); width:16px; border-radius:3px; }
+
+        .recap-link { display:inline-block; margin-top:var(--s3); padding:0; border:none; background:none; font:inherit; font-size:0.78rem; color:var(--text-dim); cursor:pointer; }
+        .recap-kicker { font-size:0.62rem; font-weight:600; letter-spacing:0.16em; text-transform:uppercase; color:var(--text-muted); }
+        .recap-score { display:flex; align-items:baseline; gap:var(--s3); margin:6px 0 var(--s5); }
+        .recap-score strong { font-weight:200; font-size:4rem; letter-spacing:-0.04em; line-height:1; }
+        .recap-delta { font-size:0.8rem; }
+        .recap-delta.up { color:var(--green); }
+        .recap-delta.down { color:var(--text-muted); }
+        .recap-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:var(--s2); }
+        .rc-tile { padding:var(--s3); border-radius:var(--r-inner); background:rgba(255,255,255,0.03); }
+        .rc-tile span { display:block; font-size:0.58rem; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; color:var(--text-muted); }
+        .rc-tile strong { display:block; font-weight:300; font-size:1.4rem; letter-spacing:-0.02em; margin-top:4px; }
+        .rc-tile strong small, .rc-tile > small { font-size:0.7rem; color:var(--text-muted); }
+        .recap-list { margin-top:var(--s4); display:flex; flex-direction:column; gap:8px; font-size:0.84rem; color:var(--text-dim); }
+        .rl-dot { display:inline-block; width:7px; height:7px; border-radius:50%; margin-right:10px; background:rgba(240,232,216,0.5); }
+        .rl-dot.gold { background:var(--accent); }
+        .recap-focus { margin-top:var(--s5); padding:var(--s4); border-radius:var(--r-inner); background:rgba(217,178,95,0.07); box-shadow:inset 0 0 0 1px rgba(217,178,95,0.25); }
+        .recap-focus span { font-size:0.6rem; font-weight:600; letter-spacing:0.16em; text-transform:uppercase; color:var(--accent); }
+        .recap-focus p { font-size:0.88rem; line-height:1.5; margin-top:6px; }
+
+        .toggle-row { display:flex; align-items:center; justify-content:space-between; gap:var(--s4); padding:var(--s3) 0; border-bottom:1px solid var(--hairline); cursor:pointer; }
+        .toggle-row strong { display:block; font-size:0.9rem; font-weight:500; }
+        .toggle-row small { display:block; font-size:0.74rem; color:var(--text-muted); margin-top:2px; }
+        .toggle { appearance:none; -webkit-appearance:none; flex:none; width:46px; height:28px; border-radius:999px; background:rgba(240,232,216,0.14); position:relative; cursor:pointer; transition:background 0.25s var(--ease); }
+        .toggle::after { content:''; position:absolute; top:3px; left:3px; width:22px; height:22px; border-radius:50%; background:var(--text); transition:transform 0.25s var(--ease); }
+        .toggle:checked { background:var(--green); }
+        .toggle:checked::after { transform:translateX(18px); }
+        .toggle:disabled { opacity:0.4; }
     </style>
 </head>
 <body>
@@ -1406,6 +1451,7 @@
     <div class="page active" id="page-today">
         <div class="container today-container">
             <div class="today-hero" id="todayHero"></div>
+            <div id="insightCard"></div>
             <div id="weekPlan"></div>
             <div id="powerUnlock"></div>
             <div id="cardioView"></div>
@@ -1574,6 +1620,21 @@
                 <p class="settings-note" id="pushStatus"></p>
                 <div class="settings-actions" id="pushActions"></div>
 
+                <!-- Reminders -->
+                <div class="day-label" style="margin-bottom:24px; margin-top:48px;">
+                    <span class="day-name" style="font-size:1.3rem;">Reminders</span>
+                </div>
+                <div id="nudgeSettings"></div>
+
+                <!-- Help -->
+                <div class="day-label" style="margin-bottom:24px; margin-top:48px;">
+                    <span class="day-name" style="font-size:1.3rem;">Help</span>
+                </div>
+                <div class="settings-actions">
+                    <button class="btn" onclick="startTour()">Replay the walkthrough</button>
+                    <button class="btn" onclick="openRecap()">Last week's recap</button>
+                </div>
+
                 <!-- Backup -->
                 <div class="day-label" style="margin-bottom:24px; margin-top:48px;">
                     <span class="day-name" style="font-size:1.3rem;">Backup</span>
@@ -1623,6 +1684,20 @@
                 <button class="rest-btn" onclick="adjustRest(15)">+15s</button>
                 <button class="rest-btn" onclick="stopRest()">Skip</button>
             </div>
+        </div>
+    </div>
+</div>
+
+<!-- FIRST-TIME WALKTHROUGH -->
+<div class="tour" id="tour">
+    <div class="tour-spot" id="tourSpot"></div>
+    <div class="tour-card" id="tourCard">
+        <h3></h3>
+        <p></p>
+        <div class="tour-foot">
+            <div class="tour-dots"></div>
+            <button class="btn" onclick="endTour()">Skip</button>
+            <button class="btn btn-primary tour-next" onclick="nextTourStep()">Next</button>
         </div>
     </div>
 </div>
@@ -1701,6 +1776,13 @@
     </div>
 </div>
 
+<div class="modal-overlay" id="recapModal">
+    <div class="modal recap-modal">
+        <div id="recapBody"></div>
+        <div class="modal-actions"><button class="btn btn-primary" onclick="closeRecap()">Got it</button></div>
+    </div>
+</div>
+
 <div class="modal-overlay" id="importModal">
     <div class="modal">
         <h2>Load Progress</h2>
@@ -1722,7 +1804,7 @@
 
 // Shown at the bottom of Settings so you can tell which version a phone is running.
 // Bump it with every deploy.
-const APP_VERSION = '1.20 · 28 Oct';
+const APP_VERSION = '1.21 · 28 Oct';
 
 const SUPABASE_URL = 'https://hcwbcxhblfjpdlkwykez.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_mEe_5g2UITyp5O-F9YRhRg_wTQWuOtf';
@@ -3122,7 +3204,11 @@ function renderToday() {
     const week = todayWeek !== null ? todayWeek : getCurrentWeek();
 
     renderTodayHero();
+    renderInsight();
     renderWeekPlan();
+    maybeStartTour();
+    maybeShowRecap();
+    scheduleNudges();
     document.getElementById('powerUnlock').innerHTML = powerUnlockHtml();
 
     // Cardio and rest days of a week plan show cardio zones instead of the lifting days
@@ -3414,14 +3500,10 @@ function estimatedMaxHr() {
 function cardioWeek() {
     const monday = mondayOf(todayStr());
     let total = 0;
-    let moderate = 0;
     Object.values(metaFor('_sessions')).forEach(list => (list || []).forEach(s => {
-        if (s.type !== 'cardio' || mondayOf(s.date) !== monday) return;
-        total += s.minutes || 0;
-        if (s.zone >= 4) moderate += 2 * (s.minutes || 0);
-        else if (s.zone >= 2 || !s.zone) moderate += s.minutes || 0;
+        if (s.type === 'cardio' && mondayOf(s.date) === monday) total += s.minutes || 0;
     }));
-    return { total, moderate };
+    return { total, moderate: cardioMinutes(d => mondayOf(d) === monday) };
 }
 
 function setTodayMode(mode) {
@@ -3573,9 +3655,15 @@ let stepsLoaded = false;
 async function loadSteps() {
     if (!currentUser || !sb) return false;
     try {
-        const { data, error } = await sb.from('step_counts')
-            .select('date, steps, updated_at, source')
+        let { data, error } = await sb.from('step_counts')
+            .select('date, steps, updated_at, source, exercise_minutes')
             .gte('date', addDays(todayStr(), -730));
+        // Before supabase-v2-setup.sql adds exercise_minutes, load steps only
+        if (error) {
+            ({ data, error } = await sb.from('step_counts')
+                .select('date, steps, updated_at, source')
+                .gte('date', addDays(todayStr(), -730)));
+        }
         if (error) throw error;
         stepData = Object.fromEntries(data.map(row => [row.date, row]));
         return true;
@@ -3724,6 +3812,7 @@ async function renderStepsSetup(open) {
                 <li>Run it once from the Shortcuts app and tap <strong>Always Allow</strong> for Health and for sending, so it can run on its own later.</li>
                 <li>Make it run by itself: open the shortcut, add a few times of day (e.g. every few hours, plus 23:30 for the day's final total), or use <strong>Automation</strong> → <strong>+</strong> → <strong>Time of Day</strong> → <strong>Run Immediately</strong>.</li>
                 <li>Wear an Apple Watch? If your steps look about double what the Health app shows, edit the shortcut's <strong>Find Health Samples</strong> and set <strong>Source is</strong> your Watch.</li>
+                <li>Optional, cardio from Apple Health: in the shortcut add <strong>Find Health Samples</strong> (Type <strong>Exercise Minutes</strong>, Start Date is today), then <strong>Calculate Statistics</strong> → Sum, and add a field <code>exercise</code> (Number) set to that Sum. Brisk walks and rides then fill your cardio ring by themselves.</li>
             </ol>
             <p class="warmup-note">Keep your key private: anyone with it can send step counts to your account. The <strong>Sync from Apple Health</strong> button above runs the shortcut on demand.</p>
         </details>
@@ -4818,6 +4907,7 @@ function renderPushStatus() {
     }
     status.textContent = text;
     actions.innerHTML = buttons;
+    renderNudgeSettings();
 }
 
 async function enableRestAlerts() {
@@ -4962,8 +5052,8 @@ function closeCelebration() {
 // Consistency score (0–100) over the last 7 days: lifting vs the plan (40), cardio vs the WHO 150 min (20),
 // steps vs the daily goal (20) and daily habits (20). Parts with nothing to measure (no steps ever synced,
 // a program without habits) drop out and the rest are re-weighted.
-function consistencyScore() {
-    const today = todayStr();
+function consistencyScore(end = todayStr()) {
+    const today = end;
     const from = addDays(today, -6);
     const inWindow = d => d >= from && d <= today;
     const prog = PROGRAMS[currentProgram];
@@ -4994,13 +5084,35 @@ function consistencyScore() {
 
 // WHO moderate-equivalent minutes (Zone 4–5 count double, Zone 1 not at all) for sessions on matching dates
 function cardioMinutes(matchDate) {
-    let minutes = 0;
+    const byDay = {};
     Object.values(metaFor('_sessions')).forEach(list => (list || []).forEach(s => {
         if (s.type !== 'cardio' || !matchDate(s.date)) return;
-        if (s.zone >= 4) minutes += 2 * (s.minutes || 0);
-        else if (s.zone >= 2 || !s.zone) minutes += s.minutes || 0;
+        const minutes = s.zone >= 4 ? 2 * (s.minutes || 0) : s.zone >= 2 || !s.zone ? s.minutes || 0 : 0;
+        byDay[s.date] = (byDay[s.date] || 0) + minutes;
     }));
-    return minutes;
+    // Days with Apple Health exercise minutes count whichever is larger, so nothing is counted twice
+    Object.keys(stepData).forEach(date => {
+        if (!matchDate(date)) return;
+        byDay[date] = Math.max(byDay[date] || 0, healthCardio(date));
+    });
+    return Object.values(byDay).reduce((a, b) => a + b, 0);
+}
+
+// Apple Health exercise minutes for a day (synced by the Shortcut), minus time spent in logged workouts
+function healthCardio(date) {
+    const exercise = (stepData[date] || {}).exercise_minutes || 0;
+    if (!exercise) return 0;
+    const lifting = Object.values(metaFor('_sessions')).flat()
+        .filter(s => s && s.type === 'workout' && s.date === date)
+        .reduce((sum, s) => sum + (s.minutes || 0), 0);
+    return Math.max(0, exercise - lifting);
+}
+
+// Minutes of cardio logged by hand on a day (any zone)
+function loggedCardio(date) {
+    return Object.values(metaFor('_sessions')).flat()
+        .filter(s => s && s.type === 'cardio' && s.date === date)
+        .reduce((sum, s) => sum + (s.minutes || 0), 0);
 }
 
 // Ticked habits on a date; the steps habit counts once 8,000 steps are synced
@@ -5081,6 +5193,14 @@ function playerStats() {
         cardioDates.add(s.date);
         cardioWeeks[mondayOf(s.date)] = true;
     });
+    Object.keys(stepData).forEach(date => {
+        const extra = healthCardio(date) - loggedCardio(date);
+        if (extra <= 0) return;
+        st.cardioTotal += extra;
+        st.cardioXp += extra;
+        cardioDates.add(date);
+        cardioWeeks[mondayOf(date)] = true;
+    });
     st.doubleDays = new Set(workoutDates.filter(d => cardioDates.has(d))).size;
     const liftTarget = weeklyLiftTarget(PROGRAMS[currentProgram]);
     Object.keys(cardioWeeks).forEach(monday => {
@@ -5117,10 +5237,6 @@ function playerStats() {
     st.weighIns = Array.isArray(allData._bodyweight) ? allData._bodyweight.length : 0;
     st.bestScore = Math.max(allData._bestScore || 0, consistencyScore().score);
     return st;
-}
-
-function daysBetween(a, b) {
-    return Math.round((parseDate(b) - parseDate(a)) / 86400000);
 }
 
 // ── Badges: 17 tracks with five tiers each, plus one-off specials ──
@@ -5275,6 +5391,7 @@ function checkAchievements() {
         const tier = track.goals.filter(g => (stats[track.stat] || 0) >= g).length;
         if (tier > (badges[track.id] || 0)) {
             badges[track.id] = tier;
+            if (!firstRun) (allData._badgeLog || (allData._badgeLog = [])).push({ track: track.id, tier, date: todayStr() });
             moments.push(() => showBadgeMoment(track, tier));
             changed = true;
         }
@@ -5433,6 +5550,7 @@ function renderConsistency() {
                 <div class="consistency-label">Consistency</div>
                 <div class="consistency-score" data-count="${score}" data-key="consistency"></div>
                 <div class="consistency-sub">Last 7 days · best ${Math.max(allData._bestScore || 0, score)}</div>
+                <button class="recap-link" onclick="openRecap()">Last week's recap ›</button>
             </div>
         </div>
         <div class="consistency-parts">
@@ -6032,10 +6150,378 @@ document.addEventListener('visibilitychange', () => {
 
 
 // ════════════════════════════════════════════
+//  COACHING: insights, walkthrough, weekly recap, reminders
+// ════════════════════════════════════════════
+
+// ── Insight: one line on Today when something stands out (dismissable for the day) ──
+function coachInsight() {
+    const prog = PROGRAMS[currentProgram];
+    const today = todayStr();
+    const weekday = new Date().getDay();
+    const stats = getStreakStats();
+    const name = ex => exerciseDisplayName(ex, getCurrentWeek());
+
+    const stalled = prog.exercises.find(ex => !ex.assist && isStalled(ex.id));
+    if (stalled) {
+        return { key: `stall-${stalled.id}`, icon: 'record', text: `${name(stalled)} has stalled for 3 weeks. Next time drop the weight about 10% and build back up over two sessions.` };
+    }
+    const daysOff = daysSinceLastWorkout();
+    if (daysOff !== null && daysOff >= 5) {
+        return { key: 'layoff', icon: 'lift', text: `${daysOff} days since your last workout. ${prog.days[getNextDay()]} is ready when you are.` };
+    }
+    if (stats.streak >= 2 && stats.thisWeek === 0 && (weekday === 5 || weekday === 6 || weekday === 0)) {
+        return { key: 'streak', icon: 'streak', text: `Your ${stats.streak}-week streak ends Sunday. One workout this weekend keeps it alive.` };
+    }
+    // Biggest gain this cycle (10% or more)
+    let best = null;
+    prog.exercises.forEach(ex => {
+        const logged = getLoggedWeeks(ex.id);
+        if (logged.length < 2 || ex.assist) return;
+        const gain = (Math.max(...logged.map(l => l.value)) - logged[0].value) / logged[0].value;
+        if (gain >= 0.1 && (!best || gain > best.gain)) best = { ex, gain };
+    });
+    const cardio = cardioWeek().moderate;
+    if (weekday >= 4 && cardio < 75) {
+        return { key: 'cardio', icon: 'cardio', text: `Cardio is at ${cardio} of 150 minutes this week. A 30-minute Zone 2 session today makes a real dent.` };
+    }
+    if (Object.keys(stepData).length) {
+        const avg = Array.from({ length: 7 }, (_, i) => stepsOn(addDays(today, -i))).reduce((a, b) => a + b, 0) / 7;
+        if (avg < stepGoal() * 0.7) {
+            return { key: 'steps', icon: 'steps', text: `Steps are averaging ${compactNum(Math.round(avg))} a day. A 20-minute walk adds about 2,000.` };
+        }
+    }
+    if (best) {
+        return { key: `gain-${best.ex.id}`, icon: 'record', text: `${name(best.ex)} is up ${Math.round(best.gain * 100)}% this cycle. Keep the reps clean and it keeps climbing.` };
+    }
+    return null;
+}
+
+function insightDismissKey() {
+    return currentUser ? `wt_insight_${currentUser.id}` : null;
+}
+
+function renderInsight() {
+    const el = document.getElementById('insightCard');
+    if (!el) return;
+    const insight = coachInsight();
+    let dismissed = '';
+    try { dismissed = localStorage.getItem(insightDismissKey()) || ''; } catch (e) { /* private mode */ }
+    if (!insight || dismissed === `${todayStr()}|${insight.key}`) {
+        el.innerHTML = '';
+        return;
+    }
+    el.innerHTML = `
+        <div class="insight">
+            <span class="insight-icon">${achievementIcon(insight.icon, 18)}</span>
+            <p>${escapeHtml(insight.text)}</p>
+            <button class="insight-close" onclick="dismissInsight('${insight.key}')" aria-label="Dismiss">×</button>
+        </div>`;
+}
+
+function dismissInsight(key) {
+    haptic();
+    try { localStorage.setItem(insightDismissKey(), `${todayStr()}|${key}`); } catch (e) { /* private mode */ }
+    renderInsight();
+}
+
+// ── First-time walkthrough: a spotlight over each part of Today ──
+let tourStep = -1;
+
+function tourSteps() {
+    const lifting = document.getElementById('liftView').style.display !== 'none';
+    return [
+        { target: '.hero-level', title: 'Your level', text: 'Everything you do earns XP: workouts, sets, records, cardio, steps and habits. Climb from Rookie to Mythic.' },
+        { target: '.hero-rings', title: 'Three rings', text: 'Lifting this week, cardio minutes toward 150, and today\'s steps. A ring turns gold when it closes.' },
+        { target: '.hero-score', title: 'Consistency score', text: 'Your last 7 days in one number, from 0 to 100. Steady beats perfect.' },
+        lifting
+            ? { target: '#startWorkoutBtn', title: 'Start here', text: 'Today\'s session. Weights are filled in for you, and records and badges unlock as you go.' }
+            : { target: '#cardioView', title: 'Cardio day', text: 'Pick a session in your zone and log it. Lifting is one tap away if you prefer.' },
+        { target: '.bottom-nav .tab-btn:nth-child(3)', title: 'Steps', text: 'Your daily steps from Apple Health, with a one-time setup.' },
+        { target: '.bottom-nav .tab-btn:nth-child(4)', title: 'Progress', text: 'Your level, badges, consistency and a chart for every lift.' },
+    ];
+}
+
+function startTour() {
+    if (!document.getElementById('mainApp').classList.contains('active')) return;
+    showTab('today');
+    tourStep = 0;
+    document.getElementById('tour').classList.add('show');
+    showTourStep();
+}
+
+function showTourStep() {
+    const steps = tourSteps();
+    const step = steps[tourStep];
+    const target = document.querySelector(step.target);
+    if (!target || !target.getBoundingClientRect().width) {
+        nextTourStep();
+        return;
+    }
+    const fixed = getComputedStyle(target.closest('.bottom-nav') || target).position === 'fixed';
+    if (!fixed) target.scrollIntoView({ block: 'center' });
+    setTimeout(() => {
+        const r = target.getBoundingClientRect();
+        const pad = 8;
+        const spot = document.getElementById('tourSpot');
+        spot.style.left = `${r.left - pad}px`;
+        spot.style.top = `${r.top - pad}px`;
+        spot.style.width = `${r.width + pad * 2}px`;
+        spot.style.height = `${r.height + pad * 2}px`;
+        const card = document.getElementById('tourCard');
+        card.querySelector('h3').textContent = step.title;
+        card.querySelector('p').textContent = step.text;
+        card.querySelector('.tour-dots').innerHTML = steps.map((_, i) => `<i class="${i === tourStep ? 'on' : ''}"></i>`).join('');
+        card.querySelector('.tour-next').textContent = tourStep === steps.length - 1 ? 'Done' : 'Next';
+        // Card goes below the spotlight, or above it when there isn't room
+        const below = r.bottom + 16 + 190 < window.innerHeight;
+        card.style.top = below ? `${r.bottom + pad + 12}px` : '';
+        card.style.bottom = below ? '' : `${window.innerHeight - r.top + pad + 12}px`;
+    }, fixed ? 0 : 280);
+}
+
+function nextTourStep() {
+    haptic();
+    tourStep++;
+    if (tourStep >= tourSteps().length) endTour();
+    else showTourStep();
+}
+
+function endTour() {
+    tourStep = -1;
+    document.getElementById('tour').classList.remove('show');
+    window.scrollTo(0, 0);
+    if (!allData._tourDone) {
+        allData._tourDone = todayStr();
+        scheduleSave();
+    }
+}
+
+// Shown once per account, the first time Today opens with nothing else on screen
+function maybeStartTour() {
+    if (allData._tourDone || tourStep >= 0) return;
+    setTimeout(() => {
+        const busy = document.getElementById('recordMoment').classList.contains('show')
+            || document.getElementById('celebrate').classList.contains('show')
+            || document.querySelector('.modal-overlay.active');
+        if (!allData._tourDone && !busy && document.getElementById('page-today').classList.contains('active')) startTour();
+    }, 900);
+}
+
+// ── Weekly recap: last Monday–Sunday as a short story, shown once each week ──
+function weekXp(monday) {
+    const sunday = addDays(monday, 6);
+    const inWeek = d => d >= monday && d <= sunday;
+    const sessions = Object.values(metaFor('_sessions')).flat().filter(s => s && inWeek(s.date));
+    let xp = 0;
+    sessions.forEach(s => {
+        if (s.type === 'workout') xp += 100 + 5 * (s.sets || 0);
+        if (s.type === 'cardio') xp += (s.minutes || 0) * (s.zone >= 4 ? 2 : s.zone === 1 ? 0.5 : 1);
+    });
+    for (let i = 0; i < 7; i++) {
+        const d = addDays(monday, i);
+        xp += Math.max(0, healthCardio(d) - loggedCardio(d));
+        xp += Math.min(150, Math.floor(stepsOn(d) / 100));
+        const done = habitsDone(d);
+        const prog = PROGRAMS[currentProgram];
+        xp += done * 10 + (prog.habits && done >= prog.habits.length ? 30 : 0);
+    }
+    xp += weekRecords(monday).length * 50;
+    xp += (allData._badgeLog || []).filter(b => inWeek(b.date)).reduce((sum, b) => sum + BADGE_TIERS[b.tier - 1].xp, 0);
+    xp += Object.values(allData._specials || {}).filter(inWeek).length * SPECIAL_XP;
+    return Math.round(xp);
+}
+
+// Personal records set in a week, from the current program's log
+function weekRecords(monday) {
+    const sunday = addDays(monday, 6);
+    const data = progData();
+    const records = [];
+    PROGRAMS[currentProgram].exercises.forEach(ex => {
+        let best = null;
+        getLoggedWeeks(ex.id).forEach(l => {
+            const date = (data[ex.id][l.week] || {}).date;
+            if (best !== null && l.value > best && !ex.assist && date && date >= monday && date <= sunday) records.push(ex.name);
+            best = best === null ? l.value : Math.max(best, l.value);
+        });
+    });
+    return records;
+}
+
+const RECAP_FOCUS = {
+    lift: 'Lifting held your score back. Book your sessions in the calendar like meetings.',
+    cardio: 'Cardio is the gap. Two 30-minute Zone 2 sessions close most of it.',
+    steps: 'Steps are the gap. A 20-minute walk after a meal adds about 2,000 a day.',
+    habits: 'Habits are the gap. Pick one to tick every day this week.',
+};
+
+function recapHtml(monday) {
+    const sunday = addDays(monday, 6);
+    const { score, parts } = consistencyScore(sunday);
+    const before = consistencyScore(addDays(monday, -1)).score;
+    const delta = score - before;
+    const workouts = allWorkoutDates().filter(d => d >= monday && d <= sunday).length;
+    const target = weeklyLiftTarget(PROGRAMS[currentProgram]);
+    const cardio = cardioMinutes(d => d >= monday && d <= sunday);
+    const stepAvg = Math.round(Array.from({ length: 7 }, (_, i) => stepsOn(addDays(monday, i))).reduce((a, b) => a + b, 0) / 7);
+    const records = weekRecords(monday);
+    const badges = (allData._badgeLog || []).filter(b => b.date >= monday && b.date <= sunday)
+        .map(b => `${BADGE_TIERS[b.tier - 1].name} ${(badgeTracks().find(t => t.id === b.track) || {}).name || ''}`)
+        .concat(specialBadges().filter(sp => (allData._specials || {})[sp.id] >= monday && (allData._specials || {})[sp.id] <= sunday).map(sp => sp.name));
+    const weakest = parts.reduce((a, b) => (b.ratio < a.ratio ? b : a));
+    const focus = weakest.ratio >= 0.9 ? 'Every part of your week was strong. Repeat it.' : RECAP_FOCUS[weakest.key];
+    const range = `${parseDate(monday).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} – ${parseDate(sunday).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}`;
+    const tile = (label, value, sub) => `<div class="rc-tile"><span>${label}</span><strong>${value}</strong>${sub ? `<small>${sub}</small>` : ''}</div>`;
+    return `
+        <div class="recap-kicker">Your week · ${escapeHtml(range)}</div>
+        <div class="recap-score"><strong>${score}</strong><span class="recap-delta ${delta >= 0 ? 'up' : 'down'}">${delta >= 0 ? '+' : '−'}${Math.abs(delta)} vs week before</span></div>
+        <div class="recap-grid">
+            ${tile('Workouts', `${workouts}<small>/${target}</small>`)}
+            ${tile('Cardio', cardio, 'minutes')}
+            ${tile('Steps', compactNum(stepAvg), 'a day')}
+            ${tile('Records', records.length)}
+            ${tile('XP', `+${weekXp(monday).toLocaleString()}`)}
+            ${tile('Badges', badges.length)}
+        </div>
+        ${records.length || badges.length ? `<div class="recap-list">
+            ${records.map(r => `<div><span class="rl-dot gold"></span>New record: ${escapeHtml(r)}</div>`).join('')}
+            ${badges.map(b => `<div><span class="rl-dot"></span>${escapeHtml(b)}</div>`).join('')}
+        </div>` : ''}
+        <div class="recap-focus"><span>This week's focus</span><p>${escapeHtml(focus)}</p></div>
+    `;
+}
+
+function openRecap(monday = addDays(mondayOf(todayStr()), -7)) {
+    document.getElementById('recapBody').innerHTML = recapHtml(monday);
+    document.getElementById('recapModal').classList.add('active');
+}
+
+function closeRecap() {
+    document.getElementById('recapModal').classList.remove('active');
+    setTimeout(nextMoment, 450);
+}
+
+// Once a week, the first time Today opens: last week's recap (if anything happened that week)
+function maybeShowRecap() {
+    if (!allData._tourDone) return;
+    const lastMonday = addDays(mondayOf(todayStr()), -7);
+    if (allData._recapSeen === lastMonday) return;
+    const lastSunday = addDays(lastMonday, 6);
+    const active = Object.values(metaFor('_sessions')).flat().some(s => s && s.date >= lastMonday && s.date <= lastSunday);
+    if (!active) return;
+    allData._recapSeen = lastMonday;
+    scheduleSave();
+    queueMoment(() => openRecap(lastMonday));
+}
+
+// ── Reminders: workout days, streaks at risk, steps (sent by the rest-push function) ──
+const NUDGE_TYPES = [
+    { id: 'workout', label: 'Workout days', note: 'A morning reminder on lifting days' },
+    { id: 'streak', label: 'Streak at risk', note: 'Saturday morning, if the week has no workout yet' },
+    { id: 'steps', label: 'Steps', note: 'Early evening, only if you\'re short of your goal' },
+];
+
+function nudgePrefs() {
+    return { workout: true, streak: true, steps: true, ...((userProfile && userProfile.nudges) || {}) };
+}
+
+function renderNudgeSettings() {
+    const el = document.getElementById('nudgeSettings');
+    if (!el) return;
+    const prefs = nudgePrefs();
+    el.innerHTML = `
+        <p class="settings-note">${restAlertsOn() ? 'Gentle reminders on your lock screen. Turn off any you don\'t want.' : 'Turn on Rest Alerts above first; reminders use the same notifications.'}</p>
+        ${NUDGE_TYPES.map(t => `
+            <label class="toggle-row">
+                <span><strong>${t.label}</strong><small>${t.note}</small></span>
+                <input type="checkbox" class="toggle" ${prefs[t.id] ? 'checked' : ''} ${restAlertsOn() ? '' : 'disabled'} onchange="setNudge('${t.id}', this.checked)">
+            </label>`).join('')}
+    `;
+}
+
+function setNudge(id, on) {
+    haptic();
+    userProfile = { ...userProfile, nudges: { ...nudgePrefs(), [id]: on } };
+    scheduleSave();
+    lastNudgePlan = '';
+    scheduleNudges();
+}
+
+function localTime(date, hour, minute) {
+    const d = parseDate(date);
+    d.setHours(hour, minute, 0, 0);
+    return d;
+}
+
+// The next 7 days of reminders, replanned whenever Today renders (only rows that changed are rewritten)
+let lastNudgePlan = '';
+let nudgeTimer = null;
+
+function scheduleNudges() {
+    clearTimeout(nudgeTimer);
+    nudgeTimer = setTimeout(planNudges, 2000);
+}
+
+async function planNudges() {
+    if (!currentUser || !sb || offlineMode || !restAlertsOn()) return;
+    const prefs = nudgePrefs();
+    const prog = PROGRAMS[currentProgram];
+    const now = new Date();
+    const today = todayStr();
+    const rows = [];
+    const add = (kind, at, title, body = '', day = null) => {
+        if (at > now) rows.push({ user_id: currentUser.id, kind, fire_at: at.toISOString(), title, body, day });
+    };
+
+    if (prefs.workout) {
+        if (prog.weekPlan) {
+            for (let i = 0; i < 7; i++) {
+                const date = addDays(today, i);
+                const plan = prog.weekPlan[parseDate(date).getDay()];
+                if (typeof plan !== 'number' || allWorkoutDates().includes(date)) continue;
+                const count = prog.exercises.filter(ex => ex.day === plan).length;
+                add('workout', localTime(date, 8, 0), `${prog.days[plan]} today`, `${count} exercises are ready for you.`);
+            }
+        } else {
+            // Rolling programs: a nudge after two days off
+            const last = workoutSessions().slice(-1)[0];
+            const date = last ? addDays(last.date, 3) : addDays(today, 1);
+            add('workout', localTime(date < today ? today : date, 8, 0), `${prog.days[getNextDay()]} is up next`, 'Two rest days done. Ready when you are.');
+        }
+    }
+    if (prefs.streak) {
+        const stats = getStreakStats();
+        const saturday = addDays(mondayOf(today), 5);
+        if (stats.streak >= 2 && stats.thisWeek === 0) {
+            add('streak', localTime(saturday, 10, 0), `Your ${stats.streak}-week streak ends Sunday`, 'One workout this weekend keeps it going.');
+        }
+    }
+    if (prefs.steps) {
+        for (let i = 0; i < 7; i++) {
+            const date = addDays(today, i);
+            add('steps', localTime(date, 18, 30), 'Steps', '', date);
+        }
+    }
+
+    const plan = JSON.stringify(rows.map(r => [r.kind, r.fire_at, r.title]));
+    if (plan === lastNudgePlan) return;
+    try {
+        const { error: delError } = await sb.from('scheduled_pushes').delete().eq('user_id', currentUser.id).gt('fire_at', now.toISOString());
+        if (delError) throw delError;
+        if (rows.length) {
+            const { error } = await sb.from('scheduled_pushes').insert(rows);
+            if (error) throw error;
+        }
+        lastNudgePlan = plan;
+    } catch (error) {
+        console.warn('Reminders not scheduled:', error.message || error);
+    }
+}
+
+// ════════════════════════════════════════════
 //  POLISH: bottom sheets, rolling numbers, pull to refresh
 // ════════════════════════════════════════════
 
-const SHEET_CLOSE = { pickerModal: closePicker, cardioModal: closeCardioLog, swapModal: closeSwap, importModal: closeImport };
+const SHEET_CLOSE = { pickerModal: closePicker, cardioModal: closeCardioLog, swapModal: closeSwap, importModal: closeImport, recapModal: closeRecap };
 
 function closeSheet(overlay) {
     const close = SHEET_CLOSE[overlay.id];

@@ -4,7 +4,7 @@
 // - Supabase (login + data) is never cached; the page keeps its own offline copy of your data.
 // - Push: shows the "rest over" notification sent by the rest-push Supabase function.
 // Bump CACHE when changing this file's caching rules.
-const CACHE = 'workout-tracker-v3';
+const CACHE = 'workout-tracker-v4';
 const APP_SHELL = ['./', 'index.html', 'manifest.webmanifest', 'icons/icon-180.png', 'icons/icon-192.png', 'icons/icon-512.png'];
 const CDN_HOSTS = ['cdnjs.cloudflare.com', 'cdn.jsdelivr.net', 'fonts.googleapis.com', 'fonts.gstatic.com'];
 
@@ -72,7 +72,7 @@ self.addEventListener('push', event => {
         body: data.body || 'Time for your next set',
         icon: 'icons/icon-192.png',
         badge: 'icons/icon-192.png',
-        tag: 'rest-timer',
+        tag: data.tag || 'rest-timer',   // reminders use their own tag so they don't replace a rest alert
         renotify: true,
         vibrate: [200, 100, 200],
     }));

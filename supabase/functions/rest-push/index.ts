@@ -6,6 +6,8 @@
 //      with the shared secret from public.push_config.
 //   3. This function claims the due timers (deletes them, so nothing is sent twice) and
 //      sends a Web Push to each of that user's devices in public.push_subscriptions.
+//   4. The same run sends reminders the app planned in public.scheduled_pushes (supabase-v2-setup.sql):
+//      workout days, streak at risk, and steps (written at send time, skipped once the goal is met).
 //
 // Deploy in the Supabase dashboard: Edge Functions → Deploy a new function → Via editor,
 // name it "rest-push", paste this file, deploy, then turn OFF "Enforce JWT verification"
@@ -30,12 +32,36 @@ Deno.serve(async (req) => {
     webpush.setVapidDetails(cfg.vapid_subject, cfg.vapid_public, cfg.vapid_private);
 
     // Claim due timers by deleting them, so overlapping runs never send the same alert twice
-    const { data: due, error: dueError } = await sb
+    const now = new Date().toISOString();
+    const { data: timers, error: dueError } = await sb
         .from('rest_timers')
         .delete()
-        .lte('fire_at', new Date().toISOString())
+        .lte('fire_at', now)
         .select('user_id, title, body');
     if (dueError) return json({ error: dueError.message }, 500);
+    const due: { user_id: string; title: string; body: string; ttl?: number; tag?: string }[] = timers ?? [];
+
+    // Reminders planned by the app (scheduled_pushes, from supabase-v2-setup.sql); claimed the same way
+    const { data: reminders } = await sb
+        .from('scheduled_pushes')
+        .delete()
+        .lte('fire_at', now)
+        .select('user_id, kind, title, body, day');
+    for (const r of reminders ?? []) {
+        if (r.kind === 'steps') {
+            // Written now, from the latest synced count; skipped once the goal is reached
+            const [{ data: count }, { data: user }] = await Promise.all([
+                sb.from('step_counts').select('steps').eq('user_id', r.user_id).eq('date', r.day).maybeSingle(),
+                sb.from('user_data').select('profile').eq('user_id', r.user_id).maybeSingle(),
+            ]);
+            const goal = Number(user?.profile?.stepGoal) || 10000;
+            const steps = count?.steps ?? 0;
+            if (steps >= goal) continue;
+            due.push({ user_id: r.user_id, title: `${(goal - steps).toLocaleString('en-US')} steps to your goal`, body: steps ? `You're at ${steps.toLocaleString('en-US')}. An evening walk closes the ring.` : 'An evening walk gets you going.', ttl: 3600, tag: 'reminder-steps' });
+        } else {
+            due.push({ user_id: r.user_id, title: r.title, body: r.body, ttl: 3600, tag: `reminder-${r.kind}` });
+        }
+    }
     if (!due.length) return json({ sent: 0 });
 
     const { data: subscriptions } = await sb
@@ -47,11 +73,11 @@ Deno.serve(async (req) => {
     let sent = 0;
     for (const timer of due) {
         for (const sub of (subscriptions ?? []).filter((s) => s.user_id === timer.user_id)) {
-            const payload = JSON.stringify({ title: timer.title || 'Rest over', body: timer.body || 'Time for your next set' });
+            const payload = JSON.stringify({ title: timer.title || 'Rest over', body: timer.body || 'Time for your next set', tag: timer.tag || 'rest-timer' });
             const request = webpush.generateRequestDetails(
                 { endpoint: sub.endpoint, keys: { p256dh: sub.p256dh, auth: sub.auth } },
                 payload,
-                { TTL: 120, urgency: 'high' },
+                { TTL: timer.ttl ?? 120, urgency: 'high' },
             );
             const host = new URL(sub.endpoint).host;
             try {
