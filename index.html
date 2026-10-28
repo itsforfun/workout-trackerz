@@ -1464,6 +1464,13 @@
         @media (prefers-reduced-motion: reduce) {
             .profile-screen.active .profile-header, .profile-screen.active form, .program-selector.active .selector-hero, .program-selector.active .program-card { animation:none; }
         }
+
+        /* ── Opening quote attribution + long quotes (v1.34) ── */
+        .splash-quote.long { font-size:clamp(1.45rem, 6.2vw, 2rem); line-height:1.18; }
+        .splash-by { margin-top:18px; font-family:var(--font-ui); font-size:0.66rem; font-weight:600; letter-spacing:0.2em; text-transform:uppercase; color:var(--text-muted); opacity:0; animation:splashIn 1.2s var(--d, 2s) cubic-bezier(.2,.8,.2,1) forwards; }
+        .splash-by:empty { display:none; }
+        .splash-by::before { content:''; display:inline-block; width:14px; height:1px; margin-right:10px; vertical-align:middle; background:var(--accent); }
+        @media (prefers-reduced-motion: reduce) { .splash-by { animation:splashFade 0.4s ease forwards; } }
     </style>
 </head>
 <body>
@@ -1483,10 +1490,12 @@
         <div class="splash-kicker" id="splashKicker"></div>
         <i class="splash-line" aria-hidden="true"></i>
         <p class="splash-quote" id="splashQuote"></p>
+        <div class="splash-by" id="splashBy"></div>
     </div>
 </div>
 <script>
 // Runs before anything else so the quote is on screen at first paint.
+// Entries are a line written for the app, or [quote, author] from public-domain writers and classic translations.
 // Lines written for this app around Odyr's themes: the endless journey, the path to greatness, constant change, listening to the body, never yielding. Shuffled like a deck (kept on this device) so none repeats until all are seen.
 const QUOTES = [
     'The road does not end. That is the gift.',
@@ -1539,14 +1548,50 @@ const QUOTES = [
     'The strongest version of you is still on the way.',
     'The path to greatness is paved with ordinary days.',
     'Begin again. That is the whole secret.',
+    ['To strive, to seek, to find, and not to yield.', 'Alfred, Lord Tennyson'],
+    ['Though much is taken, much abides.', 'Alfred, Lord Tennyson'],
+    ['I am a part of all that I have met.', 'Alfred, Lord Tennyson'],
+    ['Heart, be still, you had worse than this to bear.', 'Homer, The Odyssey'],
+    ['Between us and goodness the gods have placed the sweat of our brows: long and steep is the path that leads to her.', 'Hesiod'],
+    ['Fire is the test of gold; adversity, of strong men.', 'Seneca'],
+    ['It is not because things are difficult that we do not dare; it is because we do not dare that things are difficult.', 'Seneca'],
+    ['Life is long if you know how to use it.', 'Seneca'],
+    ['The art of life is more like the wrestler’s art than the dancer’s.', 'Marcus Aurelius'],
+    ['No longer talk at all about the kind of man that a good man ought to be, but be such.', 'Marcus Aurelius'],
+    ['First say to yourself what you would be; and then do what you have to do.', 'Epictetus'],
+    ['No great thing is created suddenly.', 'Epictetus'],
+    ['A journey of a thousand miles begins with a single step.', 'Lao Tzu'],
+    ['He who overcomes himself is mighty.', 'Lao Tzu'],
+    ['Everything flows.', 'Heraclitus'],
+    ['Character is destiny.', 'Heraclitus'],
+    ['We become brave by doing brave acts.', 'Aristotle'],
+    ['Dripping water hollows a stone.', 'Ovid'],
+    ['They can because they think they can.', 'Virgil'],
+    ['He who has a why to live for can bear almost any how.', 'Friedrich Nietzsche'],
+    ['What does not kill me makes me stronger.', 'Friedrich Nietzsche'],
+    ['All truly great thoughts are conceived while walking.', 'Friedrich Nietzsche'],
+    ['One must still have chaos in oneself to be able to give birth to a dancing star.', 'Friedrich Nietzsche'],
+    ['Trust thyself: every heart vibrates to that iron string.', 'Ralph Waldo Emerson'],
+    ['Every artist was first an amateur.', 'Ralph Waldo Emerson'],
+    ['If one advances confidently in the direction of his dreams, he will meet with a success unexpected in common hours.', 'Henry David Thoreau'],
+    ['The moment my legs begin to move, my thoughts begin to flow.', 'Henry David Thoreau'],
+    ['Afoot and light-hearted I take to the open road.', 'Walt Whitman'],
+    ['Your body is the harp of your soul, and it is yours to bring forth sweet music from it or confused sounds.', 'Kahlil Gibran'],
+    ['Far and away the best prize that life offers is the chance to work hard at work worth doing.', 'Theodore Roosevelt'],
+    ['If you can fill the unforgiving minute with sixty seconds’ worth of distance run, yours is the Earth.', 'Rudyard Kipling'],
 ];
 // Writes the weekday and the quote, one span per word so each word can rise in turn
-function renderSplash(text) {
+function renderSplash(entry) {
+    const [text, by] = Array.isArray(entry) ? entry : [entry, ''];
     document.getElementById('splashKicker').textContent = new Date().toLocaleDateString(undefined, { weekday: 'long' });
     const quote = document.getElementById('splashQuote');
-    quote.setAttribute('aria-label', text);
+    quote.setAttribute('aria-label', by ? `${text} (${by})` : text);
     const words = text.split(' ');
-    window.__splashMin = 700 + 1500 + words.length * 140 + 1600;
+    quote.classList.toggle('long', words.length > 14);
+    const byEl = document.getElementById('splashBy');
+    byEl.textContent = by;
+    byEl.style.setProperty('--d', `${0.7 + words.length * 0.14 + 0.6}s`);
+    window.__splashMin = 700 + 1500 + words.length * 140 + 1600 + (by ? 700 : 0);
     quote.innerHTML = words.map((word, i) =>
         `<span class="w" style="--i:${i}" aria-hidden="true">${word.replace(/&/g, '&amp;').replace(/</g, '&lt;')}</span>`).join(' ');
 }
@@ -1557,6 +1602,8 @@ function renderSplash(text) {
     try {
         off = localStorage.getItem('wt_splash_off') === '1';
         deck = JSON.parse(localStorage.getItem('wt_quote_deck') || '[]').filter(i => i < QUOTES.length);
+        if (localStorage.getItem('wt_quote_count') !== String(QUOTES.length)) deck = [];
+        localStorage.setItem('wt_quote_count', String(QUOTES.length));
     } catch (e) { /* private mode: still show a random quote */ }
     if (off) {
         splash.remove();
@@ -2213,7 +2260,7 @@ function renderSplash(text) {
 
 // Shown at the bottom of Settings so you can tell which version a phone is running.
 // Bump it with every deploy.
-const APP_VERSION = '1.33 · 28 Oct';
+const APP_VERSION = '1.34 · 28 Oct';
 
 const SUPABASE_URL = 'https://hcwbcxhblfjpdlkwykez.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_mEe_5g2UITyp5O-F9YRhRg_wTQWuOtf';
@@ -7909,7 +7956,7 @@ function showSplashAgain() {
     renderSplash(QUOTES[index]);
     // Replay the entrance animation
     splash.classList.remove('hide');
-    splash.querySelectorAll('.splash-kicker, .splash-line').forEach(el => {
+    splash.querySelectorAll('.splash-kicker, .splash-line, .splash-by').forEach(el => {
         el.style.animation = 'none';
         void el.offsetWidth;
         el.style.animation = '';
