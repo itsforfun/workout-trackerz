@@ -1875,7 +1875,7 @@
 
 // Shown at the bottom of Settings so you can tell which version a phone is running.
 // Bump it with every deploy.
-const APP_VERSION = '1.23 · 28 Oct';
+const APP_VERSION = '1.24 · 28 Oct';
 
 const SUPABASE_URL = 'https://hcwbcxhblfjpdlkwykez.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_mEe_5g2UITyp5O-F9YRhRg_wTQWuOtf';
@@ -3733,7 +3733,7 @@ function saveCardioLog() {
 // writes public.step_counts. The tab reads that table and refreshes every minute while open.
 const STEPS_SHORTCUT_NAME = 'Workout Steps';
 // Shared copy of the shortcut; it asks for the user's step key when it is added
-const STEPS_SHORTCUT_LINK = 'https://www.icloud.com/shortcuts/5b67429d97e04da19d333fc90a22e08e';
+const STEPS_SHORTCUT_LINK = 'https://www.icloud.com/shortcuts/2293fbc5e53f4d4985e66957a4342cc8';
 const STEPS_INGEST_URL = `${SUPABASE_URL}/functions/v1/steps-ingest`;
 const STEP_GOALS = [6000, 7000, 8000, 10000, 12000, 15000];
 
@@ -3908,7 +3908,7 @@ async function renderStepsSetup(open) {
                 <li>Run it once from the Shortcuts app and tap <strong>Always Allow</strong> for Health and for sending, so it can run on its own later.</li>
                 <li>Make it run by itself: open the shortcut, add a few times of day (e.g. every few hours, plus 23:30 for the day's final total), or use <strong>Automation</strong> → <strong>+</strong> → <strong>Time of Day</strong> → <strong>Run Immediately</strong>.</li>
                 <li>Wear an Apple Watch? If your steps look about double what the Health app shows, edit the shortcut's <strong>Find Health Samples</strong> and set <strong>Source is</strong> your Watch.</li>
-                <li>Optional, cardio from Apple Health: in the shortcut add <strong>Find Health Samples</strong> (Type <strong>Exercise Minutes</strong>, Start Date is today), then <strong>Calculate Statistics</strong> → Sum, and add a field <code>exercise</code> (Number) set to that Sum. Brisk walks and rides then fill your cardio ring by themselves.</li>
+                <li>The shortcut also sends your Apple Health exercise minutes (recorded mostly by an Apple Watch), so brisk walks and rides fill your cardio ring by themselves.</li>
             </ol>
             <p class="warmup-note">Keep your key private: anyone with it can send step counts to your account. The <strong>Sync from Apple Health</strong> button above runs the shortcut on demand.</p>
         </details>
