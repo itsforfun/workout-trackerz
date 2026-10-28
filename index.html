@@ -16,7 +16,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700&family=DM+Mono:wght@400;500&family=Bebas+Neue&family=Playfair+Display:wght@700;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700&family=DM+Mono:wght@400;500&family=Bebas+Neue&family=Playfair+Display:ital,wght@0,700;0,900;1,400;1,500&display=swap');
         * { margin:0; padding:0; box-sizing:border-box; }
         
         :root {
@@ -1267,9 +1267,117 @@
         .science-refs span { display:block; margin-top:2px; }
         .science-disclaimer { font-size:0.74rem; line-height:1.55; color:var(--text-muted); margin-top:var(--s4); padding-top:var(--s3); border-top:1px solid var(--hairline); }
         .science-link { display:block; margin-top:var(--s3); padding:0; border:none; background:none; font:inherit; font-size:0.78rem; color:var(--text-dim); cursor:pointer; text-align:left; }
+
+        /* ── Opening quote (v1.25) ── */
+        .splash { position:fixed; inset:0; z-index:700; display:flex; align-items:center; justify-content:center; padding:48px 36px;
+            background:radial-gradient(700px 420px at 50% 38%, rgba(217,178,95,0.08), transparent 70%), var(--bg);
+            transition:opacity 0.8s cubic-bezier(.2,.8,.2,1), visibility 0s linear 0.8s; cursor:pointer; }
+        .splash.hide { opacity:0; visibility:hidden; pointer-events:none; }
+        .splash-inner { max-width:420px; text-align:center; transition:transform 0.8s cubic-bezier(.2,.8,.2,1); }
+        .splash.hide .splash-inner { transform:scale(1.03); }
+        .splash-kicker { font-family:var(--font-ui); font-size:0.62rem; font-weight:600; letter-spacing:0.26em; text-transform:uppercase; color:var(--accent); opacity:0; animation:splashIn 0.9s 0.1s cubic-bezier(.2,.8,.2,1) forwards; }
+        .splash-quote { font-family:'Playfair Display', Georgia, serif; font-style:italic; font-weight:400; font-size:clamp(1.55rem, 6.4vw, 2.1rem); line-height:1.32; letter-spacing:-0.005em; color:var(--text); margin-top:20px; opacity:0; animation:splashIn 1.1s 0.3s cubic-bezier(.2,.8,.2,1) forwards; }
+        .splash-mark { position:absolute; left:0; right:0; bottom:calc(env(safe-area-inset-bottom) + 36px); text-align:center; font-family:var(--font-display); font-size:0.95rem; letter-spacing:0.28em; color:var(--text-muted); opacity:0; animation:splashFade 1s 0.9s ease forwards; }
+        @keyframes splashIn { from { opacity:0; transform:translateY(10px); filter:blur(6px); } to { opacity:1; transform:none; filter:none; } }
+        @keyframes splashFade { to { opacity:1; } }
+        @media (prefers-reduced-motion: reduce) {
+            .splash-kicker, .splash-quote, .splash-mark { animation:splashFade 0.4s ease forwards; }
+            .splash.hide .splash-inner { transform:none; }
+        }
     </style>
 </head>
 <body>
+
+<!-- OPENING QUOTE: shown on every launch, then dissolves into the app (tap to skip) -->
+<div class="splash" id="splash" onclick="hideSplash()">
+    <div class="splash-inner">
+        <div class="splash-kicker" id="splashKicker"></div>
+        <p class="splash-quote" id="splashQuote"></p>
+    </div>
+    <div class="splash-mark">Workout Tracker</div>
+</div>
+<script>
+// Runs before anything else so the quote is on screen at first paint.
+// Lines written for this app. Shuffled like a deck (kept on this device) so none repeats until all are seen.
+const QUOTES = [
+    'Strength is built in the reps nobody sees.',
+    'You don\'t need to be extreme. You need to keep showing up.',
+    'Show up today. Tomorrow\'s version of you is counting on it.',
+    'The bar doesn\'t care about your excuses. Neither should you.',
+    'Small steps, taken daily, become a different life.',
+    'Discipline is just remembering what you actually want.',
+    'Every record you set started as a rep you almost skipped.',
+    'Rest is part of the plan, not a break from it.',
+    'Slow progress is still progress. Stopping is the only setback.',
+    'You are one workout away from a better mood.',
+    'Consistency beats intensity, every single time.',
+    'The hardest part of the session is walking through the door.',
+    'Strong is a habit, not a trait.',
+    'Earn the feeling of the walk home.',
+    'Your body keeps the score of every day you showed up.',
+    'Today\'s effort is tomorrow\'s warm-up.',
+    'Nobody remembers the easy sets. Make this one count.',
+    'Be patient with results and impatient with effort.',
+    'Lift for the person you\'re becoming.',
+    'Motivation fades. Routines don\'t.',
+    'A good session beats a perfect plan you never start.',
+    'Breathe, brace, and own the next rep.',
+    'Progress hides in boring repetition.',
+    'You don\'t find time to train. You make it.',
+    'Every step counts, even the slow ones.',
+    'Quiet work, loud results.',
+    'The weight you fear today is your warm-up next year.',
+    'Win the morning, then win the day.',
+    'Be the person who finishes the set.',
+    'Fitness is a promise you keep to yourself.',
+    'Strength grows in the space between comfortable and impossible.',
+    'Do it tired. Do it slowly. Just do it well.',
+    'The only bad workout is the one you skipped.',
+    'Build a body that carries your life with ease.',
+    'Your streak is a story. Write another chapter today.',
+    'Effort is the one thing you fully control.',
+    'Recovery is where the work turns into results.',
+    'Small wins stack. Keep stacking.',
+    'Today you train for every tomorrow.',
+    'Hard sessions build easy days.',
+    'Be proud of the reps, not just the results.',
+    'A little better than last week is the whole game.',
+    'Your pace is fine. Keep moving.',
+    'Show your future self what you\'re made of.',
+    'Calm mind, strong body, steady steps.',
+    'Great days are built one ordinary session at a time.',
+    'Sweat now, smile later.',
+    'The work is simple. Doing it often is the art.',
+    'Trust the process. Log the reps.',
+    'Every day you choose yourself counts.',
+];
+(function () {
+    const splash = document.getElementById('splash');
+    let off = false;
+    let deck = [];
+    try {
+        off = localStorage.getItem('wt_splash_off') === '1';
+        deck = JSON.parse(localStorage.getItem('wt_quote_deck') || '[]').filter(i => i < QUOTES.length);
+    } catch (e) { /* private mode: still show a random quote */ }
+    if (off) {
+        splash.remove();
+        return;
+    }
+    if (!deck.length) {
+        deck = QUOTES.map((_, i) => i);
+        for (let i = deck.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [deck[i], deck[j]] = [deck[j], deck[i]];
+        }
+    }
+    const index = deck.shift();
+    try { localStorage.setItem('wt_quote_deck', JSON.stringify(deck)); } catch (e) { /* private mode */ }
+    const hour = new Date().getHours();
+    document.getElementById('splashKicker').textContent = hour < 5 ? 'Late night' : hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
+    document.getElementById('splashQuote').textContent = QUOTES[index];
+    window.__splashAt = Date.now();
+})();
+</script>
 
 <!-- LOADING SCREEN (shown while we check for an existing login) -->
 <div class="screen loading-screen active" id="loadingScreen">
@@ -1666,6 +1774,15 @@
                 </div>
                 <div id="nudgeSettings"></div>
 
+                <!-- Experience -->
+                <div class="day-label" style="margin-bottom:24px; margin-top:48px;">
+                    <span class="day-name" style="font-size:1.3rem;">Experience</span>
+                </div>
+                <label class="toggle-row">
+                    <span><strong>Opening quote</strong><small>A new motivational line each time you open the app</small></span>
+                    <input type="checkbox" class="toggle" id="splashToggle" onchange="setSplash(this.checked)">
+                </label>
+
                 <!-- Help -->
                 <div class="day-label" style="margin-bottom:24px; margin-top:48px;">
                     <span class="day-name" style="font-size:1.3rem;">Help</span>
@@ -1875,7 +1992,7 @@
 
 // Shown at the bottom of Settings so you can tell which version a phone is running.
 // Bump it with every deploy.
-const APP_VERSION = '1.24 · 28 Oct';
+const APP_VERSION = '1.25 · 28 Oct';
 
 const SUPABASE_URL = 'https://hcwbcxhblfjpdlkwykez.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_mEe_5g2UITyp5O-F9YRhRg_wTQWuOtf';
@@ -5023,6 +5140,8 @@ function renderPushStatus() {
     status.textContent = text;
     actions.innerHTML = buttons;
     renderNudgeSettings();
+    const splashToggle = document.getElementById('splashToggle');
+    if (splashToggle) splashToggle.checked = !splashOff();
 }
 
 async function enableRestAlerts() {
@@ -7226,6 +7345,68 @@ function initPullToRefresh() {
 initSheets();
 initPullToRefresh();
 
+// ── Opening quote (see the #splash block at the top of <body>) ──
+const SPLASH_MIN_MS = 2400;
+const SPLASH_MAX_MS = 5000;
+let hiddenAt = null;
+
+function hideSplash() {
+    const splash = document.getElementById('splash');
+    if (!splash || splash.classList.contains('hide')) return;
+    splash.classList.add('hide');
+}
+
+// Leave once the app has finished loading, but keep the quote up long enough to read
+function scheduleSplashHide() {
+    const splash = document.getElementById('splash');
+    if (!splash) return;
+    const shownAt = window.__splashAt || Date.now();
+    const check = () => {
+        const elapsed = Date.now() - shownAt;
+        const ready = !document.getElementById('loadingScreen').classList.contains('active');
+        if ((ready && elapsed >= SPLASH_MIN_MS) || elapsed >= SPLASH_MAX_MS) hideSplash();
+        else setTimeout(check, 150);
+    };
+    check();
+}
+
+// Home-screen apps often resume instead of relaunching: after 15+ minutes away, open with a new quote
+function showSplashAgain() {
+    const splash = document.getElementById('splash');
+    if (!splash || splashOff()) return;
+    let deck = [];
+    try { deck = JSON.parse(localStorage.getItem('wt_quote_deck') || '[]'); } catch (e) { /* private mode */ }
+    if (!deck.length) deck = QUOTES.map((_, i) => i).sort(() => Math.random() - 0.5);
+    const index = deck.shift();
+    try { localStorage.setItem('wt_quote_deck', JSON.stringify(deck)); } catch (e) { /* private mode */ }
+    const hour = new Date().getHours();
+    document.getElementById('splashKicker').textContent = hour < 5 ? 'Late night' : hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
+    document.getElementById('splashQuote').textContent = QUOTES[index];
+    // Replay the entrance animation
+    splash.classList.remove('hide');
+    splash.querySelectorAll('.splash-kicker, .splash-quote, .splash-mark').forEach(el => {
+        el.style.animation = 'none';
+        void el.offsetWidth;
+        el.style.animation = '';
+    });
+    window.__splashAt = Date.now();
+    setTimeout(hideSplash, SPLASH_MIN_MS + 300);
+}
+
+document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') hiddenAt = Date.now();
+    else if (hiddenAt && Date.now() - hiddenAt >= 15 * 60000 && !activeWorkout) showSplashAgain();
+});
+
+function splashOff() {
+    try { return localStorage.getItem('wt_splash_off') === '1'; } catch (e) { return false; }
+}
+
+function setSplash(on) {
+    haptic();
+    try { localStorage.setItem('wt_splash_off', on ? '0' : '1'); } catch (e) { /* private mode */ }
+}
+
 // ════════════════════════════════════════════
 //  INIT
 // ════════════════════════════════════════════
@@ -7241,6 +7422,7 @@ if (sb) {
     });
 }
 checkAuth();
+scheduleSplashHide();
 
 // Offline support + "Add to Home Screen" (see sw.js)
 if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
