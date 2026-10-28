@@ -1249,6 +1249,24 @@
         .seg button.on { background:var(--text); color:var(--bg); border-color:var(--text); font-weight:500; }
         .ready-note { font-size:0.8rem; line-height:1.55; color:var(--text-dim); margin-top:var(--s4); }
         .coach-gen .build-plus { display:grid; place-items:center; color:var(--accent); }
+
+        /* ── The science page (v1.23) ── */
+        .science-intro { font-size:0.84rem; line-height:1.55; color:var(--text-dim); margin:4px 0 var(--s4); }
+        .science-item { border-top:1px solid var(--hairline); padding:var(--s3) 0; }
+        .science-item summary { list-style:none; cursor:pointer; display:flex; flex-direction:column; gap:3px; }
+        .science-item summary::-webkit-details-marker { display:none; }
+        .science-item summary span { font-size:0.95rem; font-weight:500; }
+        .science-item summary span::after { content:' ›'; color:var(--text-muted); }
+        .science-item[open] summary span::after { content:' ‹'; }
+        .science-item summary small { font-size:0.76rem; color:var(--text-muted); line-height:1.45; }
+        .science-item > p { font-size:0.84rem; line-height:1.6; color:var(--text-dim); margin-top:var(--s3); }
+        .science-item > p.science-note { font-size:0.76rem; color:var(--text-muted); font-style:italic; margin-top:var(--s2); }
+        .science-refs { margin:var(--s3) 0 0 18px; display:flex; flex-direction:column; gap:var(--s2); }
+        .science-refs li { font-size:0.74rem; line-height:1.45; color:var(--text-muted); }
+        .science-refs a { color:var(--text-dim); text-decoration:underline; text-decoration-color:rgba(240,232,216,0.25); text-underline-offset:2px; }
+        .science-refs span { display:block; margin-top:2px; }
+        .science-disclaimer { font-size:0.74rem; line-height:1.55; color:var(--text-muted); margin-top:var(--s4); padding-top:var(--s3); border-top:1px solid var(--hairline); }
+        .science-link { display:block; margin-top:var(--s3); padding:0; border:none; background:none; font:inherit; font-size:0.78rem; color:var(--text-dim); cursor:pointer; text-align:left; }
     </style>
 </head>
 <body>
@@ -1653,6 +1671,7 @@
                     <span class="day-name" style="font-size:1.3rem;">Help</span>
                 </div>
                 <div class="settings-actions">
+                    <button class="btn" onclick="openScience()">How the coach works</button>
                     <button class="btn" onclick="startTour()">Replay the walkthrough</button>
                     <button class="btn" onclick="openRecap()">Last week's recap</button>
                 </div>
@@ -1820,6 +1839,14 @@
     </div>
 </div>
 
+<div class="modal-overlay" id="scienceModal">
+    <div class="modal science-modal">
+        <h2>How the coach works</h2>
+        <div id="scienceBody"></div>
+        <div class="modal-actions"><button class="btn btn-primary" onclick="closeScience()">Done</button></div>
+    </div>
+</div>
+
 <div class="modal-overlay" id="recapModal">
     <div class="modal recap-modal">
         <div id="recapBody"></div>
@@ -1848,7 +1875,7 @@
 
 // Shown at the bottom of Settings so you can tell which version a phone is running.
 // Bump it with every deploy.
-const APP_VERSION = '1.22 · 28 Oct';
+const APP_VERSION = '1.23 · 28 Oct';
 
 const SUPABASE_URL = 'https://hcwbcxhblfjpdlkwykez.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_mEe_5g2UITyp5O-F9YRhRg_wTQWuOtf';
@@ -6349,6 +6376,7 @@ function renderDeloadCard() {
             <div class="coach-kicker">${d.active ? 'Deload week' : 'Deload starts tomorrow'}</div>
             <h3>Lighter on purpose</h3>
             <p>Because ${escapeHtml(d.reason)}, the coach is planning a lighter week until ${escapeHtml(prettyDate(d.until))}: about 10% less weight and fewer sets. You come back stronger.</p>
+            <button class="science-link" onclick="openScience()">Why deloads ›</button>
             <button class="back-link" onclick="skipDeload()">Skip the deload</button>
         </div>`;
 }
@@ -6391,6 +6419,7 @@ function renderReadiness() {
             : level === 'low' ? 'Taking it easier today: about 10% lighter and one set fewer per exercise. Smart, not soft.'
             : level === 'high' ? 'You\'re ready. Chase an extra rep on your last sets.'
             : 'Normal session. Weights are set from last time.'}</p>
+        <button class="science-link" onclick="closeReadiness(); openScience()">Why this works ›</button>
     `;
 }
 
@@ -6510,6 +6539,7 @@ function renderGenerator() {
             <div class="seg">${GEN_JOINTS.map(([key, label]) => `<button class="${genDraft.protect.includes(key) ? 'on' : ''}" onclick="toggleGenJoint('${key}')">${label}</button>`).join('')}</div>
         </div>
         <p class="ready-note">The coach picks exercises for your equipment, avoids hard-on-the-joint moves you flag, and sets reps and rest for your goal. You can change anything before saving.</p>
+        <button class="science-link" onclick="closeGenerator(); openScience()">How programs are built ›</button>
     `;
 }
 
@@ -6570,6 +6600,132 @@ function createGeneratedProgram() {
     renderBuilder();
     showScreen('builder');
     showToast('Your program is ready. Review it, then Save');
+}
+
+// ════════════════════════════════════════════
+//  THE SCIENCE: what each coach rule is based on
+// ════════════════════════════════════════════
+
+// Each section: the rule in one line, why, the evidence, and an honest note on what is a judgement call.
+// References link to the paper's DOI when known, otherwise to a PubMed search for the exact title.
+const COACH_SCIENCE = [
+    {
+        title: 'Weights go up step by step',
+        rule: 'Hit the top of the rep range on every set, then add the smallest step (2–2.5 kg).',
+        why: 'Muscles and strength keep adapting only while the challenge keeps rising. Working in a rep range and adding load once the top is reached is the progression model recommended for healthy adults.',
+        note: 'The step sizes match standard plates and dumbbells; they are practical choices, not values from a study.',
+        refs: [
+            ['American College of Sports Medicine. Med Sci Sports Exerc. 2009;41(3):687–708.', 'American College of Sports Medicine position stand. Progression models in resistance training for healthy adults'],
+            ['Schoenfeld BJ, Grgic J, Ogborn D, Krieger JW. J Strength Cond Res. 2017;31(12):3508–3523.', 'Strength and Hypertrophy Adaptations Between Low- vs. High-Load Resistance Training: A Systematic Review and Meta-analysis'],
+        ],
+    },
+    {
+        title: 'Rating each set: Easy, Good, Hard, Max',
+        rule: 'Each rating is "reps left in the tank": Easy ≈ 4+, Good ≈ 2–3, Hard ≈ 1, Max = 0.',
+        why: 'The reps-in-reserve scale is a practical, studied way to rate effort in strength training. Going all the way to failure is not needed: a meta-analysis found no clear advantage for training to failure over stopping a little short, so the coach aims for sets that are hard but not all-out, and adjusts when they are clearly too easy or too hard.',
+        note: 'Ratings are subjective and get more accurate with practice, especially near failure.',
+        refs: [
+            ['Zourdos MC, Klemp A, Dolan C, et al. J Strength Cond Res. 2016;30(1):267–275.', 'Novel Resistance Training-Specific Rating of Perceived Exertion Scale Measuring Repetitions in Reserve', '10.1519/JSC.0000000000001049'],
+            ['Refalo MC, Helms ER, Trexler ET, Hamilton DL, Fyfe JJ. Sports Med. 2023;53(3):649–665.', 'Influence of Resistance Training Proximity-to-Failure on Skeletal Muscle Hypertrophy: A Systematic Review with Meta-analysis', '10.1007/s40279-022-01784-y'],
+        ],
+    },
+    {
+        title: 'Adjusting to the day',
+        rule: 'Easy sets → heavier next time; missed reps at max effort → one step lighter. A rough night or low energy → a lighter, shorter session.',
+        why: 'Adjusting load to how you perform on the day (autoregulation) gives results at least as good as fixed percentages. Poor sleep measurably lowers performance, so trimming the session protects quality.',
+        note: 'The 10% reduction and "one set fewer" are sensible coaching defaults rather than exact study values.',
+        refs: [
+            ['Helms ER, Byrnes RK, Cooke DM, et al. Front Physiol. 2018;9:247.', 'RPE vs. Percentage 1RM Loading in Periodized Programs Matched for Sets and Repetitions', '10.3389/fphys.2018.00247'],
+            ['Greig L, Stephens Hemingway BH, Aspe RR, et al. Sports Med. 2020;50(11):1873–1887.', 'Autoregulation in Resistance Training: Addressing the Inconsistencies', '10.1007/s40279-020-01330-8'],
+            ['Fullagar HH, Skorski S, Duffield R, et al. Sports Med. 2015;45(2):161–186.', 'Sleep and athletic performance: the effects of sleep loss on exercise performance, and physiological and cognitive responses to exercise'],
+        ],
+    },
+    {
+        title: 'Deload weeks',
+        rule: 'When 2+ lifts stall, after two all-out sessions in a row, or after about 7 hard weeks: one week ~10% lighter with fewer sets.',
+        why: 'Experienced strength and physique coaches use deloads to manage fatigue, usually 5–7 days every 4–6 weeks, mostly by cutting sets and effort. In a randomised trial, a week of no training mid-block left muscle growth unchanged but gave smaller strength gains, so the coach deloads by training lighter rather than stopping, and only when fatigue shows.',
+        note: 'Research on deloads is still young. The triggers here are coaching rules, and you can always skip one.',
+        refs: [
+            ['Bell L, Nolan D, Immonen V, et al. Front Sports Act Living. 2022;4:1073223.', 'You can\'t shoot another bullet until you\'ve reloaded the gun: Coaches\' perceptions, practices and experiences of deloading in strength and physique sports', '10.3389/fspor.2022.1073223'],
+            ['Coleman M, Burke R, Augustin F, et al. PeerJ. 2024;12:e16777.', 'Gaining more from doing less? The effects of a one-week deload period during supervised resistance training on muscular adaptations', '10.7717/peerj.16777'],
+        ],
+    },
+    {
+        title: 'Coming back after time off',
+        rule: 'After 7 or more days off, the first session is 10% lighter and you build back over two sessions.',
+        why: 'Strength drops when training stops, and the drop grows with the length of the break; it is larger in people over 65. Starting a little lighter and building back over two sessions matches what you can actually lift and keeps soreness down.',
+        note: 'The 7-day trigger and the 10% reduction are coaching choices; after a short break most people rebuild quickly.',
+        refs: [
+            ['Bosquet L, Berryman N, Dupuy O, et al. Scand J Med Sci Sports. 2013;23(3):e140–e149.', 'Effect of training cessation on muscular performance: a meta-analysis', '10.1111/sms.12047'],
+        ],
+    },
+    {
+        title: 'How generated programs are built',
+        rule: 'Each muscle trained about twice a week, roughly 10+ hard sets per muscle weekly, heavier sets for the main lifts and lighter, higher-rep accessories.',
+        why: 'Training a muscle twice a week tends to beat once a week for growth, more weekly sets give more growth up to a point, and a wide range of loads builds muscle when sets are hard enough.',
+        note: 'Exercise picks and joint-friendly swaps are coaching choices. If something hurts, swap it out.',
+        refs: [
+            ['Schoenfeld BJ, Ogborn D, Krieger JW. Sports Med. 2016;46(11):1689–1697.', 'Effects of Resistance Training Frequency on Measures of Muscle Hypertrophy: A Systematic Review and Meta-Analysis'],
+            ['Schoenfeld BJ, Ogborn D, Krieger JW. J Sports Sci. 2017;35(11):1073–1082.', 'Dose-response relationship between weekly resistance training volume and increases in muscle mass: A systematic review and meta-analysis'],
+        ],
+    },
+    {
+        title: 'Cardio zones',
+        rule: 'Max heart rate ≈ 208 − 0.7 × age; most cardio in Zone 2; 150 minutes of moderate activity a week.',
+        why: 'The Tanaka formula fits adults better than 220 − age. The talk test tracks the top of Zone 2. WHO recommends 150–300 moderate minutes a week. Intervals raise fitness fast; for fat loss, intervals and steady cardio work about equally.',
+        note: 'Formulas can be 10+ beats off for an individual; the talk test is a good check.',
+        refs: [
+            ['Tanaka H, Monahan KD, Seals DR. J Am Coll Cardiol. 2001;37(1):153–156.', 'Age-predicted maximal heart rate revisited'],
+            ['Persinger R, Foster C, Gibson M, et al. Med Sci Sports Exerc. 2004;36(9):1632–1636.', 'Consistency of the talk test for exercise prescription'],
+            ['Bull FC, Al-Ansari SS, Biddle S, et al. Br J Sports Med. 2020;54(24):1451–1462.', 'World Health Organization 2020 guidelines on physical activity and sedentary behaviour'],
+            ['Helgerud J, Høydal K, Wang E, et al. Med Sci Sports Exerc. 2007;39(4):665–671.', 'Aerobic high-intensity intervals improve VO2max more than moderate training'],
+            ['Wewege M, van den Berg R, Ward RE, Keech A. Obes Rev. 2017;18(6):635–646.', 'The effects of high-intensity interval training vs. moderate-intensity continuous training on body composition in overweight and obese adults: a systematic review and meta-analysis'],
+        ],
+    },
+    {
+        title: 'Steps',
+        rule: 'A daily step goal, 10,000 by default; 8,000+ ticks the steps habit.',
+        why: 'Across 15 large studies, more daily steps were linked with lower risk of death, with benefits levelling off around 6,000–8,000 steps for older adults and 8,000–10,000 for younger adults.',
+        note: 'These are observational links, not proof that steps alone cause the benefit.',
+        refs: [
+            ['Paluch AE, Bajpai S, Bassett DR, et al. Lancet Public Health. 2022;7(3):e219–e228.', 'Daily steps and all-cause mortality: a meta-analysis of 15 international cohorts'],
+        ],
+    },
+    {
+        title: 'Strength tiers',
+        rule: 'Tier thresholds are scaled to your bodyweight (allometric scaling, exponent 0.67).',
+        why: 'Strength does not rise in a straight line with bodyweight, so scaling by bodyweight to the power of about two-thirds compares people of different sizes more fairly.',
+        note: 'The tier thresholds themselves are approximations from strength-standard tables, not research values. Treat them as motivation, not a test.',
+        refs: [
+            ['Jaric S. Sports Med. 2002;32(10):615–631.', 'Muscle strength testing: use of normalisation for body size'],
+        ],
+    },
+];
+
+function referenceLink(title, doi) {
+    return doi ? `https://doi.org/${doi}` : `https://pubmed.ncbi.nlm.nih.gov/?term=${encodeURIComponent(title)}`;
+}
+
+function openScience() {
+    haptic();
+    document.getElementById('scienceBody').innerHTML = `
+        <p class="science-intro">Every rule the coach follows, why, and the research behind it. Where a number is a coaching judgement rather than a study result, it says so.</p>
+        ${COACH_SCIENCE.map(section => `
+            <details class="science-item">
+                <summary><span>${escapeHtml(section.title)}</span><small>${escapeHtml(section.rule)}</small></summary>
+                <p>${escapeHtml(section.why)}</p>
+                <p class="science-note">${escapeHtml(section.note)}</p>
+                <ol class="science-refs">
+                    ${section.refs.map(([cite, title, doi]) => `<li><a href="${referenceLink(title, doi)}" target="_blank" rel="noopener">${escapeHtml(title)}</a><span>${escapeHtml(cite)}</span></li>`).join('')}
+                </ol>
+            </details>`).join('')}
+        <p class="science-disclaimer">General fitness guidance, not medical advice. If you have a health condition, an injury or pain, check with a doctor or physiotherapist before training.</p>
+    `;
+    document.getElementById('scienceModal').classList.add('active');
+}
+
+function closeScience() {
+    document.getElementById('scienceModal').classList.remove('active');
 }
 
 // ════════════════════════════════════════════
@@ -6944,7 +7100,7 @@ async function planNudges() {
 //  POLISH: bottom sheets, rolling numbers, pull to refresh
 // ════════════════════════════════════════════
 
-const SHEET_CLOSE = { pickerModal: closePicker, cardioModal: closeCardioLog, swapModal: closeSwap, importModal: closeImport, recapModal: closeRecap, readinessModal: closeReadiness, genModal: closeGenerator };
+const SHEET_CLOSE = { pickerModal: closePicker, cardioModal: closeCardioLog, swapModal: closeSwap, importModal: closeImport, recapModal: closeRecap, readinessModal: closeReadiness, genModal: closeGenerator, scienceModal: closeScience };
 
 function closeSheet(overlay) {
     const close = SHEET_CLOSE[overlay.id];
