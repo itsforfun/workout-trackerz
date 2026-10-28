@@ -4,7 +4,7 @@
 // - Supabase (login + data) is never cached; the page keeps its own offline copy of your data.
 // - Push: shows the "rest over" notification sent by the rest-push Supabase function.
 // Bump CACHE when changing this file's caching rules.
-const CACHE = 'odyr-v8';
+const CACHE = 'odyr-v9';
 const APP_SHELL = ['./', 'index.html', 'manifest.webmanifest', 'lang/fr.js', 'icons/icon-180.png', 'icons/icon-192.png', 'icons/icon-512.png'];
 const CDN_HOSTS = ['cdnjs.cloudflare.com', 'cdn.jsdelivr.net', 'fonts.googleapis.com', 'fonts.gstatic.com'];
 

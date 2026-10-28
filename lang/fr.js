@@ -72,15 +72,7 @@ I18N_PACKS.fr = {
                 "Homère, L’Odyssée"
         ],
         [
-                "Entre nous et la vertu, les dieux ont placé la sueur ; long et raide est le chemin qui y mène.",
-                "Hésiode"
-        ],
-        [
                 "Le feu éprouve l’or ; l’adversité, les hommes forts.",
-                "Sénèque"
-        ],
-        [
-                "Ce n’est pas parce que les choses sont difficiles que nous n’osons pas ; c’est parce que nous n’osons pas qu’elles sont difficiles.",
                 "Sénèque"
         ],
         [
@@ -90,14 +82,6 @@ I18N_PACKS.fr = {
         [
                 "L’art de vivre ressemble plus à la lutte qu’à la danse.",
                 "Marc Aurèle"
-        ],
-        [
-                "Cesse enfin de discuter de ce que doit être l’homme de bien, et sois-le.",
-                "Marc Aurèle"
-        ],
-        [
-                "Dis-toi d’abord ce que tu veux être, puis fais ce que tu dois faire.",
-                "Épictète"
         ],
         [
                 "Rien de grand ne se fait d’un coup.",
@@ -132,7 +116,7 @@ I18N_PACKS.fr = {
                 "Virgile"
         ],
         [
-                "Celui qui a un pourquoi qui lui tient lieu de but peut supporter presque n’importe quel comment.",
+                "Qui a un pourquoi peut supporter presque n’importe quel comment.",
                 "Friedrich Nietzsche"
         ],
         [
@@ -144,10 +128,6 @@ I18N_PACKS.fr = {
                 "Friedrich Nietzsche"
         ],
         [
-                "Il faut encore porter du chaos en soi pour pouvoir mettre au monde une étoile dansante.",
-                "Friedrich Nietzsche"
-        ],
-        [
                 "Aie confiance en toi : chaque cœur vibre à cette corde d’acier.",
                 "Ralph Waldo Emerson"
         ],
@@ -156,28 +136,12 @@ I18N_PACKS.fr = {
                 "Ralph Waldo Emerson"
         ],
         [
-                "Si l’on avance avec confiance dans la direction de ses rêves, on rencontrera un succès inattendu dans le cours ordinaire des jours.",
-                "Henry David Thoreau"
-        ],
-        [
                 "Dès que mes jambes se mettent en mouvement, mes pensées se mettent à couler.",
                 "Henry David Thoreau"
         ],
         [
                 "À pied et le cœur léger, je prends la grand-route.",
                 "Walt Whitman"
-        ],
-        [
-                "Votre corps est la harpe de votre âme, et il vous appartient d’en tirer une douce musique ou des sons confus.",
-                "Khalil Gibran"
-        ],
-        [
-                "De loin, le plus beau prix que la vie offre est la chance de travailler dur à un travail qui en vaut la peine.",
-                "Theodore Roosevelt"
-        ],
-        [
-                "Si tu sais remplir chaque minute impitoyable de soixante secondes de course, la Terre est à toi.",
-                "Rudyard Kipling"
         ]
     ],
     strings: {

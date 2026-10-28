@@ -1473,6 +1473,42 @@
         .splash-by:empty { display:none; }
         .splash-by::before { content:''; display:inline-block; width:14px; height:1px; margin-right:10px; vertical-align:middle; background:var(--accent); }
         @media (prefers-reduced-motion: reduce) { .splash-by { animation:splashFade 0.4s ease forwards; } }
+
+        /* ── The sign-in language, round two (v1.37): gold-dot labels for every section, airy titles, a boxless trophy room ── */
+        .section-head { align-items:center; }
+        .section-head h3, .danger-zone h3 { display:flex; align-items:center; gap:10px; font-family:var(--font-ui); font-size:0.66rem; font-weight:600; letter-spacing:0.18em; text-transform:uppercase; color:var(--text-muted); }
+        .section-head h3::before, .danger-zone h3::before { content:''; width:5px; height:5px; flex:none; border-radius:50%; background:var(--accent); }
+        .danger-zone h3 { color:var(--danger); }
+        .danger-zone h3::before { background:var(--danger); }
+        .section-head span { font-size:0.72rem; }
+        .workout-title { letter-spacing:0.1em; }
+        .modal h2, .tour-card h3, .coach-card h3, .mobility-card h3 { letter-spacing:0.08em; }
+
+        .trophy-screen { background:radial-gradient(620px 440px at 50% 6%, rgba(217,178,95,0.09), transparent 70%), var(--bg); }
+        .trophy-hero { flex-direction:column; align-items:center; gap:0; text-align:center; padding:var(--s3) 0 0; background:none; box-shadow:none; border-radius:0; }
+        .th-ring { position:relative; width:136px; height:136px; margin-bottom:20px; }
+        .odyr-ring { display:block; width:100%; height:100%; overflow:visible; }
+        .level-ring .odyr-ring { height:auto; transform:none; }
+        .odyr-ring .track, .odyr-ring .fill { fill:none; stroke-width:3; stroke-linecap:round; }
+        .odyr-ring .track { stroke:rgba(240,232,216,0.1); }
+        .odyr-ring .fill { stroke:url(#odyrGold); }
+        .odyr-ring .dot { fill:#f2d891; filter:drop-shadow(0 0 6px rgba(242,216,145,0.6)); }
+        .level-rank { letter-spacing:0.12em; }
+        .trophy-hero .th-level { position:absolute; inset:0; width:auto; height:auto; border-radius:0; box-shadow:none; }
+        .trophy-hero .th-level strong { font-size:2.7rem; margin-top:2px; }
+        .trophy-hero .th-rank { font-size:2.2rem; letter-spacing:0.26em; text-indent:0.26em; }
+        .th-line { font-family:'Instrument Serif', Georgia, serif; font-size:1.25rem; color:var(--text-dim); margin-top:10px; }
+        .trophy-hero .th-sub { margin-top:8px; font-size:0.6rem; font-weight:600; letter-spacing:0.16em; text-transform:uppercase; }
+        .showcase { position:relative; margin-top:var(--s5); padding-bottom:var(--s2); }
+        .showcase::after { content:''; position:absolute; left:6%; right:6%; bottom:0; height:1px; background:linear-gradient(90deg, transparent, rgba(217,178,95,0.5), transparent); }
+        .sc-slot, .sc-slot.empty { background:none; box-shadow:none; padding:var(--s2) 0 var(--s3); }
+        .sc-slot span { font-size:0.62rem; font-weight:600; letter-spacing:0.12em; text-transform:uppercase; color:var(--text-dim); }
+        .sc-slot.empty span { color:var(--text-muted); }
+        .sc-plus { border-color:rgba(217,178,95,0.3); color:rgba(217,178,95,0.7); }
+        .sc-hint { margin-top:var(--s3); }
+        .trophy-screen.active .trophy-hero, .trophy-screen.active .showcase { animation:authRise 1.1s cubic-bezier(.2,.8,.2,1) both; }
+        .trophy-screen.active .showcase { animation-delay:0.2s; }
+        @media (prefers-reduced-motion: reduce) { .trophy-screen.active .trophy-hero, .trophy-screen.active .showcase { animation:none; } }
     </style>
 </head>
 <body>
@@ -1704,13 +1740,9 @@ const QUOTES = [
     ['Though much is taken, much abides.', 'Alfred, Lord Tennyson'],
     ['I am a part of all that I have met.', 'Alfred, Lord Tennyson'],
     ['Heart, be still, you had worse than this to bear.', 'Homer, The Odyssey'],
-    ['Between us and goodness the gods have placed the sweat of our brows: long and steep is the path that leads to her.', 'Hesiod'],
     ['Fire is the test of gold; adversity, of strong men.', 'Seneca'],
-    ['It is not because things are difficult that we do not dare; it is because we do not dare that things are difficult.', 'Seneca'],
     ['Life is long if you know how to use it.', 'Seneca'],
     ['The art of life is more like the wrestler’s art than the dancer’s.', 'Marcus Aurelius'],
-    ['No longer talk at all about the kind of man that a good man ought to be, but be such.', 'Marcus Aurelius'],
-    ['First say to yourself what you would be; and then do what you have to do.', 'Epictetus'],
     ['No great thing is created suddenly.', 'Epictetus'],
     ['A journey of a thousand miles begins with a single step.', 'Lao Tzu'],
     ['He who overcomes himself is mighty.', 'Lao Tzu'],
@@ -1722,15 +1754,10 @@ const QUOTES = [
     ['He who has a why to live for can bear almost any how.', 'Friedrich Nietzsche'],
     ['What does not kill me makes me stronger.', 'Friedrich Nietzsche'],
     ['All truly great thoughts are conceived while walking.', 'Friedrich Nietzsche'],
-    ['One must still have chaos in oneself to be able to give birth to a dancing star.', 'Friedrich Nietzsche'],
     ['Trust thyself: every heart vibrates to that iron string.', 'Ralph Waldo Emerson'],
     ['Every artist was first an amateur.', 'Ralph Waldo Emerson'],
-    ['If one advances confidently in the direction of his dreams, he will meet with a success unexpected in common hours.', 'Henry David Thoreau'],
     ['The moment my legs begin to move, my thoughts begin to flow.', 'Henry David Thoreau'],
     ['Afoot and light-hearted I take to the open road.', 'Walt Whitman'],
-    ['Your body is the harp of your soul, and it is yours to bring forth sweet music from it or confused sounds.', 'Kahlil Gibran'],
-    ['Far and away the best prize that life offers is the chance to work hard at work worth doing.', 'Theodore Roosevelt'],
-    ['If you can fill the unforgiving minute with sixty seconds’ worth of distance run, yours is the Earth.', 'Rudyard Kipling'],
 ];
 // The quote in the app's language (lang/<code>.js keeps the same order as QUOTES)
 function quoteAt(index) {
@@ -2425,7 +2452,7 @@ function renderSplash(entry) {
 
 // Shown at the bottom of Settings so you can tell which version a phone is running.
 // Bump it with every deploy.
-const APP_VERSION = '1.36 · 28 Oct';
+const APP_VERSION = '1.37 · 28 Oct';
 
 const SUPABASE_URL = 'https://hcwbcxhblfjpdlkwykez.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_mEe_5g2UITyp5O-F9YRhRg_wTQWuOtf';
@@ -6239,17 +6266,11 @@ function renderLevel() {
     const el = document.getElementById('levelCard');
     if (!el) return;
     const xp = playerXp(playerStats());
-    const r = 52;
-    const c = 2 * Math.PI * r;
-    const ratio = xp.span ? xp.into / xp.span : 1;
     const nextRank = RANKS.find(([min]) => min > xp.level);
     el.innerHTML = `
         <div class="level-top">
             <div class="level-ring">
-                <svg viewBox="0 0 120 120" aria-hidden="true">
-                    <circle class="lr-bg" cx="60" cy="60" r="${r}"/>
-                    <circle class="lr-fg" cx="60" cy="60" r="${r}" stroke-dasharray="${c}" stroke-dashoffset="${c * (1 - ratio)}"/>
-                </svg>
+                ${levelRingSvg(xp)}
                 <div class="level-num"><span>Level</span><strong data-count="${xp.level}" data-key="level"></strong></div>
             </div>
             <div class="level-info">
@@ -6311,6 +6332,24 @@ function closeTrophyRoom() {
     showScreen('app');
 }
 
+// The level ring echoes the Odyr mark: an open ring whose gold part grows toward the next level,
+// with the traveller point at its tip; the gap at the top right is where a level is completed.
+function levelRingSvg(xp) {
+    const r = 54, c = 2 * Math.PI * r, arc = c * 334 / 360;
+    const ratio = xp.level >= MAX_LEVEL ? 1 : Math.max(0, Math.min(1, xp.into / xp.span));
+    const angle = (-31 + ratio * 334) * Math.PI / 180;
+    return `
+        <svg class="odyr-ring" viewBox="0 0 120 120" aria-hidden="true">
+            <circle class="track" cx="60" cy="60" r="${r}" stroke-dasharray="${arc} ${c}" transform="rotate(-31 60 60)"/>
+            <circle class="fill" cx="60" cy="60" r="${r}" stroke-dasharray="${Math.max(0.01, ratio * arc)} ${c}" transform="rotate(-31 60 60)"/>
+            <circle class="dot" cx="${60 + r * Math.cos(angle)}" cy="${60 + r * Math.sin(angle)}" r="4.2"/>
+        </svg>`;
+}
+
+function levelRing(xp) {
+    return `<div class="th-ring">${levelRingSvg(xp)}<div class="th-level"><span>Level</span><strong>${xp.level}</strong></div></div>`;
+}
+
 function renderTrophyRoom() {
     const stats = playerStats();
     const xp = playerXp(stats);
@@ -6340,11 +6379,10 @@ function renderTrophyRoom() {
     };
     document.getElementById('trophyBody').innerHTML = `
         <div class="trophy-hero">
-            <div class="th-level"><span>Level</span><strong>${xp.level}</strong></div>
-            <div>
-                <div class="th-rank">${escapeHtml(xp.rank)}</div>
-                <div class="th-sub">${earnedTiers} of ${tracks.length * BADGE_TIERS.length} tiers · ${Object.keys(specials).length} of ${specialBadges().length} special</div>
-            </div>
+            ${levelRing(xp)}
+            <div class="th-rank">${escapeHtml(xp.rank)}</div>
+            <p class="th-line">${xp.level < MAX_LEVEL ? `${xp.toNext.toLocaleString(LOCALE)} XP to level ${xp.level + 1}` : 'Maximum level'}</p>
+            <div class="th-sub">${earnedTiers} of ${tracks.length * BADGE_TIERS.length} tiers · ${Object.keys(specials).length} of ${specialBadges().length} special</div>
         </div>
         <div class="showcase">
             ${[0, 1, 2].map(i => {
