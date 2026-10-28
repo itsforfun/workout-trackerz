@@ -1228,6 +1228,27 @@
         .toggle:checked { background:var(--green); }
         .toggle:checked::after { transform:translateX(18px); }
         .toggle:disabled { opacity:0.4; }
+
+        /* ── Adaptive coach (v1.22): effort chips, coach cards, readiness + generator sheets ── */
+        .set-effort { grid-column:1 / -1; display:flex; align-items:center; gap:6px; padding:2px 0 4px; }
+        .set-effort span { font-size:0.7rem; color:var(--text-muted); margin-right:auto; }
+        .set-effort button { padding:6px 11px; border-radius:999px; border:1px solid var(--border-bright); background:rgba(255,255,255,0.03); color:var(--text-dim); font-family:var(--font-ui); font-size:0.72rem; cursor:pointer; }
+        .set-effort button:active { background:rgba(240,232,216,0.12); }
+        .set-effort-tag { grid-column:1 / -1; justify-self:start; margin:-2px 0 2px 42px; padding:2px 9px; border-radius:999px; border:none; background:rgba(134,214,168,0.1); color:var(--green); font-family:var(--font-ui); font-size:0.64rem; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; cursor:pointer; }
+        .coach-card { padding:var(--s5); margin-bottom:var(--s4); border-radius:var(--r-card); background:var(--raised); box-shadow:var(--lift), inset 0 0 0 1px rgba(143,187,217,0.25); }
+        .coach-card.compact { padding:var(--s4); }
+        .coach-kicker { font-size:0.6rem; font-weight:600; letter-spacing:0.16em; text-transform:uppercase; color:var(--blue); }
+        .coach-card h3 { font-family:var(--font-display); font-size:1.5rem; letter-spacing:0.04em; font-weight:400; margin:4px 0 6px; }
+        .coach-card p { font-size:0.84rem; line-height:1.55; color:var(--text-dim); margin-top:4px; }
+        .coach-card .btn { margin-top:var(--s3); }
+        .coach-card .back-link { text-align:left; padding:var(--s3) 0 0; }
+        .ready-q { margin-top:var(--s4); }
+        .ready-q > span { display:block; font-size:0.62rem; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; color:var(--text-muted); margin-bottom:8px; }
+        .seg { display:flex; flex-wrap:wrap; gap:6px; }
+        .seg button { flex:1 1 auto; padding:10px 12px; border-radius:12px; border:1px solid var(--border-bright); background:rgba(255,255,255,0.02); color:var(--text-dim); font-family:var(--font-ui); font-size:0.82rem; cursor:pointer; transition:background 0.2s var(--ease), color 0.2s var(--ease); }
+        .seg button.on { background:var(--text); color:var(--bg); border-color:var(--text); font-weight:500; }
+        .ready-note { font-size:0.8rem; line-height:1.55; color:var(--text-dim); margin-top:var(--s4); }
+        .coach-gen .build-plus { display:grid; place-items:center; color:var(--accent); }
     </style>
 </head>
 <body>
@@ -1452,6 +1473,7 @@
         <div class="container today-container">
             <div class="today-hero" id="todayHero"></div>
             <div id="insightCard"></div>
+            <div id="deloadCard"></div>
             <div id="weekPlan"></div>
             <div id="powerUnlock"></div>
             <div id="cardioView"></div>
@@ -1776,6 +1798,28 @@
     </div>
 </div>
 
+<div class="modal-overlay" id="readinessModal">
+    <div class="modal">
+        <h2>How are you today?</h2>
+        <div id="readinessBody"></div>
+        <div class="modal-actions">
+            <button class="btn" onclick="confirmReadiness(true)">Skip</button>
+            <button class="btn btn-primary" onclick="confirmReadiness(false)">Start workout</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="genModal">
+    <div class="modal">
+        <h2>Build it for me</h2>
+        <div id="genBody"></div>
+        <div class="modal-actions">
+            <button class="btn" onclick="closeGenerator()">Cancel</button>
+            <button class="btn btn-primary" onclick="createGeneratedProgram()">Create my program</button>
+        </div>
+    </div>
+</div>
+
 <div class="modal-overlay" id="recapModal">
     <div class="modal recap-modal">
         <div id="recapBody"></div>
@@ -1804,7 +1848,7 @@
 
 // Shown at the bottom of Settings so you can tell which version a phone is running.
 // Bump it with every deploy.
-const APP_VERSION = '1.21 · 28 Oct';
+const APP_VERSION = '1.22 · 28 Oct';
 
 const SUPABASE_URL = 'https://hcwbcxhblfjpdlkwykez.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_mEe_5g2UITyp5O-F9YRhRg_wTQWuOtf';
@@ -2842,7 +2886,7 @@ function getLastSetsEntry(exId) {
     const weeks = progData()[exId] || {};
     for (let w = WEEKS - 1; w >= 0; w--) {
         const sets = entrySets(weeks[w]);
-        if (sets && sets.length) return { week: w, entry: weeks[w] };
+        if (sets && sets.length && !weeks[w].deload) return { week: w, entry: weeks[w] };
     }
     return null;
 }
@@ -2876,8 +2920,18 @@ function getProgression(ex) {
     const weights = sets.map(s => parseFloat(s.kg) || 0);
     const topKg = ex.assist ? Math.min(...weights) : Math.max(...weights);
     const reps = sets.map(s => parseInt(s.reps));
+    // Effort ratings (reps in reserve) refine every rule below when the sets were rated
+    const rir = averageRir(sets);
+    const step = usesLb() ? LB_INCREMENT[ex.unit] : KG_INCREMENT[ex.unit];
+    const unitShort = usesLb() ? 'lb' : 'kg';
+    const weighted = !ex.assist && !isRepsBased(ex);
 
     if (p.repMin && reps.some(r => r < p.repMin)) {
+        if (weighted && rir !== null && rir <= 0.5 && topKg > incrementKg(ex)) {
+            const lower = Math.round((topKg - incrementKg(ex)) * 1000) / 1000;
+            return { type: 'retry', label: `−${formatNum(step)}${unitShort}`, kg: lower, reps: p.repMin,
+                text: `Missed ${p.repMin} reps at max effort: drop to ${formatSetWeight(ex, lower)} and rebuild` };
+        }
         return { type: 'retry', label: 'retry', kg: topKg, reps: p.repMin,
             text: `A set fell short of ${p.repMin} reps — repeat ${formatSetWeight(ex, topKg)}` };
     }
@@ -2886,8 +2940,15 @@ function getProgression(ex) {
             text: `Complete all ${p.sets} sets at ${formatSetWeight(ex, topKg)}` };
     }
     if (p.repMax && reps.every(r => r >= p.repMax)) {
-        const step = usesLb() ? LB_INCREMENT[ex.unit] : KG_INCREMENT[ex.unit];
-        const unitShort = usesLb() ? 'lb' : 'kg';
+        if (weighted && rir !== null && rir <= 0.25) {
+            return { type: 'reps', label: 'own it', kg: topKg, reps: p.repMax,
+                text: `${p.repMax} reps on every set, but all at max effort: repeat ${formatSetWeight(ex, topKg)} until it moves smoother` };
+        }
+        if (weighted && rir !== null && rir >= 3) {
+            const jump = Math.round((topKg + 2 * incrementKg(ex)) * 1000) / 1000;
+            return { type: 'kg', label: `+${formatNum(2 * step)}${unitShort}`, kg: jump, reps: p.repMin,
+                text: `${p.repMax} reps on every set with reps to spare: jump to ${formatSetWeight(ex, jump)}` };
+        }
         if (ex.assist) {
             const less = Math.max(0, Math.round((topKg - incrementKg(ex)) * 1000) / 1000);
             return { type: 'kg', label: `−${formatNum(step)}${unitShort}`, kg: less, reps: p.repMin,
@@ -2899,8 +2960,14 @@ function getProgression(ex) {
                 ? `${p.sets} × ${p.repMax} clean — lower the bar one notch next time, or go up to ${formatSetWeight(ex, next)}`
                 : `Hit ${p.repMax} reps on every set — go up to ${formatSetWeight(ex, next)}` };
     }
-    // Coach rule: same weight three sessions running → hold it and chase one more rep
-    if (PROGRAMS[currentProgram].coachRules && isStalled(ex.id)) {
+    // Every set in range and it felt easy: add weight now rather than waiting for the top of the range
+    if (weighted && rir !== null && rir >= 3 && p.repMin && reps.every(r => r >= p.repMin)) {
+        const next = Math.round((topKg + incrementKg(ex)) * 1000) / 1000;
+        return { type: 'kg', label: `+${formatNum(step)}${unitShort}`, kg: next, reps: p.repMin,
+            text: `Every set felt easy: go up to ${formatSetWeight(ex, next)}` };
+    }
+    // Same weight three sessions running → hold it and chase one more rep
+    if (isStalled(ex.id)) {
         return { type: 'reps', label: 'stall', kg: topKg, reps: Math.min(Math.max(...reps) + 1, p.repMax || 99),
             text: `Same weight 3 sessions running — hold ${formatSetWeight(ex, topKg)} and chase +1 rep` };
     }
@@ -2915,7 +2982,7 @@ function isStalled(exId) {
     const tops = [];
     for (let w = WEEKS - 1; w >= 0 && tops.length < 3; w--) {
         const sets = entrySets(weeks[w]);
-        if (sets && sets.length) tops.push(Math.max(...sets.map(s => parseFloat(s.kg) || 0)));
+        if (sets && sets.length && !weeks[w].deload) tops.push(Math.max(...sets.map(s => parseFloat(s.kg) || 0)));
     }
     return tops.length === 3 && tops.every(t => t === tops[0]);
 }
@@ -3205,6 +3272,7 @@ function renderToday() {
 
     renderTodayHero();
     renderInsight();
+    renderDeloadCard();
     renderWeekPlan();
     maybeStartTour();
     maybeShowRecap();
@@ -3563,6 +3631,7 @@ function renderCardioView(plan, showingLift) {
             <h2>Zone ${rec.zone} <span>${escapeHtml(rec.name)}</span></h2>
             <div class="cardio-target"><strong>${bpm(rec)}</strong> bpm · ${escapeHtml(rec.sessions[0][2])}</div>
         </div>
+        ${missedLiftDay() ? `<div class="coach-card compact"><div class="coach-kicker">Catch up</div><p>You missed a lifting day this week. ${escapeHtml(missedLiftDay())} fits in today instead of cardio.</p><button class="btn btn-primary" onclick="setTodayMode('lift')">Lift today</button></div>` : ''}
         <div class="cardio-week">
             <div class="cardio-week-top">
                 <span>This week</span>
@@ -3966,6 +4035,11 @@ function renderCustomProgramCards() {
             <div class="program-cta">Open program ${ARROW_ICON}<span class="program-edit" onclick="event.stopPropagation(); openBuilder('${id}')">Edit</span></div>
         </button>`).join('');
     document.getElementById('customProgramGrid').innerHTML = cards + `
+        <button class="program-card build-card coach-gen" onclick="openGenerator()">
+            <div class="build-plus">${achievementIcon('score', 22)}</div>
+            <div class="program-title">Build it for me</div>
+            <div class="program-desc">Answer five quick questions about your goal, days, equipment and joints. The coach designs the program; you review it before saving.</div>
+        </button>
         <button class="program-card build-card" onclick="openBuilder()">
             <div class="build-plus">+</div>
             <div class="program-title">Build your own</div>
@@ -4214,21 +4288,25 @@ function clearActiveWorkout() {
     } catch (e) { /* ignore */ }
 }
 
-function startWorkout() {
-    unlockAudio();
-    if (activeWorkout) {
-        resumeWorkout();
-        return;
-    }
+// Builds today's session; a deload week and a low readiness check-in make it lighter and shorter
+function beginWorkout(readiness) {
     const prog = PROGRAMS[currentProgram];
     const week = todayWeek !== null ? todayWeek : getCurrentWeek();
+    const deload = deloadInfo();
+    const deloading = !!(deload && deload.active);
+    const low = readiness && readiness.level === 'low';
+    const factor = deloading && low ? 0.85 : deloading || low ? 0.9 : 1;
     const rows = {};
     prog.exercises.filter(ex => ex.day === todayDay).forEach(ex => {
-        const { kg, target } = workoutPrefill(ex);
-        rows[ex.id] = Array.from({ length: getPrescription(ex).sets }, () => ({ kg, reps: '', target, done: false }));
+        const prefill = workoutPrefill(ex);
+        const kg = factor < 1 ? lighterKg(ex, prefill.kg, factor) : prefill.kg;
+        const planned = getPrescription(ex).sets;
+        const sets = deloading ? Math.max(2, Math.round(planned * 0.6)) : low ? Math.max(2, planned - 1) : planned;
+        rows[ex.id] = Array.from({ length: sets }, () => ({ kg, reps: '', target: prefill.target, done: false }));
     });
-    const daysOff = prog.coachRules ? daysSinceLastWorkout() : null;
-    activeWorkout = { program: currentProgram, day: todayDay, week, startedAt: Date.now(), rows, swaps: {}, layoffDays: daysOff >= 7 ? daysOff : 0 };
+    const daysOff = daysSinceLastWorkout();
+    activeWorkout = { program: currentProgram, day: todayDay, week, startedAt: Date.now(), rows, swaps: {},
+        layoffDays: daysOff >= 7 ? daysOff : 0, deload: deloading, readiness: readiness || null };
     persistActiveWorkout();
     haptic();
     resumeWorkout();
@@ -4242,7 +4320,7 @@ function workoutPrefill(ex) {
     // Pull-ups' tracked number is reps, so only prefill their added weight from logged sets
     let kg = progression ? kgToDisplay(progression.kg) : (!isRepsBased(ex) && !isNaN(lastKg) ? kgToDisplay(lastKg) : '');
     // Coach rule: back after a week or more off → start 10% lighter and rebuild over 2 sessions
-    const daysOff = PROGRAMS[currentProgram].coachRules ? daysSinceLastWorkout() : null;
+    const daysOff = daysSinceLastWorkout();
     if (daysOff !== null && daysOff >= 7 && kg !== '' && !isRepsBased(ex) && !ex.assist) {
         const step = usesLb() ? LB_INCREMENT[ex.unit] : KG_INCREMENT[ex.unit];
         kg = formatNum(Math.max(step, Math.round((parseFloat(kg) * 0.9) / step) * step));
@@ -4280,7 +4358,10 @@ function workoutBannerHtml() {
     if (activeWorkout.layoffDays) {
         lines.push(`<strong>Welcome back after ${activeWorkout.layoffDays} days off.</strong> Weights are 10% lighter today; build back up over the next 2 sessions.`);
     }
-    if (PROGRAMS[currentProgram].coachRules) lines.push('Stop every set with 1–3 reps in reserve.');
+    if (activeWorkout.deload) lines.push('<strong>Deload week.</strong> Lighter weights and fewer sets on purpose, so you come back stronger.');
+    else if (activeWorkout.readiness && activeWorkout.readiness.level === 'low') lines.push('<strong>Easier day.</strong> About 10% lighter and one set fewer, from your check-in.');
+    else if (activeWorkout.readiness && activeWorkout.readiness.level === 'high') lines.push('<strong>You\'re ready.</strong> Chase an extra rep on your last sets.');
+    lines.push('Rate each set after you tick it. The coach uses it to set your next weights.');
     return lines.length ? `<div class="wo-banner">${lines.join('<br>')}</div>` : '';
 }
 
@@ -4365,6 +4446,9 @@ function setRowHtml(ex, i, row, key = ex.id) {
                 <span>${escapeHtml(ex.repLabel || 'reps')}</span>
             </div>
             <button class="set-check" onclick="toggleSetDone('${key}',${i})" aria-label="Mark set ${i + 1} done">${CHECK_ICON}</button>
+            ${row.done ? (row.rir === undefined
+                ? `<div class="set-effort"><span>How did it feel?</span>${EFFORTS.map(e => `<button onclick="rateSet('${key}',${i},${e.rir})">${e.label}</button>`).join('')}</div>`
+                : `<button class="set-effort-tag" onclick="clearSetEffort('${key}',${i})">${effortLabel(row.rir)}</button>`) : ''}
         </div>
     `;
 }
@@ -4557,7 +4641,7 @@ function finishWorkout() {
         const done = rows.filter(r => r.done && parseInt(r.reps) > 0);
         if (!done.length) return;
 
-        const sets = done.map(r => ({ kg: String(displayToKg(r.kg) || 0), reps: String(parseInt(r.reps)) }));
+        const sets = done.map(r => ({ kg: String(displayToKg(r.kg) || 0), reps: String(parseInt(r.reps)), ...(r.rir !== undefined ? { rir: String(r.rir) } : {}) }));
         // The tracked number: heaviest set, most reps for pull-ups, or least assistance on assisted machines
         const value = isRepsBased(ex) ? Math.max(...sets.map(s => +s.reps))
             : ex.assist ? Math.min(...sets.map(s => +s.kg))
@@ -4569,7 +4653,7 @@ function finishWorkout() {
         if (!data[exId]) data[exId] = {};
         const existing = parseFloat(entryKg(data[exId][w.week]));
         const kept = ex.assist ? value : Math.max(value, isNaN(existing) ? 0 : existing);
-        data[exId][w.week] = { kg: String(kept), sets, date };
+        data[exId][w.week] = { kg: String(kept), sets, date, ...(w.deload && isNaN(existing) ? { deload: true } : {}) };
 
         if (!ex.assist && prevBest !== null && value > prevBest) prs.push(exerciseDisplayName(ex, w.week));
         if (swapped) return;
@@ -4580,7 +4664,11 @@ function finishWorkout() {
     ensureCycleStart(w.week);
     const minutes = Math.max(1, Math.round((Date.now() - w.startedAt) / 60000));
     const swaps = Object.entries(w.swaps || {}).map(([slot, swap]) => ({ from: slot, to: swap.name }));
-    programSessions().push({ date, day: w.day, week: w.week, type: 'workout', minutes, sets: doneSets, ...(swaps.length ? { swaps } : {}) });
+    const efforts = Object.values(w.rows).flat().filter(r => r.done && r.rir !== undefined).map(r => Number(r.rir));
+    programSessions().push({ date, day: w.day, week: w.week, type: 'workout', minutes, sets: doneSets,
+        ...(swaps.length ? { swaps } : {}), ...(efforts.length ? { efforts } : {}),
+        ...(w.deload ? { deload: true } : {}), ...(w.readiness ? { readiness: w.readiness.level } : {}) });
+    checkDeload();
 
     clearActiveWorkout();
     haptic();
@@ -5575,7 +5663,8 @@ function queueMoment(show) {
 
 function nextMoment() {
     const busy = document.getElementById('recordMoment').classList.contains('show')
-        || document.getElementById('celebrate').classList.contains('show');
+        || document.getElementById('celebrate').classList.contains('show')
+        || document.querySelector('.modal-overlay.active');
     if (busy || !momentQueue.length) return;
     momentQueue.shift()();
 }
@@ -6150,6 +6239,340 @@ document.addEventListener('visibilitychange', () => {
 
 
 // ════════════════════════════════════════════
+//  ADAPTIVE COACH: effort, deloads, readiness, program generator
+// ════════════════════════════════════════════
+
+// Effort after each set, as reps left in the tank (RIR)
+const EFFORTS = [
+    { rir: 4, label: 'Easy' },
+    { rir: 2, label: 'Good' },
+    { rir: 1, label: 'Hard' },
+    { rir: 0, label: 'Max' },
+];
+
+function effortLabel(rir) {
+    const effort = EFFORTS.find(e => e.rir === Number(rir));
+    return effort ? effort.label : '';
+}
+
+// Average reps in reserve over sets that were rated; null when none were
+function averageRir(sets) {
+    const rated = (sets || []).filter(s => s.rir !== undefined && s.rir !== null && s.rir !== '').map(s => Number(s.rir));
+    return rated.length ? rated.reduce((a, b) => a + b, 0) / rated.length : null;
+}
+
+function rateSet(exId, i, rir) {
+    haptic();
+    const rows = activeWorkout.rows[exId];
+    const row = rows[i];
+    row.rir = rir;
+    // Adjust the next set straight away: easy at the top of the range → heavier, a missed max effort → lighter
+    const ex = workoutExercise(exId);
+    const next = rows[i + 1];
+    const p = getPrescription(ex);
+    const reps = parseInt(row.reps) || 0;
+    const kg = parseFloat(row.kg);
+    if (next && !next.done && !isRepsBased(ex) && !ex.assist && !isNaN(kg) && next.kg === row.kg) {
+        const step = usesLb() ? LB_INCREMENT[ex.unit] : KG_INCREMENT[ex.unit];
+        if (rir >= 4 && (!p.repMax || reps >= p.repMax)) {
+            next.kg = formatNum(kg + step);
+            showToast(`Felt easy: next set ${next.kg} ${setWeightUnit(ex)}`);
+        } else if (rir === 0 && p.repMin && reps < p.repMin && kg > step) {
+            next.kg = formatNum(kg - step);
+            showToast(`Next set ${next.kg} ${setWeightUnit(ex)}, so you hit ${p.repMin}`);
+        }
+    }
+    persistActiveWorkout();
+    renderWorkoutCard(exId);
+}
+
+function clearSetEffort(exId, i) {
+    delete activeWorkout.rows[exId][i].rir;
+    persistActiveWorkout();
+    renderWorkoutCard(exId);
+}
+
+// ── Deloads: a lighter week when lifts stall, sessions get grinding, or after ~7 hard weeks ──
+const DELOAD_DAYS = 7;
+
+function deloadPlan() {
+    return metaFor('_deload')[currentProgram] || null;
+}
+
+// The deload in effect today (or starting tomorrow), unless it was skipped
+function deloadInfo() {
+    const d = deloadPlan();
+    if (!d || d.skipped || todayStr() > d.until) return null;
+    return { ...d, active: todayStr() >= d.start };
+}
+
+function checkDeload() {
+    if (deloadInfo()) return;
+    const prog = PROGRAMS[currentProgram];
+    const stalled = prog.exercises.filter(ex => !ex.assist && isStalled(ex.id)).length;
+    const recent = workoutSessions().slice(-2);
+    const efforts = recent.length === 2 ? recent.flatMap(s => s.efforts || []) : [];
+    const grinding = efforts.length >= 6 && efforts.reduce((a, b) => a + b, 0) / efforts.length <= 0.75;
+    const last = deloadPlan();
+    const since = last ? last.start : metaFor('_cycleStart')[currentProgram];
+    const weeks = since ? Math.floor(daysBetween(since, todayStr()) / 7) : 0;
+    const due = weeks >= 7 && getStreakStats().streak >= 6;
+    const reason = stalled >= 2 ? `${stalled} lifts have stalled`
+        : grinding ? 'your last two workouts were all-out efforts'
+        : due ? `${weeks} weeks of hard training`
+        : null;
+    if (!reason) return;
+    const start = addDays(todayStr(), 1);
+    metaFor('_deload')[currentProgram] = { start, until: addDays(start, DELOAD_DAYS - 1), reason };
+    scheduleSave();
+}
+
+function skipDeload() {
+    haptic();
+    const d = deloadPlan();
+    if (d) d.skipped = true;
+    scheduleSave();
+    renderToday();
+    showToast('Deload skipped');
+}
+
+function renderDeloadCard() {
+    const el = document.getElementById('deloadCard');
+    if (!el) return;
+    const d = deloadInfo();
+    if (!d) {
+        el.innerHTML = '';
+        return;
+    }
+    el.innerHTML = `
+        <div class="coach-card">
+            <div class="coach-kicker">${d.active ? 'Deload week' : 'Deload starts tomorrow'}</div>
+            <h3>Lighter on purpose</h3>
+            <p>Because ${escapeHtml(d.reason)}, the coach is planning a lighter week until ${escapeHtml(prettyDate(d.until))}: about 10% less weight and fewer sets. You come back stronger.</p>
+            <button class="back-link" onclick="skipDeload()">Skip the deload</button>
+        </div>`;
+}
+
+// ── Readiness: three taps before a workout set today's dose ──
+const READINESS_QUESTIONS = [
+    { key: 'sleep', label: 'Sleep', options: ['Poor', 'OK', 'Great'] },
+    { key: 'soreness', label: 'Soreness', options: ['Very', 'A bit', 'None'] },
+    { key: 'energy', label: 'Energy', options: ['Low', 'OK', 'High'] },
+];
+let readinessDraft = null;
+
+// Each answer scores 0–2 (higher = readier), so the total runs 0–6
+function readinessLevel(answers) {
+    const score = READINESS_QUESTIONS.reduce((sum, q) => sum + (answers[q.key] ?? 1), 0);
+    return score <= 2 ? 'low' : score >= 5 ? 'high' : 'normal';
+}
+
+function startWorkout() {
+    unlockAudio();
+    if (activeWorkout) {
+        resumeWorkout();
+        return;
+    }
+    readinessDraft = { sleep: 1, soreness: 1, energy: 1 };
+    renderReadiness();
+    document.getElementById('readinessModal').classList.add('active');
+}
+
+function renderReadiness() {
+    const level = readinessLevel(readinessDraft);
+    const deload = deloadInfo();
+    document.getElementById('readinessBody').innerHTML = `
+        ${READINESS_QUESTIONS.map(q => `
+            <div class="ready-q">
+                <span>${q.label}</span>
+                <div class="seg">${q.options.map((opt, v) => `<button class="${readinessDraft[q.key] === v ? 'on' : ''}" onclick="setReadiness('${q.key}', ${v})">${opt}</button>`).join('')}</div>
+            </div>`).join('')}
+        <p class="ready-note">${deload && deload.active ? 'Deload week: lighter weights and fewer sets today.'
+            : level === 'low' ? 'Taking it easier today: about 10% lighter and one set fewer per exercise. Smart, not soft.'
+            : level === 'high' ? 'You\'re ready. Chase an extra rep on your last sets.'
+            : 'Normal session. Weights are set from last time.'}</p>
+    `;
+}
+
+function setReadiness(key, value) {
+    haptic();
+    readinessDraft[key] = value;
+    renderReadiness();
+}
+
+function closeReadiness() {
+    document.getElementById('readinessModal').classList.remove('active');
+}
+
+function confirmReadiness(skip) {
+    closeReadiness();
+    beginWorkout(skip ? null : { ...readinessDraft, level: readinessLevel(readinessDraft) });
+}
+
+// Lighter version of a prefilled weight (display units), rounded to the plate step
+function lighterKg(ex, kg, factor) {
+    if (kg === '' || isRepsBased(ex) || ex.assist) return kg;
+    const step = usesLb() ? LB_INCREMENT[ex.unit] : KG_INCREMENT[ex.unit];
+    return formatNum(Math.max(step, Math.round((parseFloat(kg) * factor) / step) * step));
+}
+
+// ── Catch-up: on a cardio or rest day, offer the lifting day missed earlier this week ──
+function missedLiftDay() {
+    const prog = PROGRAMS[currentProgram];
+    if (!prog.weekPlan) return null;
+    const monday = mondayOf(todayStr());
+    const done = allWorkoutDates().filter(d => d >= monday).length;
+    const planned = [];
+    for (let date = monday; date < todayStr(); date = addDays(date, 1)) {
+        const plan = prog.weekPlan[parseDate(date).getDay()];
+        if (typeof plan === 'number') planned.push(plan);
+    }
+    return planned.length > done ? prog.days[getNextDay()] : null;
+}
+
+// ── Program generator: goal, days, equipment, session length and joints → a full program ──
+// Each pattern lists exercises in order of preference: [name, equipment, stress on knees/shoulders/back (0–2)]
+const GEN_PATTERNS = {
+    squat: [['Barbell Back Squat', 'free', { knees: 2, back: 2 }], ['Hack Squat', 'gym', { knees: 2 }], ['Leg Press', 'gym', { knees: 1 }], ['Goblet Box Squat', 'db', {}], ['Dumbbell Goblet Squat', 'db', { knees: 1 }]],
+    hinge: [['Barbell RDL', 'free', { back: 2 }], ['DB Romanian Deadlift', 'db', { back: 1 }], ['Barbell Rack Pull', 'free', { back: 1 }], ['Cable Pull-Through', 'gym', {}], ['Hyperextensions', 'gym', {}]],
+    hpush: [['Barbell Bench Press', 'free', { shoulders: 2 }], ['DB Bench Press', 'db', { shoulders: 1 }], ['Machine Chest Press', 'gym', {}], ['Incline DB Press', 'db', { shoulders: 1 }], ['Push-Ups', 'none', { shoulders: 1 }]],
+    vpush: [['Barbell Overhead Press', 'free', { shoulders: 2, back: 1 }], ['Seated DB Shoulder Press', 'db', { shoulders: 1 }], ['Machine Shoulder Press', 'gym', { shoulders: 1 }], ['Landmine Press', 'free', {}]],
+    vpull: [['Pull-Ups', 'free', { shoulders: 1 }], ['Lat Pulldown', 'gym', {}], ['Single-Arm Cable Pulldown', 'gym', {}], ['DB Pullover', 'db', { shoulders: 1 }]],
+    hpull: [['Barbell Row', 'free', { back: 2 }], ['Chest-Supported Row', 'db', {}], ['Seated Cable Row', 'gym', {}], ['Single-Arm DB Row', 'db', {}]],
+    lunge: [['Bulgarian Split Squat', 'db', { knees: 2 }], ['Static Split Squat', 'db', { knees: 1 }], ['Reverse Lunge', 'db', { knees: 1 }], ['Step-Up, 3-Second Lowering', 'db', {}]],
+    glutes: [['Barbell Hip Thrust', 'free', {}], ['Machine Hip Thrust', 'gym', {}], ['Barbell Glute Bridge', 'free', {}], ['Single-Leg Calf Raise', 'db', {}]],
+    hams: [['Lying Leg Curl', 'gym', {}], ['Seated Leg Curl', 'gym', {}], ['Stability Ball Leg Curl', 'none', {}]],
+    quads: [['Leg Extension', 'gym', { knees: 1 }], ['Step-Up, 3-Second Lowering', 'db', {}]],
+    calves: [['Standing Calf Raises', 'gym', {}], ['Single-Leg Calf Raise', 'db', {}]],
+    delts: [['Cable Lateral Raise', 'gym', {}], ['DB Lateral Raise', 'db', {}], ['Face Pull', 'gym', {}]],
+    biceps: [['Cable Curl', 'gym', {}], ['DB Curl', 'db', {}], ['EZ-Bar Curl', 'free', {}]],
+    triceps: [['Rope Pressdown', 'gym', {}], ['DB Overhead Extension', 'db', { shoulders: 1 }], ['EZ-Bar Skull Crusher', 'free', {}]],
+    core: [['Pallof Press', 'gym', {}], ['Dead Bug', 'none', {}], ['Suitcase Carry', 'db', {}], ['Cable Crunch', 'gym', { back: 1 }]],
+};
+const GEN_COMPOUNDS = ['squat', 'hinge', 'hpush', 'vpush', 'vpull', 'hpull', 'lunge', 'glutes'];
+const GEN_EQUIPMENT = { gym: ['gym', 'free', 'db', 'none'], free: ['free', 'db', 'none'], db: ['db', 'none'] };
+
+// Day templates by days per week; patterns in order of priority (shorter sessions drop from the end)
+const GEN_SPLITS = {
+    2: [['Full Body A', ['squat', 'hpush', 'vpull', 'hams', 'delts', 'core']],
+        ['Full Body B', ['hinge', 'vpush', 'hpull', 'lunge', 'biceps', 'triceps']]],
+    3: [['Full Body A', ['squat', 'hpush', 'hpull', 'hams', 'delts', 'core']],
+        ['Full Body B', ['hinge', 'vpush', 'vpull', 'lunge', 'triceps', 'calves']],
+        ['Full Body C', ['squat', 'hpush', 'vpull', 'glutes', 'biceps', 'core']]],
+    4: [['Upper A', ['hpush', 'hpull', 'vpush', 'vpull', 'triceps', 'biceps']],
+        ['Lower A', ['squat', 'hinge', 'lunge', 'hams', 'calves', 'core']],
+        ['Upper B', ['vpush', 'vpull', 'hpush', 'hpull', 'delts', 'biceps']],
+        ['Lower B', ['hinge', 'squat', 'glutes', 'quads', 'calves', 'core']]],
+    5: [['Upper', ['hpush', 'hpull', 'vpush', 'vpull', 'triceps', 'biceps']],
+        ['Lower', ['squat', 'hinge', 'lunge', 'hams', 'calves', 'core']],
+        ['Push', ['vpush', 'hpush', 'delts', 'triceps', 'core']],
+        ['Pull', ['vpull', 'hpull', 'delts', 'biceps', 'core']],
+        ['Legs', ['hinge', 'squat', 'glutes', 'quads', 'calves']]],
+};
+
+const GEN_GOALS = {
+    // [sets, rep min, rep max, rest minutes] for the day's first two lifts, other compound lifts, and accessories
+    muscle: { name: 'Build Muscle', main: [3, 6, 10, 2.5], compound: [3, 8, 12, 2], accessory: [3, 10, 15, 1.5] },
+    strength: { name: 'Get Stronger', main: [4, 4, 6, 3], compound: [3, 6, 10, 2], accessory: [3, 8, 12, 1.5] },
+    fatloss: { name: 'Lean & Strong', main: [3, 8, 12, 2], compound: [3, 10, 12, 1.5], accessory: [3, 12, 15, 1] },
+    general: { name: 'All-Round Fit', main: [3, 8, 12, 2], compound: [3, 8, 12, 2], accessory: [2, 10, 15, 1.5] },
+};
+
+let genDraft = null;
+const GEN_QUESTIONS = [
+    { key: 'goal', label: 'Goal', options: [['muscle', 'Build muscle'], ['strength', 'Get stronger'], ['fatloss', 'Lose fat'], ['general', 'Stay fit']] },
+    { key: 'days', label: 'Days a week', options: [[2, '2'], [3, '3'], [4, '4'], [5, '5']] },
+    { key: 'equipment', label: 'Equipment', options: [['gym', 'Full gym'], ['free', 'Barbell + dumbbells'], ['db', 'Dumbbells only']] },
+    { key: 'minutes', label: 'Session length', options: [[45, '45 min'], [60, '60 min'], [75, '75 min']] },
+];
+const GEN_JOINTS = [['knees', 'Knees'], ['shoulders', 'Shoulders'], ['back', 'Lower back']];
+
+function openGenerator() {
+    haptic();
+    genDraft = { goal: 'muscle', days: 3, equipment: 'gym', minutes: 60, protect: [] };
+    renderGenerator();
+    document.getElementById('genModal').classList.add('active');
+}
+
+function closeGenerator() {
+    document.getElementById('genModal').classList.remove('active');
+}
+
+function renderGenerator() {
+    document.getElementById('genBody').innerHTML = `
+        ${GEN_QUESTIONS.map(q => `
+            <div class="ready-q">
+                <span>${q.label}</span>
+                <div class="seg">${q.options.map(([value, label]) => `<button class="${genDraft[q.key] === value ? 'on' : ''}" onclick="setGen('${q.key}', ${JSON.stringify(value).replace(/"/g, '&quot;')})">${label}</button>`).join('')}</div>
+            </div>`).join('')}
+        <div class="ready-q">
+            <span>Go easy on</span>
+            <div class="seg">${GEN_JOINTS.map(([key, label]) => `<button class="${genDraft.protect.includes(key) ? 'on' : ''}" onclick="toggleGenJoint('${key}')">${label}</button>`).join('')}</div>
+        </div>
+        <p class="ready-note">The coach picks exercises for your equipment, avoids hard-on-the-joint moves you flag, and sets reps and rest for your goal. You can change anything before saving.</p>
+    `;
+}
+
+function setGen(key, value) {
+    haptic();
+    genDraft[key] = value;
+    renderGenerator();
+}
+
+function toggleGenJoint(key) {
+    haptic();
+    genDraft.protect = genDraft.protect.includes(key) ? genDraft.protect.filter(k => k !== key) : [...genDraft.protect, key];
+    renderGenerator();
+}
+
+// Best exercise for a pattern: available with the equipment, no heavy stress on protected joints,
+// least joint stress first, and a different pick each time the pattern repeats in the week
+function pickExercise(pattern, draft, used) {
+    const allowed = GEN_EQUIPMENT[draft.equipment];
+    const stress = item => draft.protect.reduce((sum, joint) => sum + (item[2][joint] || 0), 0);
+    let options = GEN_PATTERNS[pattern].filter(item => allowed.includes(item[1]));
+    const gentle = options.filter(item => draft.protect.every(joint => (item[2][joint] || 0) < 2));
+    if (gentle.length) options = gentle;
+    options = options.map((item, order) => ({ item, order })).sort((a, b) => stress(a.item) - stress(b.item) || a.order - b.order).map(o => o.item);
+    const fresh = options.find(item => !used.has(item[0]));
+    return fresh || options[0] || null;
+}
+
+function generateProgram(draft) {
+    const goal = GEN_GOALS[draft.goal];
+    const perDay = draft.minutes <= 45 ? 4 : draft.minutes <= 60 ? 5 : 6;
+    const library = new Map(exerciseLibrary().map(e => [e.name, e]));
+    const used = new Set();
+    const days = GEN_SPLITS[draft.days].map(([name, patterns]) => {
+        const exercises = [];
+        patterns.slice(0, perDay).forEach(pattern => {
+            const pick = pickExercise(pattern, draft, used);
+            if (!pick || exercises.some(e => e.name === pick[0])) return;
+            used.add(pick[0]);
+            const scheme = !GEN_COMPOUNDS.includes(pattern) ? goal.accessory : exercises.length < 2 ? goal.main : goal.compound;
+            const [sets, repMin, repMax, rest] = scheme;
+            const lib = library.get(pick[0]) || {};
+            exercises.push({
+                id: `${slugify(pick[0])}-${randomId(4)}`,
+                name: pick[0], unit: lib.unit || 'kg', sets, repMin, repMax, rest,
+                thresholds: lib.thresholds || null, standardGender: lib.standardGender, bar: !!lib.bar,
+                swapKey: lib.swapKey, note: lib.note || '', per: lib.per, repLabel: lib.repLabel,
+            });
+        });
+        return { name, exercises };
+    });
+    return { id: `custom-${randomId()}`, isNew: true, name: `${goal.name} · ${draft.days} days`, days };
+}
+
+function createGeneratedProgram() {
+    closeGenerator();
+    builder = generateProgram(genDraft);
+    renderBuilder();
+    showScreen('builder');
+    showToast('Your program is ready. Review it, then Save');
+}
+
+// ════════════════════════════════════════════
 //  COACHING: insights, walkthrough, weekly recap, reminders
 // ════════════════════════════════════════════
 
@@ -6521,12 +6944,13 @@ async function planNudges() {
 //  POLISH: bottom sheets, rolling numbers, pull to refresh
 // ════════════════════════════════════════════
 
-const SHEET_CLOSE = { pickerModal: closePicker, cardioModal: closeCardioLog, swapModal: closeSwap, importModal: closeImport, recapModal: closeRecap };
+const SHEET_CLOSE = { pickerModal: closePicker, cardioModal: closeCardioLog, swapModal: closeSwap, importModal: closeImport, recapModal: closeRecap, readinessModal: closeReadiness, genModal: closeGenerator };
 
 function closeSheet(overlay) {
     const close = SHEET_CLOSE[overlay.id];
     if (close) close();
     else overlay.classList.remove('active');
+    setTimeout(nextMoment, 450);
 }
 
 // On phones every modal is a bottom sheet: drag it down (or tap outside it) to close
