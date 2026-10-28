@@ -1,4 +1,4 @@
-# CLAUDE.md — Odyra (formerly "Workout Tracker") — handoff for Claude Code
+# CLAUDE.md — Odyr (formerly "Workout Tracker", briefly "Odyra") — handoff for Claude Code
 
 > Claude Code reads this file automatically. It is the single source of truth for this project.
 > Read it fully before changing code. Older long-form docs live in `docs/` (some details there are outdated — this file wins).
@@ -323,4 +323,7 @@ reference/debug-screenshots/  ← Supabase key page, "Script error" console, Git
 - Name appears in `<title>`, `apple-mobile-web-app-title`, the manifest, the sign-in card, the program picker kicker and the default top-bar title. The Apple Health shortcut keeps its name "Workout Steps".
 - Opening quotes (`QUOTES`, 50 lines written for the app) follow the brand themes: the endless journey, constant change, listening to the body, endurance, never yielding.
 - Sign-in screen (v1.31): no card; the Odyra mark as inline SVG (`.auth-mark`, ring draws itself, the traveller point pops in), wide-spaced ODYRA wordmark, Instrument Serif tagline, text tabs with a gold dot, line-style fields. Copy in sentence case ("Log in", "Create account").
+
+## 23. Final name: Odyr (v1.32, 2026-10-28) — supersedes "Odyra" in section 22
+- **Odyr** (OH-deer), two syllables, from the Norse Óðr: the far-travelling husband of Freyja, whose name means "mind, soul, inspiration". Tagline **"The path to greatness."** The owner wanted a two-syllable, unique name around the journey, attunement, endurance and the path to greatness. "Odyssey"-named fitness apps exist, so the tagline avoids the word "odyssey". Same icon/mark; cache `odyr-v6`. Still do a formal trademark search before charging money.
 

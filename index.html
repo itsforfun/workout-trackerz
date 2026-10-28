@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Odyra</title>
+    <title>Odyr</title>
     <!-- Installable app (PWA): add to iPhone home screen via Share → Add to Home Screen -->
     <link rel="manifest" href="manifest.webmanifest">
     <meta name="theme-color" content="#13100e">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Odyra">
+    <meta name="apple-mobile-web-app-title" content="Odyr">
     <link rel="apple-touch-icon" href="icons/icon-180.png">
     <link rel="icon" type="image/png" href="icons/icon-192.png">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
@@ -1416,7 +1416,7 @@
 </div>
 <script>
 // Runs before anything else so the quote is on screen at first paint.
-// Lines written for this app around Odyra's themes: the endless journey, constant change, listening to the body, never yielding. Shuffled like a deck (kept on this device) so none repeats until all are seen.
+// Lines written for this app around Odyr's themes: the endless journey, the path to greatness, constant change, listening to the body, never yielding. Shuffled like a deck (kept on this device) so none repeats until all are seen.
 const QUOTES = [
     'The road does not end. That is the gift.',
     'You are not finishing a journey. You are becoming the one who walks it.',
@@ -1448,7 +1448,7 @@ const QUOTES = [
     'You are the traveller and the road.',
     'Strength is patience you can see.',
     'Show up, especially when no one is watching.',
-    'Each morning, the odyssey begins again.',
+    'Each morning, the path begins again.',
     'Be gentle with the body and relentless with the work.',
     'You have outlasted every hard day so far. Keep the record.',
     'Stillness and motion are both forms of training.',
@@ -1460,13 +1460,13 @@ const QUOTES = [
     'Every scar on the journey is proof you kept walking.',
     'Courage is one more step when every reason says stop.',
     'You are not behind. You are on your path.',
-    'Iron trains patience as much as muscle.',
+    'Greatness is a path, not a place.',
     'Let today be a quiet act of devotion to yourself.',
     'The practice is the pilgrimage.',
     'Never yield the ground you’ve earned.',
-    'An odyssey is measured in returns, not arrivals.',
+    'A great journey is measured in returns, not arrivals.',
     'The strongest version of you is still on the way.',
-    'Hard roads make steady feet.',
+    'The path to greatness is paved with ordinary days.',
     'Begin again. That is the whole secret.',
 ];
 // Writes the weekday and the quote, one span per word so each word can rise in turn
@@ -1528,8 +1528,8 @@ function renderSplash(text) {
                     <path class="am-ring" d="M68.6 21.6 A34 34 0 1 0 78.6 32.8" fill="none" stroke="url(#markGold)" stroke-width="5.8" stroke-linecap="round" pathLength="100"/>
                     <circle class="am-dot" cx="75.5" cy="25.8" r="4.2" fill="#f2d891"/>
                 </svg>
-                <h1>ODYRA</h1>
-                <p>Your odyssey, every day.</p>
+                <h1>ODYR</h1>
+                <p>The path to greatness.</p>
             </div>
 
             <div class="auth-tabs">
@@ -1637,7 +1637,7 @@ function renderSplash(text) {
 <div class="screen program-selector" id="programSelector">
     <div class="selector-container">
         <div class="selector-hero">
-            <div class="kicker">Odyra</div>
+            <div class="kicker">Odyr</div>
             <h1>CHOOSE YOUR PATH</h1>
             <p>Pick a program. Every program keeps its own 12-week log.</p>
         </div>
@@ -1711,7 +1711,7 @@ function renderSplash(text) {
     <div class="topbar">
         <div class="topbar-left">
             <div>
-                <div class="topbar-title" id="programTitle">Odyra</div>
+                <div class="topbar-title" id="programTitle">Odyr</div>
                 <div class="topbar-program" id="programSubtitle"></div>
             </div>
         </div>
@@ -2141,7 +2141,7 @@ function renderSplash(text) {
 
 // Shown at the bottom of Settings so you can tell which version a phone is running.
 // Bump it with every deploy.
-const APP_VERSION = '1.31 · 28 Oct';
+const APP_VERSION = '1.32 · 28 Oct';
 
 const SUPABASE_URL = 'https://hcwbcxhblfjpdlkwykez.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_mEe_5g2UITyp5O-F9YRhRg_wTQWuOtf';

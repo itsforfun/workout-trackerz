@@ -1,7 +1,7 @@
 {
-  "name": "Odyra",
-  "short_name": "Odyra",
-  "description": "Odyra: your odyssey, every day. Strength training with an adaptive coach, levels and badges.",
+  "name": "Odyr",
+  "short_name": "Odyr",
+  "description": "Odyr: the path to greatness. Strength training with an adaptive coach, levels and badges.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
