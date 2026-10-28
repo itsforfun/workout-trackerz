@@ -322,4 +322,5 @@ reference/debug-screenshots/  ← Supabase key page, "Script error" console, Git
 - Icon: an open gold ring (the path never closes) with a small gold point at the opening (the traveller), on the app's dark warm background — generated to `icons/icon-{180,192,512}.png` with Pillow. Service-worker cache renamed `odyra-v5`.
 - Name appears in `<title>`, `apple-mobile-web-app-title`, the manifest, the sign-in card, the program picker kicker and the default top-bar title. The Apple Health shortcut keeps its name "Workout Steps".
 - Opening quotes (`QUOTES`, 50 lines written for the app) follow the brand themes: the endless journey, constant change, listening to the body, endurance, never yielding.
+- Sign-in screen (v1.31): no card; the Odyra mark as inline SVG (`.auth-mark`, ring draws itself, the traveller point pops in), wide-spaced ODYRA wordmark, Instrument Serif tagline, text tabs with a gold dot, line-style fields. Copy in sentence case ("Log in", "Create account").
 
