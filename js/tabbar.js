@@ -105,8 +105,11 @@ function placeTabLens(instant, index = activeTabIndex()) {
 // A spring with a little overshoot; the stretch comes from the lens's speed
 function runTabLens() {
     if (tabLens.raf) return;
+    // Only one loop ever runs: an older loop stops as soon as a newer one starts
+    const loop = tabLens.loop = (tabLens.loop || 0) + 1;
     let last = performance.now();
     const step = now => {
+        if (loop !== tabLens.loop) return;
         const dt = Math.min(0.034, (now - last) / 1000);
         last = now;
         if (!tabLens.drag) {

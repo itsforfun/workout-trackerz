@@ -200,7 +200,8 @@
                 await new Promise(resolve => setTimeout(resolve, 1400));
                 const lens = document.querySelector('.tab-lens').getBoundingClientRect();
                 const btn = document.querySelector(`.bottom-nav > .tab-btn[onclick="switchTab('${tab}')"]`).getBoundingClientRect();
-                assert(Math.abs((lens.left + lens.width / 2) - (btn.left + btn.width / 2)) < 2, `lens not centred under ${tab}`);
+                const off = (lens.left + lens.width / 2) - (btn.left + btn.width / 2);
+                assert(Math.abs(off) < 2, `lens not centred under ${tab}: ${off.toFixed(1)}px off (lens ${lens.left.toFixed(1)}+${lens.width.toFixed(1)}, tab ${btn.left.toFixed(1)}+${btn.width.toFixed(1)}, x ${tabLens.x.toFixed(1)} → ${tabLens.target.toFixed(1)}, lift ${tabLens.lift.toFixed(2)})`);
             }
         } finally {
             window.requestAnimationFrame = realFrame;
