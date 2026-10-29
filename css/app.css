@@ -1606,3 +1606,36 @@
     /* Still no confetti, shimmer or medal glints: those move constantly */
     .celebrate-confetti, .sk, .badge-card.gleam .medal, .medal.gleam { animation:none; }
 }
+
+/* ── Tab bar (v1.43): a floating dark glass capsule with a lens that glides between tabs (js/tabbar.js) ── */
+@media (max-width:900px) {
+    .bottom-nav { left:12px; right:12px; bottom:calc(6px + env(safe-area-inset-bottom) * 0.55); padding:6px; border:none; border-radius:999px;
+        background:rgba(28,24,21,0.97); -webkit-backdrop-filter:blur(24px) saturate(1.5); backdrop-filter:blur(24px) saturate(1.5);
+        box-shadow:inset 0 0 0 1px rgba(240,232,216,0.07), inset 0 1px 0 rgba(255,255,255,0.06), 0 22px 44px -18px rgba(0,0,0,0.9);
+        transform-origin:50% 100%; touch-action:pan-y; -webkit-user-select:none; user-select:none; }
+    .main-app .page { padding-bottom:calc(104px + env(safe-area-inset-bottom)); }
+    .bottom-nav .tab-btn { position:relative; z-index:2; padding:6px 0 5px; gap:3px; -webkit-tap-highlight-color:transparent; }
+    .bottom-nav .tab-btn::after { display:none; }
+    .bottom-nav .tab-btn:active { transform:none; }
+    .bottom-nav .tab-btn.active { color:var(--text); }
+
+    /* The lens: a quiet raised pill at rest; lifted, it turns into clear glass with a champagne rim */
+    .tab-lens { position:absolute; z-index:1; top:6px; bottom:6px; left:0; width:0; border-radius:999px; overflow:hidden; pointer-events:none;
+        background:linear-gradient(180deg, rgba(240,232,216,0.11), rgba(240,232,216,0.06));
+        box-shadow:inset 0 1px 0 rgba(255,255,255,0.06);
+        transition:background 0.35s var(--ease), box-shadow 0.35s var(--ease); will-change:transform; }
+    .tab-lens.lifted { z-index:3; background:rgba(34,29,25,0.94);
+        box-shadow:inset 0 0 0 1px rgba(242,216,145,calc(0.2 + var(--lift) * 0.35)), inset 0 1.5px 0 rgba(255,250,235,calc(var(--lift) * 0.35)),
+            inset 0 -10px 18px rgba(217,178,95,calc(var(--lift) * 0.14)), 0 12px 26px -10px rgba(0,0,0,0.8), 0 0 22px rgba(217,178,95,calc(var(--lift) * 0.16)); }
+    /* Copy of the tab row seen through the lens (only while lifted, magnified by js/tabbar.js) */
+    .tab-lens-row { position:absolute; top:-6px; left:0; bottom:-6px; display:grid; grid-template-columns:repeat(5,1fr); padding:6px; box-sizing:border-box; opacity:0; transition:opacity 0.2s ease; }
+    .tab-lens.lifted .tab-lens-row { opacity:1; }
+    .tab-lens-row .tab-btn { pointer-events:none; }
+    /* A specular highlight sweeping across the glass */
+    .tab-lens::after { content:''; position:absolute; inset:0; border-radius:inherit; pointer-events:none; opacity:0; transition:opacity 0.3s ease;
+        background:linear-gradient(115deg, transparent 30%, rgba(255,248,230,0.16) 46%, transparent 58%); }
+    .tab-lens.lifted::after { opacity:1; }
+}
+@media (max-width:900px) and (prefers-reduced-motion: reduce) {
+    .tab-lens { transition:background 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease; }
+}

@@ -510,6 +510,7 @@ function switchTab(tab) {
     const current = document.querySelector('.main-app .page.active');
     const target = document.getElementById('page-' + tab);
     document.querySelectorAll('.main-app .page').forEach(p => p.getAnimations().forEach(a => a.cancel()));
+    tabLensTo(tab);
     const animate = current && current !== target && target.animate
         && document.getElementById('mainApp').classList.contains('active');
     // With Reduce Motion the tabs cross-fade without moving (see css/app.css, end)
@@ -540,6 +541,7 @@ function showTab(tab) {
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
     document.getElementById('page-'+tab).classList.add('active');
     document.querySelectorAll(`.tab-btn[onclick="switchTab('${tab}')"]`).forEach(b => b.classList.add('active'));
+    tabLensTo(tab);
 
     if (tab === 'today') {
         renderToday();

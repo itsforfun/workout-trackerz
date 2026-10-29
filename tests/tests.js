@@ -188,6 +188,26 @@
         assert(reduce.some(r => [...r.cssRules].some(k => k.name === 'sheetUp')), 'fade-only versions of the entrances are missing');
     });
 
+    await check('The tab bar lens settles under the chosen tab', async () => {
+        showScreen('app');
+        const realFrame = window.requestAnimationFrame;
+        // The hidden test window pauses real frames, so frames are simulated
+        window.requestAnimationFrame = cb => setTimeout(() => cb(performance.now()), 16);
+        tabLens.raf = null;
+        try {
+            for (const tab of ['progress', 'today', 'settings']) {
+                switchTab(tab);
+                await new Promise(resolve => setTimeout(resolve, 1400));
+                const lens = document.querySelector('.tab-lens').getBoundingClientRect();
+                const btn = document.querySelector(`.bottom-nav > .tab-btn[onclick="switchTab('${tab}')"]`).getBoundingClientRect();
+                assert(Math.abs((lens.left + lens.width / 2) - (btn.left + btn.width / 2)) < 2, `lens not centred under ${tab}`);
+            }
+        } finally {
+            window.requestAnimationFrame = realFrame;
+            tabLens.raf = null;
+        }
+    });
+
     // ── Exercise guide ──
     await check('Every exercise in the app has a guide with a demo', () => {
         const names = new Set();

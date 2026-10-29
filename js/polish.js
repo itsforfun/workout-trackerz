@@ -127,6 +127,7 @@ function initPullToRefresh() {
 
 initSheets();
 initPullToRefresh();
+initTabLens();
 
 // ── Opening quote (see the #splash block at the top of <body>) ──
 const SPLASH_MIN_MS = 4000;
