@@ -331,8 +331,8 @@ function renderBodyweight() {
             datasets: [{
                 label: `Bodyweight (${unit})`,
                 data: log.map(e => parseFloat(kgToDisplay(e.kg))),
-                borderColor: '#7fd9a8',
-                backgroundColor: 'rgba(127,217,168,0.1)',
+                borderColor: '#dcc89e',
+                backgroundColor: 'rgba(220,200,158,0.1)',
                 fill: true,
                 tension: 0.25,
                 pointRadius: 3,

@@ -22,7 +22,7 @@ function celebrate({ icon, color, kicker, title, text }) {
     titleEl.style.color = color;
     document.getElementById('celebrateText').innerHTML = text;
 
-    const colors = [color, '#e6b84a', '#f0e8d8', '#7fd9a8', '#e8734a'];
+    const colors = [color, '#e6b84a', '#f0e8d8', '#dcc89e', '#c98f66'];
     document.getElementById('celebrateConfetti').innerHTML = Array.from({ length: 60 }, (_, i) => `
         <span class="confetti-piece" style="left:${Math.random() * 100}%; background:${colors[i % colors.length]};
             animation-duration:${2 + Math.random() * 2}s; animation-delay:${Math.random() * 0.6}s;
@@ -259,15 +259,15 @@ function playerStats() {
 
 // ── Badges: 17 tracks with eight tiers each (Iron → Obsidian), plus signature and secret badges ──
 // Tier pacing for every track: Iron on the first try, Bronze in the first week or two, Silver ~1 month,
-// Gold ~3 months, Platinum ~6 months, Sapphire ~1 year, Diamond ~2 years, Obsidian for the few who stay.
+// Gold ~3 months, Platinum ~6 months, Ruby ~1 year, Diamond ~2 years, Obsidian for the few who stay.
 const BADGE_TIERS = [
     { name: 'Iron', color: '#b5b1ab', xp: 25, rarity: 95 },
     { name: 'Bronze', color: '#c48b57', xp: 50, rarity: 75 },
     { name: 'Silver', color: '#c9ced6', xp: 100, rarity: 50 },
     { name: 'Gold', color: '#d9b25f', xp: 200, rarity: 25 },
-    { name: 'Platinum', color: '#a8dccf', xp: 400, rarity: 12 },
-    { name: 'Sapphire', color: '#5b8def', xp: 800, rarity: 5 },
-    { name: 'Diamond', color: '#a3bcff', xp: 1500, rarity: 2 },
+    { name: 'Platinum', color: '#dcd8d0', xp: 400, rarity: 12 },
+    { name: 'Ruby', color: '#c4554e', xp: 800, rarity: 5 },
+    { name: 'Diamond', color: '#f3eee4', xp: 1500, rarity: 2 },
     { name: 'Obsidian', color: '#f2d891', xp: 3000, rarity: 0.5 },
 ];
 const ROMAN8 = ['', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII'];
@@ -432,11 +432,11 @@ function medalSvg(tier, icon, size = 64, extraClass = '') {
         // IV · Gold: laurel crest around a hexagon
         `<g fill="#d9b25f">${leaves}</g><polygon points="0,-40 34.6,-20 34.6,20 0,40 -34.6,20 -34.6,-20" fill="#3d3015" stroke="#f2d891" stroke-width="2.5"/><polygon points="0,-31 26.8,-15.5 26.8,15.5 0,31 -26.8,15.5 -26.8,-15.5" fill="none" stroke="#d9b25f" stroke-opacity="0.6" stroke-width="1"/>${medalGlyph(icon, '#f2d891')}`,
         // V · Platinum: star rosette with ribbons
-        `<path d="M-16 34 L-24 68 L-12 60 L-4 70 L0 38 Z" fill="#5e8f86"/><path d="M16 34 L24 68 L12 60 L4 70 L0 38 Z" fill="#7fb8ad"/><polygon points="0,-50 11,-27 35,-35 27,-11 50,0 27,11 35,35 11,27 0,50 -11,27 -35,35 -27,11 -50,0 -27,-11 -35,-35 -11,-27" fill="#24332f" stroke="#a8dccf" stroke-width="2"/><circle r="28" fill="#2c3f3a" stroke="#a8dccf" stroke-width="1.5"/>${medalGlyph(icon, '#dff5ef')}`,
-        // VI · Sapphire: shield set with a gem
-        `<path d="M0 -50 L40 -36 L40 6 C40 30 22 44 0 54 C-22 44 -40 30 -40 6 L-40 -36 Z" fill="#14213d" stroke="#5b8def" stroke-width="2.2"/><path d="M0 -42 L32 -30 L32 5 C32 25 18 37 0 45 C-18 37 -32 25 -32 5 L-32 -30 Z" fill="none" stroke="#5b8def" stroke-opacity="0.5" stroke-width="1"/><polygon points="0,-60 9,-50 0,-38 -9,-50" fill="#5b8def" stroke="#b9cdfb" stroke-width="1"/>${medalGlyph(icon, '#b9cdfb', 6)}`,
+        `<path d="M-16 34 L-24 68 L-12 60 L-4 70 L0 38 Z" fill="#8d867b"/><path d="M16 34 L24 68 L12 60 L4 70 L0 38 Z" fill="#b5b1ab"/><polygon points="0,-50 11,-27 35,-35 27,-11 50,0 27,11 35,35 11,27 0,50 -11,27 -35,35 -27,11 -50,0 -27,-11 -35,-35 -11,-27" fill="#2e2b27" stroke="#dcd8d0" stroke-width="2"/><circle r="28" fill="#3a3732" stroke="#dcd8d0" stroke-width="1.5"/>${medalGlyph(icon, '#f6f2ea')}`,
+        // VI · Ruby: shield set with a gem
+        `<path d="M0 -50 L40 -36 L40 6 C40 30 22 44 0 54 C-22 44 -40 30 -40 6 L-40 -36 Z" fill="#2a1312" stroke="#c4554e" stroke-width="2.2"/><path d="M0 -42 L32 -30 L32 5 C32 25 18 37 0 45 C-18 37 -32 25 -32 5 L-32 -30 Z" fill="none" stroke="#c4554e" stroke-opacity="0.5" stroke-width="1"/><polygon points="0,-60 9,-50 0,-38 -9,-50" fill="#c4554e" stroke="#f0b0a6" stroke-width="1"/>${medalGlyph(icon, '#f0b0a6', 6)}`,
         // VII · Diamond: cut gem with rays
-        `<g stroke="#a3bcff" stroke-width="1.5" stroke-linecap="round" opacity="0.8"><path d="M0 -60v-10"/><path d="M42 -42l7 -7"/><path d="M-42 -42l-7 -7"/><path d="M56 4h10"/><path d="M-56 4h-10"/></g><polygon points="-44,-16 -25,-42 25,-42 44,-16 0,50" fill="#1f2840" stroke="#c6d4ff" stroke-width="2.2"/><path d="M-44 -16H44M-25 -42L-13 -16L0 -42L13 -16L25 -42M-13 -16L0 50M13 -16L0 50" fill="none" stroke="#a3bcff" stroke-opacity="0.55" stroke-width="1"/>${medalGlyph(icon, '#eef2ff', 2, 26)}<path d="M30 -56l2 5 5 2-5 2-2 5-2-5-5-2 5-2z" fill="#eef2ff"/>`,
+        `<g stroke="#f3eee4" stroke-width="1.5" stroke-linecap="round" opacity="0.8"><path d="M0 -60v-10"/><path d="M42 -42l7 -7"/><path d="M-42 -42l-7 -7"/><path d="M56 4h10"/><path d="M-56 4h-10"/></g><polygon points="-44,-16 -25,-42 25,-42 44,-16 0,50" fill="#26231f" stroke="#f6f2ea" stroke-width="2.2"/><path d="M-44 -16H44M-25 -42L-13 -16L0 -42L13 -16L25 -42M-13 -16L0 50M13 -16L0 50" fill="none" stroke="#e8e1d4" stroke-opacity="0.55" stroke-width="1"/>${medalGlyph(icon, '#fffaf0', 2, 26)}<path d="M30 -56l2 5 5 2-5 2-2 5-2-5-5-2 5-2z" fill="#fffaf0"/>`,
         // VIII · Obsidian: black crowned gem with a gold halo
         `<circle r="58" fill="none" stroke="#d9b25f" stroke-opacity="0.35" stroke-width="1"/><circle r="64" fill="none" stroke="#d9b25f" stroke-opacity="0.18" stroke-width="1" stroke-dasharray="2 5"/><path d="M-30 -30 L-18 -50 L-6 -34 L0 -54 L6 -34 L18 -50 L30 -30 Z" fill="#0b0a0a" stroke="#f2d891" stroke-width="1.6" stroke-linejoin="round"/><polygon points="-42,-26 42,-26 30,26 0,50 -30,26" fill="#0b0a0a" stroke="#f2d891" stroke-width="2.2" stroke-linejoin="round"/><path d="M-42 -26L0 50L42 -26M-30 26L0 -26L30 26" fill="none" stroke="#d9b25f" stroke-opacity="0.4" stroke-width="1"/>${medalGlyph(icon, '#f2d891', 2, 26)}`,
     ][tier];

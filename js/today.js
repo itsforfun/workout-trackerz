@@ -67,8 +67,8 @@ function renderTodayHero() {
     const xp = playerXp(playerStats());
     const rings = [
         { label: 'Lift', color: '#f3ece0', value: stats.thisWeek, target: liftTarget, text: `<span data-count="${stats.thisWeek}" data-key="hero-lift"></span><small>/${liftTarget}</small>` },
-        { label: 'Cardio', color: '#86d6a8', value: cardio, target: 150, text: `<span data-count="${cardio}" data-key="hero-cardio"></span><small>/150 min</small>` },
-        { label: 'Steps', color: '#8fbbd9', value: steps, target: goal, text: `<span data-count="${steps}" data-key="hero-steps" data-format="compact"></span><small>/${compactNum(goal)}</small>` },
+        { label: 'Cardio', color: '#c98f66', value: cardio, target: 150, text: `<span data-count="${cardio}" data-key="hero-cardio"></span><small>/150 min</small>` },
+        { label: 'Steps', color: '#b0a491', value: steps, target: goal, text: `<span data-count="${steps}" data-key="hero-steps" data-format="compact"></span><small>/${compactNum(goal)}</small>` },
     ];
     const circles = rings.map((ring, i) => {
         const r = HERO_RING_RADII[i];
@@ -388,19 +388,19 @@ function logMobility(day) {
 // Five heart-rate zones as % of estimated max heart rate, with RPE (effort 0–10) and the talk
 // test for training without a heart-rate monitor. Sessions favour low-impact machines.
 const CARDIO_ZONES = [
-    { zone: 1, name: 'Recovery', pct: [50, 60], rpe: '2–3', color: '#8fbbd9', talk: 'You could sing',
+    { zone: 1, name: 'Recovery', pct: [50, 60], rpe: '2–3', color: '#b0a491', talk: 'You could sing',
         why: 'Active recovery: gets blood moving without adding fatigue. Ideal on walk days and after hard lifting.',
         sessions: [['Easy walk', 30, '30–45 min', 'Flat or a slight incline, relaxed pace'], ['Easy bike spin', 20, '20–30 min', 'Light resistance, smooth pedalling']] },
-    { zone: 2, name: 'Aerobic base', pct: [60, 70], rpe: '3–4', color: '#86d6a8', talk: 'You can talk in full sentences',
+    { zone: 2, name: 'Aerobic base', pct: [60, 70], rpe: '3–4', color: '#dcc89e', talk: 'You can talk in full sentences',
         why: 'Builds the aerobic base (heart, mitochondria, fat use) with little stress on joints or recovery. Most weekly cardio should be here.',
         sessions: [['Incline treadmill walk', 30, '30–45 min', '8–12% incline, 4.5–5.5 km/h, hands off the rails'], ['Steady bike', 30, '30–45 min', 'A resistance you could hold for an hour'], ['Elliptical', 30, '30 min', 'Low impact, easy on knees and ankles'], ['Easy rowing', 20, '20–30 min', 'Smooth strokes, about 20 per minute']] },
-    { zone: 3, name: 'Tempo', pct: [70, 80], rpe: '5–6', color: '#d4a843', talk: 'Short sentences only',
+    { zone: 3, name: 'Tempo', pct: [70, 80], rpe: '5–6', color: '#d9b25f', talk: 'Short sentences only',
         why: 'Comfortably hard. Useful in small doses once the base is built; lots of it adds fatigue without the benefits of easy or hard work.',
         sessions: [['Bike tempo', 33, '3 × 8 min, 3 min easy between', 'Steady, controlled effort']] },
-    { zone: 4, name: 'Threshold', pct: [80, 90], rpe: '7–8', color: '#e8734a', talk: 'A few words at a time',
+    { zone: 4, name: 'Threshold', pct: [80, 90], rpe: '7–8', color: '#c98f66', talk: 'A few words at a time',
         why: 'Raises the pace you can sustain. One session a week at most, and only after a few weeks of base work.',
         sessions: [['4 × 4 min intervals', 28, '4 × 4 min hard, 3 min easy', 'The "Norwegian 4×4": build to 85–95% of max by the end of each rep. Bike or incline walk']] },
-    { zone: 5, name: 'Max effort', pct: [90, 100], rpe: '9–10', color: '#c45fc4', talk: 'You can\'t talk',
+    { zone: 5, name: 'Max effort', pct: [90, 100], rpe: '9–10', color: '#e07a5f', talk: 'You can\'t talk',
         why: 'Short sprints raise fitness (VO₂max) quickly in little time but are hard to recover from. Once a week at most, on a bike.',
         sessions: [['Bike sprints', 20, '6–8 × 30 s all-out, 2 min easy', 'Seated, high resistance; stop if form or joints suffer']] },
 ];

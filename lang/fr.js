@@ -1459,5 +1459,6 @@ I18N_PACKS.fr = {
         "Program": "Programme",
         "Workouts logged": "Séances enregistrées",
         "Errors this session": "Erreurs pendant cette session",
+        "Ruby": "Rubis",
     },
 };

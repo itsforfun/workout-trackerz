@@ -165,12 +165,12 @@ const MOBILITY = {
 
 const TIERS = [
     { id:0, name:'Untested', color:'#6d5e4d', pop:'—' },
-    { id:1, name:'Beginner', color:'#7ab3d4', pop:'~50%' },
-    { id:2, name:'Novice', color:'#5fbc7a', pop:'~30%' },
-    { id:3, name:'Intermediate', color:'#d4a843', pop:'~15%' },
-    { id:4, name:'Advanced', color:'#e8734a', pop:'~7%' },
-    { id:5, name:'Elite', color:'#c45fc4', pop:'~2%' },
-    { id:6, name:'God/Goddess', color:'#e8d44a', pop:'<0.5%' },
+    { id:1, name:'Beginner', color:'#b0a491', pop:'~50%' },
+    { id:2, name:'Novice', color:'#c98f66', pop:'~30%' },
+    { id:3, name:'Intermediate', color:'#c9ced6', pop:'~15%' },
+    { id:4, name:'Advanced', color:'#d9b25f', pop:'~7%' },
+    { id:5, name:'Elite', color:'#e6e0d4', pop:'~2%' },
+    { id:6, name:'God/Goddess', color:'#f2d891', pop:'<0.5%' },
 ];
 const ROMAN = ['0', 'I', 'II', 'III', 'IV', 'V', 'VI'];
 const HEX_PATH = 'M12 2.2l8.5 4.9v9.8L12 21.8l-8.5-4.9V7.1z';

@@ -142,7 +142,7 @@ function drawStepsChart(goal) {
             labels: days.map(d => parseDate(d).toLocaleDateString(LOCALE, { weekday: 'narrow' })),
             datasets: [
                 { label: 'Steps', data: values, backgroundColor: values.map(v => (v >= goal ? '#d9b25f' : 'rgba(240,232,216,0.16)')), borderRadius: 6, maxBarThickness: 22 },
-                { type: 'line', label: 'Goal', data: days.map(() => goal), borderColor: 'rgba(134,214,168,0.8)', borderDash: [5, 4], borderWidth: 1.5, pointRadius: 0 },
+                { type: 'line', label: 'Goal', data: days.map(() => goal), borderColor: 'rgba(220,200,158,0.8)', borderDash: [5, 4], borderWidth: 1.5, pointRadius: 0 },
             ],
         },
         options: {
