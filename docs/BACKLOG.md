@@ -102,6 +102,7 @@ Status: **Done** · **Check** (built, still needs a look on the iPhone or a smal
 | 1.29 | 8-tier medals, trophy room, badge sheet, minting moment, signature and secret badges, "almost there" nudges |
 | 1.30–1.34 | Brand: Odyra, then Odyr; new icon; sign-in redesign; design carried across the app; thinker quotes |
 | 1.35–1.36 | French (whole app, reminders, quotes), Language setting, French review pass, decimal comma typing |
+| 1.50 | Tab bar collapses into a pill while scrolling down (back on scroll up, at the top or on a tap); gold glint on the chosen tab; bar steps aside under sheets |
 | 1.49 | Tab taps always register (no more taps lost to a tiny finger move) |
 | 1.48 | Tab bar redesigned: narrower than the content, lifted off the bottom, slimmer, lighter glass with a top highlight |
 | 1.47 | Anatomy body map (exercise sheet, Today, summary, weekly map on Progress); exercise library grows to 172 exercises with muscle and equipment filters; tab changes are instant; fade under the floating tab bar |

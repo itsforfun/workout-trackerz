@@ -240,6 +240,33 @@
         }
     });
 
+    await check('The tab bar collapses on scroll down and comes back on scroll up, at the top or on a tap', () => {
+        showScreen('app');
+        switchTab('today');
+        const nav = document.querySelector('.bottom-nav');
+        const scroll = y => { window.scrollTo(0, y); tabBarOnScroll(); };
+        tabLens.lift = 0;
+        scroll(0); scroll(120); scroll(300);
+        assert(nav.classList.contains('collapsed'), 'did not collapse when scrolling down');
+        scroll(260);
+        assert(!nav.classList.contains('collapsed'), 'did not come back when scrolling up');
+        scroll(400); scroll(600);
+        assert(nav.classList.contains('collapsed'), 'did not collapse again');
+        const before = document.querySelector('.main-app .page.active').id;
+        const btn = nav.querySelector('.tab-btn[onclick="switchTab(\'settings\')"]');
+        const r = btn.getBoundingClientRect();
+        nav.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, pointerId: 1, isPrimary: true, button: 0, clientX: r.left + 2, clientY: r.top + 2 }));
+        nav.dispatchEvent(new PointerEvent('pointerup', { bubbles: true, pointerId: 1, isPrimary: true, button: 0, clientX: r.left + 2, clientY: r.top + 2 }));
+        btn.click();
+        assert(!nav.classList.contains('collapsed'), 'tapping the pill did not open the bar');
+        equal(document.querySelector('.main-app .page.active').id, before, 'tapping the pill switched tabs');
+        scroll(0);
+        tabLens.handledAt = 0;
+        openRecap();
+        assert(getComputedStyle(nav).opacity === '0' || getComputedStyle(nav).translate !== 'none', 'bar still showing under a sheet');
+        closeRecap();
+    });
+
     // ── Exercise guide ──
     await check('Every exercise in the app has a guide with a demo', () => {
         const names = new Set();

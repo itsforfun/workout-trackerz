@@ -4,7 +4,7 @@
 
 // Shown at the bottom of Settings so you can tell which version a phone is running.
 // Bump it with every deploy.
-const APP_VERSION = '1.49 · 29 Oct';
+const APP_VERSION = '1.50 · 29 Oct';
 
 const SUPABASE_URL = 'https://hcwbcxhblfjpdlkwykez.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_mEe_5g2UITyp5O-F9YRhRg_wTQWuOtf';
@@ -235,6 +235,7 @@ function showScreen(name) {
         document.getElementById(id).classList.toggle('active', key === name);
     });
     window.scrollTo(0, 0);
+    if (typeof setTabBarCollapsed === 'function') setTabBarCollapsed(false);
 }
 
 // Decide where a logged-in user lands once their data is loaded

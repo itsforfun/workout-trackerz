@@ -1720,3 +1720,37 @@
 
 /* The bar never scrolls, so a tap can't be mistaken for the start of a scroll (iPhone used to cancel some taps) */
 @media (max-width:900px) { .bottom-nav { touch-action:none; } }
+
+/* ── Tab bar that steps aside (v1.50): collapses to a pill while scrolling down, a glint on the chosen tab,
+   hidden while a sheet is open, slightly thicker glass while content moves behind it ── */
+@media (max-width:900px) {
+    .bottom-nav { height:55px; transition:left 0.55s cubic-bezier(.3,1.2,.4,1), right 0.55s cubic-bezier(.3,1.2,.4,1), height 0.45s cubic-bezier(.3,1.2,.4,1),
+        background 0.4s ease, translate 0.45s cubic-bezier(.3,1.1,.4,1), opacity 0.3s ease; }
+    .bottom-nav.scrolling { background:rgba(36,31,27,0.92); }
+    .bottom-nav > .tab-btn, .bottom-nav > .tab-lens { transition:opacity 0.22s ease, filter 0.3s ease; }
+    .bottom-nav.collapsed { left:calc(50% - 30px); right:calc(50% - 30px); height:46px; overflow:hidden; }
+    .bottom-nav.collapsed > .tab-btn, .bottom-nav.collapsed > .tab-lens { opacity:0; pointer-events:none; filter:blur(4px); }
+    .tab-mini { position:absolute; inset:0; display:grid; place-items:center; color:var(--text); opacity:0; transform:scale(0.6);
+        transition:opacity 0.25s ease, transform 0.5s cubic-bezier(.3,1.4,.4,1); pointer-events:none; }
+    .bottom-nav.collapsed .tab-mini { opacity:1; transform:none; transition-delay:0.08s; }
+    .tab-mini svg { width:22px; height:22px; fill:none; stroke:currentColor; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round; }
+    .tab-mini svg .f { fill:currentColor; }
+    .tab-mini svg .cut { fill:#2a241f; stroke:#2a241f; }
+    .tab-mini svg .area { fill:currentColor; fill-opacity:0.25; stroke:none; }
+    .bottom-nav.collapsed + .tab-scrim, .main-app:has(.bottom-nav.collapsed) .tab-scrim { opacity:0.55; }
+    .tab-scrim { transition:opacity 0.4s ease, translate 0.45s ease; }
+
+    /* The chosen tab's icon catches the light */
+    .bottom-nav > .tab-btn.glint svg { animation:tabGlint 0.65s cubic-bezier(.3,1.4,.4,1); }
+    @keyframes tabGlint { 0% { transform:scale(0.86); filter:none; } 45% { transform:scale(1.12); filter:drop-shadow(0 0 6px rgba(242,216,145,0.75)); color:#f2d891; } 100% { transform:translateY(-1px) scale(1.08); filter:none; } }
+
+    /* A sheet slides up from the bottom too: the bar steps out of its way */
+    body:has(.modal-overlay.active) .bottom-nav { translate:0 140%; opacity:0; pointer-events:none; }
+    body:has(.modal-overlay.active) .tab-scrim { opacity:0; }
+}
+@media (max-width:900px) and (prefers-reduced-motion: reduce) {
+    .bottom-nav { transition:background 0.3s ease, opacity 0.3s ease; }
+    .bottom-nav.collapsed .tab-mini { transition:opacity 0.25s ease; transform:none; }
+    .bottom-nav.collapsed > .tab-btn, .bottom-nav.collapsed > .tab-lens { filter:none; }
+    body:has(.modal-overlay.active) .bottom-nav { translate:none; }
+}
