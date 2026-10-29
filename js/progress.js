@@ -511,8 +511,9 @@ function switchTab(tab) {
     const target = document.getElementById('page-' + tab);
     document.querySelectorAll('.main-app .page').forEach(p => p.getAnimations().forEach(a => a.cancel()));
     const animate = current && current !== target && target.animate
-        && document.getElementById('mainApp').classList.contains('active')
-        && !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        && document.getElementById('mainApp').classList.contains('active');
+    // With Reduce Motion the tabs cross-fade without moving (see css/app.css, end)
+    const still = prefersReducedMotion();
     if (!animate) {
         showTab(tab);
         return;
@@ -520,7 +521,7 @@ function switchTab(tab) {
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.getAttribute('onclick') === `switchTab('${tab}')`));
     const id = ++tabSwitchId;
     current.animate(
-        [{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'translateY(-6px)' }],
+        [{ opacity: 1, transform: 'none' }, { opacity: 0, transform: still ? 'none' : 'translateY(-6px)' }],
         { duration: 140, easing: 'ease-in', fill: 'forwards' }
     ).finished.then(() => {
         if (id !== tabSwitchId) return; // a newer tap took over
@@ -528,7 +529,7 @@ function switchTab(tab) {
         showTab(tab);
         window.scrollTo(0, 0);
         target.animate(
-            [{ opacity: 0, transform: 'translateY(18px)' }, { opacity: 1, transform: 'none' }],
+            [{ opacity: 0, transform: still ? 'none' : 'translateY(18px)' }, { opacity: 1, transform: 'none' }],
             { duration: 420, easing: 'cubic-bezier(.2,.8,.2,1)' }
         );
     }).catch(() => { /* cancelled by a newer tap */ });

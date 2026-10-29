@@ -2,7 +2,7 @@
 //  POLISH: bottom sheets, rolling numbers, pull to refresh
 // ════════════════════════════════════════════
 
-const SHEET_CLOSE = { pickerModal: closePicker, cardioModal: closeCardioLog, swapModal: closeSwap, importModal: closeImport, recapModal: closeRecap, readinessModal: closeReadiness, genModal: closeGenerator, scienceModal: closeScience, badgeModal: closeBadge, shareModal: closeShareCard, guideModal: closeGuide };
+const SHEET_CLOSE = { pickerModal: closePicker, cardioModal: closeCardioLog, swapModal: closeSwap, importModal: closeImport, recapModal: closeRecap, readinessModal: closeReadiness, genModal: closeGenerator, scienceModal: closeScience, badgeModal: closeBadge, shareModal: closeShareCard, guideModal: closeGuide, diagModal: closeDiagnostics };
 
 function closeSheet(overlay) {
     const close = SHEET_CLOSE[overlay.id];

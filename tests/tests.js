@@ -154,6 +154,40 @@
         });
     });
 
+    // ── Every program, for a brand-new account and with data ──
+    await check('Every program works for a new account and with data (all screens + a workout)', () => {
+        Object.keys(PROGRAMS).filter(id => !id.startsWith('custom-')).forEach(prog => [true, false].forEach(fresh => {
+            loadFixture();
+            if (fresh) {
+                allData = {};
+                userProfile = { gender: 'female', age: 30, weight: 62, height: 168, units: 'kg' };
+            }
+            const tag = `${prog}${fresh ? ' (new account)' : ''}`;
+            const step = (name, fn) => { try { fn(); } catch (error) { throw new Error(`${tag}, ${name}: ${error.message}`); } };
+            currentProgram = prog;
+            step('open program', () => selectProgram(prog));
+            ['today', 'tracker', 'steps', 'progress', 'settings'].forEach(t => step(`${t} tab`, () => showTab(t)));
+            step('trophy room', () => { openTrophyRoom(); closeTrophyRoom(); });
+            step('walkthrough', () => { showTab('today'); startTour(); endTour(); });
+            step('workout', () => {
+                activeWorkout = null;
+                showTab('today');
+                beginWorkout(null);
+                Object.values(activeWorkout.rows)[0].forEach(r => { r.done = true; r.reps = 8; r.kg = r.kg || 20; });
+                finishWorkout();
+                closeSummary();
+            });
+        }));
+        currentProgram = 'fullBody3';
+    });
+
+    await check('Reduce Motion keeps fades (no rule cuts every animation)', () => {
+        const css = [...document.styleSheets].find(sheet => (sheet.href || '').includes('app.css'));
+        const reduce = [...css.cssRules].filter(r => r.media && r.media.mediaText.includes('reduce'));
+        assert(!reduce.some(r => /animation-duration:\s*0\.01ms/.test(r.cssText)), 'a blanket rule switches every animation off');
+        assert(reduce.some(r => [...r.cssRules].some(k => k.name === 'sheetUp')), 'fade-only versions of the entrances are missing');
+    });
+
     // ── Exercise guide ──
     await check('Every exercise in the app has a guide with a demo', () => {
         const names = new Set();

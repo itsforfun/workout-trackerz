@@ -518,6 +518,7 @@
                     </button>
                 </div>
                 <p class="app-version" id="appVersion"></p>
+                <button class="pro-link diag-link" onclick="openDiagnostics()">Check this phone</button>
             </div>
         </div>
     </div>
@@ -680,6 +681,14 @@
     </div>
 </div>
 
+<div class="modal-overlay" id="diagModal">
+    <div class="modal">
+        <h2>This phone</h2>
+        <div id="diagBody"></div>
+        <div class="modal-actions"><button class="btn btn-primary" onclick="closeDiagnostics()">Done</button></div>
+    </div>
+</div>
+
 <div class="modal-overlay" id="guideModal">
     <div class="modal guide-modal">
         <div id="guideBody"></div>
@@ -731,6 +740,7 @@
 <script src="js/progress.js"></script>
 <script src="js/coach.js"></script>
 <script src="js/pro.js"></script>
+<script src="js/diagnostics.js"></script>
 <script src="js/polish.js"></script>
 <script src="js/main.js"></script>
 <script>if (/[?&]test\b/.test(location.search)) document.write('<script src="tests/fixture.js"><\/script><script src="tests/tests.js"><\/script>');</script>
