@@ -76,7 +76,30 @@ function exerciseLibrary() {
     Object.values(SWAPS).flat().forEach(([name, unit, bar, assist]) => {
         if (!byName.has(name) && !assist) byName.set(name, { name, unit, bar: !!bar, sets: 3, repMin: 8, repMax: 12, rest: 2 });
     });
+    // The full library (js/library.js); exercises that came from a program keep their tiers and notes
+    LIBRARY_BY_NAME.forEach(entry => {
+        if (entry.unit === 'kg assist') return;
+        const known = byName.get(entry.name);
+        if (known) known.equipment = entry.equipment;
+        else byName.set(entry.name, { name: entry.name, unit: entry.unit, equipment: entry.equipment, bar: entry.equipment === 'bb',
+            sets: 3, repMin: 8, repMax: 12, rest: entry.equipment === 'bb' ? 2.5 : 2, ...(entry.name.includes('Carry') ? { repLabel: 'm' } : {}) });
+    });
+    byName.forEach(e => {
+        if (!e.equipment) e.equipment = equipmentFor(e.name);
+        e.muscles = exerciseMuscles(e.name);
+    });
     return [...byName.values()].sort((a, b) => a.name.localeCompare(b.name));
+}
+
+// Equipment for exercises that came from programs but aren't in the library list
+function equipmentFor(name) {
+    const n = name.toLowerCase();
+    if (/smith/.test(n)) return 'sm';
+    if (/cable|pulldown|pressdown|face pull/.test(n)) return 'cb';
+    if (/machine|leg press|hack|extension|leg curl|pec deck/.test(n)) return 'mc';
+    if (/\bdb\b|dumbbell|goblet/.test(n)) return 'db';
+    if (/pull-up|chin-up|push-up|dip|bridge|dead bug|hyperextension/.test(n)) return 'bw';
+    return 'bb';
 }
 
 // ── Program menu: your programs + "build your own" ──
@@ -254,14 +277,43 @@ function deleteCustomProgram() {
     showToast('Program deleted');
 }
 
-// ── Exercise picker ──
+// ── Exercise library: picks exercises for the builder, or browses on its own (from Progress) ──
+let pickerMode = 'pick';      // 'pick' adds to a builder day, 'browse' opens the guide
+let pickerGroup = '';         // muscle group filter
+let pickerEquipment = '';     // equipment filter
+
 function openExercisePicker(d) {
-    haptic();
     pickerDay = d;
+    openLibrarySheet('pick', '');
+}
+
+function openExerciseLibrary(group = '') {
+    openLibrarySheet('browse', typeof group === 'string' ? group : '');
+}
+
+function openLibrarySheet(mode, group) {
+    haptic();
+    pickerMode = mode;
+    pickerGroup = group;
+    pickerEquipment = '';
+    document.getElementById('pickerTitle').textContent = mode === 'pick' ? 'Add exercise' : 'Exercise library';
+    document.getElementById('pickerCustomForm').style.display = mode === 'pick' ? '' : 'none';
     document.getElementById('pickerSearch').value = '';
     document.getElementById('pickerCustom').value = '';
     renderPickerList();
     document.getElementById('pickerModal').classList.add('active');
+}
+
+function setPickerGroup(group) {
+    haptic();
+    pickerGroup = pickerGroup === group ? '' : group;
+    renderPickerList();
+}
+
+function setPickerEquipment(code) {
+    haptic();
+    pickerEquipment = pickerEquipment === code ? '' : code;
+    renderPickerList();
 }
 
 function closePicker() {
@@ -270,14 +322,34 @@ function closePicker() {
 
 function renderPickerList() {
     const query = document.getElementById('pickerSearch').value.trim().toLowerCase();
-    pickerResults = exerciseLibrary().filter(e => !query || e.name.toLowerCase().includes(query)).slice(0, 60);
+    const all = exerciseLibrary();
+    pickerResults = all.filter(e =>
+        (!query || e.name.toLowerCase().includes(query) || tr(e.name).toLowerCase().includes(query))
+        && (!pickerGroup || e.muscles.main.includes(pickerGroup) || e.muscles.extra.includes(pickerGroup))
+        && (!pickerEquipment || e.equipment === pickerEquipment));
+    // Exercises that mainly train the chosen muscle first
+    if (pickerGroup) pickerResults.sort((a, b) => (b.muscles.main.includes(pickerGroup) ? 1 : 0) - (a.muscles.main.includes(pickerGroup) ? 1 : 0));
+    document.getElementById('pickerMap').innerHTML = bodyMapSvg({ selected: pickerGroup, tap: 'setPickerGroup', compact: true });
+    document.getElementById('pickerMuscles').innerHTML = MUSCLE_GROUPS.map(g =>
+        `<button class="lib-chip${pickerGroup === g.id ? ' on' : ''}" onclick="setPickerGroup('${g.id}')">${escapeHtml(g.name)}</button>`).join('');
+    document.getElementById('pickerEquipment').innerHTML = Object.entries(EQUIPMENT).map(([code, label]) =>
+        `<button class="lib-chip${pickerEquipment === code ? ' on' : ''}" onclick="setPickerEquipment('${code}')">${escapeHtml(label)}</button>`).join('');
+    document.getElementById('pickerCount').textContent = `${pickerResults.length} of ${all.length} exercises`;
+    const chosen = document.querySelector('#pickerMuscles .on');
+    if (chosen) chosen.scrollIntoView({ inline: 'center', block: 'nearest' });
     document.getElementById('pickerList').innerHTML = pickerResults.length
         ? pickerResults.map((e, i) => `
-            <button class="swap-option" onclick="addLibraryExercise(${i})">
-                <span>${escapeHtml(e.name)}</span><small>${escapeHtml(unitLabel(e.unit))}${e.thresholds ? ' · tiers' : ''}</small>
-            </button>`).join('')
-        : '<p class="bd-empty">Nothing found. Type it below to add your own.</p>';
+            <div class="lib-row">
+                <button class="lib-main" onclick="${pickerMode === 'pick' ? `addLibraryExercise(${i})` : `openLibraryGuide(pickerResults[${i}].name)`}">
+                    <span>${escapeHtml(e.name)}</span>
+                    <small>${muscleList(e.muscles.main)}${e.muscles.main.length ? ' · ' : ''}<span>${escapeHtml(EQUIPMENT[e.equipment] || '')}</span>${e.thresholds ? ' · <span>tiers</span>' : ''}</small>
+                </button>
+                <button class="lib-info" onclick="openLibraryGuide(pickerResults[${i}].name)" aria-label="How to">${pickerMode === 'pick' ? INFO_ICON : ''}</button>
+            </div>`).join('')
+        : `<p class="bd-empty">${pickerMode === 'pick' ? 'Nothing found. Type it below to add your own.' : 'Nothing found.'}</p>`;
 }
+
+const INFO_ICON = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 8h.01"/></svg>';
 
 function addToBuilderDay(entry) {
     const list = builder.days[pickerDay].exercises;

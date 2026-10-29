@@ -161,6 +161,15 @@ function renderToday() {
     `;
 
     renderWarmup(exercises);
+    const hits = musclesOf(exercises.map(ex => exerciseDisplayName(ex, week)));
+    document.getElementById('todayMuscles').innerHTML = hits.main.length ? `
+        <button class="today-muscles" onclick="openExerciseLibrary('${hits.main[0]}')">
+            ${bodyMapSvg({ main: hits.main, extra: hits.extra, compact: true })}
+            <span class="tm-text">
+                <span class="tm-kicker">This workout hits</span>
+                <span class="tm-main">${muscleList(hits.main)}</span>
+            </span>
+        </button>` : '';
 
     let readyToProgress = 0;
     document.getElementById('todayList').innerHTML = exercises.map((ex, idx) => {

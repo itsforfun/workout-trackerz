@@ -215,6 +215,7 @@
         Object.values(PROGRAMS).forEach(p => p.exercises.forEach(e => { names.add(e.name); (e.alternates || []).forEach(a => names.add(a)); }));
         Object.values(SWAPS).forEach(list => list.forEach(([name]) => names.add(name)));
         Object.values(GEN_PATTERNS).forEach(list => list.forEach(([name]) => names.add(name)));
+        LIBRARY.forEach(([name]) => names.add(name));
         names.forEach(name => {
             const move = guideMove(name);
             assert(move, `no movement for "${name}"`);
@@ -233,6 +234,39 @@
         });
         currentProgram = 'fullBody3';
         closeGuide();
+    });
+
+    // ── Anatomy map + library ──
+    await check('Every library exercise lists the muscles it trains', () => {
+        const lib = exerciseLibrary();
+        assert(lib.length >= 150, `only ${lib.length} exercises`);
+        lib.forEach(e => {
+            assert(e.muscles.main.length, `${e.name} has no main muscle`);
+            [...e.muscles.main, ...e.muscles.extra].forEach(g => assert(MUSCLE_GROUPS.some(m => m.id === g), `${e.name}: unknown muscle "${g}"`));
+            assert(EQUIPMENT[e.equipment], `${e.name} has no equipment`);
+        });
+    });
+
+    await check('The body map lights the right muscles and filters the library', () => {
+        const box = document.createElement('div');
+        box.innerHTML = bodyMapSvg({ main: ['ch'], extra: ['tr'] });
+        const chest = box.querySelectorAll('path[fill="url(#odyrGold)"]');
+        assert(chest.length >= 2, 'chest not lit');
+        assert(box.querySelector('path[fill="var(--bm-extra)"]'), 'supporting muscle not lit');
+        openExerciseLibrary('hm');
+        assert(pickerResults.length && pickerResults.every(e => e.muscles.main.includes('hm') || e.muscles.extra.includes('hm')), 'hamstring filter');
+        assert(pickerResults[0].muscles.main.includes('hm'), 'main-muscle exercises come first');
+        setPickerEquipment('mc');
+        assert(pickerResults.every(e => e.equipment === 'mc'), 'equipment filter');
+        closePicker();
+    });
+
+    await check('The weekly muscle map counts this week\'s sets', () => {
+        const sets = weeklyMuscleSets();
+        assert(Object.keys(sets).length, 'no muscles counted from the sample week');
+        assert(sets.qd > 0 || sets.gl > 0, 'squat sets not counted');
+        renderMuscleWeek();
+        assert(document.querySelector('#muscleWeekCard .body-map'), 'card not drawn');
     });
 
     // ── Pro waitlist ──
@@ -284,6 +318,8 @@
             openRecap(); closeRecap(); openScience(); closeScience(); openGenerator(); closeGenerator();
             PROGRAMS.fullBody3.exercises.forEach(e => openGuide(e.id)); closeGuide();
             switchTab('settings'); startPro(); cancelPro();
+            openExerciseLibrary('ch'); setPickerEquipment('db'); closePicker(); openLibraryGuide('Hammer Curl'); closeGuide();
+            LIBRARY.forEach(([name]) => tr(name));
             return new Promise(resolve => setTimeout(resolve, 50)).then(() => {
                 const keep = new Set(['Workout Steps', 'XP', 'bpm', 'Odyr', 'ODYR', 'test@example.com']);
                 Object.values(PROGRAMS).forEach(p => keep.add(p.name));

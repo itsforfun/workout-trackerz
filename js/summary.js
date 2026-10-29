@@ -58,6 +58,13 @@ function renderSummary(sm) {
             <div class="sum-list">
                 ${sm.tierUps.map(t => `<div class="sum-row"><span>${escapeHtml(t.name)}</span><strong class="tier-badge" style="color:${TIERS[t.tier].color}">${tierBadgeHtml(t.tier)}</strong></div>`).join('')}
             </div>` : ''}
+        ${(() => {
+            const hit = musclesOf(sm.exercises.map(e => e.name));
+            return hit.main.length ? `
+                <div class="section-head"><h3>Muscles trained</h3></div>
+                <div class="sum-muscles">${bodyMapSvg({ main: hit.main, extra: hit.extra })}
+                    <p>${muscleList(hit.main)}</p></div>` : '';
+        })()}
         <div class="section-head"><h3>Exercises</h3></div>
         <div class="sum-list">
             ${sm.exercises.map(e => `<div class="sum-row"><span>${escapeHtml(e.name)}</span><em>${escapeHtml(setsLine(e))}</em></div>`).join('')}

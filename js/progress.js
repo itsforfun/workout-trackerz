@@ -37,6 +37,7 @@ function renderProgress() {
     document.getElementById('page-progress').classList.toggle('is-empty', !hasData);
     renderLevel();
     renderConsistency();
+    renderMuscleWeek();
     renderAchievements();
     if (!prog.exercises.some(ex => ex.id === progressExerciseId)) {
         // Default to the first exercise with data, else the first exercise
@@ -519,21 +520,14 @@ function switchTab(tab) {
         showTab(tab);
         return;
     }
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.getAttribute('onclick') === `switchTab('${tab}')`));
-    const id = ++tabSwitchId;
-    current.animate(
-        [{ opacity: 1, transform: 'none' }, { opacity: 0, transform: still ? 'none' : 'translateY(-6px)' }],
-        { duration: 140, easing: 'ease-in', fill: 'forwards' }
-    ).finished.then(() => {
-        if (id !== tabSwitchId) return; // a newer tap took over
-        current.getAnimations().forEach(a => a.cancel());
-        showTab(tab);
-        window.scrollTo(0, 0);
-        target.animate(
-            [{ opacity: 0, transform: still ? 'none' : 'translateY(18px)' }, { opacity: 1, transform: 'none' }],
-            { duration: 420, easing: 'cubic-bezier(.2,.8,.2,1)' }
-        );
-    }).catch(() => { /* cancelled by a newer tap */ });
+    // The new page appears on the tap itself and fades in; nothing waits for the old page to leave
+    ++tabSwitchId;
+    showTab(tab);
+    window.scrollTo(0, 0);
+    target.animate(
+        [{ opacity: 0, transform: still ? 'none' : 'translateY(8px)' }, { opacity: 1, transform: 'none' }],
+        { duration: 260, easing: 'cubic-bezier(.2,.8,.2,1)' }
+    );
 }
 
 function showTab(tab) {

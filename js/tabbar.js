@@ -111,13 +111,13 @@ function runTabLens() {
         const dt = Math.min(0.034, (now - last) / 1000);
         last = now;
         if (!tabLens.drag) {
-            const force = 420 * (tabLens.target - tabLens.x) - 32 * tabLens.v;
+            const force = 640 * (tabLens.target - tabLens.x) - 40 * tabLens.v;
             tabLens.v += force * dt;
             tabLens.x += tabLens.v * dt;
         }
         const resting = !tabLens.drag && Math.abs(tabLens.target - tabLens.x) < 0.3 && Math.abs(tabLens.v) < 8;
         if (resting) tabLens.liftTarget = 0;
-        tabLens.lift += (tabLens.liftTarget - tabLens.lift) * Math.min(1, dt * (tabLens.liftTarget ? 18 : 9));
+        tabLens.lift += (tabLens.liftTarget - tabLens.lift) * Math.min(1, dt * (tabLens.liftTarget ? 22 : 14));
         renderTabLens(tabLens.drag ? tabLens.drag.v : tabLens.v);
         if (resting && tabLens.lift < 0.01) {
             tabLens.x = tabLens.target;

@@ -5,6 +5,20 @@
 // Each exercise maps to a movement (first matching rule wins; order matters, e.g. leg curl before curl).
 const GUIDE_RULES = [
     [/calf/, 'calf'],
+    [/dips/, 'dip'],
+    [/triceps kickback/, 'pressdown'],
+    [/front raise/, 'frontRaise'],
+    [/rear delt|reverse pec deck/, 'reverseFly'],
+    [/shrug/, 'shrug'],
+    [/adduction/, 'adduction'],
+    [/rollout/, 'rollout'],
+    [/woodchop/, 'woodchop'],
+    [/cossack/, 'lunge'],
+    [/nordic|glute-ham/, 'legcurl'],
+    [/leg raise/, 'kneeraise'],
+    [/good morning/, 'hinge'],
+    [/push press/, 'vpress'],
+    [/sumo squat/, 'squat'],
     [/leg press/, 'legpress'],
     [/split squat|lunge|bulgarian/, 'lunge'],
     [/step-up/, 'stepup'],
@@ -197,6 +211,43 @@ const GUIDE_TEXT = {
         avoid: ['Hips curling off the seat at the bottom', 'Snapping the knees straight at the top'],
     },
 };
+Object.assign(GUIDE_TEXT, {
+    dip: {
+        muscles: [['Chest', 'Triceps'], ['Front delts']],
+        cues: ['Shoulders down, chest proud', 'Lower until your upper arms are about level with the floor', 'Press back up to straight arms'],
+        avoid: ['Shoulders shrugging up to your ears', 'Going so deep the front of the shoulder hurts'],
+    },
+    frontRaise: {
+        muscles: [['Front delts'], ['Upper chest']],
+        cues: ['Slight bend in the elbows', 'Raise to eye height, no higher', 'Lower slowly'],
+        avoid: ['Swinging with your hips', 'Arching your lower back'],
+    },
+    reverseFly: {
+        muscles: [['Rear delts'], ['Upper back', 'Traps']],
+        cues: ['Hinge forward or rest your chest on the pad', 'Sweep your arms out wide, leading with the elbows', 'Squeeze between the shoulder blades, then lower slowly'],
+        avoid: ['Shrugging your shoulders', 'Swinging the weight up'],
+    },
+    shrug: {
+        muscles: [['Traps'], ['Forearms']],
+        cues: ['Stand tall, arms long', 'Lift your shoulders straight up toward your ears', 'Pause, then lower all the way'],
+        avoid: ['Rolling your shoulders', 'Bending your elbows'],
+    },
+    adduction: {
+        muscles: [['Adductors'], []],
+        cues: ['Sit tall against the pad', 'Squeeze your knees together', 'Return slowly to a comfortable stretch'],
+        avoid: ['Letting the weight slam back', 'Leaning forward to help'],
+    },
+    rollout: {
+        muscles: [['Abs'], ['Obliques', 'Lats']],
+        cues: ['Start kneeling, ribs down, hips tucked', 'Roll out slowly only as far as your back stays flat', 'Pull back with your abs, not your hips'],
+        avoid: ['Lower back sagging', 'Rolling further than you can control'],
+    },
+    woodchop: {
+        muscles: [['Obliques'], ['Abs', 'Side delts']],
+        cues: ['Feet wide, arms long', 'Turn through your hips and torso, not just your arms', 'Control the way back'],
+        avoid: ['Twisting only at the lower back', 'Yanking the handle'],
+    },
+});
 GUIDE_TEXT.squatBar = GUIDE_TEXT.squat;
 GUIDE_TEXT.legcurlSeated = GUIDE_TEXT.legcurl;
 
@@ -320,6 +371,25 @@ const GUIDE_DEMOS = {
         b: { k: [111, 137], a: [142, 118], t: [150, 104] },
         props: [{ type: 'line', from: { j: 't', d: [-6, -14] }, to: { j: 't', d: [12, 16] }, gold: true }, { type: 'line', from: [30, 120], to: [78, 166], faint: true }] },
 };
+Object.assign(GUIDE_DEMOS, {
+    dip: { base: { w: [100, 108] },
+        a: { e: [98, 84], k: [108, 140], a: [96, 166], t: [104, 176] },
+        b: { s: [100, 80], h: [100, 62], p: [98, 132], e: [76, 90], k: [106, 162], a: [94, 186], t: [102, 192] },
+        props: [{ type: 'line', from: [80, 110], to: [122, 110], gold: true }] },
+    frontRaise: { a: {}, b: { e: [126, 58], w: [150, 56] }, props: [{ type: 'db', at: 'w' }] },
+    reverseFly: GUIDE_DEMOS.lateral,
+    shrug: { a: {}, b: { s: [100, 51], e: [100, 77], w: [100, 101] }, props: [{ type: 'db', at: 'w' }] },
+    adduction: { view: 'front', base: { e1: [78, 84], e2: [122, 84], w1: [90, 106], w2: [110, 106] },
+        a: { k1: [82, 146], a1: [72, 180], k2: [118, 146], a2: [128, 180] }, b: {} },
+    rollout: { base: { k: [70, 180], a: [40, 182], t: [32, 184] },
+        a: { p: [78, 146], s: [112, 112], h: [128, 106], e: [116, 140], w: [120, 168] },
+        b: { p: [94, 160], s: [146, 150], h: [162, 144], e: [168, 158], w: [190, 168] },
+        props: [{ type: 'plate', at: 'w' }] },
+    woodchop: { view: 'front',
+        a: { e1: [104, 46], w1: [140, 36], e2: [126, 48], w2: [146, 38] },
+        b: { e1: [74, 100], w1: [64, 136], e2: [94, 102], w2: [70, 140] },
+        props: [{ type: 'line', from: 'w2', to: [196, 10], faint: true }] },
+});
 GUIDE_DEMOS.legcurlSeated = { ...GUIDE_DEMOS.legext, a: GUIDE_DEMOS.legext.b, b: { a: [118, 162], t: [124, 176] } };
 
 function demoPose(demo, which) {
@@ -387,18 +457,31 @@ function openGuide(id, inWorkout = false) {
     const ex = inWorkout ? workoutExercise(id) : PROGRAMS[currentProgram].exercises.find(e => e.id === id);
     if (!ex) return;
     const week = inWorkout && activeWorkout ? activeWorkout.week : (todayWeek !== null ? todayWeek : getCurrentWeek());
-    const name = exerciseDisplayName(ex, week);
+    showGuide(ex, exerciseDisplayName(ex, week), prescriptionText(ex));
+}
+
+// From the exercise library (no program around it): the meta line is the equipment
+function openLibraryGuide(name) {
+    haptic();
+    const entry = exerciseLibrary().find(e => e.name === name) || { name };
+    showGuide(entry, name, EQUIPMENT[entry.equipment] || '');
+}
+
+function showGuide(ex, name, meta) {
     const move = guideMove(name) || guideMove(ex.name);
     const text = GUIDE_TEXT[move];
-    const [primary, secondary] = text ? text.muscles : [[], []];
+    const muscles = exerciseMuscles(name).main.length ? exerciseMuscles(name) : exerciseMuscles(ex.name);
     document.getElementById('guideBody').innerHTML = `
         ${move ? `<div class="guide-stage">${guideDemoSvg(move)}</div>` : ''}
         <h2 class="guide-title">${escapeHtml(name)}</h2>
-        <div class="guide-meta">${escapeHtml(prescriptionText(ex))}</div>
-        ${text ? `<div class="guide-muscles">
-            ${primary.map(m => `<span class="gm primary">${escapeHtml(m)}</span>`).join('')}
-            ${secondary.map(m => `<span class="gm">${escapeHtml(m)}</span>`).join('')}
-        </div>` : ''}
+        <div class="guide-meta">${escapeHtml(meta)}</div>
+        ${muscles.main.length ? `
+            <div class="guide-body">${bodyMapSvg({ main: muscles.main, extra: muscles.extra, compact: true })}
+                <div class="guide-muscles">
+                    ${muscles.main.map(g => `<span class="gm primary">${escapeHtml(muscleGroupName(g))}</span>`).join('')}
+                    ${muscles.extra.map(g => `<span class="gm">${escapeHtml(muscleGroupName(g))}</span>`).join('')}
+                </div>
+            </div>` : ''}
         ${ex.note && !ex.alternates ? `<div class="guide-note"><span>Coach's note</span><p>${escapeHtml(ex.note)}</p></div>` : ''}
         ${text ? `
             <div class="section-head"><h3>How to</h3></div>

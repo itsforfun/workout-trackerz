@@ -1639,3 +1639,66 @@
 @media (max-width:900px) and (prefers-reduced-motion: reduce) {
     .tab-lens { transition:background 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease; }
 }
+
+/* ── Anatomy map + exercise library (v1.47) ── */
+:root { --bm-rest:#2f2823; --bm-quiet:#211c18; --bm-extra:rgba(217,178,95,0.38); }
+.body-map { display:flex; justify-content:center; align-items:flex-end; gap:6%; }
+.bm-side { display:block; height:250px; width:auto; overflow:visible; }
+.body-map.compact .bm-side { height:150px; }
+.bm-side path { transition:fill 0.35s var(--ease); }
+.bm-outline { fill:none; stroke:rgba(240,232,216,0.16); stroke-width:2; vector-effect:non-scaling-stroke; }
+.body-map.tappable [data-group] { cursor:pointer; }
+.body-map.tappable [data-group]:hover { filter:brightness(1.35); }
+.body-map.tappable [data-group]:active { filter:brightness(1.6); }
+
+/* Exercise sheet: map beside the muscle names */
+.guide-body { display:grid; grid-template-columns:auto 1fr; gap:var(--s4); align-items:center; margin-top:var(--s3); }
+.guide-body .bm-side { height:132px; }
+.guide-body .guide-muscles { margin-top:0; }
+
+/* Today: what this workout hits */
+.today-muscles { display:grid; grid-template-columns:auto 1fr; gap:var(--s4); align-items:center; width:100%; margin:var(--s3) 0 var(--s4); padding:var(--s4);
+    border:none; border-radius:var(--r-card); background:var(--raised); box-shadow:var(--lift); color:var(--text); font-family:var(--font-ui); text-align:left; cursor:pointer; }
+.today-muscles .bm-side { height:104px; }
+.tm-text { display:flex; flex-direction:column; gap:5px; }
+.tm-kicker { font-size:0.6rem; font-weight:600; letter-spacing:0.16em; text-transform:uppercase; color:var(--text-muted); }
+.tm-main { font-family:'Instrument Serif', Georgia, serif; font-size:1.25rem; line-height:1.2; color:var(--accent); }
+.tm-extra { font-size:0.78rem; color:var(--text-dim); }
+
+/* Summary: muscles trained */
+.sum-muscles { display:flex; flex-direction:column; align-items:center; gap:var(--s3); padding:var(--s2) 0; }
+.sum-muscles .bm-side { height:200px; }
+.sum-muscles p { font-family:'Instrument Serif', Georgia, serif; font-size:1.2rem; color:var(--accent); text-align:center; }
+
+/* Progress: this week's muscles */
+.muscle-week { margin-bottom:var(--s4); padding:var(--s5) var(--s4) var(--s4); border-radius:var(--r-card); background:radial-gradient(260px 220px at 50% 45%, rgba(217,178,95,0.07), transparent 70%), var(--raised); box-shadow:var(--lift); }
+.muscle-week:empty { display:none; }
+.mw-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:var(--s4); }
+.mw-kicker { display:flex; align-items:center; gap:10px; font-size:0.66rem; font-weight:600; letter-spacing:0.18em; text-transform:uppercase; color:var(--text-muted); }
+.mw-kicker::before { content:''; width:5px; height:5px; border-radius:50%; background:var(--accent); }
+.mw-link { border:none; background:none; font-family:var(--font-ui); font-size:0.78rem; color:var(--text-dim); cursor:pointer; }
+.mw-note { margin-top:var(--s4); font-size:0.74rem; color:var(--text-muted); text-align:center; }
+.mw-missing { margin-top:6px; font-size:0.8rem; color:var(--text-dim); text-align:center; }
+
+/* Library sheet */
+.lib-map { margin:var(--s2) 0 var(--s3); }
+.lib-chips { display:flex; gap:8px; overflow-x:auto; padding:2px 2px 6px; margin:0 -2px; scrollbar-width:none; }
+.lib-chips::-webkit-scrollbar { display:none; }
+.lib-chips.equipment { margin-bottom:var(--s3); }
+.lib-chip { flex:none; font-family:var(--font-ui); font-size:0.78rem; padding:7px 13px; border:none; border-radius:99px; color:var(--text-dim); background:rgba(255,255,255,0.04); box-shadow:inset 0 0 0 1px rgba(240,232,216,0.1); cursor:pointer; }
+.lib-chip.on { color:#13100e; background:var(--accent); box-shadow:none; }
+.lib-chips.equipment .lib-chip.on { color:var(--text); background:rgba(240,232,216,0.14); }
+.lib-count { margin:8px 2px 4px; font-size:0.7rem; color:var(--text-muted); }
+.lib-row { display:flex; align-items:center; border-bottom:1px solid rgba(240,232,216,0.06); }
+.lib-main { flex:1; display:flex; flex-direction:column; align-items:flex-start; gap:3px; padding:12px 2px; border:none; background:none; color:var(--text); font-family:var(--font-ui); font-size:0.92rem; text-align:left; cursor:pointer; }
+.lib-main small { font-size:0.74rem; color:var(--text-muted); }
+.lib-info { flex:none; width:40px; height:40px; display:grid; place-items:center; border:none; background:none; color:var(--text-muted); cursor:pointer; }
+.lib-info:empty { display:none; }
+
+/* ── Under the floating tab bar (v1.47): the page fades into the background instead of showing through the gap ── */
+.tab-scrim { display:none; }
+@media (max-width:900px) {
+    .tab-scrim { display:block; position:fixed; left:0; right:0; bottom:0; z-index:119; pointer-events:none;
+        height:calc(108px + env(safe-area-inset-bottom));
+        background:linear-gradient(180deg, rgba(19,16,14,0) 0%, rgba(19,16,14,0.82) 34%, #13100e 58%); }
+}
