@@ -20,7 +20,8 @@ Status: **Done** · **Check** (built, still needs a look on the iPhone or a smal
 | Name "Odyr" | Formal trademark search before charging money |
 | Summary and share cards (v1.38) | Try them after a real workout on the iPhone |
 | Pro waitlist (v1.39) | Table is live; check Supabase → Table Editor → pro_waitlist after people have used the app for a few weeks |
-| Exercise guide (v1.39) | Look through the demos on the iPhone; flag any that look wrong |
+| Exercise guide (v1.39) | The owner finds the stick-figure demos inaccurate; next step: license real demos (exercise.com asked about, or ExRx.net / MuscleWiki / WorkoutLabs) and add a body map + muscle-based library |
+| Second phone, French, new account (v1.40) | Re-check the opening quote and smoothness after the font fix |
 
 ## Next — not started
 
@@ -100,6 +101,7 @@ Status: **Done** · **Check** (built, still needs a look on the iPhone or a smal
 | 1.29 | 8-tier medals, trophy room, badge sheet, minting moment, signature and secret badges, "almost there" nudges |
 | 1.30–1.34 | Brand: Odyra, then Odyr; new icon; sign-in redesign; design carried across the app; thinker quotes |
 | 1.35–1.36 | French (whole app, reminders, quotes), Language setting, French review pass, decimal comma typing |
+| 1.40 | Smoother first launch: opening-quote font shipped with the app (no jump), lighter word animation, libraries no longer delay the first screen |
 | 1.39 | Exercise guide (animated demo, muscles, how-to, mistakes) for all 75 exercises; Odyr Pro waitlist with interests and fair price |
 | 1.38 | Post-workout summary, share cards (workout, weekly recap), code split into organised files, automated checks run by GitHub on every push (first run green), error reports (table set up and tested) |
 | 1.37 | Trophy room and Progress level ring in the Odyr-mark style, gold-dot section labels everywhere, quotes capped at ~14 words |

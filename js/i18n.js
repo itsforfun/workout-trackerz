@@ -40,6 +40,8 @@ if (PACK) {
         I18N.patterns.push({
             re: new RegExp('^' + parts.map((part, i) => escapeRe(part) + (i < slots.length ? (slots[i] === '{#}' ? '([\\d.,]+)' : '(.*?)') : '')).join('') + '$'),
             literal: parts.join('').length,
+            prefix: parts[0],
+            suffix: parts[parts.length - 1],
             out,
         });
     });
@@ -62,6 +64,8 @@ function tr(text, depth = 0) {
         out = I18N.exact.get(key);
         if (out === undefined && depth < 3) {
             for (const p of I18N.patterns) {
+                // Cheap check on the fixed start and end first; the regular expression only runs when they fit
+                if (!key.startsWith(p.prefix) || !key.endsWith(p.suffix)) continue;
                 const m = key.match(p.re);
                 if (!m) continue;
                 const values = m.slice(1).map(v => tr(v, depth + 1));
@@ -138,13 +142,4 @@ if (PACK) {
     window.confirm = message => nativeConfirm(tr(message));
     window.alert = message => nativeAlert(tr(message));
     window.prompt = (message, value) => nativePrompt(tr(message), value);
-    // Charts draw on a canvas, so their labels are translated before each draw
-    if (window.Chart) Chart.register({
-        id: 'i18n',
-        beforeUpdate(chart) {
-            const data = chart.data;
-            if (data.labels) data.labels = data.labels.map(l => (typeof l === 'string' ? tr(l) : l));
-            data.datasets.forEach(ds => { if (typeof ds.label === 'string') ds.label = tr(ds.label); });
-        },
-    });
 }

@@ -80,6 +80,25 @@ function quoteAt(index) {
     return (PACK && PACK.quotes && PACK.quotes[index]) || QUOTES[index];
 }
 
+// Keeps the reveal paused until the quote's font is ready (at most ~1 s), so words never change shape mid-animation.
+// The time spent waiting is added to how long the quote stays up.
+function holdSplashForFont(splash) {
+    if (!document.fonts || !document.fonts.load) return;
+    const text = document.getElementById('splashQuote').textContent;
+    if (document.fonts.check('400 32px "Instrument Serif"', text)) return;
+    splash.classList.add('waiting');
+    const started = Date.now();
+    let released = false;
+    const go = () => {
+        if (released) return;
+        released = true;
+        splash.classList.remove('waiting');
+        window.__splashMin = (window.__splashMin || 0) + (Date.now() - started);
+    };
+    document.fonts.load('400 32px "Instrument Serif"', text).then(go, go);
+    setTimeout(go, 1000);
+}
+
 // Writes the weekday and the quote, one span per word so each word can rise in turn
 function renderSplash(entry) {
     const [text, by] = Array.isArray(entry) ? entry : [entry, ''];
@@ -120,4 +139,5 @@ function renderSplash(entry) {
     try { localStorage.setItem('wt_quote_deck', JSON.stringify(deck)); } catch (e) { /* private mode */ }
     renderSplash(quoteAt(index));
     window.__splashAt = Date.now();
+    holdSplashForFont(splash);
 })();

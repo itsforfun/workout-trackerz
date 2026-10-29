@@ -4,7 +4,7 @@
 
 // Shown at the bottom of Settings so you can tell which version a phone is running.
 // Bump it with every deploy.
-const APP_VERSION = '1.39 · 28 Oct';
+const APP_VERSION = '1.40 · 28 Oct';
 
 const SUPABASE_URL = 'https://hcwbcxhblfjpdlkwykez.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_mEe_5g2UITyp5O-F9YRhRg_wTQWuOtf';
@@ -18,6 +18,16 @@ try {
 } catch (error) {
     console.error('Supabase init error:', error);
 }
+
+// Charts draw on a canvas, so their labels are translated before each draw (the language engine is in js/i18n.js)
+if (PACK && window.Chart) Chart.register({
+    id: 'i18n',
+    beforeUpdate(chart) {
+        const data = chart.data;
+        if (data.labels) data.labels = data.labels.map(l => (typeof l === 'string' ? tr(l) : l));
+        data.datasets.forEach(ds => { if (typeof ds.label === 'string') ds.label = tr(ds.label); });
+    },
+});
 
 // ── Error reports: anything that breaks on a phone lands in the private error_log table
 // (supabase-errors-setup.sql; only readable in the Supabase dashboard). At most 5 per page load, no repeats.

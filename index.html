@@ -13,8 +13,11 @@
     <meta name="apple-mobile-web-app-title" content="Odyr">
     <link rel="apple-touch-icon" href="icons/icon-180.png">
     <link rel="icon" type="image/png" href="icons/icon-192.png">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- The opening quote's font ships with the app, so the quote never jumps when a font arrives -->
+    <link rel="preload" href="fonts/instrument-serif-latin.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700&family=DM+Mono:wght@400;500&family=Bebas+Neue&family=Playfair+Display:wght@700;900&display=swap">
     <link rel="stylesheet" href="css/app.css">
 </head>
 <body>
@@ -709,6 +712,9 @@
 <div class="toast" id="toast"></div>
 
 <!-- The app, in load order (classic scripts share one global scope; see CLAUDE.md section 27) -->
+<!-- Libraries load after the opening quote is on screen (they used to delay the first paint) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <!-- Automated checks: only with ?test in the address (see tests/) -->
 <script>if (/[?&]test\b/.test(location.search)) document.write('<script src="tests/setup.js"><\/script>');</script>
 <script src="js/core.js"></script>
