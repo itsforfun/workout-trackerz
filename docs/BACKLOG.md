@@ -102,6 +102,7 @@ Status: **Done** · **Check** (built, still needs a look on the iPhone or a smal
 | 1.29 | 8-tier medals, trophy room, badge sheet, minting moment, signature and secret badges, "almost there" nudges |
 | 1.30–1.34 | Brand: Odyra, then Odyr; new icon; sign-in redesign; design carried across the app; thinker quotes |
 | 1.35–1.36 | French (whole app, reminders, quotes), Language setting, French review pass, decimal comma typing |
+| 1.46 | Tab bar lens lands exactly centred (measured without the squeeze); one animation loop at a time |
 | 1.44 | Tab bar lens re-aims when the bar resizes; no stuck lens after returning from another screen |
 | 1.43 | Floating glass tab bar with a lens that lifts, glides, stretches and magnifies (iOS 26 style), draggable |
 | 1.42 | One warm palette: no blue or green anywhere (rings, cardio, done states, tiers, medals, plates); Sapphire tier becomes Ruby |

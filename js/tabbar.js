@@ -46,12 +46,10 @@ function tabSlot(index) {
     const nav = tabBar();
     const btn = tabButtons()[index];
     if (!nav || !btn) return null;
-    const n = nav.getBoundingClientRect();
-    const b = btn.getBoundingClientRect();
     const inset = 2;
-    // A hidden bar (another screen is open) has no size; nothing to aim at
-    if (b.width <= inset * 2) return null;
-    return { x: b.left - n.left + inset, w: b.width - inset * 2 };
+    // Layout positions, which the bar's squeeze (a transform) doesn't change; a hidden bar has no size
+    if (btn.offsetWidth <= inset * 2) return null;
+    return { x: btn.offsetLeft + inset, w: btn.offsetWidth - inset * 2 };
 }
 
 function activeTabIndex() {
