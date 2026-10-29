@@ -209,6 +209,37 @@
         }
     });
 
+    await check('Tapping a tab always switches, even with a little finger wobble', () => {
+        showScreen('app');
+        const nav = document.querySelector('.bottom-nav');
+        const tap = (tab, wobble = 0) => {
+            const btn = document.querySelector(`.bottom-nav > .tab-btn[onclick="switchTab('${tab}')"]`);
+            const r = btn.getBoundingClientRect();
+            const x = r.left + r.width / 2;
+            const y = r.top + r.height / 2;
+            const opts = { bubbles: true, pointerId: 1, isPrimary: true, button: 0 };
+            btn.dispatchEvent(new PointerEvent('pointerdown', { ...opts, clientX: x, clientY: y }));
+            if (wobble) nav.dispatchEvent(new PointerEvent('pointermove', { ...opts, clientX: x + wobble, clientY: y + wobble }));
+            btn.dispatchEvent(new PointerEvent('pointerup', { ...opts, clientX: x + wobble, clientY: y + wobble }));
+            btn.click();   // the browser's own click right after: must not switch twice
+        };
+        let switches = 0;
+        const real = window.switchTab;
+        window.switchTab = tab => { switches++; return real(tab); };
+        try {
+            tap('progress');
+            assert(document.getElementById('page-progress').classList.contains('active'), 'plain tap did not switch');
+            tap('steps', 7);
+            assert(document.getElementById('page-steps').classList.contains('active'), 'tap with a small wobble did not switch');
+            tap('today');
+            assert(document.getElementById('page-today').classList.contains('active'), 'third tap did not switch');
+            equal(switches, 3, 'switches (one per tap)');
+        } finally {
+            window.switchTab = real;
+            tabLens.handledAt = 0;
+        }
+    });
+
     // ── Exercise guide ──
     await check('Every exercise in the app has a guide with a demo', () => {
         const names = new Set();

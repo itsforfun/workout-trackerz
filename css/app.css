@@ -1717,3 +1717,6 @@
     .main-app .page { padding-bottom:calc(100px + env(safe-area-inset-bottom)); }
     .tab-scrim { height:calc(96px + env(safe-area-inset-bottom)); background:linear-gradient(180deg, rgba(19,16,14,0) 0%, rgba(19,16,14,0.75) 40%, #13100e 72%); }
 }
+
+/* The bar never scrolls, so a tap can't be mistaken for the start of a scroll (iPhone used to cancel some taps) */
+@media (max-width:900px) { .bottom-nav { touch-action:none; } }

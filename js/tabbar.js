@@ -35,6 +35,7 @@ function initTabLens() {
     nav.addEventListener('pointermove', lensPointerMove);
     nav.addEventListener('pointerup', lensPointerUp);
     nav.addEventListener('pointercancel', lensPointerUp);
+    nav.addEventListener('click', swallowHandledClick, true);
     // Re-aim whenever the bar changes size (rotation, scrollbars appearing, font loading)
     if (window.ResizeObserver) new ResizeObserver(retargetTabLens).observe(nav);
     else window.addEventListener('resize', retargetTabLens);
@@ -154,24 +155,32 @@ function renderTabLens(velocity) {
 }
 
 // ── Dragging the lens along the bar, like iOS 26 ──
+function tabTarget(btn) {
+    return btn ? (btn.getAttribute('onclick').match(/switchTab\('(\w+)'\)/) || [])[1] : null;
+}
+
+// The real tab button under a point (the lens copy is ignored)
+function tabAt(x) {
+    return tabButtons().find(b => { const r = b.getBoundingClientRect(); return x >= r.left && x <= r.right; }) || null;
+}
+
 function lensPointerDown(e) {
-    if (prefersReducedMotion() || !tabLens.ready) return;
+    if (e.button > 0) return;
     const n = tabBar().getBoundingClientRect();
-    tabLens.drag = { startX: e.clientX, origin: tabLens.x, moved: false, v: 0, lastX: e.clientX, lastT: performance.now(), left: n.left };
+    tabLens.drag = { startX: e.clientX, origin: tabLens.x, moved: false, v: 0, lastX: e.clientX, lastT: performance.now(), left: n.left, btn: tabAt(e.clientX) };
+    if (prefersReducedMotion() || !tabLens.ready) return;
     tabLens.liftTarget = 1;
     runTabLens();
 }
 
 function lensPointerMove(e) {
     const d = tabLens.drag;
-    if (!d) return;
+    if (!d || prefersReducedMotion() || !tabLens.ready) return;
     const dx = e.clientX - d.startX;
-    if (!d.moved && Math.abs(dx) < 8) return;
+    // A tap may wobble a little; only a clear sideways move becomes a drag
+    if (!d.moved && Math.abs(dx) < 12) return;
     if (!d.moved) {
         d.moved = true;
-        // Start from the pressed tab when the finger isn't on the lens
-        const under = tabButtons().findIndex(b => { const r = b.getBoundingClientRect(); return d.startX >= r.left && d.startX <= r.right; });
-        if (under !== activeTabIndex()) d.origin = tabLens.x;
         tabBar().setPointerCapture(e.pointerId);
     }
     const now = performance.now();
@@ -180,28 +189,49 @@ function lensPointerMove(e) {
     d.lastT = now;
     const first = tabSlot(0);
     const last = tabSlot(tabButtons().length - 1);
-    tabLens.x = Math.max(first.x - 6, Math.min(last.x + 6, e.clientX - d.left - tabLens.w / 2));
+    if (first && last) tabLens.x = Math.max(first.x - 6, Math.min(last.x + 6, e.clientX - d.left - tabLens.w / 2));
 }
 
+// The tab switches here, on finger-up, rather than on the browser's click (which iPhone sometimes drops);
+// the click that follows is swallowed so the tab isn't switched twice.
 function lensPointerUp(e) {
     const d = tabLens.drag;
     tabLens.drag = null;
     if (!d) return;
-    if (!d.moved) {
-        // A plain tap: the button's own onclick switches the tab and moves the lens
-        if (!e.target.closest('.tab-btn')) tabLens.liftTarget = 0;
+    if (e.type === 'pointercancel') {
+        tabLens.liftTarget = 0;
         runTabLens();
         return;
     }
-    // Released after a drag: land on the nearest tab
-    const centre = tabLens.x + tabLens.w / 2;
-    let best = 0;
-    tabButtons().forEach((b, i) => {
-        const s = tabSlot(i);
-        if (Math.abs(s.x + s.w / 2 - centre) < Math.abs(tabSlot(best).x + tabSlot(best).w / 2 - centre)) best = i;
-    });
-    tabLens.v = d.v * 0.35;
-    const tab = (tabButtons()[best].getAttribute('onclick').match(/switchTab\('(\w+)'\)/) || [])[1];
-    if (tab && best !== activeTabIndex()) switchTab(tab);
+    let tab;
+    if (!d.moved) {
+        tab = tabTarget(d.btn);
+    } else {
+        // Released after a drag: land on the nearest tab
+        const centre = tabLens.x + tabLens.w / 2;
+        let best = 0;
+        tabButtons().forEach((b, i) => {
+            const slot = tabSlot(i);
+            const bestSlot = tabSlot(best);
+            if (slot && bestSlot && Math.abs(slot.x + slot.w / 2 - centre) < Math.abs(bestSlot.x + bestSlot.w / 2 - centre)) best = i;
+        });
+        tabLens.v = d.v * 0.35;
+        tab = tabTarget(tabButtons()[best]);
+    }
+    if (!tab) {
+        tabLens.liftTarget = 0;
+        runTabLens();
+        return;
+    }
+    tabLens.handledAt = performance.now();
+    if (tab !== tabTarget(tabButtons()[activeTabIndex()])) switchTab(tab);
     else tabLensTo(tab);
+}
+
+// Swallows the click that follows a tap already handled on finger-up (keyboard clicks still work)
+function swallowHandledClick(e) {
+    if (tabLens.handledAt && performance.now() - tabLens.handledAt < 700) {
+        e.stopPropagation();
+        e.preventDefault();
+    }
 }
