@@ -35,7 +35,9 @@ function initTabLens() {
     nav.addEventListener('pointermove', lensPointerMove);
     nav.addEventListener('pointerup', lensPointerUp);
     nav.addEventListener('pointercancel', lensPointerUp);
-    window.addEventListener('resize', () => placeTabLens(true));
+    // Re-aim whenever the bar changes size (rotation, scrollbars appearing, font loading)
+    if (window.ResizeObserver) new ResizeObserver(retargetTabLens).observe(nav);
+    else window.addEventListener('resize', retargetTabLens);
     placeTabLens(true);
 }
 
@@ -47,6 +49,8 @@ function tabSlot(index) {
     const n = nav.getBoundingClientRect();
     const b = btn.getBoundingClientRect();
     const inset = 2;
+    // A hidden bar (another screen is open) has no size; nothing to aim at
+    if (b.width <= inset * 2) return null;
     return { x: b.left - n.left + inset, w: b.width - inset * 2 };
 }
 
@@ -70,6 +74,19 @@ function tabLensTo(tab) {
     tabLens.w = slot.w;
     tabLens.liftTarget = 1;
     runTabLens();
+}
+
+function retargetTabLens() {
+    if (tabLens.drag) return;
+    const slot = tabSlot(activeTabIndex());
+    if (!slot || !slot.w) return;
+    tabLens.target = slot.x;
+    tabLens.w = slot.w;
+    if (!tabLens.raf) {
+        tabLens.x = slot.x;
+        tabLens.ready = true;
+        renderTabLens(0);
+    }
 }
 
 function placeTabLens(instant, index = activeTabIndex()) {
