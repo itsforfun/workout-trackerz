@@ -676,6 +676,15 @@
 
     // ── Language (only when opened with &lang=fr) ──
     if (PACK) {
+        await check('Tier pop-ups show the translated tier name', () => {
+            const ex = PROGRAMS[currentProgram].exercises.find(e => e.thresholds);
+            celebrateTier(ex, 6);
+            const title = document.getElementById('celebrateTitle').textContent;
+            equal(title, tr(tierName(6)).toUpperCase(), 'tier title');
+            assert(!/^GOD(DESS)?$/.test(title), `still English: ${title}`);
+            document.getElementById('celebrate').classList.remove('show');
+        });
+
         await check('Translation: plain text, patterns and values', () => {
             equal(tr('Settings'), 'Réglages', 'exact text');
             equal(tr('3 sets · 47 min'), '3 séries · 47 min', 'pattern with numbers');

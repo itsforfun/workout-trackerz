@@ -5,70 +5,70 @@ I18N_PACKS.fr = {
     name: 'Français',
     locale: 'fr-FR',
     quotes: [
-        "La route ne finit pas. C’est là son cadeau.",
-        "Vous n’achevez pas un voyage. Vous devenez la personne qui le parcourt.",
-        "Chaque corps que vous avez eu était un brouillon. Continuez d’écrire.",
-        "Rien ne reste immobile. Avancez avec.",
-        "Le corps se souvient de chaque promesse tenue.",
-        "La force, c’est ce qui reste quand abandonner était possible.",
-        "On n’arrive pas. On s’approfondit.",
-        "Le diamant n’est qu’une pression qui a refusé de céder.",
+        "La route ne s’arrête jamais. C’est tout son prix.",
+        "Il ne s’agit pas d’arriver, mais de devenir le chemin.",
+        "Chaque corps que vous avez eu n’était qu’un brouillon. Continuez d’écrire.",
+        "Tout bouge. Bougez avec.",
+        "Le corps garde la mémoire de chaque promesse tenue.",
+        "La force, c’est ce qui reste quand on aurait pu abandonner.",
+        "On n’arrive jamais. On s’enracine.",
+        "Un diamant, c’est du charbon qui a tenu bon sous la pression.",
         "Écoutez votre corps. Il vous parle depuis toujours.",
-        "Chaque répétition est un pas sur un chemin qui n’appartient qu’à vous.",
-        "La vie ne cesse de changer. Entraînez-vous à changer avec elle.",
-        "Rien en vous n’était destiné à être achevé.",
+        "Chaque répétition est un pas sur un chemin qui n’est qu’à vous.",
+        "La vie change sans cesse. Entraînez-vous à changer avec elle.",
+        "On n’a jamais fini de se construire.",
         "Cédez au repos, jamais au doute.",
-        "Le chemin devient plus raide parce que votre force grandit.",
-        "Tenez bon aujourd’hui. Demain vous le rendra en force.",
-        "La discipline est une forme silencieuse de respect de soi.",
-        "Certains jours, on entraîne le corps. La plupart du temps, la volonté.",
-        "Le voyage vers l’extérieur est aussi un voyage vers l’intérieur.",
-        "Pliez comme l’eau. Revenez comme la marée.",
-        "Tenez quand c’est dur. C’est là que vous vous forgez.",
-        "Votre souffle est votre plus ancien partenaire d’entraînement.",
-        "Chaque saison de la vie demande une nouvelle forme de force.",
-        "La montagne ne bouge pas. Vous apprenez à grimper.",
+        "Si la pente se raidit, c’est que votre force grandit.",
+        "Tenez bon aujourd’hui : demain vous le rendra en force.",
+        "La discipline est une forme discrète de respect de soi.",
+        "Certains jours, on entraîne le corps. Le plus souvent, la volonté.",
+        "Tout voyage au-dehors est aussi un voyage au-dedans.",
+        "Souple comme l’eau, constant comme la marée.",
+        "Tenez quand c’est dur : c’est là qu’on se forge.",
+        "Votre souffle est votre plus vieux partenaire d’entraînement.",
+        "Chaque saison de la vie demande une force nouvelle.",
+        "La montagne ne bouge pas. C’est vous qui apprenez à grimper.",
         "Le repos n’est pas la fin du chemin. Il en fait partie.",
-        "L’invincible se construit, il ne naît pas.",
-        "Bougez avec intention, et le corps suit l’esprit.",
-        "Un revers n’est qu’un chapitre plus long.",
-        "Vous êtes le voyageur et la route.",
+        "On ne naît pas solide, on le devient.",
+        "Bougez avec intention : le corps suit l’esprit.",
+        "Un revers n’est qu’un chapitre un peu plus long.",
+        "Vous êtes à la fois le voyage et la route.",
         "La force, c’est de la patience qui se voit.",
-        "Soyez là, surtout quand personne ne regarde.",
+        "Soyez au rendez-vous, surtout quand personne ne regarde.",
         "Chaque matin, le chemin recommence.",
-        "Soyez doux avec le corps et implacable avec l’effort.",
-        "Vous avez survécu à chaque jour difficile jusqu’ici. Gardez ce record.",
-        "Le calme et le mouvement sont deux formes d’entraînement.",
-        "Vos limites reculent chaque fois que vous les rencontrez.",
+        "Douceur pour le corps, exigence pour l’effort.",
+        "Tous vos jours difficiles, vous les avez traversés. Continuez.",
+        "Le calme et le mouvement font tous deux partie de l’entraînement.",
+        "Vos limites reculent chaque fois que vous les touchez.",
         "Les racines profondes poussent en silence.",
-        "Tomber, se reposer, se relever. Toute une vie durant.",
-        "Les objectifs changent. Le chemin continue.",
-        "Écoutez-vous. Votre corps connaît le chemin.",
-        "Chaque cicatrice du voyage prouve que vous avez continué à marcher.",
-        "Le courage, c’est un pas de plus quand toutes les raisons disent stop.",
+        "Tomber, souffler, se relever. Et recommencer, toute une vie.",
+        "Les objectifs changent, le chemin continue.",
+        "Écoutez-vous : votre corps connaît le chemin.",
+        "Chaque cicatrice du voyage prouve que vous avez continué d’avancer.",
+        "Le courage, c’est un pas de plus quand tout vous dit d’arrêter.",
         "Vous n’êtes pas en retard. Vous êtes sur votre chemin.",
-        "La grandeur est un chemin, pas un lieu.",
-        "Que ce jour soit un acte discret de dévotion envers vous-même.",
-        "La pratique est le pèlerinage.",
-        "Ne cédez jamais le terrain que vous avez gagné.",
-        "Un grand voyage se mesure à ses retours, pas à ses arrivées.",
-        "La version la plus forte de vous-même est encore en chemin.",
-        "Le chemin vers la grandeur est pavé de jours ordinaires.",
-        "Recommencez. Tout le secret est là.",
+        "La grandeur est un chemin, pas une destination.",
+        "Faites de ce jour un geste discret de bienveillance envers vous-même.",
+        "Le pèlerinage, c’est la pratique elle-même.",
+        "Ne cédez jamais le terrain gagné.",
+        "Un grand voyage se compte en retours, pas en arrivées.",
+        "Le meilleur de vous-même est encore en chemin.",
+        "Le chemin de la grandeur est pavé de jours ordinaires.",
+        "Recommencer, voilà tout le secret.",
         [
-                "Lutter, chercher, trouver, et ne pas céder.",
-                "Alfred Tennyson"
+                "Ceux qui vivent, ce sont ceux qui luttent.",
+                "Victor Hugo"
         ],
         [
-                "Si beaucoup nous est pris, beaucoup demeure.",
-                "Alfred Tennyson"
+                "Patience et longueur de temps font plus que force ni que rage.",
+                "Jean de La Fontaine"
         ],
         [
-                "Je suis une part de tout ce que j’ai rencontré.",
-                "Alfred Tennyson"
+                "Je ne peins pas l’être. Je peins le passage.",
+                "Michel de Montaigne"
         ],
         [
-                "Courage, mon cœur ; tu as supporté pire que cela.",
+                "Endure, mon cœur : tu as enduré bien pire.",
                 "Homère, L’Odyssée"
         ],
         [
@@ -76,35 +76,35 @@ I18N_PACKS.fr = {
                 "Sénèque"
         ],
         [
-                "La vie est longue si l’on sait s’en servir.",
+                "La vie est longue si l’on sait en user.",
                 "Sénèque"
         ],
         [
-                "L’art de vivre ressemble plus à la lutte qu’à la danse.",
+                "L’art de vivre tient plus de la lutte que de la danse.",
                 "Marc Aurèle"
         ],
         [
-                "Rien de grand ne se fait d’un coup.",
+                "Rien de grand ne se fait tout d’un coup.",
                 "Épictète"
         ],
         [
-                "Un voyage de mille lieues commence par un pas.",
+                "Un voyage de mille lieues commence toujours par un premier pas.",
                 "Lao-Tseu"
         ],
         [
-                "Celui qui se vainc lui-même est puissant.",
+                "Celui qui se vainc lui-même est fort.",
                 "Lao-Tseu"
         ],
         [
-                "Tout s’écoule.",
+                "Tout coule.",
                 "Héraclite"
         ],
         [
-                "Le caractère d’un homme est son destin.",
+                "Le caractère, c’est le destin.",
                 "Héraclite"
         ],
         [
-                "C’est en accomplissant des actes courageux que nous devenons courageux.",
+                "C’est en pratiquant les actions courageuses que nous devenons courageux.",
                 "Aristote"
         ],
         [
@@ -112,11 +112,11 @@ I18N_PACKS.fr = {
                 "Ovide"
         ],
         [
-                "Ils peuvent parce qu’ils croient pouvoir.",
+                "Ils peuvent, parce qu’ils croient pouvoir.",
                 "Virgile"
         ],
         [
-                "Qui a un pourquoi peut supporter presque n’importe quel comment.",
+                "Qui a un pourquoi vivre peut supporter presque n’importe quel comment.",
                 "Friedrich Nietzsche"
         ],
         [
@@ -124,25 +124,25 @@ I18N_PACKS.fr = {
                 "Friedrich Nietzsche"
         ],
         [
-                "Toutes les pensées vraiment grandes sont conçues en marchant.",
+                "Seules les pensées qui viennent en marchant ont de la valeur.",
                 "Friedrich Nietzsche"
         ],
         [
-                "Aie confiance en toi : chaque cœur vibre à cette corde d’acier.",
-                "Ralph Waldo Emerson"
+                "À vaincre sans péril, on triomphe sans gloire.",
+                "Pierre Corneille, Le Cid"
         ],
         [
-                "Tout artiste a d’abord été un amateur.",
-                "Ralph Waldo Emerson"
+                "Vingt fois sur le métier remettez votre ouvrage.",
+                "Nicolas Boileau"
         ],
         [
-                "Dès que mes jambes se mettent en mouvement, mes pensées se mettent à couler.",
-                "Henry David Thoreau"
+                "Notre nature est dans le mouvement ; le repos entier est la mort.",
+                "Blaise Pascal"
         ],
         [
-                "À pied et le cœur léger, je prends la grand-route.",
-                "Walt Whitman"
-        ]
+                "Le pessimisme est d’humeur ; l’optimisme est de volonté.",
+                "Alain"
+        ],
     ],
     strings: {
         "The path to greatness.": "Le chemin vers la grandeur.",

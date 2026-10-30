@@ -7,7 +7,7 @@ function celebrateTier(ex, tier, prs = []) {
         icon: tierMedal(TIERS[tier].color, ROMAN[tier]),
         color: TIERS[tier].color,
         kicker: 'New tier unlocked',
-        title: tierName(tier).toUpperCase(),
+        title: tr(tierName(tier)).toUpperCase(),   // translated first: "GOD" would not match the key "God"
         text: `${escapeHtml(ex.name)} · ${tier === 6 ? 'the top tier' : `top ${TIERS[tier].pop} of lifters`}` +
             (prs.length ? `<br>New PRs: ${prs.map(escapeHtml).join(', ')}` : ''),
     });
