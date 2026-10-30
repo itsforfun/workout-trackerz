@@ -418,3 +418,14 @@ reference/debug-screenshots/  ← Supabase key page, "Script error" console, Git
 - Progress overview lost the "This week" and current-score tiles (Today has them): hero + Streak, Records, Strength, Badges. The score's history stays in "Score and level in detail".
 - **+5 XP** rises from each ticked set in workout mode (`floatXp`, `SET_XP`, also used by `playerXp`).
 - Tab bar and lens row are 3 columns (`repeat(3,1fr)`). Adding a tab means changing those three CSS rules too.
+
+## 40. Progress without repeats (v1.55, 2026-10-30)
+- The owner couldn't find the strength standards chart (it sat ~1,200px down, under the overview, muscle map and four summary tiles) and found Progress repetitive. Removed the repeats:
+  - Level: only in the overview hero. The old level card is gone; its "Where your XP comes from" moved to the trophy room (`xpSourcesHtml`, with the next rank).
+  - Badges: only the overview tile; the "Trophy room" card is gone.
+  - Average/top tier: only the Strength tile; the four summary tiles (`progressSummary`) are gone.
+  - Lift picking: only the list; the dropdown (`progressExercise`) is gone.
+  - Consistency breakdown: now a sheet (`scoreModal`, `openScore`/`closeScore`) opened by tapping the score in the middle of the Today rings, since the score is a this-week number.
+- **Order:** overview (level hero + Streak, Records, Strength, Badges) → Lifts (one list) → this week's muscles → Pro card.
+- **The open lift:** `#liftPanel` (numbers, chart with the next standard as a dashed line, the I–VI strength standards bar, Weekly log) is moved right under its row (`placeLiftPanel`). Tapping a row opens it (`tapLift`); tapping the open row folds it. `selectProgressExercise(id)` always opens.
+- Each Progress part renders through `renderPart(name, fn)`: one part failing on odd saved data is reported to `error_log` instead of leaving the rest blank (still throws under `?test`).

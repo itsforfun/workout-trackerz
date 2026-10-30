@@ -87,7 +87,7 @@ function renderTodayHero() {
             <span class="hlv-bar"><span style="width:${xp.span ? Math.round((xp.into / xp.span) * 100) : 100}%"></span></span>
         </button>
         <div class="hero-rings">
-            <div class="hero-score"><strong data-count="${consistency.score}" data-key="hero-score"></strong><span>score</span></div>
+            <button class="hero-score" onclick="openScore()"><strong data-count="${consistency.score}" data-key="hero-score"></strong><span>score ›</span></button>
             <svg viewBox="0 0 200 200" aria-hidden="true">
                 <defs><linearGradient id="heroGold" x1="0" y1="0" x2="1" y2="1">
                     <stop offset="0" stop-color="#f2d891"/><stop offset="1" stop-color="#b38636"/>

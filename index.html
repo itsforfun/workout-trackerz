@@ -320,13 +320,11 @@
                 <button class="btn btn-primary" onclick="switchTab('today')">Go to today's workout</button>
             </div>
             <div class="overview" id="progressOverview"></div>
-            <div class="muscle-week" id="muscleWeekCard"></div>
-            <div class="section-head" id="liftsHead"><h3>Lifts</h3></div>
-            <div class="stat-row" id="progressSummary"></div>
+            <div class="section-head" id="liftsHead"><h3>Lifts</h3><span>Tap a lift for its chart</span></div>
+            <div class="progress-list" id="progressList"></div>
 
-            <div class="progress-panel">
-                <label class="form-label" for="progressExercise">Exercise</label>
-                <select class="form-input" id="progressExercise" onchange="selectProgressExercise(this.value)"></select>
+            <!-- The open lift: moved under its row in the list (see renderProgress) -->
+            <div class="progress-panel" id="liftPanel">
                 <div class="stat-row" id="progressStats"></div>
                 <div class="chart-wrap"><canvas id="progressChart"></canvas></div>
                 <div class="chart-empty" id="progressEmpty"><strong>Nothing logged yet</strong>Finish this lift in a workout, or fill in a week in the log below.</div>
@@ -338,11 +336,7 @@
                 </details>
             </div>
 
-            <div class="progress-list" id="progressList"></div>
-            <div class="section-head" id="detailsHead"><h3>Score and level in detail</h3></div>
-            <div class="consistency-card" id="consistencyCard"></div>
-            <div class="level-card" id="levelCard"></div>
-            <div id="achievementsCard"></div>
+            <div class="muscle-week" id="muscleWeekCard"></div>
             <div class="pro-card" data-pro-card></div>
         </div>
     </div>
@@ -675,6 +669,13 @@
 <div class="modal-overlay" id="badgeModal">
     <div class="modal badge-modal">
         <div id="badgeBody"></div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="scoreModal">
+    <div class="modal">
+        <div class="consistency-card" id="consistencyCard"></div>
+        <div class="modal-actions"><button class="btn btn-primary" onclick="closeScore()">Done</button></div>
     </div>
 </div>
 

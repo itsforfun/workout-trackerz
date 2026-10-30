@@ -565,52 +565,14 @@ function openAchievements() {
     openTrophyRoom();
 }
 
-// Level card (top of Progress): level ring, rank, XP to next level and where XP came from
-function renderLevel() {
-    const el = document.getElementById('levelCard');
-    if (!el) return;
-    const xp = playerXp(playerStats());
-    const nextRank = RANKS.find(([min]) => min > xp.level);
-    el.innerHTML = `
-        <div class="level-top">
-            <div class="level-ring">
-                ${levelRingSvg(xp)}
-                <div class="level-num"><span>Level</span><strong data-count="${xp.level}" data-key="level"></strong></div>
-            </div>
-            <div class="level-info">
-                <div class="level-rank">${escapeHtml(xp.rank)}</div>
-                <div class="level-xp"><strong data-count="${xp.total}" data-key="xp-total" data-format="locale"></strong> XP</div>
-                <div class="level-next">${xp.level < MAX_LEVEL ? `${xp.toNext.toLocaleString(LOCALE)} XP to level ${xp.level + 1}` : 'Maximum level'}</div>
-                ${nextRank ? `<div class="level-next">${escapeHtml(nextRank[1])} at level ${nextRank[0]}</div>` : ''}
-            </div>
-        </div>
+// Where XP came from (trophy room, under the level)
+function xpSourcesHtml(xp) {
+    return `
         <details class="level-sources">
-            <summary>Where your XP comes from</summary>
+            <summary>Where your ${xp.total.toLocaleString(LOCALE)} XP comes from</summary>
             ${xp.sources.filter(([, v]) => v > 0).map(([name, v]) => `<div class="ls-row"><span>${name}</span><span>${v.toLocaleString(LOCALE)} XP</span></div>`).join('') || '<div class="ls-row"><span>Finish a workout to earn your first XP</span></div>'}
             <p>Workout 100 · set 5 · record 50 · strength tier 40 per lift · cardio 1 per minute (Zone 4–5 double) · steps 1 per 100 (150 a day max) · habit 10, perfect day +30 · weigh-in 10 · badge tiers 25 to 3,000 · signature badges 250 · secret badges 500.</p>
-        </details>
-    `;
-    rollNumbers(el);
-}
-
-// Progress tab: a doorway to the trophy room with the showcase (or best medals) in view
-function renderAchievements() {
-    const el = document.getElementById('achievementsCard');
-    if (!el) return;
-    const stats = playerStats();
-    const tracks = badgeTracks();
-    const earnedTiers = tracks.reduce((sum, t) => sum + badgeTier(t, stats), 0);
-    const shelf = showcaseTracks(stats);
-    el.innerHTML = `
-        <button class="trophy-door" onclick="openTrophyRoom()">
-            <div class="td-medals">${shelf.map(t => medalSvg(badgeTier(t, stats), t.icon, 54)).join('')}</div>
-            <div class="td-text">
-                <strong>Trophy room</strong>
-                <span>${earnedTiers} of ${tracks.length * BADGE_TIERS.length} tiers · ${Object.keys(allData._specials || {}).length} special badges</span>
-            </div>
-            <span class="td-arrow">›</span>
-        </button>
-    `;
+        </details>`;
 }
 
 // ════════════════════════════════════════════
@@ -657,6 +619,7 @@ function levelRing(xp) {
 function renderTrophyRoom() {
     const stats = playerStats();
     const xp = playerXp(stats);
+    const nextRank = RANKS.find(([min]) => min > xp.level);
     const tracks = badgeTracks();
     const specials = allData._specials || {};
     const pinned = allData._showcase || [];
@@ -687,6 +650,8 @@ function renderTrophyRoom() {
             <div class="th-rank">${escapeHtml(xp.rank)}</div>
             <p class="th-line">${xp.level < MAX_LEVEL ? `${xp.toNext.toLocaleString(LOCALE)} XP to level ${xp.level + 1}` : 'Maximum level'}</p>
             <div class="th-sub">${earnedTiers} of ${tracks.length * BADGE_TIERS.length} tiers · ${Object.keys(specials).length} of ${specialBadges().length} special</div>
+            ${nextRank ? `<div class="th-sub">${escapeHtml(nextRank[1])} at level ${nextRank[0]}</div>` : ''}
+            ${xpSourcesHtml(xp)}
         </div>
         <div class="showcase">
             ${[0, 1, 2].map(i => {
@@ -849,6 +814,18 @@ function setBadgeNudge() {
 }
 
 // Consistency breakdown on the Progress tab
+// The score's breakdown: a sheet opened by tapping the score in the middle of the Today rings
+function openScore() {
+    haptic();
+    renderConsistency();
+    document.getElementById('scoreModal').classList.add('active');
+}
+
+function closeScore() {
+    document.getElementById('scoreModal').classList.remove('active');
+    setTimeout(nextMoment, 400);
+}
+
 function renderConsistency() {
     const el = document.getElementById('consistencyCard');
     if (!el) return;
@@ -859,7 +836,7 @@ function renderConsistency() {
                 <div class="consistency-label">Consistency</div>
                 <div class="consistency-score" data-count="${score}" data-key="consistency"></div>
                 <div class="consistency-sub">Last 7 days · best ${Math.max(allData._bestScore || 0, score)}</div>
-                <button class="recap-link" onclick="openRecap()">Last week's recap ›</button>
+                <button class="recap-link" onclick="closeScore(); openRecap()">Last week's recap ›</button>
             </div>
         </div>
         <div class="consistency-parts">

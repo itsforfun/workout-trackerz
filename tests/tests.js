@@ -418,7 +418,7 @@
         assert(el.querySelector('.ov-rank').textContent.trim().length, 'no rank');
         equal(el.querySelectorAll('.ov-tile').length, 4, 'four tiles (this week lives on Today)');
         assert(el.textContent.includes(String(xp.level)), 'level number missing');
-        assert(el.compareDocumentPosition(document.getElementById('consistencyCard')) & Node.DOCUMENT_POSITION_FOLLOWING, 'overview not above the details');
+        assert(el.compareDocumentPosition(document.getElementById('progressList')) & Node.DOCUMENT_POSITION_FOLLOWING, 'overview not above the lifts');
     });
 
     await check('Three tabs: Steps opens from Today, lifts are logged and fixed in Progress', () => {
@@ -443,6 +443,38 @@
         input.dispatchEvent(new Event('change'));
         equal(entryKg(progData()[ex.id][11]), String(displayToKg('300')), 'typed week saved');
         assert(document.getElementById('progressStats').textContent.includes(trackerToDisplay(ex, displayToKg('300'))), 'best not updated');
+    });
+
+    await check('Progress: a lift opens its chart and strength standards under its row, nothing shown twice', () => {
+        showScreen('app');
+        switchTab('progress');
+        const page = document.getElementById('page-progress');
+        ['levelCard', 'achievementsCard', 'progressSummary', 'progressExercise'].forEach(id => assert(!document.getElementById(id), `${id} still on the page`));
+        assert(!page.contains(document.getElementById('consistencyCard')), 'score breakdown still on Progress');
+        const panel = document.getElementById('liftPanel');
+        const open = document.querySelector('.progress-row.active');
+        assert(open && open.nextElementSibling === panel && !panel.hidden, 'open lift has no panel under it');
+        const ex = getExercise(open.dataset.ex);
+        if (ex.thresholds) assert(document.querySelectorAll('#tierTrack .tier-mark').length === 6, 'strength standards bar missing');
+        if (getLoggedWeeks(ex.id).length && typeof Chart !== 'undefined') assert(progressChart, 'no chart for a lift with data');
+        const other = [...document.querySelectorAll('.progress-row')].find(r => r !== open);
+        other.click();
+        assert(other.nextElementSibling === panel && !panel.hidden, 'tapping another lift did not open it');
+        other.click();
+        assert(panel.hidden, 'tapping the open lift did not fold it');
+        other.click();
+    });
+
+    await check('The score breakdown opens from the Today rings; XP sources live in the trophy room', () => {
+        showScreen('app');
+        switchTab('today');
+        document.querySelector('#todayHero .hero-score').click();
+        assert(document.getElementById('scoreModal').classList.contains('active'), 'score sheet did not open');
+        assert(document.querySelectorAll('#consistencyCard .cp-row').length, 'no score parts');
+        closeScore();
+        openTrophyRoom();
+        assert(document.querySelector('#trophyBody .level-sources'), 'no XP sources in the trophy room');
+        closeTrophyRoom();
     });
 
     await check('Ticking a set shows the XP it earned', () => {

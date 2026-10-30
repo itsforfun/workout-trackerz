@@ -31,51 +31,43 @@ function previousCycle() {
     return archive.length ? archive[archive.length - 1] : null;
 }
 
+// Each part draws on its own, so one failing part (odd saved data) can't leave the rest of the page blank
+function renderPart(name, fn) {
+    try {
+        fn();
+    } catch (error) {
+        if (/[?&]test\b/.test(location.search)) throw error;   // the automated checks must still see it
+        reportError(error.message, `progress: ${name}`, error.stack);
+    }
+}
+
+// Progress: level and all-time tiles, then one list of lifts. The open lift shows its chart, strength
+// standards and weekly log right under its row; tapping it again folds it away.
+let liftOpen = true;
+
 function renderProgress() {
     const prog = PROGRAMS[currentProgram];
     const hasData = prog.exercises.some(ex => getLoggedWeeks(ex.id).length);
     document.getElementById('page-progress').classList.toggle('is-empty', !hasData);
-    renderOverview();
-    renderLevel();
-    renderConsistency();
-    renderMuscleWeek();
-    renderAchievements();
+    renderPart('overview', renderOverview);
+    renderPart('muscles', renderMuscleWeek);
     if (!prog.exercises.some(ex => ex.id === progressExerciseId)) {
         // Default to the first exercise with data, else the first exercise
         const withData = prog.exercises.find(ex => getLoggedWeeks(ex.id).length);
         progressExerciseId = (withData || prog.exercises[0]).id;
+        liftOpen = true;
     }
 
-    // Program summary
-    const ranked = prog.exercises.filter(ex => ex.thresholds);
-    const tiers = ranked.map(ex => getTier(ex, getBestKg(ex.id)));
-    const tested = prog.exercises.filter(ex => getLoggedWeeks(ex.id).length).length;
-    const weeksLogged = new Set(prog.exercises.flatMap(ex => getLoggedWeeks(ex.id).map(l => l.week))).size;
-    const topTier = tiers.length ? Math.max(...tiers) : 0;
-    const rankedTiers = tiers.filter(t => t > 0);
-    const avgTier = rankedTiers.length ? rankedTiers.reduce((a, b) => a + b, 0) / rankedTiers.length : 0;
-    document.getElementById('progressSummary').innerHTML =
-        statTile('Exercises tested', `${tested}/${prog.exercises.length}`) +
-        statTile('Weeks logged', `${weeksLogged}/${WEEKS}`) +
-        statTile('Top tier', tierName(topTier), topTier ? `Level ${ROMAN[topTier]} of VI` : '', TIERS[topTier].color) +
-        statTile('Average tier', rankedTiers.length ? tierName(Math.round(avgTier)) : '—', rankedTiers.length ? `${avgTier.toFixed(1)} / 6` : (ranked.length ? '' : 'no tiers in this program'));
-
-    // Exercise picker, grouped by day
-    document.getElementById('progressExercise').innerHTML = prog.days.map((dayName, dayIdx) => `
-        <optgroup label="${escapeHtml(dayName)}">
-            ${prog.exercises.filter(ex => ex.day === dayIdx).map(ex =>
-                `<option value="${ex.id}"${ex.id === progressExerciseId ? ' selected' : ''}>${escapeHtml(ex.name)}</option>`
-            ).join('')}
-        </optgroup>
-    `).join('');
-
-    // One row per exercise
-    document.getElementById('progressList').innerHTML = prog.exercises.map(ex => {
+    // One row per exercise; the panel is parked outside the list while the rows are redrawn
+    const panel = document.getElementById('liftPanel');
+    const list = document.getElementById('progressList');
+    list.after(panel);
+    list.innerHTML = prog.exercises.map(ex => {
         const best = getBestKg(ex.id);
         const tier = getTier(ex, best);
         const color = TIERS[tier].color;
         return `
-            <button class="progress-row${ex.id === progressExerciseId ? ' active' : ''}" onclick="selectProgressExercise('${ex.id}', true)">
+            <button class="progress-row" data-ex="${ex.id}" onclick="tapLift('${ex.id}')">
                 <div>
                     <div class="row-name">${escapeHtml(ex.name)}</div>
                     <div class="row-day">${escapeHtml(prog.days[ex.day])}</div>
@@ -85,18 +77,36 @@ function renderProgress() {
             </button>
         `;
     }).join('');
-
-    renderProgressDetail();
+    placeLiftPanel();
+    renderPart('lift', renderProgressDetail);
 }
 
-function selectProgressExercise(exId, scrollUp = false) {
+function placeLiftPanel() {
+    const panel = document.getElementById('liftPanel');
+    const row = document.querySelector(`.progress-row[data-ex="${progressExerciseId}"]`);
+    document.querySelectorAll('.progress-row').forEach(r => r.classList.toggle('active', liftOpen && r === row));
+    panel.hidden = !liftOpen || !row;
+    if (row) row.after(panel);
+}
+
+// Tapping the open lift folds it away; any other lift opens in its place
+function tapLift(exId) {
+    haptic();
+    if (exId === progressExerciseId && liftOpen) {
+        liftOpen = false;
+        placeLiftPanel();
+    } else {
+        selectProgressExercise(exId);
+    }
+}
+
+function selectProgressExercise(exId) {
+    liftOpen = true;
     progressExerciseId = exId;
-    document.getElementById('progressExercise').value = exId;
-    document.querySelectorAll('.progress-row').forEach(row => {
-        row.classList.toggle('active', row.getAttribute('onclick').includes(`'${exId}'`));
-    });
+    placeLiftPanel();
     renderProgressDetail();
-    if (scrollUp) document.querySelector('.progress-panel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    const row = document.querySelector(`.progress-row[data-ex="${exId}"]`);
+    if (row && row.getBoundingClientRect().top < 80) row.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 function renderProgressDetail(withLog = true) {
@@ -128,7 +138,7 @@ function renderProgressDetail(withLog = true) {
             (thresholds ? statTile('Tier', tierName(0), '', TIERS[0].color) : statTile('Sessions', '0'));
     }
     document.getElementById('progressStats').innerHTML = statsHtml;
-    document.querySelector('.progress-panel').classList.toggle('empty', !logged.length);
+    document.getElementById('liftPanel').classList.toggle('empty', !logged.length);
 
     renderProgressChart(ex, logged, thresholds, tier);
     renderTierTrack(ex, best, thresholds, tier);
@@ -608,9 +618,9 @@ function renderOverview() {
         <div class="ov-grid">
             ${tile('', "openTrophyRoom()", 'Streak', `<strong>${streak.streak}</strong><small>${streak.streak === 1 ? 'week' : 'weeks'}</small>`,
                 `<span>Best ${Math.max(stats.bestStreak, streak.streak)}</span>`)}
-            ${tile('', "scrollToCard('progressList')", 'Records', `<strong>${stats.records}</strong>`,
+            ${tile('', "scrollToCard('liftsHead')", 'Records', `<strong>${stats.records}</strong>`,
                 weekRecs ? `<span class="ov-gold">+${weekRecs} this week</span>` : '<span>all time</span>')}
-            ${tile('', "scrollToCard('progressList')", 'Strength', `<span class="ov-tier" style="color:${TIERS[avgTier].color}">${escapeHtml(tierName(avgTier))}</span>`,
+            ${tile('', "scrollToCard('liftsHead')", 'Strength', `<span class="ov-tier" style="color:${TIERS[avgTier].color}">${escapeHtml(tierName(avgTier))}</span>`,
                 topTier ? `<span>Best: ${escapeHtml(tierName(topTier))}</span>` : '<span>Log a lift to get ranked</span>')}
             ${tile('', "openTrophyRoom()", 'Badges', `<strong>${earned}</strong><small>/${tracks.length * BADGE_TIERS.length}</small>`,
                 showcase.length ? `<span class="ov-medals">${showcase.map(t => medalSvg(badgeTier(t, stats), t.icon, 26)).join('')}</span>` : '<span>tiers earned</span>')}

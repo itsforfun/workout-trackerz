@@ -1815,3 +1815,18 @@ button.hl-row:active { opacity:0.7; }
 @media (prefers-reduced-motion: reduce) {
     @keyframes xpFloat { 0% { opacity:0; transform:translate(-50%, -14px); } 25% { opacity:1; } 100% { opacity:0; transform:translate(-50%, -14px); } }
 }
+
+/* ── Progress without repeats (v1.55): lifts open in place, score breakdown on Today, XP sources in the trophy room ── */
+.progress-panel[hidden] { display:none; }
+#liftPanel { margin:calc(var(--s2) * -1) 0 var(--s3); border-top-left-radius:0; border-top-right-radius:0; animation:liftOpen .32s var(--ease); }
+.progress-row.active { border-bottom-left-radius:0; border-bottom-right-radius:0; }
+@keyframes liftOpen { from { opacity:0; transform:translateY(-6px); } to { opacity:1; transform:none; } }
+#liftsHead span { font-size:0.72rem; color:var(--text-dim); letter-spacing:0; text-transform:none; }
+button.hero-score { inset:26%; border:none; border-radius:50%; background:none; padding:0; font:inherit; color:inherit; cursor:pointer; pointer-events:auto; }
+button.hero-score:active { opacity:0.7; }
+#scoreModal .consistency-card { box-shadow:none; background:transparent; padding:0; margin-bottom:var(--s4); }
+.trophy-hero .level-sources { width:100%; max-width:380px; margin:var(--s4) auto 0; text-align:left; }
+.trophy-hero .level-sources summary { text-align:center; }
+@media (prefers-reduced-motion: reduce) {
+    @keyframes liftOpen { from { opacity:0; } to { opacity:1; } }
+}

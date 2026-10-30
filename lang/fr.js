@@ -1587,5 +1587,8 @@ I18N_PACKS.fr = {
         "Weekly log": "Journal des semaines",
         "Type or fix any week": "Saisissez ou corrigez une semaine",
         "+{#} XP": "+{0} XP",
+        "Tap a lift for its chart": "Touchez un exercice pour voir son graphique",
+        "score ›": "score ›",
+        "Where your {} XP comes from": "D’où viennent vos {0} XP",
     },
 };
