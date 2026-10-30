@@ -4,7 +4,7 @@
 
 // Shown at the bottom of Settings so you can tell which version a phone is running.
 // Bump it with every deploy.
-const APP_VERSION = '1.72 · 30 Oct';
+const APP_VERSION = '1.73 · 30 Oct';
 
 const SUPABASE_URL = 'https://hcwbcxhblfjpdlkwykez.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_mEe_5g2UITyp5O-F9YRhRg_wTQWuOtf';
@@ -318,23 +318,46 @@ function fillProgramCard(card, p) {
 function orderProgramCards() {
     const programIdOf = card => (card.getAttribute('onclick').match(/'([^']+)'/) || [])[1];
     const programOf = card => PROGRAMS[programIdOf(card)];
-    const cards = [...document.querySelectorAll('#forYouGrid .program-card, #moreProgramGrid .program-card')].filter(programOf);
+    const cards = [...document.querySelectorAll('#forYouGrid .program-card, #moreProgramGrid .program-card, #cardioProgramGrid .program-card')].filter(programOf);
     const gender = userGender();
     const forYou = document.getElementById('forYouGrid');
     const more = document.getElementById('moreProgramGrid');
     // Programs written for your sex first, then the ones for everyone (cardio), in the order they're defined
     const order = Object.keys(PROGRAMS);
     const rank = p => !gender ? 0 : p.gender === gender ? 0 : !p.gender ? 1 : 2;
+    const cardio = document.getElementById('cardioProgramGrid');
+    const counts = { lifting: 0, cardio: 0 };
     cards.map(card => ({ card, i: order.indexOf(programIdOf(card)), rank: rank(programOf(card)), mine: rank(programOf(card)) < 2 }))
         .sort((a, b) => (a.rank - b.rank) || a.i - b.i)
-        .forEach(({ card, mine }, i) => {
-            fillProgramCard(card, programOf(card));
-            (mine ? forYou : more).appendChild(card);
+        .forEach(({ card, mine }) => {
+            const p = programOf(card);
+            fillProgramCard(card, p);
+            // Cardio programs have their own tab; lifting ones split into For you / More programs
+            const kind = p.type === 'cardio' ? 'cardio' : 'lifting';
+            (kind === 'cardio' ? cardio : mine ? forYou : more).appendChild(card);
             const index = card.querySelector('.program-index');
-            if (index) index.textContent = String(i + 1).padStart(2, '0');
+            if (index) index.textContent = String(++counts[kind]).padStart(2, '0');
         });
     document.getElementById('morePrograms').hidden = !more.children.length;
     document.getElementById('forYouKicker').hidden = !gender;
+    if (!programKind) programKind = isCardioProgram() ? 'cardio' : 'lifting';
+    showProgramKind();
+}
+
+// Program menu: Lifting | Cardio (opens on the kind of program you're on)
+let programKind = null;
+
+function setProgramKind(kind) {
+    if (kind === programKind) return;
+    haptic();
+    programKind = kind;
+    showProgramKind();
+}
+
+function showProgramKind() {
+    document.querySelectorAll('#programKinds .ld-seg').forEach(b => b.classList.toggle('active', b.dataset.kind === programKind));
+    document.getElementById('liftingPrograms').hidden = programKind !== 'lifting';
+    document.getElementById('cardioPrograms').hidden = programKind !== 'cardio';
 }
 
 function showScreen(name) {

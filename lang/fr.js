@@ -1814,5 +1814,6 @@ I18N_PACKS.fr = {
         "Running shoes": "Des chaussures de course",
         "The first step on any path is choosing it.": "Le premier pas sur un chemin, c’est de le choisir.",
         "Every program keeps its own twelve-week log": "Chaque programme garde son propre suivi sur douze semaines",
+        "Lifting": "Musculation",
     },
 };

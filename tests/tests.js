@@ -588,7 +588,7 @@
             assert(!more.hidden && !more.open, 'More programs should be there, folded');
             userProfile = { ...userProfile, gender: null };
             showScreen('selector');
-            assert(more.hidden && document.querySelectorAll('#forYouGrid .program-card').length === Object.keys(PROGRAMS).filter(id => !id.startsWith('custom-')).length, 'without a sex every program should be listed');
+            assert(more.hidden && document.querySelectorAll('#forYouGrid .program-card').length === Object.keys(PROGRAMS).filter(id => !id.startsWith('custom-') && !isCardioProgram(PROGRAMS[id])).length, 'without a sex every lifting program should be listed');
             userProfile = { ...userProfile, gender: 'female' };
             const maleOnly = QUOTES.map((_, i) => i).filter(i => !quoteFits(i));
             assert(maleOnly.length && maleOnly.every(i => MALE_ONLY.test(Array.isArray(QUOTES[i]) ? QUOTES[i][0] : QUOTES[i])), 'male-only quotes not skipped');
@@ -863,6 +863,28 @@
             equal(document.getElementById('progressList').style.display, 'none', 'no lifts section for a cardio program');
         } finally {
             selectProgram(saved);
+        }
+    });
+
+    await check('Program menu: Lifting and Cardio tabs, each numbered from 01', () => {
+        const saved = currentProgram;
+        try {
+            programKind = null;
+            showScreen('selector');
+            equal(programKind, isCardioProgram() ? 'cardio' : 'lifting', 'opens on the kind of program you are on');
+            const ids = sel => [...document.querySelectorAll(sel)].map(c => (c.getAttribute('onclick').match(/'([^']+)'/) || [])[1]);
+            const cardioIds = ids('#cardioProgramGrid .program-card');
+            assert(cardioIds.length === 3 && cardioIds.every(id => isCardioProgram(PROGRAMS[id])), `cardio tab holds ${cardioIds.join(', ')}`);
+            assert(ids('#liftingPrograms .program-card').every(id => !isCardioProgram(PROGRAMS[id])), 'a cardio program under Lifting');
+            equal(document.querySelector('#cardioProgramGrid .program-index').textContent, '01', 'cardio numbered from 01');
+            document.querySelector('#programKinds [data-kind="cardio"]').click();
+            assert(document.getElementById('liftingPrograms').hidden && !document.getElementById('cardioPrograms').hidden, 'cardio tab did not show');
+            document.querySelector('#programKinds [data-kind="lifting"]').click();
+            assert(!document.getElementById('liftingPrograms').hidden, 'lifting tab did not come back');
+        } finally {
+            programKind = null;
+            currentProgram = saved;
+            showScreen('app');
         }
     });
 
