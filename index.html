@@ -180,8 +180,9 @@
             <h1>CHOOSE YOUR PATH</h1>
             <p>Every program keeps its own twelve-week log.</p>
         </div>
-        
-        <div class="program-grid">
+
+        <div class="kicker selector-kicker" id="forYouKicker">For you</div>
+        <div class="program-grid" id="forYouGrid">
             <button class="program-card" onclick="selectProgram('male')">
                 <div class="program-top"><span class="program-index">01</span><span class="program-tag">Push · Pull · Legs · 3 days</span></div>
                 <div class="program-title">9-5 Beast Mode</div>
@@ -218,6 +219,11 @@
                 <div class="program-cta">Select program <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
             </button>
         </div>
+        <!-- Programs written for the other sex: one tap away, never hidden (orderProgramCards) -->
+        <details class="more-programs" id="morePrograms">
+            <summary><span>More programs</span><small>Different focus. Standards adapt to you.</small></summary>
+            <div class="program-grid" id="moreProgramGrid"></div>
+        </details>
         <div class="selector-section">
             <div class="kicker">Your programs</div>
             <div class="program-grid" id="customProgramGrid"></div>

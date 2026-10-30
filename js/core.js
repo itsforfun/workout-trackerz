@@ -4,7 +4,7 @@
 
 // Shown at the bottom of Settings so you can tell which version a phone is running.
 // Bump it with every deploy.
-const APP_VERSION = '1.58 · 30 Oct';
+const APP_VERSION = '1.59 · 30 Oct';
 
 const SUPABASE_URL = 'https://hcwbcxhblfjpdlkwykez.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_mEe_5g2UITyp5O-F9YRhRg_wTQWuOtf';
@@ -257,20 +257,24 @@ function rememberGender() {
     try { localStorage.setItem('odyr_gender', userGender() || ''); } catch (e) { /* private mode */ }
 }
 
-// Program menu: programs written for your sex first, the rest after (order otherwise unchanged)
+// Program menu: the programs written for your sex under "For you"; the others folded under "More programs"
+// (one tap away, never hidden: every program converts its standards to whoever trains). Without a sex
+// in the profile, every program is listed.
 function orderProgramCards() {
     const programOf = card => PROGRAMS[(card.getAttribute('onclick').match(/'([^']+)'/) || [])[1]];
-    const cards = [...document.querySelectorAll('#programSelector .program-card:not(.custom-card)')].filter(programOf);
-    if (!cards.length) return;
-    const gender = userGender() || 'male';
-    const after = cards[cards.length - 1].nextSibling;   // whatever follows the built-in programs stays after them
-    cards.map((card, i) => ({ card, i, rank: programOf(card).gender === gender ? 0 : 1 }))
-        .sort((a, b) => a.rank - b.rank || a.i - b.i)
-        .forEach(({ card }, i) => {
-            card.parentNode.insertBefore(card, after);
+    const cards = [...document.querySelectorAll('#forYouGrid .program-card, #moreProgramGrid .program-card')].filter(programOf);
+    const gender = userGender();
+    const forYou = document.getElementById('forYouGrid');
+    const more = document.getElementById('moreProgramGrid');
+    cards.map((card, i) => ({ card, i, mine: !gender || programOf(card).gender === gender }))
+        .sort((a, b) => (b.mine - a.mine) || a.i - b.i)
+        .forEach(({ card, mine }, i) => {
+            (mine ? forYou : more).appendChild(card);
             const index = card.querySelector('.program-index');
             if (index) index.textContent = String(i + 1).padStart(2, '0');
         });
+    document.getElementById('morePrograms').hidden = !more.children.length;
+    document.getElementById('forYouKicker').hidden = !gender;
 }
 
 function showScreen(name) {

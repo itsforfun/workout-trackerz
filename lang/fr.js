@@ -1615,5 +1615,8 @@ I18N_PACKS.fr = {
         "converted to women's standards": "convertis en standards féminins",
         "converted to men's standards": "convertis en standards masculins",
         "Max heart rate ≈ 208 − 0.7 × age (women: 206 − 0.88 × age); most cardio in Zone 2; 150 minutes of moderate activity a week.": "Fréquence cardiaque max ≈ 208 − 0,7 × âge (femmes : 206 − 0,88 × âge) ; l’essentiel du cardio en zone 2 ; 150 minutes d’activité modérée par semaine.",
+        "For you": "Pour vous",
+        "More programs": "Autres programmes",
+        "Different focus. Standards adapt to you.": "Autre orientation. Les standards s’adaptent à vous.",
     },
 };

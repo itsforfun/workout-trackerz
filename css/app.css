@@ -1863,3 +1863,16 @@ button.hero-score:active { opacity:0.7; }
     font:inherit; font-size:0.8rem; font-weight:500; white-space:nowrap; cursor:pointer; transition:background .25s var(--ease), color .25s var(--ease); }
 .ld-seg.active { background:var(--raised); color:var(--text); box-shadow:0 1px 6px rgba(0,0,0,0.35); }
 .ld-seg:active { opacity:0.7; }
+
+/* ── Program menu: For you, then More programs folded (v1.59) ── */
+.selector-kicker { margin:0 0 var(--s3); }
+.selector-kicker[hidden], .more-programs[hidden] { display:none; }
+.more-programs { margin-top:var(--s5); }
+.more-programs summary { display:flex; align-items:baseline; justify-content:space-between; gap:var(--s3); padding:var(--s4) var(--s1);
+    border-top:1px solid var(--hairline, rgba(240,232,216,0.08)); list-style:none; cursor:pointer; }
+.more-programs summary::-webkit-details-marker { display:none; }
+.more-programs summary span { flex-shrink:0; white-space:nowrap; font-size:0.95rem; font-weight:500; color:var(--text); }
+.more-programs summary span::after { content:'›'; display:inline-block; margin-left:8px; color:var(--text-muted); transition:transform .25s var(--ease); }
+.more-programs[open] summary span::after { transform:rotate(90deg); }
+.more-programs summary small { font-size:0.75rem; color:var(--text-dim); text-align:right; }
+.more-programs[open] .program-grid { animation:rise .4s var(--ease); }

@@ -574,6 +574,15 @@
                 .map(c => (c.getAttribute('onclick').match(/'([^']+)'/) || [])[1]).filter(id => PROGRAMS[id]);
             assert(order.slice(0, 2).every(id => PROGRAMS[id].gender === 'female'), `women's programs not first: ${order.join(', ')}`);
             equal(document.querySelector('#programSelector .program-index').textContent, '01', 'cards renumbered');
+            const ids = sel => [...document.querySelectorAll(sel)].map(c => (c.getAttribute('onclick').match(/'([^']+)'/) || [])[1]);
+            assert(ids('#forYouGrid .program-card').every(id => PROGRAMS[id].gender === 'female'), 'For you holds a men\'s program');
+            assert(ids('#moreProgramGrid .program-card').length && ids('#moreProgramGrid .program-card').every(id => PROGRAMS[id].gender === 'male'), 'men\'s programs not under More programs');
+            const more = document.getElementById('morePrograms');
+            assert(!more.hidden && !more.open, 'More programs should be there, folded');
+            userProfile = { ...userProfile, gender: null };
+            showScreen('selector');
+            assert(more.hidden && document.querySelectorAll('#forYouGrid .program-card').length === 5, 'without a sex every program should be listed');
+            userProfile = { ...userProfile, gender: 'female' };
             const maleOnly = QUOTES.map((_, i) => i).filter(i => !quoteFits(i));
             assert(maleOnly.length && maleOnly.every(i => MALE_ONLY.test(Array.isArray(QUOTES[i]) ? QUOTES[i][0] : QUOTES[i])), 'male-only quotes not skipped');
         } finally {
