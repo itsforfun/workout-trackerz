@@ -1881,5 +1881,7 @@ I18N_PACKS.fr = {
         "Tap Share, then Add to Home Screen. Rest alerts, reminders and full screen work from there.": "Touchez Partager, puis Sur l’écran d’accueil. Alertes de repos, rappels et plein écran fonctionnent depuis là.",
         "Install it for full screen, rest alerts and reminders.": "Installez-la pour le plein écran, les alertes de repos et les rappels.",
         "Install": "Installer",
+        "{#} of {#} · {#} days left": "{0} sur {1} · {2} jours restants",
+        "{#} of {#} · Last day": "{0} sur {1} · Dernier jour",
     },
 };

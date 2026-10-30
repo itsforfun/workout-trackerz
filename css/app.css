@@ -2053,3 +2053,15 @@ button.hero-score:active { opacity:0.7; }
 .install-text span { font-size:0.8rem; line-height:1.5; color:var(--text-dim); }
 .install-btn { margin-top:var(--s2); align-self:flex-start; padding:8px 16px; }
 .install-close { display:grid; place-items:center; width:28px; height:28px; border:none; background:none; color:var(--text-muted); cursor:pointer; }
+
+/* ── Calm Today (v1.78): quests fold into one line ── */
+.quests-card summary.quests-head { display:grid; grid-template-columns:1fr auto auto; align-items:center; gap:var(--s3); margin:0; list-style:none; cursor:pointer; }
+.quests-card summary::-webkit-details-marker { display:none; }
+.quests-card[open] summary.quests-head { margin-bottom:var(--s2); }
+.quests-dots { display:flex; gap:5px; }
+.quests-dots i { width:8px; height:8px; border-radius:50%; border:1.5px solid rgba(240,232,216,0.25); }
+.quests-dots i.started { border-color:var(--accent); }
+.quests-dots i.done { background:var(--accent); border-color:var(--accent); }
+.quests-card .quests-left::after { content:'›'; display:inline-block; margin-left:8px; color:var(--text-muted); transition:transform .25s var(--ease); }
+.quests-card[open] .quests-left::after { transform:rotate(90deg); }
+#weekPlan .week-plan { margin-top:var(--s3); }

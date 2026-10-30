@@ -484,7 +484,6 @@ function closeScience() {
 // ── Insight: one line on Today when something stands out (dismissable for the day) ──
 function coachInsight() {
     const prog = PROGRAMS[currentProgram];
-    const today = todayStr();
     const weekday = new Date().getDay();
     const stats = getStreakStats();
     const name = ex => exerciseDisplayName(ex, getCurrentWeek());
@@ -500,32 +499,9 @@ function coachInsight() {
     if (stats.streak >= 2 && stats.thisWeek === 0 && (weekday === 5 || weekday === 6 || weekday === 0)) {
         return { key: 'streak', icon: 'streak', text: `Your ${stats.streak}-week streak ends Sunday. One workout this weekend keeps it alive.` };
     }
-    // Biggest gain this cycle (10% or more)
-    let best = null;
-    prog.exercises.forEach(ex => {
-        const logged = getLoggedWeeks(ex.id);
-        if (logged.length < 2 || ex.assist) return;
-        const gain = (Math.max(...logged.map(l => l.value)) - logged[0].value) / logged[0].value;
-        if (gain >= 0.1 && (!best || gain > best.gain)) best = { ex, gain };
-    });
-    const cardio = cardioWeek().moderate;
-    // Talk about this week's cardio quest when there is one, so the tip and the quest never disagree
-    const cardioQuest = ((metaFor('_quests')[mondayOf(todayStr())] || {}).list || []).find(q => q.kind === 'cardio');
-    const cardioGoal = cardioQuest ? cardioQuest.target : cardioTarget();
-    if (cardioGoal && weekday >= 4 && cardio < cardioGoal / 2) {
-        return { key: 'cardio', icon: 'cardio', text: `Cardio is at ${cardio} of ${cardioGoal} minutes this week. A 30-minute Zone 2 session today makes a real dent.` };
-    }
-    if (Object.keys(stepData).length) {
-        const avg = Array.from({ length: 7 }, (_, i) => stepsOn(addDays(today, -i))).reduce((a, b) => a + b, 0) / 7;
-        if (avg < stepGoal() * 0.7) {
-            return { key: 'steps', icon: 'steps', text: `Steps are averaging ${compactNum(Math.round(avg))} a day. A 20-minute walk adds about 2,000.` };
-        }
-    }
+    // Only what matters today: cardio and steps are covered by the weekly quests, gains by the Progress strength card
     const near = nearestBadgeText();
     if (near) return { key: near.key, icon: near.track.icon, text: near.text };
-    if (best) {
-        return { key: `gain-${best.ex.id}`, icon: 'record', text: `${name(best.ex)} is up ${Math.round(best.gain * 100)}% this cycle. Keep the reps clean and it keeps climbing.` };
-    }
     return null;
 }
 

@@ -104,6 +104,9 @@ function checkQuests() {
     });
 }
 
+// Today: one line (quests done, days left, a dot per quest); opens into the list
+let questsOpen = false;
+
 function renderQuests() {
     const el = document.getElementById('questsCard');
     if (!el || !currentProgram) return;
@@ -111,12 +114,14 @@ function renderQuests() {
     const week = questWeek(monday);
     const daysLeft = Math.round((parseDate(addDays(monday, 6)) - parseDate(todayStr())) / 86400000) + 1;
     const doneCount = week.list.filter(q => week.done[q.id]).length;
+    const dots = week.list.map(q => `<i class="${week.done[q.id] ? 'done' : questProgress(q, monday) > 0 ? 'started' : ''}"></i>`).join('');
     el.innerHTML = `
-        <div class="quests-card">
-            <div class="quests-head">
+        <details class="quests-card" ${questsOpen ? 'open' : ''} ontoggle="questsOpen = this.open">
+            <summary class="quests-head">
                 <span class="quests-kicker">This week’s quests</span>
-                <span class="quests-left">${doneCount === week.list.length ? 'All done' : daysLeft === 1 ? 'Last day' : `${daysLeft} days left`}</span>
-            </div>
+                <span class="quests-dots">${dots}</span>
+                <span class="quests-left">${doneCount === week.list.length ? 'All done' : `${doneCount} of ${week.list.length} · ${daysLeft === 1 ? 'Last day' : `${daysLeft} days left`}`}</span>
+            </summary>
             ${week.list.map(q => {
                 const done = !!week.done[q.id];
                 const progress = Math.min(q.target, questProgress(q, monday));
@@ -129,5 +134,5 @@ function renderQuests() {
                     <span class="quest-xp">${done ? 'Done' : q.target > 1 ? `${progress}/${q.target}` : `+${QUEST_XP} XP`}</span>
                 </div>`;
             }).join('')}
-        </div>`;
+        </details>`;
 }

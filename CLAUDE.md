@@ -291,7 +291,7 @@ reference/debug-screenshots/  ← Supabase key page, "Script error" console, Git
 - UI: level strip at the top of the Today hero (gold bar), level card at the top of Progress (ring, rank, XP breakdown), badge grid + specials at the bottom of Progress.
 
 ## 18. Coaching (v1.21, 2026-10-28)
-- **Insight** (`coachInsight`, card under the Today hero): first match of stalled lift → 5+ days off → streak at risk (Fri–Sun) → cardio behind (Thu+) → steps under 70% of goal → biggest gain ≥10%. Dismiss hides it for the day (localStorage).
+- **Insight** (`coachInsight`, card under the Today hero): first match of stalled lift → 5+ days off → streak at risk (Fri–Sun) → a badge tier within reach (since v1.78 nothing else: cardio and steps are covered by the weekly quests, gains by the Progress strength card). Dismiss hides it for the day (localStorage).
 - **Walkthrough** (`startTour`): spotlight tour of Today, once per account (`workout_data._tourDone`); Settings → Help → Replay.
 - **Weekly recap** (`openRecap`, `recapModal` sheet): last Monday–Sunday — score vs week before, workouts, cardio, steps, records, XP (`weekXp`), badges (`_badgeLog` [{track, tier, date}] from v1.21 on), and a focus line from the weakest score part. Shown once a week (`_recapSeen`) when Today opens and last week had activity; also Progress → "Last week's recap" and Settings → Help.
 - **Reminders** (`planNudges`, Settings → Reminders, `profile.nudges`): app rewrites the next 7 days of rows in `scheduled_pushes` (workout days 08:00, streak at risk Sat 10:00, steps 18:30). `rest-push` sends them; the steps text is written at send time and skipped once the goal is met. Needs `supabase-v2-setup.sql` + redeploying `rest-push`.
@@ -535,3 +535,8 @@ reference/debug-screenshots/  ← Supabase key page, "Script error" console, Git
 - **First quest:** a brand-new account's training quest is "Log your first workout" (kind `first`, target 1).
 - **Install card** on Today (`renderInstallCard`, `#installCard`): iPhone Safari shows "Tap Share, then Add to Home Screen…"; Android/Chrome uses `beforeinstallprompt` with an Install button; hidden once installed or dismissed (`odyr_install_dismissed`).
 - **Crew invite links:** Share sends `…/?crew=CODE`; js/main.js keeps the code in `odyr_crew_invite` through sign-up and tidies the address; `openCrewInvite` (after the crew loads on Today) opens the journey with the join form and code filled in.
+
+## 57. Calm Today (v1.78, 2026-10-30)
+- Order on Today (index.html): level + rings → install card (until installed/dismissed) → saga card → week strip → coach tip → deload/power notes → rest day or the workout → quests → habits → Cardio card → mobility. The next workout is visible without scrolling on a phone.
+- Quests fold into one line (`renderQuests`: "This week's quests", a dot per quest, "1 of 3 · 3 days left"); tap to open the list (`questsOpen` for the session).
+- The coach tip (`coachInsight`) shows only what matters today: stalled lift, 5+ days off, streak at risk, a badge tier within reach. Cardio and steps nudges went (quests cover them), and "up X% this cycle" (the Progress strength card shows it).
