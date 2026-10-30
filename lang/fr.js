@@ -1606,5 +1606,6 @@ I18N_PACKS.fr = {
         "Est. 1-rep max ({})": "1RM estimé ({0})",
 
         "Strength tier": "Palier de force",
+        "Not logged yet": "Pas encore enregistré",
     },
 };

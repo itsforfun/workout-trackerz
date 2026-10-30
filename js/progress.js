@@ -120,9 +120,11 @@ function renderPart(name, fn) {
     }
 }
 
-// Progress: level and all-time tiles, then one list of lifts. The open lift shows its chart, strength
-// standards and weekly log right under its row; tapping it again folds it away.
+// Progress: level and all-time tiles, then the lifts of one workout at a time (segments above the list,
+// opening on the workout you did last). The open lift shows its chart, strength standards and weekly log
+// right under its row; tapping it again folds it away.
 let liftOpen = true;
+let liftDay = null;
 
 function renderProgress() {
     const prog = PROGRAMS[currentProgram];
@@ -130,18 +132,46 @@ function renderProgress() {
     document.getElementById('page-progress').classList.toggle('is-empty', !hasData);
     renderPart('overview', renderOverview);
     renderPart('muscles', renderMuscleWeek);
-    if (!prog.exercises.some(ex => ex.id === progressExerciseId)) {
-        // Default to the first exercise with data, else the first exercise
-        const withData = prog.exercises.find(ex => getLoggedWeeks(ex.id).length);
-        progressExerciseId = (withData || prog.exercises[0]).id;
-        liftOpen = true;
+    if (liftDay === null || liftDay >= prog.days.length) liftDay = lastLiftDay(prog);
+    renderPart('lifts', renderLifts);
+}
+
+// The workout day of the most recent lifting session, else the first
+function lastLiftDay(prog) {
+    const last = programSessions().filter(s => s && s.type !== 'cardio' && s.type !== 'mobility' && typeof s.day === 'number').slice(-1)[0];
+    return last && last.day < prog.days.length ? last.day : 0;
+}
+
+function dayLifts(prog = PROGRAMS[currentProgram]) {
+    return prog.days.length > 1 ? prog.exercises.filter(ex => ex.day === liftDay) : prog.exercises;
+}
+
+function setLiftDay(day) {
+    if (day === liftDay) return;
+    haptic();
+    liftDay = day;
+    liftOpen = true;
+    renderLifts();
+}
+
+function renderLifts() {
+    const prog = PROGRAMS[currentProgram];
+    const lifts = dayLifts(prog);
+    if (!lifts.some(ex => ex.id === progressExerciseId)) {
+        // Open the first lift of this workout with something logged, else its first lift
+        progressExerciseId = (lifts.find(ex => strengthHistory(ex).length) || lifts[0]).id;
     }
 
-    // One row per exercise; the panel is parked outside the list while the rows are redrawn
+    const days = document.getElementById('liftDays');
+    days.hidden = prog.days.length < 2;
+    days.innerHTML = prog.days.map((name, i) =>
+        `<button class="ld-seg${i === liftDay ? ' active' : ''}" onclick="setLiftDay(${i})">${escapeHtml(name)}</button>`).join('');
+
+    // One row per lift; the panel is parked outside the list while the rows are redrawn
     const panel = document.getElementById('liftPanel');
     const list = document.getElementById('progressList');
     list.after(panel);
-    list.innerHTML = prog.exercises.map(ex => {
+    list.innerHTML = lifts.map(ex => {
         const best = getBestKg(ex.id);
         const tier = getTier(ex, best);
         const color = TIERS[tier].color;
@@ -151,7 +181,7 @@ function renderProgress() {
             <button class="progress-row" data-ex="${ex.id}" onclick="tapLift('${ex.id}')">
                 <div class="row-main">
                     <div class="row-name">${escapeHtml(ex.name)}</div>
-                    <div class="row-day">${best ? `${trackerToDisplay(ex, best)} ${escapeHtml(trackerUnit(ex))}` : escapeHtml(prog.days[ex.day])}${ex.thresholds && tier ? ` · <span style="color:${color}">${escapeHtml(tierName(tier))}</span>` : ''}</div>
+                    <div class="row-day">${best ? `${trackerToDisplay(ex, best)} ${escapeHtml(trackerUnit(ex))}` : 'Not logged yet'}${ex.thresholds && tier ? ` · <span style="color:${color}">${escapeHtml(tierName(tier))}</span>` : ''}</div>
                 </div>
                 ${history.length ? sparkSvg(history.map(p => p.value)) : '<span></span>'}
                 <span class="row-change ${changeClass(pct)}">${pct !== null ? changeText(pct) : history.length ? 'New' : '—'}</span>
@@ -184,6 +214,13 @@ function tapLift(exId) {
 function selectProgressExercise(exId) {
     liftOpen = true;
     progressExerciseId = exId;
+    const ex = getExercise(exId);
+    if (PROGRAMS[currentProgram].days.length > 1 && ex && ex.day !== liftDay) {
+        // A lift from another workout: switch to that workout's segment
+        liftDay = ex.day;
+        renderLifts();
+        return;
+    }
     placeLiftPanel();
     renderProgressDetail();
     const row = document.querySelector(`.progress-row[data-ex="${exId}"]`);

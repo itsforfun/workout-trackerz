@@ -494,7 +494,7 @@
         const card = document.querySelector('#progressOverview .strength-card');
         assert(card && card.querySelector('.spark-line'), 'no strength trend card at the top of Progress');
         assert(card.querySelector('.sc-value').textContent.trim().startsWith('+'), 'overall change not shown');
-        const trained = PROGRAMS[currentProgram].exercises.filter(e => strengthHistory(e).length).length;
+        const trained = dayLifts().filter(e => strengthHistory(e).length).length;
         assert(trained && document.querySelectorAll('.progress-row .spark').length === trained, 'every trained lift needs its trend on its row');
         if (typeof Chart !== 'undefined') equal(progressChart.data.labels.length, strengthHistory(getExercise(progressExerciseId)).length, 'chart points = workouts');
     });
@@ -520,6 +520,27 @@
         equal(allData._badgeVersion, 3, 'badge version');
         equal(allData._level, playerXp(playerStats()).level, 'level follows the lower badge XP');
         equal(momentQueue.length, 0, 'no pop-ups for the re-measure');
+    });
+
+    await check('Lifts show one workout at a time, opening on the last workout done', () => {
+        showScreen('app');
+        liftDay = null;
+        switchTab('progress');
+        const prog = PROGRAMS[currentProgram];
+        const segs = document.querySelectorAll('#liftDays .ld-seg');
+        equal(segs.length, prog.days.length, 'one segment per workout');
+        equal(liftDay, lastLiftDay(prog), 'opens on the last workout done');
+        const rows = () => [...document.querySelectorAll('#progressList .progress-row')].map(r => getExercise(r.dataset.ex));
+        assert(rows().every(ex => ex.day === liftDay), 'rows from another workout shown');
+        const other = (liftDay + 1) % prog.days.length;
+        segs[other].click();
+        assert(rows().length && rows().every(ex => ex.day === other), 'segment did not switch the list');
+        assert(document.querySelector('.progress-row.active'), 'no lift open in the new workout');
+        // Selecting a lift from another workout jumps to its segment
+        const elsewhere = prog.exercises.find(ex => ex.day !== liftDay);
+        selectProgressExercise(elsewhere.id);
+        equal(liftDay, elsewhere.day, 'did not follow the lift to its workout');
+        assert(document.querySelector(`.progress-row.active[data-ex="${elsewhere.id}"]`), 'that lift is not open');
     });
 
     await check('Ticking a set shows the XP it earned', () => {
