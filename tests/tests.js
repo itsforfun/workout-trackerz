@@ -592,6 +592,13 @@
         }
     });
 
+    await check('Every program card says what the program gets you', () => {
+        const cards = [...document.querySelectorAll('#programSelector .program-card:not(.custom-card):not(.build-card)')];
+        equal(cards.length, Object.keys(PROGRAMS).filter(id => !id.startsWith('custom-')).length, 'one card per program');
+        cards.forEach(card => assert(card.querySelector('.program-promise') && card.querySelector('.program-promise').textContent.trim().length > 10,
+            `${card.querySelector('.program-title').textContent} has no promise`));
+    });
+
     await check('Ticking a set shows the XP it earned', () => {
         const anchor = document.createElement('button');
         document.body.appendChild(anchor);

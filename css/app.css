@@ -1876,3 +1876,6 @@ button.hero-score:active { opacity:0.7; }
 .more-programs[open] summary span::after { transform:rotate(90deg); }
 .more-programs summary small { font-size:0.75rem; color:var(--text-dim); text-align:right; }
 .more-programs[open] .program-grid { animation:rise .4s var(--ease); }
+
+/* ── Program promise (v1.61): what each program gets you, under its name ── */
+.program-promise { margin:-4px 0 12px; font-family:'Instrument Serif', Georgia, serif; font-size:1.3rem; line-height:1.25; color:var(--accent); }
