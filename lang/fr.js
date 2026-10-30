@@ -1812,7 +1812,7 @@ I18N_PACKS.fr = {
         "Gym": "Salle",
         "Outdoors or machine": "Dehors ou sur machine",
         "Running shoes": "Des chaussures de course",
-        "Every path asks one thing of you first: to choose it.": "Chaque chemin vous demande d’abord une chose : le choisir.",
+        "The first step on any path is choosing it.": "Le premier pas sur un chemin, c’est de le choisir.",
         "Every program keeps its own twelve-week log": "Chaque programme garde son propre suivi sur douze semaines",
     },
 };
