@@ -155,7 +155,7 @@
             () => switchTab('progress'), () => switchTab('settings'), () => openTrophyRoom(), () => openBadge(badgeTracks()[0].id),
             () => closeBadge(), () => closeTrophyRoom(), () => openRecap(), () => closeRecap(), () => openScience(), () => closeScience(),
             () => openGenerator(), () => closeGenerator(), () => openBuilder(), () => showScreen('selector'), () => showScreen('app'),
-            () => openGuide(PROGRAMS.fullBody3.exercises[0].id), () => closeGuide(), () => startPro(), () => cancelPro(),
+            () => openGuide(PROGRAMS.fullBody3.exercises[0].id), () => closeGuide(), () => openOdyssey(), () => closeOdyssey(), () => startPro(), () => cancelPro(),
         ];
         steps.forEach((step, i) => {
             try { step(); } catch (error) { throw new Error(`step ${i + 1}: ${error.message}`); }
@@ -638,6 +638,37 @@
             currentProgram = saved.program;
             todayMode = null;
         }
+    });
+
+    await check('Odyssey: leagues from everything you do, travel since last visit, landmarks, the journey screen', () => {
+        const j = journey();
+        equal(j.sources.workouts, allWorkoutDates().length * LEAGUES.workout, 'workout leagues');
+        equal(j.total, j.sources.workouts + j.sources.cardio + j.sources.steps + j.sources.habits, 'total');
+        equal(j.into, j.total % SAGA_LENGTH, 'leagues into the saga');
+        assert(j.toNext > 0 && j.toNext <= 100, 'leagues to the next landmark');
+        // Since your last visit
+        try { localStorage.setItem(`odyr_leagues_${currentUser.id}`, String(Math.max(0, j.total - 30))); } catch (e) { /* private mode */ }
+        showScreen('app');
+        switchTab('today');
+        const card = document.querySelector('#sagaCard .saga-card');
+        assert(card && card.querySelector('.road-traveller'), 'no saga card on Today');
+        if (j.total >= 30) assert(/\+30 leagues/.test(card.textContent), `travel since last visit not shown: ${card.textContent}`);
+        equal(lastSeenLeagues(), j.total, 'this visit remembered');
+        // Landmarks: the first run is quiet, the next one reached gets a moment
+        delete allData._landmark;
+        momentQueue.length = 0;
+        checkLandmarks();
+        equal(momentQueue.length, 0, 'first run should be quiet');
+        allData._landmark -= 1;
+        checkLandmarks();
+        assert(momentQueue.length === 1 || document.getElementById('recordMoment').classList.contains('show'), 'no landmark moment');
+        momentQueue.length = 0;
+        closeRecord();
+        // The journey screen
+        card.click();
+        assert(document.getElementById('odysseyScreen').classList.contains('active'), 'journey screen did not open');
+        equal(document.querySelectorAll('#odysseyBody .road-label').length, LANDMARKS.length, 'every landmark named');
+        closeOdyssey();
     });
 
     await check('Ticking a set shows the XP it earned', () => {

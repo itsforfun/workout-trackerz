@@ -256,6 +256,16 @@
     <div class="workout-body" id="trophyBody"></div>
 </div>
 
+<!-- ODYSSEY: the saga as a winding road -->
+<div class="screen workout-screen odyssey-screen" id="odysseyScreen">
+    <div class="workout-top">
+        <button class="wo-close" onclick="closeOdyssey()" aria-label="Close the journey"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 6l-6 6 6 6"/></svg></button>
+        <div class="workout-title"><div>Your journey</div></div>
+        <span></span>
+    </div>
+    <div class="workout-body" id="odysseyBody"></div>
+</div>
+
 <!-- POST-WORKOUT SUMMARY -->
 <div class="screen workout-screen summary-screen" id="summaryScreen">
     <div class="workout-top">
@@ -309,6 +319,7 @@
     <div class="page active" id="page-today">
         <div class="container today-container">
             <div class="today-hero" id="todayHero"></div>
+            <div id="sagaCard"></div>
             <div id="insightCard"></div>
             <div id="deloadCard"></div>
             <div id="weekPlan"></div>
@@ -779,6 +790,7 @@
 <script src="js/anatomy.js"></script>
 <script src="js/summary.js"></script>
 <script src="js/rewards.js"></script>
+<script src="js/odyssey.js"></script>
 <script src="js/progress.js"></script>
 <script src="js/coach.js"></script>
 <script src="js/pro.js"></script>

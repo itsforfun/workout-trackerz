@@ -131,6 +131,8 @@ function renderToday() {
     const week = todayWeek !== null ? todayWeek : getCurrentWeek();
 
     renderTodayHero();
+    renderSagaCard();
+    checkLandmarks();
     renderInsight();
     renderDeloadCard();
     renderWeekPlan();

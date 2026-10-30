@@ -1897,3 +1897,42 @@ button.hero-score:active { opacity:0.7; }
 .ce-bar { grid-column:1 / -1; height:4px; border-radius:99px; background:rgba(240,232,216,0.08); overflow:hidden; }
 .ce-bar span { display:block; height:100%; border-radius:inherit; background:var(--copper); }
 .back-link.top { display:block; margin:0 0 var(--s3); padding:0; }
+
+/* ── Odyssey (v1.64): the saga card on Today, the journey screen, landmark moments ── */
+.saga-card { display:block; width:100%; margin-top:var(--s3); padding:var(--s4) var(--s4) var(--s3); border:none; border-radius:var(--r-card); text-align:left; cursor:pointer;
+    color:var(--text); font-family:var(--font-ui); background:radial-gradient(300px 120px at 85% 0%, rgba(217,178,95,0.10), transparent 70%), var(--raised); box-shadow:var(--lift); }
+.saga-card:active { transform:scale(0.99); }
+.saga-top { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:baseline; gap:4px var(--s3); }
+.saga-kicker { font-size:0.62rem; font-weight:600; letter-spacing:0.16em; text-transform:uppercase; color:var(--text-muted); }
+.saga-kicker span { color:var(--accent); }
+.saga-gain { font-size:0.72rem; color:var(--accent); animation:popIn .6s var(--ease) .4s both; }
+.saga-road { display:block; width:100%; height:64px; margin:var(--s2) 0 var(--s1); overflow:visible; }
+.road-line { fill:none; stroke:rgba(240,232,216,0.12); stroke-width:2; stroke-linecap:round; stroke-linejoin:round; stroke-dasharray:1 5; }
+.road-done { fill:none; stroke:var(--accent); stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round; }
+.road-stop { fill:var(--bg); stroke:rgba(240,232,216,0.25); stroke-width:1.5; }
+.road-stop.passed { fill:var(--accent); stroke:var(--accent); }
+.road-traveller { fill:#f2d891; filter:drop-shadow(0 0 6px rgba(242,216,145,0.75)); }
+.saga-next { font-size:0.8rem; color:var(--text-dim); }
+.saga-next strong { color:var(--text); font-weight:500; }
+.saga-next > span:not(.saga-open) { color:var(--text); }
+.saga-open { float:right; color:var(--text-muted); }
+
+.odyssey-screen { background:radial-gradient(620px 440px at 50% 4%, rgba(217,178,95,0.08), transparent 70%), var(--bg); }
+.odyssey-screen .workout-body { padding-bottom:calc(48px + env(safe-area-inset-bottom)); }
+.odyssey-hero { text-align:center; padding:var(--s4) 0 var(--s2); }
+.odyssey-hero h2 { font-family:var(--font-display); font-size:2.6rem; letter-spacing:0.08em; line-height:1; margin:6px 0; }
+.odyssey-line { font-family:'Instrument Serif', Georgia, serif; font-size:1.25rem; color:var(--text-dim); max-width:28ch; margin:0 auto; }
+.odyssey-stats { display:flex; justify-content:center; gap:var(--s4); margin-top:var(--s3); font-size:0.78rem; color:var(--text-dim); }
+.odyssey-stats strong { color:var(--text); font-weight:500; }
+.odyssey-map { display:block; width:100%; max-width:420px; margin:var(--s3) auto; overflow:visible; }
+.odyssey-map .road-line { stroke-width:2.5; }
+.odyssey-map .road-done { stroke-width:3; }
+.road-label { font-family:var(--font-ui); font-size:12px; fill:var(--text-muted); }
+.road-label.passed { fill:var(--text); }
+.odyssey-sources { display:grid; grid-template-columns:1fr 1fr; gap:var(--s2); }
+.odyssey-sources div { display:flex; flex-direction:column; gap:2px; padding:var(--s3) var(--s4); border-radius:var(--r-inner); background:var(--raised); }
+.odyssey-sources span { font-size:0.62rem; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; color:var(--text-muted); }
+.odyssey-sources strong { font-weight:300; font-size:1.6rem; }
+.odyssey-sources small { font-size:0.7rem; color:var(--text-dim); }
+.odyssey-note { margin-top:var(--s4); text-align:center; font-family:'Instrument Serif', Georgia, serif; font-size:1.1rem; color:var(--text-dim); }
+.moment-mark { width:96px; height:96px; color:var(--accent); }
