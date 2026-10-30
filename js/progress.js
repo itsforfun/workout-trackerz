@@ -527,11 +527,9 @@ async function saveData() {
     // Save to cloud
     await saveToCloud();
 
-    // Also download a JSON backup of this program
-    const filename = currentProgram === 'male' ? '9-5-beast-mode-data.json' :
-                     currentProgram === 'female' ? 'hourglass-goddess-data.json' :
-                     currentProgram === 'maleTotalBody' ? 'beast-total-body-data.json' :
-                     'goddess-total-body-data.json';
+    // Also download a JSON backup of this program, named after it (e.g. odyr-freyja-data.json)
+    const slug = PROGRAMS[currentProgram].name.toLowerCase().normalize('NFD').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    const filename = `odyr-${slug || 'program'}-data.json`;
     const backup = { program: currentProgram, exercises: progData() };
     const json = JSON.stringify(backup, null, 2);
     const blob = new Blob([json], {type:'application/json'});

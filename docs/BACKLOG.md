@@ -70,7 +70,6 @@ Status: **Done** · **Check** (built, still needs a look on the iPhone or a smal
 - Home-screen widgets (rings, streak), Live Activity for a ticking rest countdown on the lock screen (owner asked for it, 2026-10-29), Apple Watch app
 
 **Other**
-- Rename the five programs to match Odyr's Norse journey theme (owner planning it, 2026-10-30)
 - For women, later: optional cycle tracking that informs readiness and deloads; a female figure in the exercise demos (suggested 2026-10-30)
 - Progress photos and body measurements, kept private
 - Own web address (for example odyr.app)
@@ -107,6 +106,7 @@ Status: **Done** · **Check** (built, still needs a look on the iPhone or a smal
 | 1.29 | 8-tier medals, trophy room, badge sheet, minting moment, signature and secret badges, "almost there" nudges |
 | 1.30–1.34 | Brand: Odyra, then Odyr; new icon; sign-in redesign; design carried across the app; thinker quotes |
 | 1.35–1.36 | French (whole app, reminders, quotes), Language setting, French review pass, decimal comma typing |
+| 1.60 | Programs renamed to fit the theme and what each does: Forge, Freyja, Anvil, Valkyrie, Wayfarer |
 | 1.59 | Program menu: "For you" shows the programs written for your sex, the others folded under "More programs" |
 | 1.58 | Made for women too: strength standards follow your sex on any program, Goddess top tier, women's max heart rate formula, women's programs first, program tags by focus, opening quotes without male-only language |
 | 1.57 | Harder badges: every track re-paced (Iron after a few sessions, Platinum ~1 year, Obsidian 6+ years), earned badges re-measured once against the new targets; Progress lists one workout's lifts at a time (segments, opening on the last workout done) |

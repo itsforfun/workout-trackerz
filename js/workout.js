@@ -555,7 +555,7 @@ const SWAPS = {
     'standing-calf-raise-a': [['Seated Calf Raise', 'kg'], ['Leg Press Calf Raise', 'kg'], ['Single-Leg Calf Raise', 'kg/DB']],
     'standing-calf-raise-c': [['Seated Calf Raise', 'kg'], ['Leg Press Calf Raise', 'kg'], ['Single-Leg Calf Raise', 'kg/DB']],
     'cable-crunch': [['Machine Crunch', 'kg'], ['Hanging Knee Raise', 'kg+']],
-    // 3-Day Full Body: alternatives keep the same movement pattern (spec section 5)
+    // Wayfarer (3-Day Full Body): alternatives keep the same movement pattern (spec section 5)
     'goblet-box-squat': [['Goblet Squat', 'kg/DB'], ['Smith Machine Box Squat', 'kg'], ['Barbell Box Squat', 'kg', true]],
     'incline-db-press': [['Incline Machine Press', 'kg'], ['Flat DB Press', 'kg/DB'], ['Push-Ups', 'reps/+kg']],
     'lat-pulldown': [['Assisted Pull-Up Machine', 'kg assist', false, true], ['Single-Arm Cable Pulldown', 'kg']],

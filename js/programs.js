@@ -7,8 +7,8 @@
 // `meta` is parsed for sets × reps and rest (see getPrescription); `note` is the form cue.
 const PROGRAMS = {
     male: {
-        name: '9-5 Beast Mode',
-        subtitle: 'Push/Pull/Legs for Men',
+        name: 'Forge',   // was "9-5 Beast Mode" (renamed v1.60): three sessions that build size and strength
+        subtitle: 'Push · Pull · Legs · 3 days a week',
         gender: 'male',
         heroTitle: 'WORK HARD<br>STAY HARD',
         heroSubtitle: 'Track · Progress · Dominate',
@@ -36,8 +36,8 @@ const PROGRAMS = {
         ]
     },
     female: {
-        name: 'Hourglass Goddess',
-        subtitle: 'A/B/C Split for Women',
+        name: 'Freyja',   // was "Hourglass Goddess" (renamed v1.60): Norse goddess of beauty, Odyr's wife; glutes and shape
+        subtitle: 'Glutes & shape · A / B / C',
         gender: 'female',
         heroTitle: 'HOURGLASS<br>GODDESS',
         heroSubtitle: 'Sculpt · Shape · Slay',
@@ -67,8 +67,8 @@ const PROGRAMS = {
         ]
     },
     maleTotalBody: {
-        name: 'Beast Mode Total Body',
-        subtitle: 'Full-Body for Men (1-2x/week)',
+        name: 'Anvil',   // was "Beast Mode Total Body" (renamed v1.60): one compact, heavy barbell session
+        subtitle: 'Full body · 1–2 days a week',
         gender: 'male',
         heroTitle: 'TOTAL BODY<br>BEAST',
         heroSubtitle: 'Complete · Efficient · Effective',
@@ -83,8 +83,8 @@ const PROGRAMS = {
         ]
     },
     femaleTotalBody: {
-        name: 'Goddess Total Body',
-        subtitle: 'Full-Body for Women (1-2x/week)',
+        name: 'Valkyrie',   // was "Goddess Total Body" (renamed v1.60): warrior women; heavy full-body compounds
+        subtitle: 'Glutes & full body · 1–2 days a week',
         gender: 'female',
         heroTitle: 'TOTAL BODY<br>GODDESS',
         heroSubtitle: 'Complete · Sculpted · Strong',
@@ -101,7 +101,7 @@ const PROGRAMS = {
     // Joint-friendly full body for returning lifters, fat loss first; needs no trap bar or leg press.
     // Rest: 2-3 min after the first two lifts, 60-90 s after the rest.
     fullBody3: {
-        name: '3-Day Full Body',
+        name: 'Wayfarer',   // was "3-Day Full Body" (renamed v1.60): the road back, with walks and easy cardio
         subtitle: 'Fat-loss full body · Mon / Wed / Fri',
         gender: 'male',
         heroTitle: 'REBUILD<br>STRONGER',
@@ -153,7 +153,7 @@ const PROGRAMS = {
     }
 };
 
-// Optional 20-minute off-day mobility for 9-5 Beast Mode, matched to the last workout day.
+// Optional 20-minute off-day mobility for Forge (was 9-5 Beast Mode), matched to the last workout day.
 // 2-3 rounds, 30-45 s each.
 const MOBILITY = {
     male: [

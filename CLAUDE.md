@@ -451,3 +451,12 @@ reference/debug-screenshots/  ← Supabase key page, "Script error" console, Git
 - **Program menu:** programs written for your sex are listed under "For you" (`#forYouGrid`); the others are folded under "More programs" (`<details id="morePrograms">`, never hidden), all renumbered in order (`orderProgramCards`, v1.59). Without a sex in the profile, all programs are listed under one heading; the tags describe each program's focus ("Glutes & shape · 3 days", "Push · Pull · Legs · 3 days") instead of "Men"/"Women", since every program now ranks anyone fairly.
 - **Opening quotes:** for women, the three classic lines in male-only language ("strong men", "He who…") are skipped (`quoteFits`, `MALE_ONLY` in js/splash.js). The sex is kept on the phone as `odyr_gender` (`rememberGender`) because the quote shows before sign-in finishes.
 - Already in place before: female body map, women's programs, Goddess naming on women's programs. French was already gender-neutral.
+
+## 44. Program names (v1.60, 2026-10-30)
+- The owner renamed the five programs to fit Odyr's theme (Norse story + the journey), each name matching what the program does. Ids are unchanged, so saved data is unaffected:
+  - `male` 9-5 Beast Mode → **Forge** (Push/Pull/Legs, three sessions that build size and strength)
+  - `female` Hourglass Goddess → **Freyja** (Norse goddess of beauty, Odyr's wife; glutes and shape, A/B/C)
+  - `maleTotalBody` Beast Mode Total Body → **Anvil** (one compact, heavy barbell session; pairs with Forge)
+  - `femaleTotalBody` Goddess Total Body → **Valkyrie** (warrior women; heavy full-body compounds; pairs with Freyja)
+  - `fullBody3` 3-Day Full Body → **Wayfarer** (the road back for returning lifters, with walks and easy cardio)
+- Card descriptions open with why the name fits; subtitles describe the focus ("Glutes & shape · A / B / C") instead of "for Men/Women". Backups download as `odyr-<name>-data.json`. Older sections of this file still use the old names.

@@ -213,7 +213,7 @@ function renderToday() {
     renderHabits();
 }
 
-// ── Programs with a weekly plan, warm-up, daily habits and a power milestone (3-Day Full Body) ──
+// ── Programs with a weekly plan, warm-up, daily habits and a power milestone (Wayfarer) ──
 
 const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
