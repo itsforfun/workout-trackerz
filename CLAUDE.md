@@ -510,4 +510,4 @@ reference/debug-screenshots/  ← Supabase key page, "Script error" console, Git
 
 ## 52. Program cards show the same key facts (v1.69, 2026-10-30)
 - Owner: the tag at the top right of each program card must be consistent and show the difficulty. Every program now has `level` (1 Beginner, 2 Intermediate, 3 Advanced), `perWeek` and `equipment` in its definition (js/programs.js, js/cardio.js). `fillProgramCard` (js/core.js, run by `orderProgramCards` whenever the menu opens) writes the tag as three signal-style bars + level name + days a week, and makes the third detail "Equipment". The details row is always Split · Session · Equipment (the promise line covers the focus). index.html carries the same text so nothing jumps.
-- Levels today: Beginner for Valkyrie, Wayfarer, Horizon and First Stride; Intermediate for Forge, Freyja, Anvil and Tempest. A new program needs all three fields (the automated check fails otherwise).
+- Levels (set by the owner, v1.70): Advanced for Forge and Freyja; Intermediate for Anvil, Valkyrie, Wayfarer and Tempest; Beginner for Horizon and First Stride. A new program needs all three fields (the automated check fails otherwise).

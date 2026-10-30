@@ -8,7 +8,7 @@
 const PROGRAMS = {
     male: {
         name: 'Forge',   // was "9-5 Beast Mode" (renamed v1.60): three sessions that build size and strength
-        level: 2, perWeek: '3 days a week', equipment: 'Full gym',   // shown the same way on every program card
+        level: 3, perWeek: '3 days a week', equipment: 'Full gym',   // shown the same way on every program card
         subtitle: 'Push · Pull · Legs · 3 days a week',
         gender: 'male',
         heroTitle: 'WORK HARD<br>STAY HARD',
@@ -38,7 +38,7 @@ const PROGRAMS = {
     },
     female: {
         name: 'Freyja',   // was "Hourglass Goddess" (renamed v1.60): Norse goddess of beauty, Odyr's wife; glutes and shape
-        level: 2, perWeek: '3 days a week', equipment: 'Full gym',   // shown the same way on every program card
+        level: 3, perWeek: '3 days a week', equipment: 'Full gym',   // shown the same way on every program card
         subtitle: 'Glutes & shape · A / B / C',
         gender: 'female',
         heroTitle: 'HOURGLASS<br>GODDESS',
@@ -87,7 +87,7 @@ const PROGRAMS = {
     },
     femaleTotalBody: {
         name: 'Valkyrie',   // was "Goddess Total Body" (renamed v1.60): warrior women; heavy full-body compounds
-        level: 1, perWeek: '1–2 days a week', equipment: 'Basic gym',   // shown the same way on every program card
+        level: 2, perWeek: '1–2 days a week', equipment: 'Basic gym',   // shown the same way on every program card
         subtitle: 'Glutes & full body · 1–2 days a week',
         gender: 'female',
         heroTitle: 'TOTAL BODY<br>GODDESS',
@@ -106,7 +106,7 @@ const PROGRAMS = {
     // Rest: 2-3 min after the first two lifts, 60-90 s after the rest.
     fullBody3: {
         name: 'Wayfarer',   // was "3-Day Full Body" (renamed v1.60): the road back, with walks and easy cardio
-        level: 1, perWeek: '3 days a week', equipment: 'Gym',   // shown the same way on every program card
+        level: 2, perWeek: '3 days a week', equipment: 'Gym',   // shown the same way on every program card
         subtitle: 'Full body · Mon / Wed / Fri + cardio',
         gender: 'male',
         heroTitle: 'REBUILD<br>STRONGER',
