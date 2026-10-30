@@ -133,6 +133,8 @@ function renderToday() {
     renderTodayHero();
     renderSagaCard();
     checkLandmarks();
+    checkQuests();
+    renderQuests();
     renderInsight();
     renderDeloadCard();
     renderWeekPlan();
@@ -331,6 +333,8 @@ function toggleHabit(i, on) {
     scheduleSave();
     renderHabits();
     checkAchievements();
+    checkQuests();
+    renderQuests();
     renderTodayHero();
 }
 

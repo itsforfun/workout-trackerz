@@ -132,6 +132,7 @@ function renderWorkout() {
                     </div>
                     ${ex.swappedFrom ? `<div class="wo-sub swapped">Swapped in for ${escapeHtml(ex.swappedFrom)} today</div>` : ''}
                     <div class="wo-sub">${escapeHtml(prescriptionText(ex))}${p.restText ? ` · ${escapeHtml(p.restText)} rest` : ''}</div>
+                    ${ghostChipHtml(ex, exId)}
                     ${ex.note && !ex.alternates ? `<div class="wo-sub" style="font-style:italic;">${escapeHtml(ex.note)}</div>` : ''}
                     ${progression ? `<div class="wo-tip prog-badge ${progression.type}" style="white-space:normal;"><span>${escapeHtml(progression.text)}</span></div>` : ''}
                     ${!ex.swappedFrom && upgradeText(ex, w.week) ? `<div class="wo-sub swapped">${escapeHtml(upgradeText(ex, w.week))}</div>` : ''}
@@ -225,6 +226,7 @@ function toggleSetDone(exId, i) {
         floatXp(rowEl && rowEl.querySelector('.set-check'), SET_XP);
         startRest(getPrescription(workoutExercise(exId)).restSec, nextUpLabel(exId));
         checkRecord(exId, i);
+        checkGhost(exId, i);
         setBadgeNudge();
     }
 }
@@ -242,6 +244,44 @@ function floatXp(anchor, amount) {
     el.style.top = `${r.top}px`;
     document.body.appendChild(el);
     setTimeout(() => el.remove(), 1200);
+}
+
+// ── Your ghost: you, four weeks ago. Beat its best set and it turns gold (once per workout). ──
+const GHOST_DAYS = 28;
+
+function ghostOf(ex) {
+    if (!ex || ex.swappedFrom || ex.assist) return null;
+    const cutoff = addDays(todayStr(), -GHOST_DAYS);
+    const past = strengthHistory(ex).filter(p => p.date <= cutoff);
+    return past.length ? past[past.length - 1] : null;
+}
+
+function ghostChipHtml(ex, slot) {
+    const ghost = ghostOf(ex);
+    if (!ghost) return '';
+    if ((activeWorkout.ghosts || {})[slot]) return `<div class="wo-ghost beaten" id="ghost_${slot}"><span class="ghost-dot"></span>You beat your ghost</div>`;
+    const what = isRepsBased(ex)
+        ? `${Math.round(ghost.value)} reps`
+        : `${kgToDisplay(ghost.kg)} ${setWeightUnit(ex)}${ghost.reps ? ` × ${ghost.reps}` : ''}`;
+    return `<div class="wo-ghost" id="ghost_${slot}"><span class="ghost-dot"></span>Your ghost, 4 weeks ago: ${escapeHtml(what)}</div>`;
+}
+
+function checkGhost(slot, i) {
+    const ex = workoutExercise(slot);
+    const ghost = ghostOf(ex);
+    const ghosts = activeWorkout.ghosts || (activeWorkout.ghosts = {});
+    if (!ghost || ghosts[slot]) return;
+    const row = activeWorkout.rows[slot][i];
+    const reps = parseInt(row.reps);
+    if (!(reps > 0)) return;
+    const kg = displayToKg(row.kg);
+    const value = isRepsBased(ex) ? reps : strengthOf(ex, { kg, sets: [{ kg, reps }] });
+    if (!(value > ghost.value)) return;
+    ghosts[slot] = true;
+    persistActiveWorkout();
+    const chip = document.getElementById(`ghost_${slot}`);
+    if (chip) chip.outerHTML = ghostChipHtml(ex, slot);
+    showToast(`You beat your ghost on ${exerciseDisplayName(ex, activeWorkout.week)}`);
 }
 
 // ── New record: a set beyond the best ever logged for this exercise ──

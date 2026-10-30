@@ -671,6 +671,46 @@
         closeOdyssey();
     });
 
+    await check('Your ghost: you four weeks ago, beaten once per workout', () => {
+        const ex = PROGRAMS[currentProgram].exercises.find(e => e.thresholds && !isRepsBased(e));
+        const old = addDays(todayStr(), -40);
+        allData._archive = { [currentProgram]: [{ start: old, end: addDays(old, 7), data: { [ex.id]: { 0: { kg: '20', sets: [{ kg: '20', reps: 8 }], date: old } } } }] };
+        const ghost = ghostOf(ex);
+        assert(ghost && ghost.date === old, 'ghost should be the workout from 4+ weeks ago');
+        activeWorkout = { rows: { [ex.id]: [{ kg: kgToDisplay(30), reps: '8', done: true }] }, week: 0, day: ex.day, startedAt: Date.now() };
+        assert(/Your ghost, 4 weeks ago/.test(ghostChipHtml(ex, ex.id)), 'ghost chip');
+        checkGhost(ex.id, 0);
+        assert(activeWorkout.ghosts && activeWorkout.ghosts[ex.id], 'a heavier set should beat the ghost');
+        assert(/You beat your ghost/.test(ghostChipHtml(ex, ex.id)), 'beaten chip');
+        activeWorkout = null;
+        try { localStorage.removeItem(activeWorkoutKey()); } catch (e) { /* private mode */ }
+    });
+
+    await check('Weekly quests: three from your log and goal, progress, completion with XP', () => {
+        const monday = mondayOf(todayStr());
+        delete metaFor('_quests')[monday];
+        const week = questWeek(monday);
+        equal(week.list.length, 3, 'three quests');
+        assert(week.list.some(q => q.kind === 'train'), 'a training quest');
+        assert(week.list.every(q => q.target >= 1 && questLabel(q).length > 5), 'every quest has a target and a label');
+        equal(questWeek(monday), week, 'quests stay put for the week');
+        // Finish the training quest by lowering its target to what's done
+        const train = week.list.find(q => q.kind === 'train');
+        train.target = Math.max(1, questProgress(train, monday));
+        if (questProgress(train, monday) >= 1) {
+            const xpBefore = questXp();
+            momentQueue.length = 0;
+            checkQuests();
+            assert(week.done.train, 'training quest not completed');
+            equal(questXp(), xpBefore + QUEST_XP, 'quest XP');
+            assert(playerXp(playerStats()).sources.some(([name, v]) => name === 'Quests' && v >= QUEST_XP), 'quests in the XP breakdown');
+            momentQueue.length = 0;
+        }
+        showScreen('app');
+        switchTab('today');
+        equal(document.querySelectorAll('#questsCard .quest-row').length, 3, 'quests on Today');
+    });
+
     await check('Ticking a set shows the XP it earned', () => {
         const anchor = document.createElement('button');
         document.body.appendChild(anchor);

@@ -653,6 +653,7 @@ function weekXp(monday) {
         xp += done * 10 + (done >= dailyHabits().length ? 30 : 0);
     }
     xp += weekRecords(monday).length * 50;
+    xp += Object.keys((metaFor('_quests')[monday] || {}).done || {}).length * QUEST_XP;
     xp += (allData._badgeLog || []).filter(b => inWeek(b.date)).reduce((sum, b) => sum + BADGE_TIERS[b.tier - 1].xp, 0);
     xp += Object.values(allData._specials || {}).filter(inWeek).length * SPECIAL_XP;
     return Math.round(xp);

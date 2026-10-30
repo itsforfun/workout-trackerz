@@ -1936,3 +1936,27 @@ button.hero-score:active { opacity:0.7; }
 .odyssey-sources small { font-size:0.7rem; color:var(--text-dim); }
 .odyssey-note { margin-top:var(--s4); text-align:center; font-family:'Instrument Serif', Georgia, serif; font-size:1.1rem; color:var(--text-dim); }
 .moment-mark { width:96px; height:96px; color:var(--accent); }
+
+/* ── Ghost of your past self (v1.65) ── */
+.wo-ghost { display:inline-flex; align-items:center; gap:7px; margin-top:6px; padding:4px 10px 4px 8px; border-radius:99px; font-size:0.72rem;
+    color:var(--text-dim); background:rgba(240,232,216,0.05); border:0.5px dashed rgba(240,232,216,0.22); }
+.ghost-dot { width:7px; height:7px; border-radius:50%; background:rgba(240,232,216,0.35); box-shadow:0 0 6px rgba(240,232,216,0.35); }
+.wo-ghost.beaten { color:var(--accent); border:0.5px solid rgba(217,178,95,0.5); background:rgba(217,178,95,0.08); animation:popIn .5s var(--ease); }
+.wo-ghost.beaten .ghost-dot { background:var(--accent); box-shadow:0 0 8px rgba(217,178,95,0.8); }
+
+/* ── Weekly quests (v1.65) ── */
+.quests-card { margin-top:var(--s3); padding:var(--s4); border-radius:var(--r-card); background:var(--raised); box-shadow:var(--lift); }
+.quests-head { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:var(--s2); }
+.quests-kicker { font-size:0.62rem; font-weight:600; letter-spacing:0.16em; text-transform:uppercase; color:var(--text-muted); }
+.quests-left { font-size:0.72rem; color:var(--text-dim); }
+.quest-row { display:grid; grid-template-columns:22px 1fr auto; gap:var(--s3); align-items:center; padding:10px 0; border-top:1px solid rgba(240,232,216,0.06); }
+.quest-row:first-of-type { border-top:none; }
+.quest-check { display:grid; place-items:center; width:22px; height:22px; border-radius:50%; border:1.5px solid rgba(240,232,216,0.25); color:var(--bg); }
+.quest-check svg { width:13px; height:13px; }
+.quest-row.done .quest-check { background:var(--accent); border-color:var(--accent); animation:popIn .4s var(--ease); }
+.quest-text { display:flex; flex-direction:column; gap:6px; font-size:0.86rem; color:var(--text); }
+.quest-row.done .quest-text { color:var(--text-dim); }
+.quest-bar { display:block; height:3px; border-radius:99px; background:rgba(240,232,216,0.08); overflow:hidden; }
+.quest-bar span { display:block; height:100%; border-radius:inherit; background:var(--accent); }
+.quest-xp { font-size:0.75rem; color:var(--accent); white-space:nowrap; font-variant-numeric:tabular-nums; }
+.quest-row.done .quest-xp { color:var(--text-muted); }

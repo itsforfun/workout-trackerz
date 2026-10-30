@@ -385,6 +385,7 @@ function playerXp(stats) {
         ['Habits', stats.habitTicks * 10 + stats.perfectDays * 30],
         ['Weigh-ins', stats.weighIns * 10],
         ['Badges', badgeXp],
+        ['Quests', questXp()],
     ];
     const total = sources.reduce((sum, [, xp]) => sum + xp, 0);
     const level = levelFromXp(total);

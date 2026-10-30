@@ -27,7 +27,6 @@ Status: **Done** · **Check** (built, still needs a look on the iPhone or a smal
 ## Next — not started
 
 **Sharing and motivation**
-- Weekly challenges: three small goals each Monday, picked from your own log ("one more rep on Bench", "150 cardio minutes"), with XP (suggested 2026-10-30)
 - Streak shield: one per month, keeps a streak alive through a missed week (suggested 2026-10-30)
 - "Then vs now" moments: monthly reminder of how far you've come (strength %, weight, workouts) (suggested 2026-10-30)
 - Guided first week for new accounts: a short checklist of quick wins (suggested 2026-10-30)
@@ -106,6 +105,7 @@ Status: **Done** · **Check** (built, still needs a look on the iPhone or a smal
 | 1.29 | 8-tier medals, trophy room, badge sheet, minting moment, signature and secret badges, "almost there" nudges |
 | 1.30–1.34 | Brand: Odyra, then Odyr; new icon; sign-in redesign; design carried across the app; thinker quotes |
 | 1.35–1.36 | French (whole app, reminders, quotes), Language setting, French review pass, decimal comma typing |
+| 1.65 | Ghost of your past self in workout mode (you, 4 weeks ago, to beat); weekly quests (three each Monday from your log and goal, 75 XP each) |
 | 1.64 | Odyssey: everything you do moves your traveller along sagas of 1,000 leagues with named landmarks; saga card on Today shows how far you travelled since your last visit; landmark moments; journey screen |
 | 1.63 | French opening quotes rewritten for native readers; seven lines now from French writers (Hugo, La Fontaine, Montaigne, Corneille, Boileau, Pascal, Alain); tier pop-up translated in French |
 | 1.62 | Goal in your profile drives six daily habits in every program (protein for your weight, sleep, steps, eating for your goal), with sources; cardio zones and science in every program; program cards describe training, not fat loss or muscle; French names Enclume and Sentier |
