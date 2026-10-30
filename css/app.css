@@ -1960,3 +1960,36 @@ button.hero-score:active { opacity:0.7; }
 .quest-bar span { display:block; height:100%; border-radius:inherit; background:var(--accent); }
 .quest-xp { font-size:0.75rem; color:var(--accent); white-space:nowrap; font-variant-numeric:tabular-nums; }
 .quest-row.done .quest-xp { color:var(--text-muted); }
+
+/* ── Crews (v1.66) ── */
+.crew-card { margin:var(--s3) 0; padding:var(--s4); border-radius:var(--r-card); background:var(--raised); box-shadow:var(--lift); text-align:left; }
+.crew-kicker { font-size:0.62rem; font-weight:600; letter-spacing:0.16em; text-transform:uppercase; color:var(--text-muted); }
+.crew-pitch { margin:6px 0 var(--s3); font-size:0.85rem; line-height:1.5; color:var(--text-dim); }
+.crew-actions { display:flex; gap:var(--s2); margin-top:var(--s3); }
+.crew-actions .btn { flex:1; }
+.crew-form { margin-top:var(--s2); }
+.crew-head { display:flex; justify-content:space-between; align-items:center; gap:var(--s3); }
+.crew-name { font-family:var(--font-display); font-size:1.7rem; letter-spacing:0.06em; line-height:1.1; }
+.crew-code { display:flex; flex-direction:column; align-items:center; gap:2px; padding:6px 12px; border:0.5px solid rgba(217,178,95,0.4); border-radius:12px;
+    background:rgba(217,178,95,0.06); color:var(--text-dim); font:inherit; font-size:0.62rem; letter-spacing:0.1em; text-transform:uppercase; cursor:pointer; }
+.crew-code span { font-size:0.95rem; letter-spacing:0.18em; color:var(--accent); font-weight:600; }
+.crew-ship { margin:var(--s3) 0 var(--s2); }
+.crew-ship-top { display:flex; justify-content:space-between; align-items:baseline; font-size:0.72rem; color:var(--text-dim); }
+.crew-ship-top strong { font-weight:300; font-size:1.3rem; color:var(--text); }
+.crew-ship-top small { font-size:0.72rem; color:var(--text-dim); }
+.crew-ship-bar { position:relative; height:6px; margin-top:8px; border-radius:99px; background:rgba(240,232,216,0.08); }
+.crew-ship-bar span { display:block; height:100%; border-radius:inherit; background:linear-gradient(90deg, rgba(217,178,95,0.5), var(--accent)); }
+.crew-ship-bar i { position:absolute; top:50%; width:12px; height:12px; margin:-6px 0 0 -6px; border-radius:50%; background:#f2d891; box-shadow:0 0 8px rgba(242,216,145,0.7); }
+.crew-member { display:grid; grid-template-columns:34px 1fr auto 40px; gap:var(--s3); align-items:center; padding:10px 0; border-top:1px solid rgba(240,232,216,0.06); }
+.crew-avatar { display:grid; place-items:center; width:34px; height:34px; border-radius:50%; background:rgba(240,232,216,0.06); font-weight:600; color:var(--text-dim); }
+.crew-member.me .crew-avatar { background:rgba(217,178,95,0.15); color:var(--accent); }
+.crew-who { display:flex; flex-direction:column; gap:2px; min-width:0; }
+.crew-who strong { font-weight:500; font-size:0.9rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.crew-who strong small, .crew-who > small { font-weight:400; font-size:0.72rem; color:var(--text-dim); }
+.crew-leagues { font-size:1.1rem; font-weight:300; font-variant-numeric:tabular-nums; }
+.crew-horn { display:grid; place-items:center; width:36px; height:36px; border:none; border-radius:50%; background:rgba(217,178,95,0.1); color:var(--accent); cursor:pointer; }
+.crew-horn:active { transform:scale(0.92); }
+.crew-horn.sent { background:transparent; color:var(--text-muted); }
+.crew-leave { display:block; margin:var(--s3) auto 0; font-size:0.75rem; color:var(--text-muted); }
+.saga-crew { margin-top:6px; padding-top:8px; border-top:1px solid rgba(240,232,216,0.06); font-size:0.75rem; color:var(--text-dim); }
+.saga-crew span { color:var(--accent); }

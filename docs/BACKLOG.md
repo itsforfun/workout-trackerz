@@ -19,6 +19,7 @@ Status: **Done** · **Check** (built, still needs a look on the iPhone or a smal
 | Backup download | Exports one program's log; a full "Export all my data" is still missing |
 | Name "Odyr" | Formal trademark search before charging money |
 | Summary and share cards (v1.38) | Try them after a real workout on the iPhone |
+| Crews (v1.66) | Run supabase-crews-setup.sql in Supabase, then try a crew with a friend |
 | Pro waitlist (v1.39) | Table is live; check Supabase → Table Editor → pro_waitlist after people have used the app for a few weeks |
 | Tab bar lens (v1.43–1.44) | Try the glide and the drag on the iPhone; tune speed or stretch if needed |
 | Exercise guide (v1.39) | The owner finds the stick-figure demos inaccurate; still deciding on licensed demos (exercise.com, ExRx.net, MuscleWiki, WorkoutLabs). Body map and muscle library done in v1.47 |
@@ -32,7 +33,6 @@ Status: **Done** · **Check** (built, still needs a look on the iPhone or a smal
 - Guided first week for new accounts: a short checklist of quick wins (suggested 2026-10-30)
 - Share cards for a single new record and for level-ups (the summary and weekly recap can be shared already)
 - Share button on the badge sheet (for the share cards)
-- Friends and weekly challenges (steps or workouts), small private groups
 - Read-only progress sharing with a coach or training partner
 - Personal greeting with your name, and "What's new" notes after updates
 
@@ -105,6 +105,7 @@ Status: **Done** · **Check** (built, still needs a look on the iPhone or a smal
 | 1.29 | 8-tier medals, trophy room, badge sheet, minting moment, signature and secret badges, "almost there" nudges |
 | 1.30–1.34 | Brand: Odyra, then Odyr; new icon; sign-in redesign; design carried across the app; thinker quotes |
 | 1.35–1.36 | French (whole app, reminders, quotes), Language setting, French review pass, decimal comma typing |
+| 1.66 | Crews: up to 8 friends on one ship, invite codes, ranked by effort (leagues) not weights, horns of encouragement (needs supabase-crews-setup.sql) |
 | 1.65 | Ghost of your past self in workout mode (you, 4 weeks ago, to beat); weekly quests (three each Monday from your log and goal, 75 XP each) |
 | 1.64 | Odyssey: everything you do moves your traveller along sagas of 1,000 leagues with named landmarks; saga card on Today shows how far you travelled since your last visit; landmark moments; journey screen |
 | 1.63 | French opening quotes rewritten for native readers; seven lines now from French writers (Hugo, La Fontaine, Montaigne, Corneille, Boileau, Pascal, Alain); tier pop-up translated in French |

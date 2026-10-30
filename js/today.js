@@ -133,6 +133,9 @@ function renderToday() {
     renderTodayHero();
     renderSagaCard();
     checkLandmarks();
+    // Crew: load once (then the saga card shows the ship), afterwards keep my numbers this week current
+    if (crewState === 'idle') loadCrew().then(c => { if (c) renderSagaCard(); });
+    else syncCrewStats();
     checkQuests();
     renderQuests();
     renderInsight();

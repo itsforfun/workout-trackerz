@@ -23,6 +23,7 @@ window.__sbCalls = [];
                 signOut: async () => ({ error: null }),
             },
             from: query,
+            rpc: async (name, args) => { window.__sbCalls.push({ op: 'rpc', name, args }); return { data: null, error: null }; },
             functions: { invoke: async () => ({ data: null, error: null }) },
         }),
     };

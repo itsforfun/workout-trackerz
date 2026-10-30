@@ -22,17 +22,29 @@ const LANDMARKS = [
 ];
 const ROMAN_SAGA = ['', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X'];
 
-// All leagues ever travelled, from the saved log (all programs), with where they came from
+// Leagues travelled on the dates that match (all programs), by source
+function leagueSources(match = () => true) {
+    return {
+        workouts: allWorkoutDates().filter(match).length * LEAGUES.workout,
+        cardio: Math.floor(cardioMinutes(match) / LEAGUES.cardioMinutes),
+        steps: Object.keys(stepData).filter(match).reduce((sum, d) => sum + Math.min(LEAGUES.stepsDayMax, Math.floor(stepsOn(d) / LEAGUES.steps)), 0),
+        habits: Object.keys(metaFor('_habits')).filter(match).reduce((sum, d) => sum + habitsDone(d) * LEAGUES.habit, 0),
+    };
+}
+
+function leaguesBetween(from, to) {
+    const s = leagueSources(d => d >= from && d <= to);
+    return s.workouts + s.cardio + s.steps + s.habits;
+}
+
+// All leagues ever travelled, with where they came from
 function journey() {
-    const workouts = allWorkoutDates().length * LEAGUES.workout;
-    const cardio = Math.floor(cardioMinutes(() => true) / LEAGUES.cardioMinutes);
-    const steps = Object.keys(stepData).reduce((sum, d) => sum + Math.min(LEAGUES.stepsDayMax, Math.floor(stepsOn(d) / LEAGUES.steps)), 0);
-    const habits = Object.keys(metaFor('_habits')).reduce((sum, d) => sum + habitsDone(d) * LEAGUES.habit, 0);
-    const total = workouts + cardio + steps + habits;
+    const sources = leagueSources();
+    const total = sources.workouts + sources.cardio + sources.steps + sources.habits;
     const saga = Math.floor(total / SAGA_LENGTH) + 1;
     const into = total % SAGA_LENGTH;
     const stop = Math.floor(into / 100);   // the last landmark passed in this saga
-    return { total, saga, into, stop, next: stop + 1, toNext: (stop + 1) * 100 - into, sources: { workouts, cardio, steps, habits } };
+    return { total, saga, into, stop, next: stop + 1, toNext: (stop + 1) * 100 - into, sources };
 }
 
 function sagaName(saga) {
@@ -115,6 +127,7 @@ function renderSagaCard() {
             </div>
             ${roadSvg(j.into, fromInto)}
             <div class="saga-next"><strong>${j.toNext.toLocaleString(LOCALE)}</strong> ${j.toNext === 1 ? 'league to' : 'leagues to'} <span>${escapeHtml(next[0])}</span> <span class="saga-open">›</span></div>
+            ${crewLineHtml()}
         </button>`;
     travelTo(el.querySelector('svg'), fromInto, j.into);
     rememberLeagues(j.total);
@@ -175,6 +188,7 @@ function renderOdyssey() {
             <p class="odyssey-line">${escapeHtml(LANDMARKS[j.stop][1])}</p>
             <div class="odyssey-stats"><span><strong>${j.into.toLocaleString(LOCALE)}</strong> of ${SAGA_LENGTH.toLocaleString(LOCALE)} leagues</span><span><strong>${j.toNext.toLocaleString(LOCALE)}</strong> ${j.toNext === 1 ? 'league to' : 'leagues to'} <span>${escapeHtml(LANDMARKS[j.next][0])}</span></span></div>
         </div>
+        <div id="crewCard"></div>
         <svg class="odyssey-map" viewBox="0 0 360 ${H}" aria-hidden="true">
             <polyline class="road-line" points="${pts.join(' ')}"/>
             <polyline class="road-done" points="${pts.join(' ')}" pathLength="1000" stroke-dasharray="${j.into} 1000"/>
@@ -190,6 +204,7 @@ function renderOdyssey() {
         </div>
         <p class="odyssey-note">Missed days never send you back. The road just waits for you.</p>
     `;
+    renderCrew();
     // Open with the traveller in view
     requestAnimationFrame(() => {
         const map = document.querySelector('.odyssey-map');

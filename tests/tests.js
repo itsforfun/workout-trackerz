@@ -711,6 +711,76 @@
         equal(document.querySelectorAll('#questsCard .quest-row').length, 3, 'quests on Today');
     });
 
+    await check('Crews: start one, crewmates, the ship this week, horns (pretend database)', async () => {
+        const realFrom = sb.from, realRpc = sb.rpc;
+        const db = { crews: [], crew_members: [], crew_horns: [] };
+        sb.from = table => {
+            const filters = [];
+            let op = 'select', payload = null, single = false;
+            const q = {
+                select: () => q, order: () => q, limit: () => q,
+                eq: (k, v) => { filters.push(r => r[k] === v); return q; },
+                gt: (k, v) => { filters.push(r => r[k] > v); return q; },
+                maybeSingle: () => { single = true; return q; },
+                update: p => { op = 'update'; payload = p; return q; },
+                delete: () => { op = 'delete'; return q; },
+                insert: p => { op = 'insert'; payload = p; return q; },
+                then(resolve, reject) {
+                    const match = r => filters.every(f => f(r));
+                    let data = null;
+                    if (op === 'select') { const rows = db[table].filter(match); data = single ? rows[0] || null : rows; }
+                    if (op === 'update') db[table].filter(match).forEach(r => Object.assign(r, payload));
+                    if (op === 'delete') db[table] = db[table].filter(r => !match(r));
+                    if (op === 'insert') db[table].push({ ...payload, at: new Date().toISOString() });
+                    return Promise.resolve({ data, error: null }).then(resolve, reject);
+                },
+            };
+            return q;
+        };
+        sb.rpc = async (name, args) => {
+            if (name !== 'create_crew') return { data: null, error: { message: 'no crew with that code' } };
+            db.crews.push({ id: 'c1', name: args.crew_name, code: 'A7F3K9' });
+            db.crew_members.push({ crew_id: 'c1', user_id: currentUser.id, display_name: args.display, week_start: null, week_leagues: 0, week_workouts: 0 });
+            return { data: 'A7F3K9', error: null };
+        };
+        try {
+            crew = null; crewState = 'idle'; crewForm = null;
+            await loadCrew();
+            openOdyssey();
+            assert(document.querySelector('#crewCard .crew-pitch'), 'no invitation to start a crew');
+            crewForm = 'create';
+            renderCrew();
+            document.getElementById('crewName').value = 'Morning Wolves';
+            document.getElementById('crewDisplay').value = 'Kev';
+            await submitCrew('create');
+            assert(crew && crew.code === 'A7F3K9', 'crew not loaded after starting it');
+            const monday = mondayOf(todayStr());
+            const me = db.crew_members[0];
+            equal(me.week_start, monday, 'my week pushed');
+            equal(me.week_leagues, leaguesBetween(monday, addDays(monday, 6)), 'my leagues this week');
+            // A crewmate whose numbers are from last week: they count as zero this week
+            db.crew_members.push({ crew_id: 'c1', user_id: 'u2', display_name: 'Sam', week_start: addDays(monday, -7), week_leagues: 300, week_workouts: 3 });
+            crewState = 'idle';
+            await loadCrew();
+            renderCrew();
+            equal(document.querySelectorAll('#crewCard .crew-member').length, 2, 'two members');
+            equal(crewShip().goal, 200, 'one landmark per member');
+            equal(crewShip().sailed, me.week_leagues, 'last week does not count');
+            try { localStorage.removeItem(hornKey('u2')); } catch (e) { /* private mode */ }
+            await soundHorn('u2');
+            equal(db.crew_horns.length, 1, 'horn sent');
+            await soundHorn('u2');
+            equal(db.crew_horns.length, 1, 'one horn a day per crewmate');
+            assert(/Morning Wolves/.test(crewLineHtml()), 'crew line on the saga card');
+            closeOdyssey();
+        } finally {
+            sb.from = realFrom;
+            sb.rpc = realRpc;
+            crew = null;
+            crewState = 'idle';
+        }
+    });
+
     await check('Ticking a set shows the XP it earned', () => {
         const anchor = document.createElement('button');
         document.body.appendChild(anchor);
