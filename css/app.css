@@ -1993,3 +1993,16 @@ button.hero-score:active { opacity:0.7; }
 .crew-leave { display:block; margin:var(--s3) auto 0; font-size:0.75rem; color:var(--text-muted); }
 .saga-crew { margin-top:6px; padding-top:8px; border-top:1px solid rgba(240,232,216,0.06); font-size:0.75rem; color:var(--text-dim); }
 .saga-crew span { color:var(--accent); }
+
+/* ── Guided cardio session (v1.68) ── */
+.cardio-screen { background:radial-gradient(520px 420px at 50% 30%, rgba(201,143,102,0.10), transparent 70%), var(--bg); }
+.cr-stage { margin:var(--s5) 0 var(--s4); text-align:center; }
+.cr-kicker { font-size:0.62rem; font-weight:600; letter-spacing:0.16em; text-transform:uppercase; color:var(--text-muted); }
+.cr-label { margin-top:var(--s2); font-family:var(--font-display); font-size:3rem; letter-spacing:0.08em; line-height:1; color:var(--text); }
+.cr-zone { margin-top:6px; font-size:0.9rem; color:var(--zone); font-weight:500; }
+.cr-clock { margin:var(--s4) 0 var(--s2); font-weight:200; font-size:5.6rem; line-height:1; letter-spacing:-0.03em; font-variant-numeric:tabular-nums; }
+.cr-talk { font-family:'Instrument Serif', Georgia, serif; font-size:1.15rem; color:var(--text-dim); }
+.cr-next { text-align:center; font-size:0.85rem; color:var(--text-dim); padding:var(--s3); border-radius:var(--r-inner); background:var(--raised); }
+.cr-next strong { color:var(--text); font-weight:500; }
+.cr-controls { display:flex; gap:var(--s2); margin:var(--s4) 0 var(--s3); }
+.cr-controls .btn { flex:1; padding:16px; }

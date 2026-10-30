@@ -4,7 +4,7 @@
 
 // Shown at the bottom of Settings so you can tell which version a phone is running.
 // Bump it with every deploy.
-const APP_VERSION = '1.67 · 30 Oct';
+const APP_VERSION = '1.68 · 30 Oct';
 
 const SUPABASE_URL = 'https://hcwbcxhblfjpdlkwykez.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_mEe_5g2UITyp5O-F9YRhRg_wTQWuOtf';
@@ -283,6 +283,7 @@ const SCREENS = {
     builder: 'builderScreen',
     trophy: 'trophyScreen',
     odyssey: 'odysseyScreen',
+    cardio: 'cardioScreen',
     summary: 'summaryScreen',
 };
 
@@ -298,13 +299,17 @@ function rememberGender() {
 // (one tap away, never hidden: every program converts its standards to whoever trains). Without a sex
 // in the profile, every program is listed.
 function orderProgramCards() {
-    const programOf = card => PROGRAMS[(card.getAttribute('onclick').match(/'([^']+)'/) || [])[1]];
+    const programIdOf = card => (card.getAttribute('onclick').match(/'([^']+)'/) || [])[1];
+    const programOf = card => PROGRAMS[programIdOf(card)];
     const cards = [...document.querySelectorAll('#forYouGrid .program-card, #moreProgramGrid .program-card')].filter(programOf);
     const gender = userGender();
     const forYou = document.getElementById('forYouGrid');
     const more = document.getElementById('moreProgramGrid');
-    cards.map((card, i) => ({ card, i, mine: !gender || programOf(card).gender === gender }))
-        .sort((a, b) => (b.mine - a.mine) || a.i - b.i)
+    // Programs written for your sex first, then the ones for everyone (cardio), in the order they're defined
+    const order = Object.keys(PROGRAMS);
+    const rank = p => !gender ? 0 : p.gender === gender ? 0 : !p.gender ? 1 : 2;
+    cards.map(card => ({ card, i: order.indexOf(programIdOf(card)), rank: rank(programOf(card)), mine: rank(programOf(card)) < 2 }))
+        .sort((a, b) => (a.rank - b.rank) || a.i - b.i)
         .forEach(({ card, mine }, i) => {
             (mine ? forYou : more).appendChild(card);
             const index = card.querySelector('.program-index');

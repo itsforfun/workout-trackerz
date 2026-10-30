@@ -128,7 +128,7 @@ let liftDay = null;
 
 function renderProgress() {
     const prog = PROGRAMS[currentProgram];
-    const hasData = prog.exercises.some(ex => getLoggedWeeks(ex.id).length);
+    const hasData = prog.exercises.some(ex => getLoggedWeeks(ex.id).length) || (isCardioProgram(prog) && workoutSessions().length > 0);
     document.getElementById('page-progress').classList.toggle('is-empty', !hasData);
     renderPart('overview', renderOverview);
     renderPart('muscles', renderMuscleWeek);
@@ -156,6 +156,14 @@ function setLiftDay(day) {
 
 function renderLifts() {
     const prog = PROGRAMS[currentProgram];
+    // Cardio programs have no lifts: the section steps aside (their sessions show in the Cardio ring and journey)
+    const noLifts = !prog.exercises.length;
+    ['liftsHead', 'progressList'].forEach(id => { document.getElementById(id).style.display = noLifts ? 'none' : ''; });
+    if (noLifts) {
+        document.getElementById('liftDays').hidden = true;
+        document.getElementById('liftPanel').hidden = true;
+        return;
+    }
     const lifts = dayLifts(prog);
     if (!lifts.some(ex => ex.id === progressExerciseId)) {
         // Open the first lift of this workout with something logged, else its first lift

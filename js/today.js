@@ -66,7 +66,7 @@ function renderTodayHero() {
     const consistency = consistencyScore();
     const xp = playerXp(playerStats());
     const rings = [
-        { label: 'Lift', color: '#f3ece0', value: stats.thisWeek, target: liftTarget, text: `<span data-count="${stats.thisWeek}" data-key="hero-lift"></span><small>/${liftTarget}</small>` },
+        { label: isCardioProgram() ? 'Sessions' : 'Lift', color: '#f3ece0', value: stats.thisWeek, target: liftTarget, text: `<span data-count="${stats.thisWeek}" data-key="hero-lift"></span><small>/${liftTarget}</small>` },
         { label: 'Cardio', color: '#c98f66', value: cardio, target: cardioTarget(), text: `<span data-count="${cardio}" data-key="hero-cardio"></span><small>/${cardioTarget()} min</small>` },
         { label: 'Steps', color: '#b0a491', value: steps, target: goal, text: `<span data-count="${steps}" data-key="hero-steps" data-format="compact"></span><small>/${compactNum(goal)}</small>` },
     ].filter(ring => ring.target > 0);   // cardio set to Off: two rings
@@ -162,6 +162,15 @@ function renderToday() {
     `).join('');
     const activeTab = document.querySelector('.day-tab.active');
     if (activeTab) activeTab.scrollIntoView({ block: 'nearest', inline: 'start' });
+
+    // Cardio programs: the day's timed session instead of an exercise list
+    if (isCardioProgram(prog)) {
+        renderCardioDay(prog, week, nextDay);
+        renderMobility();
+        renderHabits();
+        return;
+    }
+    document.getElementById('startWorkoutBtn').setAttribute('onclick', 'startWorkout()');
 
     const exercises = prog.exercises.filter(ex => ex.day === todayDay);
     const minutes = Math.round(exercises.reduce((sum, ex) => {

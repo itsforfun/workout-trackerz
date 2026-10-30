@@ -233,6 +233,30 @@
                 <div class="program-specs"><div><span>Split</span>A · B · C + cardio</div><div><span>Session</span>~50 min</div><div><span>Focus</span>Joints &amp; strength</div></div>
                 <div class="program-cta">Select program <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
             </button>
+            <button class="program-card cardio-program" onclick="selectProgram('horizon')">
+                <div class="program-top"><span class="program-index">06</span><span class="program-tag">Zone 2 base · 3 days</span></div>
+                <div class="program-title">Horizon</div>
+                <div class="program-promise">Easy, steady sessions that build an engine for everything else.</div>
+                <div class="program-desc">Named for the line you keep moving toward: three Zone 2 sessions a week, each a little longer, with short strides to stay quick.</div>
+                <div class="program-specs"><div><span>Split</span>Easy · Steady · Long</div><div><span>Session</span>35–100 min</div><div><span>Focus</span>Aerobic base</div></div>
+                <div class="program-cta">Select program <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+            </button>
+            <button class="program-card cardio-program" onclick="selectProgram('tempest')">
+                <div class="program-top"><span class="program-index">07</span><span class="program-tag">Intervals · 3 days</span></div>
+                <div class="program-title">Tempest</div>
+                <div class="program-promise">Intervals, tempo and an easy day, a little harder every week.</div>
+                <div class="program-desc">Like the weather it is named for, it comes in waves: Norwegian-style 4 × 4 intervals, a tempo session and an easy Zone 2 day.</div>
+                <div class="program-specs"><div><span>Split</span>Intervals · Tempo · Easy</div><div><span>Session</span>30–60 min</div><div><span>Focus</span>Fitness &amp; pace</div></div>
+                <div class="program-cta">Select program <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+            </button>
+            <button class="program-card cardio-program" onclick="selectProgram('firstStride')">
+                <div class="program-top"><span class="program-index">08</span><span class="program-tag">Beginner · 3 days</span></div>
+                <div class="program-title">First Stride</div>
+                <div class="program-promise">From walking to 30 minutes of running in 12 weeks.</div>
+                <div class="program-desc">Run-walk sessions that grow a little each week, from one-minute runs to 30 minutes without stopping. No experience needed.</div>
+                <div class="program-specs"><div><span>Split</span>Run · Walk</div><div><span>Session</span>25–40 min</div><div><span>Focus</span>Your first run</div></div>
+                <div class="program-cta">Select program <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+            </button>
         </div>
         <!-- Programs written for the other sex: one tap away, never hidden (orderProgramCards) -->
         <details class="more-programs" id="morePrograms">
@@ -254,6 +278,17 @@
         <span></span>
     </div>
     <div class="workout-body" id="trophyBody"></div>
+</div>
+
+<!-- GUIDED CARDIO SESSION -->
+<div class="screen workout-screen cardio-screen" id="cardioScreen">
+    <div class="workout-top">
+        <button class="wo-close" onclick="closeCardioSession()" aria-label="Stop the session"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+        <div class="workout-title"><div id="cardioTitle">Session</div><div class="workout-sub" id="cardioSub"></div></div>
+        <span></span>
+        <div class="workout-progress"><span id="cardioProgress"></span></div>
+    </div>
+    <div class="workout-body" id="cardioBody"></div>
 </div>
 
 <!-- ODYSSEY: the saga as a winding road -->
@@ -795,6 +830,7 @@
 <script src="js/steps.js"></script>
 <script src="js/builder.js"></script>
 <script src="js/workout.js"></script>
+<script src="js/cardio.js"></script>
 <script src="js/guide.js"></script>
 <script src="js/library.js"></script>
 <script src="js/anatomy-data.js"></script>

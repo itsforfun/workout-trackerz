@@ -180,6 +180,13 @@
             step('workout', () => {
                 activeWorkout = null;
                 showTab('today');
+                if (isCardioProgram()) {
+                    startCardioSession();
+                    skipCardioBlock();
+                    finishCardioSession(true);
+                    closeRecord();
+                    return;
+                }
                 beginWorkout(null);
                 Object.values(activeWorkout.rows)[0].forEach(r => { r.done = true; r.reps = 8; r.kg = r.kg || 20; });
                 finishWorkout();
@@ -575,13 +582,13 @@
             assert(order.slice(0, 2).every(id => PROGRAMS[id].gender === 'female'), `women's programs not first: ${order.join(', ')}`);
             equal(document.querySelector('#programSelector .program-index').textContent, '01', 'cards renumbered');
             const ids = sel => [...document.querySelectorAll(sel)].map(c => (c.getAttribute('onclick').match(/'([^']+)'/) || [])[1]);
-            assert(ids('#forYouGrid .program-card').every(id => PROGRAMS[id].gender === 'female'), 'For you holds a men\'s program');
+            assert(ids('#forYouGrid .program-card').every(id => !PROGRAMS[id].gender || PROGRAMS[id].gender === 'female'), 'For you holds a men\'s program');
             assert(ids('#moreProgramGrid .program-card').length && ids('#moreProgramGrid .program-card').every(id => PROGRAMS[id].gender === 'male'), 'men\'s programs not under More programs');
             const more = document.getElementById('morePrograms');
             assert(!more.hidden && !more.open, 'More programs should be there, folded');
             userProfile = { ...userProfile, gender: null };
             showScreen('selector');
-            assert(more.hidden && document.querySelectorAll('#forYouGrid .program-card').length === 5, 'without a sex every program should be listed');
+            assert(more.hidden && document.querySelectorAll('#forYouGrid .program-card').length === Object.keys(PROGRAMS).filter(id => !id.startsWith('custom-')).length, 'without a sex every program should be listed');
             userProfile = { ...userProfile, gender: 'female' };
             const maleOnly = QUOTES.map((_, i) => i).filter(i => !quoteFits(i));
             assert(maleOnly.length && maleOnly.every(i => MALE_ONLY.test(Array.isArray(QUOTES[i]) ? QUOTES[i][0] : QUOTES[i])), 'male-only quotes not skipped');
@@ -803,6 +810,46 @@
             assert(document.querySelector('#cardioEntry .cardio-entry'), 'cardio stays available when Off');
         } finally {
             userProfile = saved;
+        }
+    });
+
+    await check('Cardio programs: sessions for every day and week, guided mode, logged as workout and cardio', () => {
+        ['horizon', 'tempest', 'firstStride'].forEach(id => {
+            const prog = PROGRAMS[id];
+            for (let w = 0; w < WEEKS; w++) prog.days.forEach((_, d) => {
+                const s = cardioSessionFor(prog, d, w);
+                assert(s.blocks.length && s.blocks.every(b => b.sec > 0 && b.zone >= 1 && b.zone <= 5), `${id} day ${d} week ${w + 1}: bad blocks`);
+                assert(s.rows.length && s.minutes >= 15 && s.minutes <= 110, `${id} day ${d} week ${w + 1}: ${s.minutes} min`);
+            });
+        });
+        const last = cardioSessionFor(PROGRAMS.firstStride, 0, 11);
+        assert(last.blocks.some(b => b.label === 'Run' && b.sec === 30 * 60), 'First Stride should end with a 30-minute run');
+        const saved = currentProgram;
+        try {
+            selectProgram('tempest');
+            switchTab('today');
+            assert(/Start session/.test(document.getElementById('startWorkoutBtn').textContent), 'start button should start a session');
+            equal(document.querySelectorAll('#todayList .today-item').length, cardioSessionFor(PROGRAMS.tempest, todayDay, getCurrentWeek()).rows.length, 'session plan on Today');
+            const leagues = journey().total;
+            const workouts = workoutSessions().length;
+            startCardioSession();
+            assert(document.getElementById('cardioScreen').classList.contains('active'), 'guided session did not open');
+            assert(document.querySelector('#cardioBody .cr-clock'), 'no countdown');
+            toggleCardioPause();
+            assert(cardioRun.pausedAt, 'pause');
+            toggleCardioPause();
+            skipCardioBlock();
+            equal(cardioPosition().index, 1, 'skip moves to the next block');
+            finishCardioSession(true);
+            closeRecord();
+            equal(workoutSessions().length, workouts + 1, 'logged as a workout');
+            assert(programSessions().some(s => s.type === 'cardio' && s.planned && s.date === todayStr()), 'logged as cardio minutes');
+            assert(journey().total >= leagues + LEAGUES.workout, 'leagues for the session');
+            assert(!loadCardioRun(), 'session not cleared');
+            switchTab('progress');
+            equal(document.getElementById('progressList').style.display, 'none', 'no lifts section for a cardio program');
+        } finally {
+            selectProgram(saved);
         }
     });
 
