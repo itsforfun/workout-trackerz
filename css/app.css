@@ -1754,3 +1754,39 @@
     .bottom-nav.collapsed > .tab-btn, .bottom-nav.collapsed > .tab-lens { filter:none; }
     body:has(.modal-overlay.active) .bottom-nav { translate:none; }
 }
+
+/* ── Progress overview (v1.53): the first screen of Progress at a glance ── */
+.overview { margin-bottom:var(--s5); }
+.overview:empty { display:none; }
+.ov-hero { display:grid; grid-template-columns:auto 1fr; gap:var(--s4); align-items:center; width:100%; padding:var(--s4) var(--s4) var(--s4) var(--s3);
+    border:none; border-radius:var(--r-card); color:var(--text); font-family:var(--font-ui); text-align:left; cursor:pointer;
+    background:radial-gradient(260px 180px at 18% 50%, rgba(217,178,95,0.12), transparent 70%), var(--raised); box-shadow:var(--lift); }
+.ov-hero .th-ring { width:112px; height:112px; margin:0; }
+.ov-hero .th-level { position:absolute; inset:0; width:auto; height:auto; border-radius:0; box-shadow:none; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+.ov-hero .th-level span { font-size:0.52rem; font-weight:600; letter-spacing:0.16em; text-transform:uppercase; color:var(--text-muted); }
+.ov-hero .th-level strong { font-weight:200; font-size:2.3rem; line-height:1; }
+.ov-rank { font-family:var(--font-display); font-size:1.8rem; letter-spacing:0.16em; color:var(--accent); line-height:1; }
+.ov-line { margin-top:6px; font-family:'Instrument Serif', Georgia, serif; font-size:1.1rem; color:var(--text-dim); }
+.ov-link { display:inline-block; margin-top:10px; font-size:0.74rem; color:var(--text-muted); }
+.ov-grid { display:grid; grid-template-columns:1fr 1fr; gap:var(--s2); margin-top:var(--s2); }
+.ov-tile { display:flex; flex-direction:column; align-items:flex-start; gap:4px; min-height:104px; padding:var(--s3) var(--s4); border:none; border-radius:var(--r-inner);
+    background:var(--raised); box-shadow:var(--lift); color:var(--text); font-family:var(--font-ui); text-align:left; cursor:pointer; }
+.ov-tile:active { transform:scale(0.98); }
+.ov-kicker { font-size:0.58rem; font-weight:600; letter-spacing:0.16em; text-transform:uppercase; color:var(--text-muted); }
+.ov-value { display:flex; align-items:baseline; gap:3px; }
+.ov-value strong { font-weight:200; font-size:2.1rem; line-height:1.05; }
+.ov-value small { font-size:0.8rem; color:var(--text-muted); }
+.ov-tier { font-family:var(--font-display); font-size:1.6rem; letter-spacing:0.06em; line-height:1.2; }
+.ov-sub { display:flex; flex-wrap:wrap; align-items:center; gap:4px 6px; width:100%; margin-top:auto; font-size:0.72rem; color:var(--text-dim); }
+.ov-delta.up { color:var(--success); font-weight:600; }
+.ov-delta.down { color:var(--danger); font-weight:600; }
+.ov-gold { color:var(--accent); font-weight:500; }
+.ov-bars { display:flex; align-items:flex-end; gap:3px; width:100%; height:20px; margin-top:4px; }
+.ov-bars i { flex:1; border-radius:2px; background:linear-gradient(180deg, rgba(217,178,95,0.85), rgba(217,178,95,0.3)); }
+.ov-meter { display:block; width:100%; height:4px; border-radius:99px; background:rgba(240,232,216,0.08); overflow:hidden; }
+.ov-meter i { display:block; height:100%; border-radius:inherit; background:var(--gold); }
+.ov-medals { display:flex; gap:4px; }
+.ov-medals svg { width:26px; height:26px; }
+.ov-tile.score { grid-row:span 1; }
+
+#page-progress.is-empty #liftsHead { display:none; }

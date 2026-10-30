@@ -130,9 +130,17 @@
 
     // ── Scores and levels ──
     await check('Levels: XP thresholds rise and ranks match', () => {
-        for (let l = 2; l <= 100; l++) assert(xpForLevel(l) > xpForLevel(l - 1), `level ${l} needs more XP than ${l - 1}`);
+        for (let l = 2; l <= MAX_LEVEL; l++) assert(xpForLevel(l) > xpForLevel(l - 1), `level ${l} needs more XP than ${l - 1}`);
         equal(levelFromXp(xpForLevel(10)), 10, 'level from XP');
         equal(rankFor(10), 'Contender', 'rank at level 10');
+        equal(rankFor(MAX_LEVEL), 'Mythic', 'top rank at the last level');
+        // Harder curve: about six weeks of steady training (~2,000 XP a week) to reach level 10, a year for 30
+        assert(xpForLevel(10) > 9000 && xpForLevel(10) < 14000, `level 10 needs ${xpForLevel(10)} XP`);
+        assert(xpForLevel(30) > 80000 && xpForLevel(30) < 130000, `level 30 needs ${xpForLevel(30)} XP`);
+        allData._level = 40; delete allData._levelCurve;
+        momentQueue.length = 0;
+        checkAchievements();
+        equal(allData._level, playerXp(playerStats()).level, 'stored level resets to the new curve');
     });
 
     await check('Consistency score stays between 0 and 100', () => {
@@ -400,6 +408,17 @@
         assert(sets.qd > 0 || sets.gl > 0, 'squat sets not counted');
         renderMuscleWeek();
         assert(document.querySelector('#muscleWeekCard .body-map'), 'card not drawn');
+    });
+
+    await check('The Progress overview shows level, score and the key numbers first', () => {
+        renderOverview();
+        const el = document.getElementById('progressOverview');
+        const xp = playerXp(playerStats());
+        assert(el.querySelector('.ov-hero .th-ring'), 'no level ring');
+        assert(el.querySelector('.ov-rank').textContent.trim().length, 'no rank');
+        equal(el.querySelectorAll('.ov-tile').length, 6, 'six tiles');
+        assert(el.textContent.includes(String(xp.level)), 'level number missing');
+        assert(el.compareDocumentPosition(document.getElementById('consistencyCard')) & Node.DOCUMENT_POSITION_FOLLOWING, 'overview not above the details');
     });
 
     // ── Pro waitlist ──

@@ -101,6 +101,7 @@ Status: **Done** · **Check** (built, still needs a look on the iPhone or a smal
 | 1.29 | 8-tier medals, trophy room, badge sheet, minting moment, signature and secret badges, "almost there" nudges |
 | 1.30–1.34 | Brand: Odyra, then Odyr; new icon; sign-in redesign; design carried across the app; thinker quotes |
 | 1.35–1.36 | French (whole app, reminders, quotes), Language setting, French review pass, decimal comma typing |
+| 1.53 | Progress overview at the top of the tab (level ring and rank, consistency, this week, streak, records, strength, badges); levels go to 150 and each level takes longer (new rank Titan) |
 | 1.52 | Sound fixed and extended: achievement pop-ups play reliably (sound re-enabled on every touch and after the phone locks), distinct sounds for records, badges, level-ups, new tiers and finishing a workout, 3-2-1 ticks at the end of rest, sounds mix with your music, Sounds setting |
 | 1.51 | Rest on the lock screen: when the phone locks mid-rest, a notification shows when the rest ends and what's next, replaced by "Rest over" |
 | 1.50 | Tab bar collapses into a pill while scrolling down (back on scroll up, at the top or on a tap); gold glint on the chosen tab; bar steps aside under sheets |

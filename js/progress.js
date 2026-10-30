@@ -35,6 +35,7 @@ function renderProgress() {
     const prog = PROGRAMS[currentProgram];
     const hasData = prog.exercises.some(ex => getLoggedWeeks(ex.id).length);
     document.getElementById('page-progress').classList.toggle('is-empty', !hasData);
+    renderOverview();
     renderLevel();
     renderConsistency();
     renderMuscleWeek();
@@ -569,3 +570,64 @@ document.addEventListener('visibilitychange', () => {
     else if (currentUser && document.getElementById('page-steps').classList.contains('active')) renderSteps();
     else if (activeWorkout && rest.interval) tickRest();
 });
+
+// ── Overview: the first screen of Progress answers "how am I doing?" at a glance; each tile opens its detail ──
+function renderOverview() {
+    const el = document.getElementById('progressOverview');
+    if (!el) return;
+    const stats = playerStats();
+    const xp = playerXp(stats);
+    const today = todayStr();
+    const { score } = consistencyScore(today);
+    const lastWeek = consistencyScore(addDays(today, -7)).score;
+    const delta = score - lastWeek;
+    const days = Array.from({ length: 7 }, (_, i) => consistencyScore(addDays(today, i - 6)).score);
+    const streak = getStreakStats();
+    const target = weeklyLiftTarget(PROGRAMS[currentProgram]);
+    const prog = PROGRAMS[currentProgram];
+    const tiers = prog.exercises.filter(ex => ex.thresholds).map(ex => getTier(ex, getBestKg(ex.id))).filter(t => t > 0);
+    const topTier = tiers.length ? Math.max(...tiers) : 0;
+    const avgTier = tiers.length ? Math.round(tiers.reduce((a, b) => a + b, 0) / tiers.length) : 0;
+    const weekRecs = weekRecords(mondayOf(today)).length;
+    const tracks = badgeTracks();
+    const earned = tracks.reduce((sum, t) => sum + badgeTier(t, stats), 0);
+    const showcase = showcaseTracks(stats).filter(t => badgeTier(t, stats) > 0).slice(0, 3);
+    const tile = (cls, onclick, kicker, value, sub) => `
+        <button class="ov-tile ${cls}" onclick="${onclick}">
+            <span class="ov-kicker">${kicker}</span>
+            <span class="ov-value">${value}</span>
+            <span class="ov-sub">${sub}</span>
+        </button>`;
+    el.innerHTML = `
+        <button class="ov-hero" onclick="openTrophyRoom()">
+            <div class="th-ring">${levelRingSvg(xp)}<div class="th-level"><span>Level</span><strong>${xp.level}</strong></div></div>
+            <div class="ov-hero-text">
+                <div class="ov-rank">${escapeHtml(xp.rank)}</div>
+                <p class="ov-line">${xp.level < MAX_LEVEL ? `${xp.toNext.toLocaleString(LOCALE)} XP to level ${xp.level + 1}` : 'Maximum level'}</p>
+                <span class="ov-link">Trophy room ›</span>
+            </div>
+        </button>
+        <div class="ov-grid">
+            ${tile('score', "scrollToCard('consistencyCard')", 'Consistency', `<strong data-count="${score}" data-key="ov-score"></strong>`,
+                `<span class="ov-delta ${delta >= 0 ? 'up' : 'down'}">${delta >= 0 ? '+' : '−'}${Math.abs(delta)}</span> <span>vs last week</span>
+                 <span class="ov-bars">${days.map(d => `<i style="height:${Math.max(8, d)}%"></i>`).join('')}</span>`)}
+            ${tile('', "switchTab('today')", 'This week', `<strong>${streak.thisWeek}</strong><small>/${target}</small>`,
+                `<span class="ov-meter"><i style="width:${Math.min(100, Math.round(streak.thisWeek / Math.max(1, target) * 100))}%"></i></span><span>workouts</span>`)}
+            ${tile('', "openTrophyRoom()", 'Streak', `<strong>${streak.streak}</strong><small>${streak.streak === 1 ? 'week' : 'weeks'}</small>`,
+                `<span>Best ${Math.max(stats.bestStreak, streak.streak)}</span>`)}
+            ${tile('', "scrollToCard('progressList')", 'Records', `<strong>${stats.records}</strong>`,
+                weekRecs ? `<span class="ov-gold">+${weekRecs} this week</span>` : '<span>all time</span>')}
+            ${tile('', "scrollToCard('progressList')", 'Strength', `<span class="ov-tier" style="color:${TIERS[avgTier].color}">${escapeHtml(tierName(avgTier))}</span>`,
+                topTier ? `<span>Best: ${escapeHtml(tierName(topTier))}</span>` : '<span>Log a lift to get ranked</span>')}
+            ${tile('', "openTrophyRoom()", 'Badges', `<strong>${earned}</strong><small>/${tracks.length * BADGE_TIERS.length}</small>`,
+                showcase.length ? `<span class="ov-medals">${showcase.map(t => medalSvg(badgeTier(t, stats), t.icon, 26)).join('')}</span>` : '<span>tiers earned</span>')}
+        </div>
+    `;
+    rollNumbers(el);
+}
+
+function scrollToCard(id) {
+    haptic();
+    const card = document.getElementById(id);
+    if (card) window.scrollTo({ top: card.getBoundingClientRect().top + window.scrollY - 90, behavior: prefersReducedMotion() ? 'auto' : 'smooth' });
+}

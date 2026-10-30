@@ -352,13 +352,16 @@ function badgeProgress(track, stats) {
     return { tier, next, value, ratio: Math.max(0, Math.min(1, (value - prev) / Math.max(1, next - prev))), remaining: Math.max(0, next - value) };
 }
 
-// ── Levels: XP from everything you do, levels 1–100 on a rising curve, rank titles by level ──
-const RANKS = [[1, 'Rookie'], [5, 'Apprentice'], [10, 'Contender'], [15, 'Athlete'], [20, 'Competitor'], [30, 'Veteran'],
-    [40, 'Elite'], [50, 'Master'], [65, 'Grandmaster'], [80, 'Legend'], [100, 'Mythic']];
-const MAX_LEVEL = 100;
+// ── Levels: XP from everything you do, levels 1–150 on a steep curve, rank titles by level ──
+// Paced for someone training ~3 times a week with steps and cardio (~2,000 XP a week): level 10 in about
+// six weeks, 30 in a year, 60 in about four years, 100 in ten, 150 a lifetime. (v1.53; was 1–100 at 100·(n−1)^1.7)
+const RANKS = [[1, 'Rookie'], [5, 'Apprentice'], [10, 'Contender'], [20, 'Athlete'], [30, 'Competitor'], [45, 'Veteran'],
+    [60, 'Elite'], [75, 'Master'], [90, 'Grandmaster'], [110, 'Legend'], [130, 'Titan'], [150, 'Mythic']];
+const MAX_LEVEL = 150;
+const LEVEL_CURVE = 2;   // bump when the curve changes, so the stored level resets quietly
 
 function xpForLevel(level) {
-    return Math.round(100 * Math.pow(level - 1, 1.7));
+    return Math.round(180 * Math.pow(level - 1, 1.875));
 }
 
 function levelFromXp(xp) {
@@ -501,6 +504,12 @@ function checkAchievements() {
         }
     });
     const xp = playerXp(stats);
+    if (allData._levelCurve !== LEVEL_CURVE) {
+        // A new level curve: start from the level the new curve gives, without a level-up moment
+        allData._levelCurve = LEVEL_CURVE;
+        if (allData._level) allData._level = xp.level;
+        changed = true;
+    }
     if (xp.level > (allData._level || 0)) {
         const hadLevel = !!allData._level;
         allData._level = xp.level;
