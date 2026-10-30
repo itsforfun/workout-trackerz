@@ -267,8 +267,6 @@
         </div>
         <div class="tab-nav">
             <button class="tab-btn active" onclick="switchTab('today')">Today</button>
-            <button class="tab-btn" onclick="switchTab('tracker')">Tracker</button>
-            <button class="tab-btn" onclick="switchTab('steps')">Steps</button>
             <button class="tab-btn" onclick="switchTab('progress')">Progress</button>
             <button class="tab-btn" onclick="switchTab('settings')">Settings</button>
         </div>
@@ -282,8 +280,6 @@
     <div class="tab-scrim" aria-hidden="true"></div>
     <nav class="bottom-nav">
         <button class="tab-btn active" onclick="switchTab('today')"><svg viewBox="0 0 24 24"><circle class="f" cx="12" cy="12" r="9"/><path class="cut" d="M10 8.5l5 3.5-5 3.5z"/></svg><span>Today</span></button>
-        <button class="tab-btn" onclick="switchTab('tracker')"><svg viewBox="0 0 24 24"><rect class="f" x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect class="f" x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect class="f" x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect class="f" x="13.5" y="13.5" width="7" height="7" rx="1.5"/></svg><span>Tracker</span></button>
-        <button class="tab-btn" onclick="switchTab('steps')"><svg viewBox="0 0 24 24"><path class="f" d="M7.5 3.5c1.6 0 2.6 1.9 2.6 4.4 0 2.3-.8 4.1-2.3 4.1S5.2 10.8 5.2 8.6C5.2 5.6 6 3.5 7.5 3.5z"/><path class="f" d="M5.6 14.5l4.2-.6.4 2.6c.2 1.3-.7 2.4-2 2.5s-2.3-.8-2.4-2z"/><path class="f" d="M16.5 7.5c1.5 0 2.3 2.1 2.3 5.1 0 2.2-1 3.4-2.6 3.4s-2.3-1.8-2.3-4.1c0-2.5 1-4.4 2.6-4.4z"/><path class="f" d="M14.2 18.5l4.2.6-.2 1.9c-.1 1.2-1.1 2-2.4 2s-2-1.1-1.9-2.4z"/></svg><span>Steps</span></button>
         <button class="tab-btn" onclick="switchTab('progress')"><svg viewBox="0 0 24 24"><path class="area" d="M5 16l5-5 4 3 6-7v13H5z"/><path d="M3 20h18"/><path d="M5 16l5-5 4 3 6-7"/></svg><span>Progress</span></button>
         <button class="tab-btn" onclick="switchTab('settings')"><svg viewBox="0 0 24 24"><circle class="cut" cx="12" cy="12" r="3"/><path class="f" d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg><span>Settings</span></button>
     </nav>
@@ -311,17 +307,6 @@
         </div>
     </div>
 
-    <!-- TRACKER PAGE -->
-    <div class="page" id="page-tracker">
-        <div class="container">
-            <div class="hero">
-                <h1 id="heroTitle">WORK HARD<br>STAY HARD</h1>
-                <p id="heroSubtitle">Track · Progress · Dominate</p>
-            </div>
-            <div id="workoutDays"></div>
-        </div>
-    </div>
-
     <!-- PROGRESS PAGE -->
     <div class="page" id="page-progress">
         <div class="container">
@@ -344,9 +329,13 @@
                 <select class="form-input" id="progressExercise" onchange="selectProgressExercise(this.value)"></select>
                 <div class="stat-row" id="progressStats"></div>
                 <div class="chart-wrap"><canvas id="progressChart"></canvas></div>
-                <div class="chart-empty" id="progressEmpty"><strong>Nothing logged yet</strong>Finish this lift in a workout, or fill in a week on the Tracker tab.</div>
+                <div class="chart-empty" id="progressEmpty"><strong>Nothing logged yet</strong>Finish this lift in a workout, or fill in a week in the log below.</div>
                 <div class="tier-track-label" id="tierTrackLabel"></div>
                 <div class="tier-track" id="tierTrack"></div>
+                <details class="lift-log" id="liftLogWrap">
+                    <summary><span>Weekly log</span><small>Type or fix any week</small></summary>
+                    <div class="week-grid" id="liftLog"></div>
+                </details>
             </div>
 
             <div class="progress-list" id="progressList"></div>
@@ -361,6 +350,7 @@
     <!-- STEPS PAGE -->
     <div class="page" id="page-steps">
         <div class="container today-container">
+            <button class="sub-back" onclick="switchTab('today')"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>Today</button>
             <div class="hero">
                 <h1>STEPS</h1>
             </div>

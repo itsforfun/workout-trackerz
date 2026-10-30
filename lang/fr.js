@@ -213,7 +213,7 @@ I18N_PACKS.fr = {
         "Go to today's workout": "Voir la séance du jour",
         "Exercise": "Exercice",
         "Nothing logged yet": "Rien d’enregistré pour l’instant",
-        "Finish this lift in a workout, or fill in a week on the Tracker tab.": "Faites cet exercice pendant une séance, ou remplissez une semaine dans l’onglet Suivi.",
+        "Finish this lift in a workout, or fill in a week in the log below.": "Faites cet exercice pendant une séance, ou remplissez une semaine dans le journal ci-dessous.",
         "STEPS": "PAS",
         "No steps yet": "Pas encore de pas",
         "Set up Apple Health sync below, or type today's steps.": "Configurez la synchronisation avec Santé ci-dessous, ou saisissez vos pas du jour.",
@@ -1584,5 +1584,8 @@ I18N_PACKS.fr = {
         "tiers earned": "paliers obtenus",
         "Lifts": "Exercices",
         "Score and level in detail": "Score et niveau en détail",
+        "Weekly log": "Journal des semaines",
+        "Type or fix any week": "Saisissez ou corrigez une semaine",
+        "+{#} XP": "+{0} XP",
     },
 };

@@ -218,13 +218,10 @@ function openProgram() {
     const prog = PROGRAMS[currentProgram];
     document.getElementById('programTitle').textContent = prog.name;
     document.getElementById('programSubtitle').textContent = prog.subtitle;
-    document.getElementById('heroTitle').innerHTML = prog.heroTitle;
-    document.getElementById('heroSubtitle').textContent = prog.heroSubtitle;
 
     todayDay = null;
     todayWeek = null;
     todayMode = null;
-    buildTracker();
     switchTab('today');
     setSaveStatus(offlineMode ? 'offline' : savePending ? 'pending' : 'saved');
     showScreen('app');
@@ -243,7 +240,6 @@ async function switchProgram() {
 // Rebuild whatever depends on units, bodyweight or data
 function refreshAllViews() {
     if (!currentProgram) return;
-    buildTracker();
     const activePage = document.querySelector('.page.active');
     if (activePage && activePage.id === 'page-today') renderToday();
     if (activePage && activePage.id === 'page-progress') renderProgress();
@@ -428,75 +424,35 @@ function ensureCycleStart(week) {
 }
 
 // ════════════════════════════════════════════
-//  TRACKER BUILD
+//  LIFT LOG (Progress → a lift → Log): the 12 weeks of one lift, typed or fixed by hand
 // ════════════════════════════════════════════
 
 // Tier per exercise as last shown, so we only celebrate real tier-ups
 let knownTiers = {};
 
-function buildTracker() {
-    const prog = PROGRAMS[currentProgram];
-    const container = document.getElementById('workoutDays');
-    container.innerHTML = '';
-    knownTiers = {};
-
-    prog.days.forEach((dayName, dayIdx) => {
-        const section = document.createElement('div');
-        section.className = 'day-section';
-        section.innerHTML = `
-            <div class="day-label">
-                <span class="day-number">${String(dayIdx + 1).padStart(2, '0')}</span>
-                <span class="day-name">${escapeHtml(dayName)}</span>
-            </div>
-            <div id="day_${dayIdx}"></div>
-        `;
-        container.appendChild(section);
-    });
-
-    const weeksByExercise = progData();
-
-    prog.exercises.forEach(ex => {
-        const dayContainer = document.getElementById(`day_${ex.day}`);
-        const block = document.createElement('div');
-        block.className = 'exercise-block';
-
-        block.innerHTML = `
-            <div class="exercise-header">
-                <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-                    <span class="exercise-name">${escapeHtml(ex.name)}</span>
-                    <span class="tier-badge" id="badge_${ex.id}"></span>
-                    ${progressionBadge(getProgression(ex))}
-                </div>
-                <span class="exercise-meta">${escapeHtml(ex.meta)}</span>
-            </div>
-            ${ex.note ? `<div class="exercise-note">${escapeHtml(ex.alternates ? `${ex.note}: ${ex.alternates.join(' / ')}` : ex.note)}</div>` : ''}
-            <div class="week-grid"></div>
-        `;
-        dayContainer.appendChild(block);
-
-        const grid = block.querySelector('.week-grid');
-        const weeks = weeksByExercise[ex.id] || {};
-        for (let w = 0; w < WEEKS; w++) {
-            const col = document.createElement('div');
-            col.className = 'week-col';
-            const raw = entryKg(weeks[w]);
-            const val = raw !== undefined && raw !== '' ? trackerToDisplay(ex, raw) : '';
-            col.innerHTML = `
-                <div class="week-label">W${w+1}</div>
+function renderLiftLog() {
+    const grid = document.getElementById('liftLog');
+    const ex = PROGRAMS[currentProgram] && PROGRAMS[currentProgram].exercises.find(e => e.id === progressExerciseId);
+    if (!grid || !ex) return;
+    const weeks = progData()[ex.id] || {};
+    let html = '';
+    for (let w = 0; w < WEEKS; w++) {
+        const raw = entryKg(weeks[w]);
+        const val = raw !== undefined && raw !== '' ? trackerToDisplay(ex, raw) : '';
+        html += `
+            <div class="week-col">
+                <div class="week-label">W${w + 1}</div>
                 <div class="week-input-wrap">
                     <input type="text" inputmode="decimal" placeholder="—" value="${escapeHtml(val)}"
                         id="inp_${ex.id}_${w}" oninput="onInput('${ex.id}',${w},this)" onchange="onInputDone('${ex.id}')"
-                        class="${val?'filled':''}">
+                        class="${val ? 'filled' : ''}">
                     <div class="input-hint" id="hint_${ex.id}_${w}"></div>
                 </div>
-            `;
-            grid.appendChild(col);
-        }
-
-        updateBadge(ex.id);
-        updateWeekHints(ex.id);
-        knownTiers[ex.id] = getTier(ex, getBestKg(ex.id));
-    });
+            </div>`;
+    }
+    grid.innerHTML = html;
+    updateWeekHints(ex.id);
+    knownTiers[ex.id] = getTier(ex, getBestKg(ex.id));
 }
 
 // Under each week: the reps logged in workout mode (e.g. "10·10·9"), "PR" on the best week, else the unit

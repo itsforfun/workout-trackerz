@@ -380,7 +380,7 @@ function playerXp(stats) {
         + specialBadges().filter(sp => specials[sp.id]).reduce((sum, sp) => sum + (sp.secret ? SECRET_XP : SPECIAL_XP), 0);
     const sources = [
         ['Workouts', stats.workouts * 100],
-        ['Sets', stats.sets * 5],
+        ['Sets', stats.sets * SET_XP],
         ['Records', stats.records * 50],
         ['Strength tiers', stats.tierPoints * 40],
         ['Cardio', Math.round(stats.cardioXp)],

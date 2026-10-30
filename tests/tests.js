@@ -151,7 +151,7 @@
     // ── Every screen renders ──
     await check('Every screen and sheet renders without an error', () => {
         const steps = [
-            () => switchTab('today'), () => switchTab('tracker'), () => switchTab('steps'), () => renderStepsSetup(true),
+            () => switchTab('today'), () => switchTab('steps'), () => renderStepsSetup(true),
             () => switchTab('progress'), () => switchTab('settings'), () => openTrophyRoom(), () => openBadge(badgeTracks()[0].id),
             () => closeBadge(), () => closeTrophyRoom(), () => openRecap(), () => closeRecap(), () => openScience(), () => closeScience(),
             () => openGenerator(), () => closeGenerator(), () => openBuilder(), () => showScreen('selector'), () => showScreen('app'),
@@ -174,7 +174,7 @@
             const step = (name, fn) => { try { fn(); } catch (error) { throw new Error(`${tag}, ${name}: ${error.message}`); } };
             currentProgram = prog;
             step('open program', () => selectProgram(prog));
-            ['today', 'tracker', 'steps', 'progress', 'settings'].forEach(t => step(`${t} tab`, () => showTab(t)));
+            ['today', 'steps', 'progress', 'settings'].forEach(t => step(`${t} tab`, () => showTab(t)));
             step('trophy room', () => { openTrophyRoom(); closeTrophyRoom(); });
             step('walkthrough', () => { showTab('today'); startTour(); endTour(); });
             step('workout', () => {
@@ -237,8 +237,8 @@
         try {
             tap('progress');
             assert(document.getElementById('page-progress').classList.contains('active'), 'plain tap did not switch');
-            tap('steps', 7);
-            assert(document.getElementById('page-steps').classList.contains('active'), 'tap with a small wobble did not switch');
+            tap('settings', 7);
+            assert(document.getElementById('page-settings').classList.contains('active'), 'tap with a small wobble did not switch');
             tap('today');
             assert(document.getElementById('page-today').classList.contains('active'), 'third tap did not switch');
             equal(switches, 3, 'switches (one per tap)');
@@ -410,15 +410,48 @@
         assert(document.querySelector('#muscleWeekCard .body-map'), 'card not drawn');
     });
 
-    await check('The Progress overview shows level, score and the key numbers first', () => {
+    await check('The Progress overview shows the level and all-time numbers first', () => {
         renderOverview();
         const el = document.getElementById('progressOverview');
         const xp = playerXp(playerStats());
         assert(el.querySelector('.ov-hero .th-ring'), 'no level ring');
         assert(el.querySelector('.ov-rank').textContent.trim().length, 'no rank');
-        equal(el.querySelectorAll('.ov-tile').length, 6, 'six tiles');
+        equal(el.querySelectorAll('.ov-tile').length, 4, 'four tiles (this week lives on Today)');
         assert(el.textContent.includes(String(xp.level)), 'level number missing');
         assert(el.compareDocumentPosition(document.getElementById('consistencyCard')) & Node.DOCUMENT_POSITION_FOLLOWING, 'overview not above the details');
+    });
+
+    await check('Three tabs: Steps opens from Today, lifts are logged and fixed in Progress', () => {
+        showScreen('app');
+        const tabs = [...document.querySelectorAll('.bottom-nav > .tab-btn')].map(b => b.getAttribute('onclick'));
+        equal(tabs.join(' '), "switchTab('today') switchTab('progress') switchTab('settings')", 'tab bar');
+        switchTab('today');
+        document.querySelector('#todayHero .hl-open').click();
+        assert(document.getElementById('page-steps').classList.contains('active'), 'Steps row did not open steps');
+        assert(document.querySelector(".bottom-nav > .tab-btn[onclick=\"switchTab('today')\"]").classList.contains('active'), 'Today not lit while on Steps');
+        document.querySelector('#page-steps .sub-back').click();
+        assert(document.getElementById('page-today').classList.contains('active'), 'back link did not return to Today');
+
+        // Fix a week by hand in the lift log: saved, and the chart's numbers follow
+        switchTab('progress');
+        const ex = PROGRAMS[currentProgram].exercises.find(e => e.thresholds && !isRepsBased(e));
+        selectProgressExercise(ex.id);
+        const input = document.getElementById(`inp_${ex.id}_11`);
+        assert(input, 'no week 12 box in the log');
+        input.value = '300';
+        input.dispatchEvent(new Event('input'));
+        input.dispatchEvent(new Event('change'));
+        equal(entryKg(progData()[ex.id][11]), String(displayToKg('300')), 'typed week saved');
+        assert(document.getElementById('progressStats').textContent.includes(trackerToDisplay(ex, displayToKg('300'))), 'best not updated');
+    });
+
+    await check('Ticking a set shows the XP it earned', () => {
+        const anchor = document.createElement('button');
+        document.body.appendChild(anchor);
+        floatXp(anchor, SET_XP);
+        const el = document.querySelector('.xp-float');
+        assert(el && el.textContent.includes('+5'), 'no +5 XP');
+        el.remove(); anchor.remove();
     });
 
     // ── Pro waitlist ──
@@ -464,7 +497,8 @@
 
         await check('Every screen is fully translated', () => {
             I18N.missing.clear();
-            ['today', 'tracker', 'steps', 'progress', 'settings'].forEach(t => switchTab(t));
+            ['today', 'steps', 'progress', 'settings'].forEach(t => switchTab(t));
+            document.getElementById('liftLogWrap').open = true;
             renderStepsSetup(true);
             openTrophyRoom(); openBadge(badgeTracks()[0].id); closeBadge(); closeTrophyRoom();
             openRecap(); closeRecap(); openScience(); closeScience(); openGenerator(); closeGenerator();

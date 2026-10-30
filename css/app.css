@@ -633,7 +633,7 @@
         .topbar .tab-nav { display:none; }
         .topbar-actions { flex-wrap:nowrap; gap:10px; }
         .topbar-actions .save-status { flex:none; }
-        .bottom-nav { display:grid; grid-template-columns:repeat(4,1fr); position:fixed; left:0; right:0; bottom:0; z-index:120; padding:8px 8px calc(8px + env(safe-area-inset-bottom)); background:rgba(19,16,14,0.88); -webkit-backdrop-filter:saturate(1.4) blur(20px); backdrop-filter:saturate(1.4) blur(20px); border-top:1px solid var(--border); }
+        .bottom-nav { display:grid; grid-template-columns:repeat(3,1fr); position:fixed; left:0; right:0; bottom:0; z-index:120; padding:8px 8px calc(8px + env(safe-area-inset-bottom)); background:rgba(19,16,14,0.88); -webkit-backdrop-filter:saturate(1.4) blur(20px); backdrop-filter:saturate(1.4) blur(20px); border-top:1px solid var(--border); }
         .bottom-nav .tab-btn { display:flex; flex-direction:column; align-items:center; gap:4px; padding:6px 0; border:none; background:none; color:var(--text-muted); font-size:0.66rem; font-weight:500; letter-spacing:0; text-transform:none; }
         .bottom-nav .tab-btn svg { width:23px; height:23px; fill:none; stroke:currentColor; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round; }
         .bottom-nav .tab-btn.active { color:var(--accent); background:none; border:none; }
@@ -836,10 +836,10 @@
     .picker-list { max-height:46vh; overflow-y:auto; margin-top:12px; }
     @media (max-width:600px) {
         .bd-fields { grid-template-columns:repeat(2, 1fr); }
-        .bottom-nav { grid-template-columns:repeat(5,1fr) !important; }
+        .bottom-nav { grid-template-columns:repeat(3,1fr) !important; }
         .ring-steps { font-size:3rem; }
     }
-    @media (max-width:900px) { .bottom-nav { grid-template-columns:repeat(5,1fr); } }
+    @media (max-width:900px) { .bottom-nav { grid-template-columns:repeat(3,1fr); } }
 
     /* SCREENS: exactly one .screen has .active at a time (see showScreen) */
     .screen:not(.active) { display:none !important; }
@@ -1628,7 +1628,7 @@
         box-shadow:inset 0 0 0 1px rgba(242,216,145,calc(0.2 + var(--lift) * 0.35)), inset 0 1.5px 0 rgba(255,250,235,calc(var(--lift) * 0.35)),
             inset 0 -10px 18px rgba(217,178,95,calc(var(--lift) * 0.14)), 0 12px 26px -10px rgba(0,0,0,0.8), 0 0 22px rgba(217,178,95,calc(var(--lift) * 0.16)); }
     /* Copy of the tab row seen through the lens (only while lifted, magnified by js/tabbar.js) */
-    .tab-lens-row { position:absolute; top:-6px; left:0; bottom:-6px; display:grid; grid-template-columns:repeat(5,1fr); padding:6px; box-sizing:border-box; opacity:0; transition:opacity 0.2s ease; }
+    .tab-lens-row { position:absolute; top:-6px; left:0; bottom:-6px; display:grid; grid-template-columns:repeat(3,1fr); padding:6px; box-sizing:border-box; opacity:0; transition:opacity 0.2s ease; }
     .tab-lens.lifted .tab-lens-row { opacity:1; }
     .tab-lens-row .tab-btn { pointer-events:none; }
     /* A specular highlight sweeping across the glass */
@@ -1778,15 +1778,40 @@
 .ov-value small { font-size:0.8rem; color:var(--text-muted); }
 .ov-tier { font-family:var(--font-display); font-size:1.6rem; letter-spacing:0.06em; line-height:1.2; }
 .ov-sub { display:flex; flex-wrap:wrap; align-items:center; gap:4px 6px; width:100%; margin-top:auto; font-size:0.72rem; color:var(--text-dim); }
-.ov-delta.up { color:var(--success); font-weight:600; }
-.ov-delta.down { color:var(--danger); font-weight:600; }
 .ov-gold { color:var(--accent); font-weight:500; }
-.ov-bars { display:flex; align-items:flex-end; gap:3px; width:100%; height:20px; margin-top:4px; }
-.ov-bars i { flex:1; border-radius:2px; background:linear-gradient(180deg, rgba(217,178,95,0.85), rgba(217,178,95,0.3)); }
-.ov-meter { display:block; width:100%; height:4px; border-radius:99px; background:rgba(240,232,216,0.08); overflow:hidden; }
-.ov-meter i { display:block; height:100%; border-radius:inherit; background:var(--gold); }
 .ov-medals { display:flex; gap:4px; }
 .ov-medals svg { width:26px; height:26px; }
-.ov-tile.score { grid-row:span 1; }
 
 #page-progress.is-empty #liftsHead { display:none; }
+
+/* ── Three tabs (v1.54): lift log in Progress, Steps opened from Today, XP rising from each set ── */
+.lift-log { margin-top:var(--s4); border-radius:var(--r-inner); background:var(--raised); overflow:hidden; }
+.lift-log summary { display:flex; align-items:baseline; justify-content:space-between; gap:var(--s2); padding:var(--s3) var(--s4); cursor:pointer; list-style:none; }
+.lift-log summary::-webkit-details-marker { display:none; }
+.lift-log summary span { font-size:0.68rem; font-weight:600; letter-spacing:0.16em; text-transform:uppercase; color:var(--text-muted); }
+.lift-log summary span::after { content:'›'; display:inline-block; margin-left:8px; letter-spacing:0; transition:transform .25s var(--ease); }
+.lift-log[open] summary span::after { transform:rotate(90deg); }
+.lift-log summary small { font-size:0.72rem; color:var(--text-dim); }
+.lift-log .week-grid { border-top:1px solid rgba(240,232,216,0.06); }
+.lift-log .week-label { background:transparent; border-bottom:none; color:var(--text-dim); letter-spacing:0.08em; }
+.lift-log .week-col { border-right-color:rgba(240,232,216,0.05); }
+.lift-log .week-input-wrap input { font-family:var(--font-num, inherit); font-size:0.85rem; padding:6px 2px; }
+
+.sub-back { display:inline-flex; align-items:center; gap:4px; margin:var(--s2) 0 0 -6px; padding:6px 8px; border:none; background:none;
+    color:var(--text-muted); font:inherit; font-size:0.85rem; cursor:pointer; }
+.sub-back:active { opacity:0.6; }
+
+button.hl-row { border:none; background:none; padding:0; font:inherit; color:inherit; text-align:left; cursor:pointer; }
+button.hl-row:active { opacity:0.7; }
+.hl-chev { margin-left:-2px; letter-spacing:0; color:var(--text-dim); }
+
+.xp-float { position:fixed; z-index:400; pointer-events:none; transform:translate(-50%, 0); font-size:0.72rem; font-weight:600;
+    letter-spacing:0.06em; color:var(--accent); text-shadow:0 1px 8px rgba(0,0,0,0.6); animation:xpFloat 1.1s var(--ease) forwards; }
+@keyframes xpFloat {
+    0% { opacity:0; transform:translate(-50%, 4px); }
+    20% { opacity:1; }
+    100% { opacity:0; transform:translate(-50%, -34px); }
+}
+@media (prefers-reduced-motion: reduce) {
+    @keyframes xpFloat { 0% { opacity:0; transform:translate(-50%, -14px); } 25% { opacity:1; } 100% { opacity:0; transform:translate(-50%, -14px); } }
+}

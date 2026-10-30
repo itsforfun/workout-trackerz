@@ -222,10 +222,26 @@ function toggleSetDone(exId, i) {
     if (row.done) {
         const rowEl = document.getElementById(`set_${exId}_${i}`);
         if (rowEl) rowEl.classList.add('pop');
+        floatXp(rowEl && rowEl.querySelector('.set-check'), SET_XP);
         startRest(getPrescription(workoutExercise(exId)).restSec, nextUpLabel(exId));
         checkRecord(exId, i);
         setBadgeNudge();
     }
+}
+
+// A soft "+5 XP" rises from the tick, so XP builds visibly set by set
+const SET_XP = 5;
+
+function floatXp(anchor, amount) {
+    if (!anchor) return;
+    const r = anchor.getBoundingClientRect();
+    const el = document.createElement('div');
+    el.className = 'xp-float';
+    el.textContent = `+${amount} XP`;
+    el.style.left = `${r.left + r.width / 2}px`;
+    el.style.top = `${r.top}px`;
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 1200);
 }
 
 // ── New record: a set beyond the best ever logged for this exercise ──
@@ -423,7 +439,6 @@ function finishWorkout() {
     flushSave();
 
     summaryOpen = true;   // set before Today renders, so badge moments it queues wait for the summary
-    buildTracker();
     showScreen('app');
     switchTab('today');
 

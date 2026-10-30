@@ -96,7 +96,11 @@ function renderTodayHero() {
             </svg>
         </div>
         <div class="hero-legend">
-            ${rings.map(ring => `
+            ${rings.map(ring => ring.label === 'Steps' ? `
+                <button class="hl-row hl-open${ring.value >= ring.target ? ' closed' : ''}" style="--c:${ring.color}" onclick="switchTab('steps')">
+                    <span class="hl-label">${ring.label} <span class="hl-chev" aria-hidden="true">›</span></span>
+                    <span class="hl-value">${ring.text}</span>
+                </button>` : `
                 <div class="hl-row${ring.value >= ring.target ? ' closed' : ''}" style="--c:${ring.color}">
                     <span class="hl-label">${ring.label}</span>
                     <span class="hl-value">${ring.text}</span>
@@ -112,7 +116,7 @@ function renderTodayHero() {
     el.getBoundingClientRect();
     setTimeout(() => el.querySelectorAll('.hr-fg').forEach(circle => { circle.style.strokeDashoffset = circle.dataset.offset; }), 30);
 
-    // Steps live on the Steps tab; fetch today's count once so the ring is right on first open
+    // Steps live in the Steps view (tap Steps under the rings); fetch today's count once so the ring is right on first open
     if (!heroStepsRequested && currentUser) {
         heroStepsRequested = true;
         loadSteps().then(ok => { if (ok) { checkAchievements(); renderTodayHero(); } });

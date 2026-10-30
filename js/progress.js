@@ -99,7 +99,7 @@ function selectProgressExercise(exId, scrollUp = false) {
     if (scrollUp) document.querySelector('.progress-panel').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
-function renderProgressDetail() {
+function renderProgressDetail(withLog = true) {
     const ex = getExercise(progressExerciseId);
     const logged = getLoggedWeeks(ex.id);
     const thresholds = getThresholds(ex);
@@ -132,6 +132,7 @@ function renderProgressDetail() {
 
     renderProgressChart(ex, logged, thresholds, tier);
     renderTierTrack(ex, best, thresholds, tier);
+    if (withLog) renderLiftLog();
 }
 
 const CHART_TICKS = { color: '#7f725f', font: { family: 'Inter', size: 10 } };
@@ -384,7 +385,6 @@ function startNewCycle() {
     allData[currentProgram] = {};
     delete starts[currentProgram];
     todayWeek = null;
-    buildTracker();
     renderCycleInfo();
     scheduleSave();
     showToast('New cycle started — week 1, let\'s go!');
@@ -421,6 +421,8 @@ function onInputDone(exId) {
     updateWeekHints(exId);
     if (tier > (knownTiers[exId] || 0)) celebrateTier(ex, tier);
     knownTiers[exId] = tier;
+    // Redraw the chart and numbers above; the log itself stays as typed, so the next box keeps focus
+    if (exId === progressExerciseId) renderProgressDetail(false);
 }
 
 async function saveData() {
@@ -512,7 +514,7 @@ function switchTab(tab) {
     const current = document.querySelector('.main-app .page.active');
     const target = document.getElementById('page-' + tab);
     document.querySelectorAll('.main-app .page').forEach(p => p.getAnimations().forEach(a => a.cancel()));
-    tabLensTo(tab);
+    tabLensTo(tab === 'steps' ? 'today' : tab);
     const animate = current && current !== target && target.animate
         && document.getElementById('mainApp').classList.contains('active');
     // With Reduce Motion the tabs cross-fade without moving (see css/app.css, end)
@@ -535,13 +537,13 @@ function showTab(tab) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
     document.getElementById('page-'+tab).classList.add('active');
-    document.querySelectorAll(`.tab-btn[onclick="switchTab('${tab}')"]`).forEach(b => b.classList.add('active'));
-    tabLensTo(tab);
+    // Steps opens from the Steps ring on Today, so Today stays lit in the tab bar
+    const barTab = tab === 'steps' ? 'today' : tab;
+    document.querySelectorAll(`.tab-btn[onclick="switchTab('${barTab}')"]`).forEach(b => b.classList.add('active'));
+    tabLensTo(barTab);
 
     if (tab === 'today') {
         renderToday();
-    } else if (tab === 'tracker') {
-        buildTracker();
     } else if (tab === 'steps') {
         renderSteps();
     } else if (tab === 'progress') {
@@ -571,19 +573,15 @@ document.addEventListener('visibilitychange', () => {
     else if (activeWorkout && rest.interval) tickRest();
 });
 
-// ── Overview: the first screen of Progress answers "how am I doing?" at a glance; each tile opens its detail ──
+// ── Overview: the first screen of Progress answers "how far have I come?" at a glance; each tile opens its detail.
+// This week (rings, score) belongs to Today, so it isn't repeated here. ──
 function renderOverview() {
     const el = document.getElementById('progressOverview');
     if (!el) return;
     const stats = playerStats();
     const xp = playerXp(stats);
     const today = todayStr();
-    const { score } = consistencyScore(today);
-    const lastWeek = consistencyScore(addDays(today, -7)).score;
-    const delta = score - lastWeek;
-    const days = Array.from({ length: 7 }, (_, i) => consistencyScore(addDays(today, i - 6)).score);
     const streak = getStreakStats();
-    const target = weeklyLiftTarget(PROGRAMS[currentProgram]);
     const prog = PROGRAMS[currentProgram];
     const tiers = prog.exercises.filter(ex => ex.thresholds).map(ex => getTier(ex, getBestKg(ex.id))).filter(t => t > 0);
     const topTier = tiers.length ? Math.max(...tiers) : 0;
@@ -608,11 +606,6 @@ function renderOverview() {
             </div>
         </button>
         <div class="ov-grid">
-            ${tile('score', "scrollToCard('consistencyCard')", 'Consistency', `<strong data-count="${score}" data-key="ov-score"></strong>`,
-                `<span class="ov-delta ${delta >= 0 ? 'up' : 'down'}">${delta >= 0 ? '+' : '−'}${Math.abs(delta)}</span> <span>vs last week</span>
-                 <span class="ov-bars">${days.map(d => `<i style="height:${Math.max(8, d)}%"></i>`).join('')}</span>`)}
-            ${tile('', "switchTab('today')", 'This week', `<strong>${streak.thisWeek}</strong><small>/${target}</small>`,
-                `<span class="ov-meter"><i style="width:${Math.min(100, Math.round(streak.thisWeek / Math.max(1, target) * 100))}%"></i></span><span>workouts</span>`)}
             ${tile('', "openTrophyRoom()", 'Streak', `<strong>${streak.streak}</strong><small>${streak.streak === 1 ? 'week' : 'weeks'}</small>`,
                 `<span>Best ${Math.max(stats.bestStreak, streak.streak)}</span>`)}
             ${tile('', "scrollToCard('progressList')", 'Records', `<strong>${stats.records}</strong>`,
