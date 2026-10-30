@@ -43,7 +43,7 @@ function closeCelebration() {
 //  CONSISTENCY SCORE + ACHIEVEMENTS
 // ════════════════════════════════════════════
 
-// Consistency score (0–100) over the last 7 days: lifting vs the plan (40), cardio vs the WHO 150 min (20),
+// Consistency score (0–100) over the last 7 days: lifting vs the plan (40), cardio vs your weekly target (20, unless Off),
 // steps vs the daily goal (20) and daily habits (20). Parts with nothing to measure (no steps ever synced,
 // a program without habits) drop out and the rest are re-weighted.
 function consistencyScore(end = todayStr()) {
@@ -57,7 +57,7 @@ function consistencyScore(end = todayStr()) {
     parts.push({ key: 'lift', label: 'Lift', weight: 40, ratio: Math.min(1, workouts / weeklyLiftTarget(prog)), text: `${workouts} of ${weeklyLiftTarget(prog)} workouts` });
 
     const cardio = cardioMinutes(inWindow);
-    parts.push({ key: 'cardio', label: 'Cardio', weight: 20, ratio: Math.min(1, cardio / 150), text: `${cardio} of 150 min` });
+    if (cardioTarget()) parts.push({ key: 'cardio', label: 'Cardio', weight: 20, ratio: Math.min(1, cardio / cardioTarget()), text: `${cardio} of ${cardioTarget()} min` });
 
     if (Object.keys(stepData).length) {
         const days = Array.from({ length: 7 }, (_, i) => addDays(today, -i));
@@ -211,10 +211,9 @@ function playerStats() {
     Object.keys(cardioWeeks).forEach(monday => {
         const sunday = addDays(monday, 6);
         const moderate = cardioMinutes(d => d >= monday && d <= sunday);
-        if (moderate >= 150) {
-            st.whoWeeks++;
-            if (workoutDates.filter(d => d >= monday && d <= sunday).length >= liftTarget) st.fullHouseWeeks++;
-        }
+        if (moderate >= 150) st.whoWeeks++;   // Heart Healthy stays on the WHO 150 minutes, whatever the setting
+        if (cardioTarget() && moderate >= cardioTarget()
+            && workoutDates.filter(d => d >= monday && d <= sunday).length >= liftTarget) st.fullHouseWeeks++;
     });
 
     // Steps: goal days, best run of goal days, 20k days, XP (1 per 100 steps, up to 150 a day)
@@ -240,14 +239,14 @@ function playerStats() {
     });
     st.weighIns = Array.isArray(allData._bodyweight) ? allData._bodyweight.length : 0;
 
-    // Perfect week: lifting plan, 150 cardio minutes and the step goal on average, all in one Monday–Sunday
+    // Perfect week: lifting plan, the cardio target and the step goal on average, all in one Monday–Sunday
     const allWeeks = new Set(workoutDates.map(mondayOf));
     allWeeks.forEach(monday => {
         const sunday = addDays(monday, 6);
         const lifts = workoutDates.filter(d => d >= monday && d <= sunday).length;
         const cardio = cardioMinutes(d => d >= monday && d <= sunday);
         const stepAvg = Array.from({ length: 7 }, (_, i) => stepsOn(addDays(monday, i))).reduce((a, b) => a + b, 0) / 7;
-        if (lifts >= liftTarget && cardio >= 150 && stepAvg >= goal) st.perfectWeeks++;
+        if (lifts >= liftTarget && cardio >= cardioTarget() && stepAvg >= goal) st.perfectWeeks++;
     });
     // All in: lifted, hit the step goal and ticked every habit on the same day
     st.allInDays = new Set(workoutDates.filter(d => stepsOn(d) >= goal && habitsDone(d) >= dailyHabits().length)).size;
@@ -305,12 +304,12 @@ function badgeTracks() {
 // One-off badges. Signature ones reward training smart; secret ones stay hidden until earned.
 function specialBadges() {
     return [
-        { id: 'perfect-week', icon: 'score', name: 'Perfect Week', desc: 'Close all three rings in one week: lifting plan, 150 cardio minutes and your step goal', stat: 'perfectWeeks' },
+        { id: 'perfect-week', icon: 'score', name: 'Perfect Week', desc: 'Close all your rings in one week: lifting plan, cardio target and step goal', stat: 'perfectWeeks' },
         { id: 'listened', icon: 'habit', name: 'Listened to Your Body', desc: 'Train on a low-readiness day, at the lighter weights the coach set', stat: 'lowReadinessWorkouts' },
         { id: 'deload', icon: 'streak', name: 'Deload Done Right', desc: 'Finish two workouts during a deload week instead of skipping it', stat: 'deloadWorkouts', goal: 2 },
         { id: 'honest', icon: 'record', name: 'Honest Effort', desc: 'Rate every set in 25 workouts', stat: 'honestWorkouts', goal: 25 },
         { id: 'dawn', icon: 'streak', name: 'Dawn Patrol', desc: 'Start 10 workouts before 7 AM', stat: 'dawnWorkouts', goal: 10 },
-        { id: 'full-house', icon: 'score', name: 'Full House', desc: 'Hit your lifting plan and 150 cardio minutes in the same week', stat: 'fullHouseWeeks' },
+        { id: 'full-house', icon: 'score', name: 'Full House', desc: 'Hit your lifting plan and your cardio target in the same week', stat: 'fullHouseWeeks' },
         { id: 'double-day', icon: 'cardio', name: 'Double Day', desc: 'Lift and do cardio on the same day', stat: 'doubleDays' },
         { id: 'record-day', icon: 'record', name: 'Record Day', desc: 'Set 3 personal records in one workout', stat: 'bestPrDay', goal: 3 },
         { id: 'marathon', icon: 'steps', name: 'Marathon Day', desc: 'Walk 20,000 steps in one day', stat: 'marathonDays' },

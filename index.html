@@ -420,12 +420,22 @@
 
                     <div class="form-group">
                     <label class="form-label">Your goal</label>
-                    <select class="form-input" id="settingsGoal">
+                    <select class="form-input" id="settingsGoal" onchange="cardioFollowsGoal(this.value)">
                         <option value="fatloss">Lose fat</option>
                         <option value="muscle">Build muscle</option>
                         <option value="strength">Get stronger</option>
                         <option value="general">Stay fit and healthy</option>
                     </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Cardio</label>
+                        <select class="form-input" id="settingsCardio">
+                            <option value="off">Off</option>
+                            <option value="light">Light · 60 min a week</option>
+                            <option value="standard">Standard · 150 min a week (WHO)</option>
+                            <option value="high">High · 300 min a week</option>
+                        </select>
                     </div>
                     <div class="form-group">
                         <label class="form-label">Weight units</label>

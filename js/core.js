@@ -4,7 +4,7 @@
 
 // Shown at the bottom of Settings so you can tell which version a phone is running.
 // Bump it with every deploy.
-const APP_VERSION = '1.66 · 30 Oct';
+const APP_VERSION = '1.67 · 30 Oct';
 
 const SUPABASE_URL = 'https://hcwbcxhblfjpdlkwykez.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_mEe_5g2UITyp5O-F9YRhRg_wTQWuOtf';
@@ -210,6 +210,18 @@ function userGender() {
 function userGoal() {
     const g = userProfile && userProfile.goal;
     return ['fatloss', 'muscle', 'strength'].includes(g) ? g : 'general';
+}
+
+// Weekly cardio target, chosen in Settings; until then it follows the goal (light for muscle and strength,
+// the WHO 150 minutes otherwise). Off removes the Cardio ring, its part of the score and cardio quests.
+const CARDIO_LEVELS = { off: 0, light: 60, standard: 150, high: 300 };
+function userCardio() {
+    const c = userProfile && userProfile.cardio;
+    if (c in CARDIO_LEVELS) return c;
+    return ['muscle', 'strength'].includes(userGoal()) ? 'light' : 'standard';
+}
+function cardioTarget() {
+    return CARDIO_LEVELS[userCardio()];
 }
 
 // Daily habits come from your goal, not your program: fat loss or muscle depends on eating, sleep and

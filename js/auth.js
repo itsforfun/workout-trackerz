@@ -245,6 +245,12 @@ async function handleDeleteAccount() {
     await signOutAndReset();
 }
 
+// Until a cardio level was picked by hand, it follows the goal chosen in the form
+function cardioFollowsGoal(goal) {
+    if (userProfile && userProfile.cardio) return;
+    document.getElementById('settingsCardio').value = ['muscle', 'strength'].includes(goal) ? 'light' : 'standard';
+}
+
 async function handleSettingsUpdate(event) {
     event.preventDefault();
 
@@ -258,7 +264,11 @@ async function handleSettingsUpdate(event) {
 
     const weightChanged = !userProfile || Math.abs((userProfile.weight || 0) - weight) >= 0.05;
     const goal = document.getElementById('settingsGoal').value || 'general';
-    userProfile = { ...userProfile, gender, age, weight, height, goal, units };
+    // Keep following the goal unless a different level was picked
+    const picked = document.getElementById('settingsCardio').value;
+    const goalDefault = ['muscle', 'strength'].includes(goal) ? 'light' : 'standard';
+    const cardio = !userProfile.cardio && picked === goalDefault ? undefined : picked;
+    userProfile = { ...userProfile, gender, age, weight, height, goal, cardio, units };
     rememberGender();
     if (weightChanged) logBodyweight(weight);
 
@@ -275,6 +285,7 @@ function loadSettingsForm() {
     document.getElementById('settingsUnits').value = usesLb() ? 'lb' : 'kg';
     document.getElementById('settingsGender').value = userProfile.gender || 'male';
     document.getElementById('settingsGoal').value = userGoal();
+    document.getElementById('settingsCardio').value = userCardio();
     document.getElementById('settingsAge').value = userProfile.age || '';
     document.getElementById('settingsWeightLabel').textContent = `Weight (${usesLb() ? 'lb' : 'kg'})`;
     document.getElementById('settingsWeight').value = userProfile.weight ? kgToDisplay(userProfile.weight) : '';

@@ -20,11 +20,12 @@ function makeQuests(monday) {
     const prog = PROGRAMS[currentProgram];
     const lastMonday = addDays(monday, -7);
     const lastWeek = weekDays(lastMonday);
-    const kinds = GOAL_QUESTS[userGoal()];
+    // Cardio quests only when cardio is on
+    const kinds = GOAL_QUESTS[userGoal()].filter(k => k !== 'cardio' || cardioTarget());
     const goalQuest = kind => {
         if (kind === 'cardio') {
             const last = cardioMinutes(d => d >= lastMonday && d < monday);
-            return { id: 'cardio', kind, target: Math.min(150, Math.max(60, Math.round((last + 30) / 10) * 10)) };
+            return { id: 'cardio', kind, target: Math.min(cardioTarget(), Math.max(Math.min(60, cardioTarget()), Math.round((last + 30) / 10) * 10)) };
         }
         if (kind === 'steps') {
             const last = lastWeek.filter(d => stepsOn(d) >= stepGoal()).length;

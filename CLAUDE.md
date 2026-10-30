@@ -495,3 +495,8 @@ reference/debug-screenshots/  ← Supabase key page, "Script error" console, Git
 - **The ship:** everyone's leagues this week toward one landmark (100 leagues) per member (`crewShip`). Shown on the journey screen (crew card above the map) and as one line on Today's saga card (`crewLineHtml`).
 - **Horns:** encouragement to a crewmate, once a day each (`soundHorn`, localStorage `odyr_horn_<user>_<date>`); horns received since the last look show as a moment (`checkHorns`).
 - Tests use an in-memory pretend database for the crew check; `tests/setup.js` stub now has `rpc`.
+
+## 50. Cardio as a setting (v1.67, 2026-10-30)
+- Cardio is optional and follows the goal: `profile.cardio` = off | light (60 min/week) | standard (150, WHO) | high (300); `userCardio()` / `cardioTarget()` in js/core.js. Until picked in Settings → Cardio it follows the goal (light for Build muscle / Get stronger, standard otherwise; `cardioFollowsGoal` keeps the form in step and saving stores it only when picked by hand).
+- Everything that said 150 now uses `cardioTarget()`: the Cardio ring (hidden when Off: two rings), its part of the consistency score (dropped when Off), the coach's "cardio behind" tip, cardio quests (none when Off; target capped at the setting), Perfect Week and Full House. The Heart Healthy badge stays on the WHO 150 minutes. The Cardio card and its science stay available to everyone.
+- Owner's note: steps already carry much of daily energy expenditure; a deeper look at energy expenditure (calories, balance) is for Odyr Pro (backlog).

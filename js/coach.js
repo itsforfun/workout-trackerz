@@ -506,8 +506,8 @@ function coachInsight() {
         if (gain >= 0.1 && (!best || gain > best.gain)) best = { ex, gain };
     });
     const cardio = cardioWeek().moderate;
-    if (weekday >= 4 && cardio < 75) {
-        return { key: 'cardio', icon: 'cardio', text: `Cardio is at ${cardio} of 150 minutes this week. A 30-minute Zone 2 session today makes a real dent.` };
+    if (cardioTarget() && weekday >= 4 && cardio < cardioTarget() / 2) {
+        return { key: 'cardio', icon: 'cardio', text: `Cardio is at ${cardio} of ${cardioTarget()} minutes this week. A 30-minute Zone 2 session today makes a real dent.` };
     }
     if (Object.keys(stepData).length) {
         const avg = Array.from({ length: 7 }, (_, i) => stepsOn(addDays(today, -i))).reduce((a, b) => a + b, 0) / 7;
@@ -558,7 +558,7 @@ function tourSteps() {
     const lifting = document.getElementById('liftView').style.display !== 'none';
     return [
         { target: '.hero-level', title: 'Your level', text: 'Everything you do earns XP: workouts, sets, records, cardio, steps and habits. Climb from Rookie to Mythic.' },
-        { target: '.hero-rings', title: 'Three rings', text: 'Lifting this week, cardio minutes toward 150, and today\'s steps. A ring turns gold when it closes.' },
+        { target: '.hero-rings', title: 'Three rings', text: 'Lifting this week, cardio toward your weekly target, and today\'s steps. A ring turns gold when it closes.' },
         { target: '.hero-score', title: 'Consistency score', text: 'Your last 7 days in one number, from 0 to 100. Steady beats perfect.' },
         lifting
             ? { target: '#startWorkoutBtn', title: 'Start here', text: 'Today\'s session. Weights are filled in for you, and records and badges unlock as you go.' }

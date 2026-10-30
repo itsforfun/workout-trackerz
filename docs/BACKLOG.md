@@ -39,6 +39,7 @@ Status: **Done** · **Check** (built, still needs a look on the iPhone or a smal
 **Coach (the paid "Pro" tier idea)**
 - AI coach chat that answers from your own log ("why has my bench stalled?")
 - Adaptive nutrition: protein and calorie targets that follow your weight trend
+- Energy expenditure: calories from steps, workouts and cardio, energy balance with the weight trend (owner, 2026-10-30)
 - Readiness from Apple Health sleep and resting heart rate (today it's a manual check-in)
 - Volume tuning: add or remove sets per muscle based on how you respond
 - Full week replanning when a day is missed (today: a catch-up offer on cardio days)
@@ -105,6 +106,7 @@ Status: **Done** · **Check** (built, still needs a look on the iPhone or a smal
 | 1.29 | 8-tier medals, trophy room, badge sheet, minting moment, signature and secret badges, "almost there" nudges |
 | 1.30–1.34 | Brand: Odyra, then Odyr; new icon; sign-in redesign; design carried across the app; thinker quotes |
 | 1.35–1.36 | French (whole app, reminders, quotes), Language setting, French review pass, decimal comma typing |
+| 1.67 | Cardio as a setting that starts from your goal: Off, Light 60, Standard 150, High 300 min a week; ring, score and quests follow it |
 | 1.66 | Crews: up to 8 friends on one ship, invite codes, ranked by effort (leagues) not weights, horns of encouragement (needs supabase-crews-setup.sql) |
 | 1.65 | Ghost of your past self in workout mode (you, 4 weeks ago, to beat); weekly quests (three each Monday from your log and goal, 75 XP each) |
 | 1.64 | Odyssey: everything you do moves your traveller along sagas of 1,000 leagues with named landmarks; saga card on Today shows how far you travelled since your last visit; landmark moments; journey screen |

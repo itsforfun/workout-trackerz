@@ -67,9 +67,9 @@ function renderTodayHero() {
     const xp = playerXp(playerStats());
     const rings = [
         { label: 'Lift', color: '#f3ece0', value: stats.thisWeek, target: liftTarget, text: `<span data-count="${stats.thisWeek}" data-key="hero-lift"></span><small>/${liftTarget}</small>` },
-        { label: 'Cardio', color: '#c98f66', value: cardio, target: 150, text: `<span data-count="${cardio}" data-key="hero-cardio"></span><small>/150 min</small>` },
+        { label: 'Cardio', color: '#c98f66', value: cardio, target: cardioTarget(), text: `<span data-count="${cardio}" data-key="hero-cardio"></span><small>/${cardioTarget()} min</small>` },
         { label: 'Steps', color: '#b0a491', value: steps, target: goal, text: `<span data-count="${steps}" data-key="hero-steps" data-format="compact"></span><small>/${compactNum(goal)}</small>` },
-    ];
+    ].filter(ring => ring.target > 0);   // cardio set to Off: two rings
     const circles = rings.map((ring, i) => {
         const r = HERO_RING_RADII[i];
         const c = 2 * Math.PI * r;
@@ -472,9 +472,9 @@ function renderCardioEntry(show) {
     const week = cardioWeek();
     el.innerHTML = `
         <button class="cardio-entry" onclick="setTodayMode('cardio')">
-            <span class="ce-text"><span class="ce-kicker">Cardio</span><strong>${week.moderate}<small> / 150 min this week</small></strong></span>
+            <span class="ce-text"><span class="ce-kicker">Cardio</span><strong>${week.moderate}<small>${cardioTarget() ? ` / ${cardioTarget()} min this week` : ' min this week'}</small></strong></span>
             <span class="ce-link">Zones and science ›</span>
-            <span class="ce-bar"><span style="width:${Math.min(100, Math.round(week.moderate / 150 * 100))}%"></span></span>
+            ${cardioTarget() ? `<span class="ce-bar"><span style="width:${Math.min(100, Math.round(week.moderate / cardioTarget() * 100))}%"></span></span>` : ''}
         </button>`;
 }
 
@@ -494,7 +494,8 @@ function renderCardioView(plan, showingLift, chosen = false) {
     const todayMinutes = programSessions()
         .filter(s => s.type === 'cardio' && s.date === todayStr())
         .reduce((sum, s) => sum + (s.minutes || 0), 0);
-    const pct = Math.min(100, Math.round((week.moderate / 150) * 100));
+    const target = cardioTarget() || 150;
+    const pct = Math.min(100, Math.round((week.moderate / target) * 100));
     const bpm = z => `${Math.round(hrMax * z.pct[0] / 100)}–${Math.round(hrMax * z.pct[1] / 100)}`;
     const rec = CARDIO_ZONES.find(z => z.zone === recommended);
 
@@ -533,7 +534,7 @@ function renderCardioView(plan, showingLift, chosen = false) {
         <div class="cardio-week">
             <div class="cardio-week-top">
                 <span>This week</span>
-                <strong>${week.moderate}<small> / 150 min</small></strong>
+                <strong>${week.moderate}<small> / ${target} min</small></strong>
             </div>
             <div class="cardio-week-bar"><span style="width:${pct}%"></span></div>
             ${todayMinutes ? `<div class="cardio-today">${todayMinutes} min logged today</div>` : ''}

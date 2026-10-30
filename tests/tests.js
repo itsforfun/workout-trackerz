@@ -781,6 +781,31 @@
         }
     });
 
+    await check('Cardio follows your setting: Off, Light, Standard, High (default from the goal)', () => {
+        const saved = userProfile;
+        try {
+            userProfile = { ...saved, goal: 'muscle', cardio: undefined };
+            equal(cardioTarget(), 60, 'muscle goal starts light');
+            userProfile = { ...saved, goal: 'fatloss', cardio: undefined };
+            equal(cardioTarget(), 150, 'fat loss starts at the WHO 150');
+            userProfile = { ...saved, goal: 'fatloss', cardio: 'high' };
+            showScreen('app');
+            switchTab('today');
+            assert(/\/300 min/.test(document.getElementById('todayHero').textContent), 'high target not on the ring');
+            userProfile = { ...saved, goal: 'general', cardio: 'off' };
+            switchTab('today');
+            equal(document.querySelectorAll('#todayHero .hr-fg').length, 2, 'cardio Off: two rings');
+            assert(!consistencyScore().parts.some(p => p.key === 'cardio'), 'cardio Off still in the score');
+            const monday = mondayOf(todayStr());
+            delete metaFor('_quests')[monday];
+            assert(!questWeek(monday).list.some(q => q.kind === 'cardio'), 'cardio Off still gets a cardio quest');
+            delete metaFor('_quests')[monday];
+            assert(document.querySelector('#cardioEntry .cardio-entry'), 'cardio stays available when Off');
+        } finally {
+            userProfile = saved;
+        }
+    });
+
     await check('Ticking a set shows the XP it earned', () => {
         const anchor = document.createElement('button');
         document.body.appendChild(anchor);
