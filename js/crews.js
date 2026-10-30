@@ -102,11 +102,31 @@ async function leaveCrew() {
 
 async function shareCrewCode() {
     haptic();
+    // A link that opens Odyr straight on "Join this crew" with the code filled in (?crew=CODE)
+    const url = `${location.origin}${location.pathname}?crew=${encodeURIComponent(crew.code)}`;
     const text = `Join my crew "${crew.name}" on Odyr. Code: ${crew.code}`;
     try {
-        if (navigator.share) await navigator.share({ text: tr(text) });
+        if (navigator.share) await navigator.share({ text: tr(text), url });
         else { await navigator.clipboard.writeText(crew.code); showToast('Code copied'); }
     } catch (e) { /* share sheet closed */ }
+}
+
+// ── Invite links: ?crew=CODE is kept until signed in with a program, then opens the join form ──
+function crewInvite() {
+    try { return localStorage.getItem('odyr_crew_invite'); } catch (e) { return null; }
+}
+
+function openCrewInvite() {
+    const code = crewInvite();
+    if (!code || crewState !== 'ready' || !currentProgram) return;
+    try { localStorage.removeItem('odyr_crew_invite'); } catch (e) { /* private mode */ }
+    if (crew) return showToast('You’re already in a crew');
+    crewForm = 'join';
+    openOdyssey();
+    const input = document.getElementById('crewCode');
+    if (input) input.value = code;
+    const card = document.getElementById('crewCard');
+    if (card) card.scrollIntoView({ block: 'center' });
 }
 
 // ── Horns: a nudge of encouragement to a crewmate, once a day each ──

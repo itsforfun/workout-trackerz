@@ -23,7 +23,6 @@ Status: **Done** · **Check** (built, still needs a look on the iPhone or a smal
 | Pro waitlist (v1.39) | Table is live; check Supabase → Table Editor → pro_waitlist after people have used the app for a few weeks |
 | Tab bar lens (v1.43–1.44) | Try the glide and the drag on the iPhone; tune speed or stretch if needed |
 | Exercise guide (v1.39) | The owner finds the stick-figure demos inaccurate; still deciding on licensed demos (exercise.com, ExRx.net, MuscleWiki, WorkoutLabs). Body map and muscle library done in v1.47 |
-| New accounts feel empty | A better first day: welcome, first goal, walkthrough straight away; "Install Odyr" prompt when opened in Safari |
 
 ## Next — not started
 
@@ -107,6 +106,7 @@ Status: **Done** · **Check** (built, still needs a look on the iPhone or a smal
 | 1.29 | 8-tier medals, trophy room, badge sheet, minting moment, signature and secret badges, "almost there" nudges |
 | 1.30–1.34 | Brand: Odyra, then Odyr; new icon; sign-in redesign; design carried across the app; thinker quotes |
 | 1.35–1.36 | French (whole app, reminders, quotes), Language setting, French review pass, decimal comma typing |
+| 1.77 | First five minutes: Our pick for you (one question, one program), first-workout quest, Add to Home Screen card, crew invite links |
 | 1.76 | Week strip in every lifting program (suggested days when a program has none); cardio days shown as optional, Rest instead of Walk; off days open on a rest-day card with optional cardio or lift anyway |
 | 1.75 | Program descriptions rewritten to sell: the story behind each name, then what the training focuses on |
 | 1.74 | Skadi: women's 4-day glute-first program (knee-control warm-up, easy cardio days, max 5 lifts a session); warning when a set goes to failure on hip thrusts, RDLs or split squats |

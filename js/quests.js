@@ -42,7 +42,8 @@ function makeQuests(monday) {
         const pick = lifts[weekIndex(monday) % Math.min(3, lifts.length)];
         list.push({ id: 'lift', kind: 'lift', program: currentProgram, exId: pick.ex.id, best: Math.max(...pick.h.map(p => p.value)), target: 1 });
     }
-    list.push({ id: 'train', kind: 'train', target: weeklyLiftTarget(prog) });
+    // A brand-new account starts with one winnable quest: the first workout
+    list.push(allWorkoutDates().length ? { id: 'train', kind: 'train', target: weeklyLiftTarget(prog) } : { id: 'first', kind: 'first', target: 1 });
     const first = kinds[weekIndex(monday) % kinds.length];
     list.push(goalQuest(first));
     // Nothing lifted yet: a second goal quest instead of the lift one
@@ -67,7 +68,7 @@ function questProgress(q, monday) {
         const ex = getExercise(q.exId);
         return ex && strengthHistory(ex).some(p => inWeek(p.date) && p.value > q.best) ? 1 : 0;
     }
-    if (q.kind === 'train') return allWorkoutDates().filter(inWeek).length;
+    if (q.kind === 'train' || q.kind === 'first') return allWorkoutDates().filter(inWeek).length;
     if (q.kind === 'cardio') return cardioMinutes(inWeek);
     if (q.kind === 'steps') return days.filter(d => stepsOn(d) >= stepGoal()).length;
     return days.filter(d => habitsDone(d) >= dailyHabits().length).length;
@@ -78,6 +79,7 @@ function questLabel(q) {
         const ex = (PROGRAMS[q.program] || {}).exercises && PROGRAMS[q.program].exercises.find(e => e.id === q.exId);
         return `Beat your best on ${ex ? ex.name : 'a lift'}`;
     }
+    if (q.kind === 'first') return isCardioProgram() ? 'Finish your first session' : 'Log your first workout';
     if (q.kind === 'train') return q.target === 1 ? 'Train once this week' : `Train ${q.target} times this week`;
     if (q.kind === 'cardio') return `${q.target} cardio minutes`;
     if (q.kind === 'steps') return `Hit your step goal on ${q.target} days`;

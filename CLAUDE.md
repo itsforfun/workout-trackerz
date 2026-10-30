@@ -529,3 +529,9 @@ reference/debug-screenshots/  ← Supabase key page, "Script error" console, Git
 - **Strip:** lifting days show a short label (`dayShortLabel`: Push, A, Glutes; "Lift" for one-day programs); off days show "Cardio" in a dashed, quieter style when cardio is on, else "Rest"; "Walk" is gone (steps are a daily habit). One line under the strip: "Cardio days are optional".
 - **Off days** open on a rest-day card (`renderRestDay`, `#restDay`): "Recover", recovery first, your Zone 2 bpm if cardio is on, the catch-up offer, and buttons Optional cardio (zones + science, `todayMode = 'cardio'`) and Lift anyway / Lift today. The Cardio card on lifting days still opens the same zones.
 - The coach's cardio tip uses this week's cardio quest target when there is one, so the tip and the quest never disagree.
+
+## 56. First five minutes (v1.77, 2026-10-30)
+- **Our pick for you** (`renderProgramPick`, `#programPick`, js/core.js): on the program menu before any program is chosen and with no workouts, one question "How many days a week can you train?" (1–2 / 3 / 4+, saved as `profile.daysPerWeek`) and a recommendation (`recommendedProgram(days, sex, goal)`: women Valkyrie / Freyja / Skadi; men Anvil / Forge (muscle, strength) or Wayfarer / Forge) with its tag, promise and "Start with …".
+- **First quest:** a brand-new account's training quest is "Log your first workout" (kind `first`, target 1).
+- **Install card** on Today (`renderInstallCard`, `#installCard`): iPhone Safari shows "Tap Share, then Add to Home Screen…"; Android/Chrome uses `beforeinstallprompt` with an Install button; hidden once installed or dismissed (`odyr_install_dismissed`).
+- **Crew invite links:** Share sends `…/?crew=CODE`; js/main.js keeps the code in `odyr_crew_invite` through sign-up and tidies the address; `openCrewInvite` (after the crew loads on Today) opens the journey with the join form and code filled in.

@@ -943,6 +943,54 @@
         }
     });
 
+    await check('First five minutes: our pick, the first quest, the install card, crew invite links', () => {
+        const saved = { program: currentProgram, profile: userProfile, data: allData };
+        try {
+            // Our pick: days a week, sex and goal choose a program
+            equal(recommendedProgram('12', 'female'), 'femaleTotalBody', 'woman, 1–2 days');
+            equal(recommendedProgram('4', 'female'), 'skadi', 'woman, 4+ days');
+            equal(recommendedProgram('3', 'male', 'muscle'), 'male', 'man, 3 days, muscle');
+            equal(recommendedProgram('3', 'male', 'general'), 'fullBody3', 'man, 3 days, stay fit');
+            // A brand-new account: no program, no workouts
+            allData = {};
+            currentProgram = null;
+            userProfile = { ...saved.profile, gender: 'female', daysPerWeek: undefined };
+            showScreen('selector');
+            assert(document.querySelector('#programPick .pp-q'), 'no pick for a new account');
+            setPickDays('4');
+            assert(/Skadi/.test(document.querySelector('#programPick .pp-result').textContent), 'pick not shown after answering');
+            document.querySelector('#programPick .pp-result .btn').click();
+            equal(currentProgram, 'skadi', 'start button did not choose the pick');
+            showScreen('selector');
+            equal(document.getElementById('programPick').innerHTML, '', 'pick should go once a program is chosen');
+            // The first quest
+            const week = questWeek(mondayOf(todayStr()));
+            assert(week.list.some(q => q.kind === 'first'), 'no first-workout quest for a new account');
+            // Install card: shown when the phone can install, gone once dismissed
+            installEvent = { prompt() {}, userChoice: Promise.resolve() };
+            try { localStorage.removeItem('odyr_install_dismissed'); } catch (e) { /* private mode */ }
+            renderInstallCard();
+            assert(document.querySelector('#installCard .install-card'), 'no install card');
+            dismissInstall();
+            equal(document.getElementById('installCard').innerHTML, '', 'install card not dismissed');
+            installEvent = null;
+            // Crew invite link: opens the join form with the code
+            try { localStorage.setItem('odyr_crew_invite', 'A7F3K9'); } catch (e) { /* private mode */ }
+            crew = null; crewState = 'ready';
+            openCrewInvite();
+            assert(document.getElementById('odysseyScreen').classList.contains('active'), 'invite did not open the journey');
+            equal(document.getElementById('crewCode').value, 'A7F3K9', 'invite code not filled in');
+            equal(crewInvite(), null, 'invite not cleared');
+            closeOdyssey();
+        } finally {
+            crewState = 'idle'; crewForm = null;
+            try { localStorage.removeItem('odyr_install_dismissed'); } catch (e) { /* private mode */ }
+            allData = saved.data;
+            userProfile = saved.profile;
+            selectProgram(saved.program);
+        }
+    });
+
     await check('Ticking a set shows the XP it earned', () => {
         const anchor = document.createElement('button');
         document.body.appendChild(anchor);

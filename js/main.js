@@ -12,6 +12,13 @@ if (sb) {
         }
     });
 }
+// A crew invite link (?crew=CODE): keep the code through sign-up, and tidy the address
+(() => {
+    const code = new URLSearchParams(location.search).get('crew');
+    if (!code) return;
+    try { localStorage.setItem('odyr_crew_invite', code.toUpperCase().slice(0, 6)); } catch (e) { /* private mode */ }
+    history.replaceState(null, '', location.pathname);
+})();
 checkAuth();
 scheduleSplashHide();
 

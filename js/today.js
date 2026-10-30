@@ -161,11 +161,12 @@ function renderToday() {
     const week = todayWeek !== null ? todayWeek : getCurrentWeek();
 
     renderTodayHero();
+    renderInstallCard();
     renderSagaCard();
     checkLandmarks();
     // Crew: load once (then the saga card shows the ship), afterwards keep my numbers this week current
-    if (crewState === 'idle') loadCrew().then(c => { if (c) renderSagaCard(); });
-    else syncCrewStats();
+    if (crewState === 'idle') loadCrew().then(c => { if (c) renderSagaCard(); openCrewInvite(); });
+    else { syncCrewStats(); openCrewInvite(); }
     checkQuests();
     renderQuests();
     renderInsight();
@@ -507,6 +508,53 @@ function setTodayMode(mode) {
     todayMode = mode;
     renderToday();
     window.scrollTo(0, 0);
+}
+
+// ── "Add Odyr to your Home Screen": shown in a phone browser, until installed or dismissed ──
+// On iPhone, lock-screen rest alerts and reminders only work from the Home Screen app.
+let installEvent = null;
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvent = e; renderInstallCard(); });
+
+function isInstalled() {
+    return navigator.standalone || (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches);
+}
+
+function renderInstallCard() {
+    const el = document.getElementById('installCard');
+    if (!el) return;
+    let dismissed = false;
+    try { dismissed = localStorage.getItem('odyr_install_dismissed') === '1'; } catch (e) { /* private mode */ }
+    const ios = /iPhone|iPad|iPod/.test(navigator.userAgent);
+    if (isInstalled() || dismissed || (!ios && !installEvent)) {
+        el.innerHTML = '';
+        return;
+    }
+    el.innerHTML = `
+        <div class="install-card">
+            <svg class="install-mark" aria-hidden="true"><use href="#odyrMark"/></svg>
+            <div class="install-text">
+                <strong>Add Odyr to your Home Screen</strong>
+                <span>${ios
+                    ? 'Tap Share, then Add to Home Screen. Rest alerts, reminders and full screen work from there.'
+                    : 'Install it for full screen, rest alerts and reminders.'}</span>
+                ${!ios ? '<button class="btn btn-primary install-btn" onclick="installOdyr()">Install</button>' : ''}
+            </div>
+            <button class="install-close" onclick="dismissInstall()" aria-label="Dismiss">${CLOSE_ICON}</button>
+        </div>`;
+}
+
+async function installOdyr() {
+    if (!installEvent) return;
+    installEvent.prompt();
+    await installEvent.userChoice.catch(() => {});
+    installEvent = null;
+    renderInstallCard();
+}
+
+function dismissInstall() {
+    haptic();
+    try { localStorage.setItem('odyr_install_dismissed', '1'); } catch (e) { /* private mode */ }
+    renderInstallCard();
 }
 
 // An off day in a lifting program: recovery first, cardio optional, lifting one tap away

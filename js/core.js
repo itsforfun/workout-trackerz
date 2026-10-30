@@ -4,7 +4,7 @@
 
 // Shown at the bottom of Settings so you can tell which version a phone is running.
 // Bump it with every deploy.
-const APP_VERSION = '1.76 · 30 Oct';
+const APP_VERSION = '1.77 · 30 Oct';
 
 const SUPABASE_URL = 'https://hcwbcxhblfjpdlkwykez.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_mEe_5g2UITyp5O-F9YRhRg_wTQWuOtf';
@@ -342,6 +342,53 @@ function orderProgramCards() {
     document.getElementById('forYouKicker').hidden = !gender;
     if (!programKind) programKind = isCardioProgram() ? 'cardio' : 'lifting';
     showProgramKind();
+    renderProgramPick();
+}
+
+// ── Our pick for you: on a first visit, one question (days a week) and a program chosen from it, your sex and goal ──
+const DAY_CHOICES = [['12', '1–2'], ['3', '3'], ['4', '4+']];
+
+function recommendedProgram(days, gender = userGender(), goal = userGoal()) {
+    const body = ['muscle', 'strength'].includes(goal);
+    if (gender === 'female') return days === '12' ? 'femaleTotalBody' : days === '3' ? 'female' : 'skadi';
+    if (days === '12') return 'maleTotalBody';
+    if (days === '3') return body ? 'male' : 'fullBody3';
+    return 'male';
+}
+
+function renderProgramPick() {
+    const el = document.getElementById('programPick');
+    if (!el) return;
+    // Only before the first program is chosen and nothing has been trained yet
+    if (currentProgram || allWorkoutDates().length) {
+        el.innerHTML = '';
+        return;
+    }
+    const days = userProfile && userProfile.daysPerWeek;
+    const pick = days && recommendedProgram(days);
+    const card = pick && document.querySelector(`#programSelector .program-card[onclick="selectProgram('${pick}')"]`);
+    const promise = card && card.querySelector('.program-promise') ? card.querySelector('.program-promise').textContent : '';
+    el.innerHTML = `
+        <div class="program-pick">
+            <div class="kicker">Our pick for you</div>
+            <p class="pp-q">How many days a week can you train?</p>
+            <div class="pp-days">${DAY_CHOICES.map(([v, label]) => `<button class="pp-day${days === v ? ' active' : ''}" onclick="setPickDays('${v}')">${label}</button>`).join('')}</div>
+            ${pick ? `
+                <div class="pp-result">
+                    <div class="pp-name">${escapeHtml(PROGRAMS[pick].name)}</div>
+                    <div class="program-tag">${programTagHtml(PROGRAMS[pick])}</div>
+                    <p class="pp-promise">${escapeHtml(promise)}</p>
+                    <button class="btn btn-primary" onclick="selectProgram('${pick}')">Start with ${escapeHtml(PROGRAMS[pick].name)}</button>
+                    <p class="pp-browse">Or browse every program below.</p>
+                </div>` : ''}
+        </div>`;
+}
+
+function setPickDays(days) {
+    haptic();
+    userProfile = { ...userProfile, daysPerWeek: days };
+    scheduleSave();
+    renderProgramPick();
 }
 
 // Program menu: Lifting | Cardio (opens on the kind of program you're on)
