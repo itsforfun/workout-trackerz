@@ -24,6 +24,7 @@ const STRIDE_WEEKS = [
 Object.assign(PROGRAMS, {
     horizon: {
         name: 'Horizon',
+        level: 1, perWeek: '3 days a week', equipment: 'Outdoors or machine',   // shown the same way on every program card
         subtitle: 'Zone 2 base · 3 days',
         type: 'cardio',
         days: ['Easy', 'Steady', 'Long'],
@@ -45,6 +46,7 @@ Object.assign(PROGRAMS, {
     },
     tempest: {
         name: 'Tempest',
+        level: 2, perWeek: '3 days a week', equipment: 'Outdoors or machine',   // shown the same way on every program card
         subtitle: 'Intervals · tempo · easy · 3 days',
         type: 'cardio',
         days: ['Intervals', 'Tempo', 'Easy'],
@@ -66,6 +68,7 @@ Object.assign(PROGRAMS, {
     },
     firstStride: {
         name: 'First Stride',
+        level: 1, perWeek: '3 days a week', equipment: 'Running shoes',   // shown the same way on every program card
         subtitle: 'Walk to a 30-minute run · 3 days',
         type: 'cardio',
         days: ['Day A', 'Day B', 'Day C'],

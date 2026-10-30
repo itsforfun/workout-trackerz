@@ -4,7 +4,7 @@
 
 // Shown at the bottom of Settings so you can tell which version a phone is running.
 // Bump it with every deploy.
-const APP_VERSION = '1.68 · 30 Oct';
+const APP_VERSION = '1.69 · 30 Oct';
 
 const SUPABASE_URL = 'https://hcwbcxhblfjpdlkwykez.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_mEe_5g2UITyp5O-F9YRhRg_wTQWuOtf';
@@ -295,6 +295,23 @@ function rememberGender() {
     try { localStorage.setItem('odyr_gender', userGender() || ''); } catch (e) { /* private mode */ }
 }
 
+// Every program card shows the same key facts in the same place: difficulty (bars + name) and days a week
+// in the tag; split, session length and equipment underneath. Filled from the program's own fields.
+const PROGRAM_LEVELS = ['', 'Beginner', 'Intermediate', 'Advanced'];
+
+function programTagHtml(p) {
+    const bars = [1, 2, 3].map(n => `<i${n <= p.level ? ' class="on"' : ''}></i>`).join('');
+    return `<span class="lvl" aria-hidden="true">${bars}</span><span>${PROGRAM_LEVELS[p.level]}</span> · <span>${p.perWeek}</span>`;
+}
+
+function fillProgramCard(card, p) {
+    if (!p.level) return;
+    const tag = card.querySelector('.program-tag');
+    if (tag) tag.innerHTML = programTagHtml(p);
+    const kit = card.querySelector('.program-specs > div:nth-child(3)');
+    if (kit) kit.innerHTML = `<span>Equipment</span>${escapeHtml(p.equipment)}`;
+}
+
 // Program menu: the programs written for your sex under "For you"; the others folded under "More programs"
 // (one tap away, never hidden: every program converts its standards to whoever trains). Without a sex
 // in the profile, every program is listed.
@@ -311,6 +328,7 @@ function orderProgramCards() {
     cards.map(card => ({ card, i: order.indexOf(programIdOf(card)), rank: rank(programOf(card)), mine: rank(programOf(card)) < 2 }))
         .sort((a, b) => (a.rank - b.rank) || a.i - b.i)
         .forEach(({ card, mine }, i) => {
+            fillProgramCard(card, programOf(card));
             (mine ? forYou : more).appendChild(card);
             const index = card.querySelector('.program-index');
             if (index) index.textContent = String(i + 1).padStart(2, '0');

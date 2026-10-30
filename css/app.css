@@ -2006,3 +2006,12 @@ button.hero-score:active { opacity:0.7; }
 .cr-next strong { color:var(--text); font-weight:500; }
 .cr-controls { display:flex; gap:var(--s2); margin:var(--s4) 0 var(--s3); }
 .cr-controls .btn { flex:1; padding:16px; }
+
+/* ── Program card tag: difficulty bars + level + days a week, the same on every card (v1.69) ── */
+.program-tag { display:inline-flex; align-items:center; gap:6px; }
+.program-tag .lvl { display:inline-flex; align-items:flex-end; gap:2px; height:11px; margin-right:2px; }
+.program-tag .lvl i { display:block; width:3px; border-radius:1px; background:rgba(240,232,216,0.22); }
+.program-tag .lvl i:nth-child(1) { height:5px; }
+.program-tag .lvl i:nth-child(2) { height:8px; }
+.program-tag .lvl i:nth-child(3) { height:11px; }
+.program-tag .lvl i.on { background:var(--accent); }

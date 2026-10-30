@@ -604,6 +604,19 @@
         equal(cards.length, Object.keys(PROGRAMS).filter(id => !id.startsWith('custom-')).length, 'one card per program');
         cards.forEach(card => assert(card.querySelector('.program-promise') && card.querySelector('.program-promise').textContent.trim().length > 10,
             `${card.querySelector('.program-title').textContent} has no promise`));
+        // The same key facts on every card: difficulty and days a week in the tag, equipment last in the details
+        showScreen('selector');
+        cards.forEach(card => {
+            const p = PROGRAMS[(card.getAttribute('onclick').match(/'([^']+)'/) || [])[1]];
+            const name = card.querySelector('.program-title').textContent;
+            assert(p.level >= 1 && p.level <= 3 && p.perWeek && p.equipment, `${name}: missing level, days or equipment`);
+            equal(card.querySelectorAll('.program-tag .lvl i.on').length, p.level, `${name}: level bars`);
+            // (the translator may not have run yet, so either language counts)
+            const tag = card.querySelector('.program-tag').textContent;
+            assert([PROGRAM_LEVELS[p.level], tr(PROGRAM_LEVELS[p.level])].some(t => tag.includes(t)), `${name}: level name in the tag`);
+            assert(/Equipment|Matériel/.test(card.querySelector('.program-specs > div:nth-child(3)').textContent), `${name}: equipment not last in the details`);
+        });
+        showScreen('app');
     });
 
     await check('Habits follow your goal and cardio science is in every program; programs promise no fat loss or muscle', () => {

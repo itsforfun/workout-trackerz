@@ -106,6 +106,7 @@ Status: **Done** · **Check** (built, still needs a look on the iPhone or a smal
 | 1.29 | 8-tier medals, trophy room, badge sheet, minting moment, signature and secret badges, "almost there" nudges |
 | 1.30–1.34 | Brand: Odyra, then Odyr; new icon; sign-in redesign; design carried across the app; thinker quotes |
 | 1.35–1.36 | French (whole app, reminders, quotes), Language setting, French review pass, decimal comma typing |
+| 1.69 | Program cards all show difficulty (bars + level) and days a week in the tag, and Split · Session · Equipment underneath |
 | 1.68 | Cardio programs (Horizon, Tempest, First Stride) with a guided session mode: blocks, countdown, beeps, screen kept awake, minutes logged per zone |
 | 1.67 | Cardio as a setting that starts from your goal: Off, Light 60, Standard 150, High 300 min a week; ring, score and quests follow it |
 | 1.66 | Crews: up to 8 friends on one ship, invite codes, ranked by effort (leagues) not weights, horns of encouragement (needs supabase-crews-setup.sql) |

@@ -1807,5 +1807,10 @@ I18N_PACKS.fr = {
         "Finish now and save what you did?": "Terminer maintenant et enregistrer ce que vous avez fait ?",
         "Session complete": "Séance terminée",
         "+{#} leagues on your journey": "+{0} lieues sur votre voyage",
+        "3 days a week": "3 jours par semaine",
+        "1–2 days a week": "1 à 2 jours par semaine",
+        "Gym": "Salle",
+        "Outdoors or machine": "Dehors ou sur machine",
+        "Running shoes": "Des chaussures de course",
     },
 };
