@@ -499,6 +499,29 @@
         if (typeof Chart !== 'undefined') equal(progressChart.data.labels.length, strengthHistory(getExercise(progressExerciseId)).length, 'chart points = workouts');
     });
 
+    await check('Badges are harder, and badges earned under the old targets are re-measured once, quietly', () => {
+        badgeTracks().forEach(t => {
+            equal(t.goals.length, 8, `${t.id} tiers`);
+            assert(t.goals.every((g, i) => !i || g >= t.goals[i - 1]), `${t.id} targets must rise`);
+        });
+        const workouts = badgeTracks().find(t => t.id === 'workouts');
+        assert(workouts.goals[0] > 1 && workouts.goals[7] >= 1000, 'workout badges not harder');
+        // An old save holding Obsidian on Set Machine with only a few sets logged
+        allData._badges = { sets: 8 };
+        allData._badgeVersion = 2;
+        allData._badgeDates = { sets: { 8: '2026-10-01' } };
+        allData._level = 99;
+        momentQueue.length = 0;
+        const stats = playerStats();
+        checkAchievements();
+        const expected = badgeTracks().find(t => t.id === 'sets').goals.filter(g => stats.sets >= g).length;
+        equal(allData._badges.sets, expected, 'Set Machine re-measured');
+        assert(!allData._badgeDates.sets[8], 'old Obsidian date kept');
+        equal(allData._badgeVersion, 3, 'badge version');
+        equal(allData._level, playerXp(playerStats()).level, 'level follows the lower badge XP');
+        equal(momentQueue.length, 0, 'no pop-ups for the re-measure');
+    });
+
     await check('Ticking a set shows the XP it earned', () => {
         const anchor = document.createElement('button');
         document.body.appendChild(anchor);

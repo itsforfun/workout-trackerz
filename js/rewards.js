@@ -285,23 +285,23 @@ const BADGE_GROUPS = [
 
 function badgeTracks() {
     return [
-        { id: 'workouts', icon: 'lift', name: 'Iron Regular', unit: 'workouts', stat: 'workouts', goals: [1, 5, 15, 40, 80, 150, 300, 500], tip: 'Finish workouts. Every session counts, however short.' },
-        { id: 'streak', icon: 'streak', name: 'Unbroken', unit: 'weeks in a row', stat: 'bestStreak', goals: [1, 2, 4, 8, 12, 26, 52, 104], tip: 'Train at least once every week. One session keeps the streak alive.' },
-        { id: 'records', icon: 'record', name: 'Record Breaker', unit: 'personal records', stat: 'records', goals: [1, 3, 10, 25, 50, 100, 200, 400], tip: 'Beat your best on any lift. Follow the +kg suggestions on Today.' },
-        { id: 'strength', icon: 'tier', name: 'Strength Standard', unit: '', stat: 'topTier', goals: [1, 2, 3, 4, 4, 5, 5, 6], label: v => tierName(v), tip: 'Raise your best lift to the next strength standard for your bodyweight.' },
-        { id: 'allround', icon: 'tier', name: 'All-Rounder', unit: 'lifts at Novice or above', stat: 'liftsRanked', goals: [1, 2, 4, 6, 9, 12, 16, 20], tip: 'Bring more of your lifts up to Novice, not just your favourites.' },
-        { id: 'volume', icon: 'lift', name: 'Heavy Lifter', unit: 'kg lifted in total', stat: 'volume', goals: [1000, 10000, 40000, 100000, 250000, 500000, 1000000, 2000000], tip: 'Total weight × reps across every set you log.' },
-        { id: 'sets', icon: 'lift', name: 'Set Machine', unit: 'sets', stat: 'sets', goals: [3, 30, 100, 300, 600, 1200, 2500, 5000], tip: 'Tick off sets in workout mode.' },
-        { id: 'weeks', icon: 'lift', name: 'Long Game', unit: 'program weeks logged', stat: 'weeksLogged', goals: [1, 4, 8, 12, 24, 48, 96, 156], tip: 'Log at least one lift in each week of your program.' },
+        { id: 'workouts', icon: 'lift', name: 'Iron Regular', unit: 'workouts', stat: 'workouts', goals: [3, 12, 40, 80, 156, 312, 624, 1000], tip: 'Finish workouts. Every session counts, however short.' },
+        { id: 'streak', icon: 'streak', name: 'Unbroken', unit: 'weeks in a row', stat: 'bestStreak', goals: [2, 4, 12, 26, 52, 104, 156, 260], tip: 'Train at least once every week. One session keeps the streak alive.' },
+        { id: 'records', icon: 'record', name: 'Record Breaker', unit: 'personal records', stat: 'records', goals: [3, 10, 30, 60, 120, 240, 400, 700], tip: 'Beat your best on any lift. Follow the +kg suggestions on Today.' },
+        { id: 'strength', icon: 'tier', name: 'Strength Standard', unit: '', stat: 'topTier', goals: [2, 3, 3, 4, 4, 5, 5, 6], label: v => tierName(v), tip: 'Raise your best lift to the next strength standard for your bodyweight.' },
+        { id: 'allround', icon: 'tier', name: 'All-Rounder', unit: 'lifts at Novice or above', stat: 'liftsRanked', goals: [2, 4, 6, 9, 12, 16, 20, 25], tip: 'Bring more of your lifts up to Novice, not just your favourites.' },
+        { id: 'volume', icon: 'lift', name: 'Heavy Lifter', unit: 'kg lifted in total', stat: 'volume', goals: [5000, 50000, 200000, 500000, 1200000, 2500000, 5000000, 8000000], tip: 'Total weight × reps across every set you log.' },
+        { id: 'sets', icon: 'lift', name: 'Set Machine', unit: 'sets', stat: 'sets', goals: [20, 100, 300, 800, 2500, 5000, 10000, 18000], tip: 'Tick off sets in workout mode.' },
+        { id: 'weeks', icon: 'lift', name: 'Long Game', unit: 'program weeks logged', stat: 'weeksLogged', goals: [2, 4, 12, 24, 52, 104, 156, 260], tip: 'Log at least one lift in each week of your program.' },
         { id: 'comeback', icon: 'streak', name: 'Comeback', unit: 'returns after 2+ weeks off', stat: 'comebacks', goals: [1, 2, 3, 5, 8, 12, 16, 20], tip: 'Life happens. Coming back is what counts.' },
-        { id: 'score', icon: 'score', name: 'Consistency', unit: 'best consistency score', stat: 'bestScore', goals: [30, 50, 60, 70, 80, 90, 95, 100], tip: 'Lift, cardio, steps and habits over 7 days, all in balance.' },
-        { id: 'cardio', icon: 'cardio', name: 'Cardio Engine', unit: 'cardio minutes', stat: 'cardioTotal', goals: [10, 60, 300, 800, 1500, 3000, 6000, 10000], tip: 'Log cardio sessions, or let Apple Health exercise minutes count.' },
-        { id: 'who', icon: 'cardio', name: 'Heart Healthy', unit: 'weeks with 150 cardio min', stat: 'whoWeeks', goals: [1, 2, 4, 8, 12, 26, 52, 104], tip: 'Reach 150 moderate minutes in a week (Zone 4–5 count double).' },
-        { id: 'intervals', icon: 'cardio', name: 'Interval Hunter', unit: 'Zone 4–5 sessions', stat: 'intervals', goals: [1, 3, 8, 15, 30, 50, 80, 120], tip: 'Log a threshold or max-effort cardio session.' },
-        { id: 'stepdays', icon: 'steps', name: 'Step Counter', unit: 'days at step goal', stat: 'stepGoalDays', goals: [1, 7, 21, 45, 90, 180, 365, 730], tip: 'Hit your daily step goal.' },
-        { id: 'stepstreak', icon: 'steps', name: 'Stride Streak', unit: 'goal days in a row', stat: 'bestStepStreak', goals: [1, 3, 7, 21, 45, 90, 180, 365], tip: 'Hit your step goal day after day.' },
-        { id: 'habits', icon: 'habit', name: 'Daily Discipline', unit: 'perfect habit days', stat: 'perfectDays', goals: [1, 3, 7, 21, 45, 90, 180, 365], tip: 'Tick every daily habit in one day.' },
-        { id: 'weighins', icon: 'scale', name: 'Check-In', unit: 'weigh-ins', stat: 'weighIns', goals: [1, 3, 8, 15, 30, 52, 104, 200], tip: 'Log your bodyweight in Settings.' },
+        { id: 'score', icon: 'score', name: 'Consistency', unit: 'best consistency score', stat: 'bestScore', goals: [40, 55, 65, 75, 85, 92, 97, 100], tip: 'Lift, cardio, steps and habits over 7 days, all in balance.' },
+        { id: 'cardio', icon: 'cardio', name: 'Cardio Engine', unit: 'cardio minutes', stat: 'cardioTotal', goals: [30, 150, 600, 1800, 4000, 8000, 16000, 30000], tip: 'Log cardio sessions, or let Apple Health exercise minutes count.' },
+        { id: 'who', icon: 'cardio', name: 'Heart Healthy', unit: 'weeks with 150 cardio min', stat: 'whoWeeks', goals: [1, 4, 12, 26, 52, 104, 156, 260], tip: 'Reach 150 moderate minutes in a week (Zone 4–5 count double).' },
+        { id: 'intervals', icon: 'cardio', name: 'Interval Hunter', unit: 'Zone 4–5 sessions', stat: 'intervals', goals: [1, 5, 15, 30, 60, 100, 160, 250], tip: 'Log a threshold or max-effort cardio session.' },
+        { id: 'stepdays', icon: 'steps', name: 'Step Counter', unit: 'days at step goal', stat: 'stepGoalDays', goals: [3, 14, 45, 90, 180, 365, 730, 1460], tip: 'Hit your daily step goal.' },
+        { id: 'stepstreak', icon: 'steps', name: 'Stride Streak', unit: 'goal days in a row', stat: 'bestStepStreak', goals: [3, 7, 21, 45, 90, 180, 365, 730], tip: 'Hit your step goal day after day.' },
+        { id: 'habits', icon: 'habit', name: 'Daily Discipline', unit: 'perfect habit days', stat: 'perfectDays', goals: [3, 7, 21, 45, 90, 180, 365, 730], tip: 'Tick every daily habit in one day.' },
+        { id: 'weighins', icon: 'scale', name: 'Check-In', unit: 'weigh-ins', stat: 'weighIns', goals: [2, 8, 20, 40, 75, 150, 300, 520], tip: 'Log your bodyweight in Settings.' },
     ];
 }
 
@@ -311,16 +311,16 @@ function specialBadges() {
         { id: 'perfect-week', icon: 'score', name: 'Perfect Week', desc: 'Close all three rings in one week: lifting plan, 150 cardio minutes and your step goal', stat: 'perfectWeeks' },
         { id: 'listened', icon: 'habit', name: 'Listened to Your Body', desc: 'Train on a low-readiness day, at the lighter weights the coach set', stat: 'lowReadinessWorkouts' },
         { id: 'deload', icon: 'streak', name: 'Deload Done Right', desc: 'Finish two workouts during a deload week instead of skipping it', stat: 'deloadWorkouts', goal: 2 },
-        { id: 'honest', icon: 'record', name: 'Honest Effort', desc: 'Rate every set in 10 workouts', stat: 'honestWorkouts', goal: 10 },
-        { id: 'dawn', icon: 'streak', name: 'Dawn Patrol', desc: 'Start 5 workouts before 7 AM', stat: 'dawnWorkouts', goal: 5 },
+        { id: 'honest', icon: 'record', name: 'Honest Effort', desc: 'Rate every set in 25 workouts', stat: 'honestWorkouts', goal: 25 },
+        { id: 'dawn', icon: 'streak', name: 'Dawn Patrol', desc: 'Start 10 workouts before 7 AM', stat: 'dawnWorkouts', goal: 10 },
         { id: 'full-house', icon: 'score', name: 'Full House', desc: 'Hit your lifting plan and 150 cardio minutes in the same week', stat: 'fullHouseWeeks' },
         { id: 'double-day', icon: 'cardio', name: 'Double Day', desc: 'Lift and do cardio on the same day', stat: 'doubleDays' },
         { id: 'record-day', icon: 'record', name: 'Record Day', desc: 'Set 3 personal records in one workout', stat: 'bestPrDay', goal: 3 },
         { id: 'marathon', icon: 'steps', name: 'Marathon Day', desc: 'Walk 20,000 steps in one day', stat: 'marathonDays' },
-        { id: 'adaptable', icon: 'lift', name: 'Adaptable', desc: 'Swap an exercise 5 times', stat: 'swaps', goal: 5 },
+        { id: 'adaptable', icon: 'lift', name: 'Adaptable', desc: 'Swap an exercise 10 times', stat: 'swaps', goal: 10 },
         { id: 'flawless', icon: 'score', name: 'Flawless', desc: 'Reach a consistency score of 100', stat: 'bestScore', goal: 100 },
         { id: 'summit', icon: 'tier', name: 'Summit', desc: `Reach ${tierName(6)} on any lift`, stat: 'topTier', goal: 6 },
-        { id: 'night-owl', icon: 'streak', name: 'Night Owl', desc: 'Start 3 workouts after 9 PM', stat: 'nightWorkouts', goal: 3, secret: true },
+        { id: 'night-owl', icon: 'streak', name: 'Night Owl', desc: 'Start 5 workouts after 9 PM', stat: 'nightWorkouts', goal: 5, secret: true },
         { id: 'full-cycle', icon: 'lift', name: 'The Full Cycle', desc: 'Log all 12 weeks of a program', stat: 'maxWeeksLogged', goal: 12, secret: true },
         { id: 'all-in', icon: 'score', name: 'All In', desc: 'Lift, hit your step goal and tick every habit on the same day', stat: 'allInDays', secret: true },
     ];
@@ -462,7 +462,7 @@ function checkAchievements() {
         allData._bestScore = stats.bestScore;
         changed = true;
     }
-    // The first run, and the switch to eight tiers, award what was already earned quietly
+    // The first run, the switch to eight tiers and the harder targets (v1.57) all settle quietly
     let quiet = !allData._badges;
     if (!allData._badges) {
         allData._badges = {};
@@ -475,8 +475,24 @@ function checkAchievements() {
         (allData._badgeLog || []).forEach(entry => { entry.tier = OLD_TIER_MAP[entry.tier] || entry.tier; });
         changed = true;
     }
-    if (allData._badgeVersion !== 2) {
-        allData._badgeVersion = 2;
+    if ((allData._badgeVersion || 2) < 3 && allData._badges) {
+        // v1.57: harder targets. Badges are re-measured once against them, quietly; tiers above what the
+        // new targets give are taken back (and their dates), so every tier from here on is earned the hard way.
+        quiet = true;
+        badgeTracks().forEach(track => {
+            const tier = track.goals.filter(g => (stats[track.stat] || 0) >= g).length;
+            if ((allData._badges[track.id] || 0) > tier) allData._badges[track.id] = tier;
+            const trackDates = (allData._badgeDates || {})[track.id];
+            if (trackDates) Object.keys(trackDates).forEach(t => { if (+t > tier) delete trackDates[t]; });
+        });
+        delete allData._level;   // less badge XP can mean a lower level; it is stored again below without a pop-up
+        allData._badgeLog = (allData._badgeLog || []).filter(entry => {
+            const track = badgeTracks().find(t => t.id === entry.track);
+            return track && entry.tier <= (allData._badges[track.id] || 0);
+        });
+    }
+    if (allData._badgeVersion !== 3) {
+        allData._badgeVersion = 3;
         changed = true;
     }
     const badges = allData._badges;
