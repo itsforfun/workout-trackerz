@@ -260,7 +260,7 @@ function showRecord(ex, value, prev) {
 }
 
 // Full-screen gold moment (new record, achievement); closes itself after a few seconds
-function showMoment({ kicker, valueHtml, unit, name, sub, color = '' }) {
+function showMoment({ kicker, valueHtml, unit, name, sub, color = '', sound = 'record' }) {
     // A badge moment takes its metal's colour; everything else is gold
     document.querySelector('#recordMoment .rr-fg').style.stroke = color;
     document.querySelector('#recordMoment .record-kicker').style.color = color;
@@ -273,7 +273,7 @@ function showMoment({ kicker, valueHtml, unit, name, sub, color = '' }) {
     el.classList.remove('show');
     void el.offsetWidth;   // restart the animation
     el.classList.add('show');
-    chime();
+    playSound(sound);
     haptic();
     if (navigator.vibrate) navigator.vibrate([18, 90, 30]);
     clearTimeout(recordTimer);
@@ -286,23 +286,6 @@ function closeRecord() {
     setTimeout(nextMoment, 450);
 }
 
-// Two soft rising notes, quieter than the rest-timer beep
-function chime() {
-    if (!audioCtx) return;
-    [[659.3, 0], [987.8, 0.14]].forEach(([freq, offset]) => {
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = 'sine';
-        osc.frequency.value = freq;
-        const t = audioCtx.currentTime + offset;
-        gain.gain.setValueAtTime(0.0001, t);
-        gain.gain.exponentialRampToValueAtTime(0.16, t + 0.02);
-        gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.9);
-        osc.connect(gain).connect(audioCtx.destination);
-        osc.start(t);
-        osc.stop(t + 0.95);
-    });
-}
 
 // What the rest alert says is coming next: another set of this exercise, or the next exercise
 function nextUpLabel(exId) {
@@ -500,6 +483,10 @@ function tickRest() {
     const remaining = Math.max(0, Math.ceil((rest.endAt - Date.now()) / 1000));
     document.getElementById('restTime').textContent = `${Math.floor(remaining / 60)}:${String(remaining % 60).padStart(2, '0')}`;
     document.getElementById('restFill').style.width = `${(remaining / rest.total) * 100}%`;
+    if (remaining > 0 && remaining <= 3 && rest.lastTick !== remaining && document.visibilityState === 'visible') {
+        rest.lastTick = remaining;
+        playSound('tick');
+    }
     if (remaining === 0 && !rest.beeped) {
         rest.beeped = true;
         document.getElementById('restBar').classList.add('done');
@@ -762,6 +749,8 @@ function renderPushStatus() {
     renderNudgeSettings();
     const splashToggle = document.getElementById('splashToggle');
     if (splashToggle) splashToggle.checked = !splashOff();
+    const soundToggle = document.getElementById('soundToggle');
+    if (soundToggle) soundToggle.checked = soundsOn();
     const langSelect = document.getElementById('settingsLang');
     if (langSelect) langSelect.value = LANGUAGES[storedLang()] ? storedLang() : '';
 }
@@ -867,26 +856,3 @@ function cancelRestPush() {
         .then(({ error }) => { if (error) console.warn('Rest alert not cancelled:', error.message); });
 }
 
-// iPhones only allow sound after a tap, so the audio context is created on the first one
-let audioCtx = null;
-
-function unlockAudio() {
-    try {
-        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        if (audioCtx.state === 'suspended') audioCtx.resume();
-    } catch (e) { /* no audio available */ }
-}
-
-function beep() {
-    if (!audioCtx) return;
-    [0, 0.25, 0.5].forEach(offset => {
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.frequency.value = 880;
-        gain.gain.setValueAtTime(0.25, audioCtx.currentTime + offset);
-        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + offset + 0.18);
-        osc.connect(gain).connect(audioCtx.destination);
-        osc.start(audioCtx.currentTime + offset);
-        osc.stop(audioCtx.currentTime + offset + 0.2);
-    });
-}

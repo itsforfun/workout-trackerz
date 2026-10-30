@@ -30,6 +30,7 @@ function celebrate({ icon, color, kicker, title, text }) {
     `).join('');
     document.getElementById('celebrate').classList.add('show');
     if (navigator.vibrate) navigator.vibrate(80);
+    playSound('tier');
 }
 
 function closeCelebration() {
@@ -521,6 +522,7 @@ function showBadgeMoment(track, tier) {
         name: track.name,
         sub: `${badgeGoalText(track, track.goals[tier - 1])} · +${t.xp} XP`,
         color: t.color,
+        sound: 'badge',
     });
 }
 
@@ -531,6 +533,7 @@ function showSpecialMoment(sp) {
         unit: '',
         name: sp.name,
         sub: `${sp.desc} · +${sp.secret ? SECRET_XP : SPECIAL_XP} XP`,
+        sound: 'badge',
     });
 }
 
@@ -541,6 +544,7 @@ function showLevelMoment(xp) {
         unit: xp.rank,
         name: `Level ${xp.level}`,
         sub: xp.level < MAX_LEVEL ? `${xp.toNext.toLocaleString(LOCALE)} XP to level ${xp.level + 1}` : 'Maximum level',
+        sound: 'level',
     });
 }
 

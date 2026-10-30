@@ -299,6 +299,49 @@
         }
     });
 
+    await check('Every celebration and timer event plays its own sound', () => {
+        const played = [];
+        const real = window.playSound;
+        window.playSound = name => played.push(name);
+        momentQueue.length = 0;
+        closeRecord();
+        document.querySelectorAll('.modal-overlay.active').forEach(m => m.classList.remove('active'));
+        try {
+            const track = badgeTracks()[0];
+            showBadgeMoment(track, 2); closeRecord();
+            showSpecialMoment(specialBadges()[0]); closeRecord();
+            showLevelMoment(playerXp(playerStats())); closeRecord();
+            celebrateTier(PROGRAMS.fullBody3.exercises[0], 2); closeCelebration();
+            showRecord(PROGRAMS.fullBody3.exercises[0], 50, 40); closeRecord();
+            rest.total = 90; rest.endAt = Date.now() + 2500; rest.beeped = false; rest.lastTick = null; tickRest();
+            rest.endAt = Date.now() - 10; tickRest();
+            stopRest();
+        } finally {
+            window.playSound = real;
+            momentQueue.length = 0;
+        }
+        ['badge', 'level', 'tier', 'record', 'tick', 'rest'].forEach(name => assert(played.includes(name), `no "${name}" sound (got ${played.join(', ')})`));
+    });
+
+    await check('A sound asked for before the first touch plays on that touch', () => {
+        const realCtx = audioCtx;
+        const realSounds = { ...SOUNDS };
+        const heard = [];
+        SOUNDS.badge = () => heard.push('badge');
+        try {
+            audioCtx = { state: 'suspended', resume: () => { audioCtx.state = 'running'; return Promise.resolve(); } };
+            playSound('badge');
+            equal(heard.length, 0, 'played before a touch');
+            audioCtx.state = 'running';
+            unlockAudio();
+            equal(heard.length, 1, 'not played on the first touch');
+        } finally {
+            audioCtx = realCtx;
+            Object.assign(SOUNDS, realSounds);
+            pendingSound = null;
+        }
+    });
+
     // ── Exercise guide ──
     await check('Every exercise in the app has a guide with a demo', () => {
         const names = new Set();

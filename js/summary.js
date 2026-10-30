@@ -9,6 +9,7 @@ function openSummary(summary) {
     lastSummary = summary;
     renderSummary(summary);
     showScreen('summary');
+    playSound('complete');
     document.querySelector('#summaryScreen .workout-body').scrollTop = 0;
 }
 

@@ -480,6 +480,10 @@
                     <span><strong>Opening quote</strong><small>A new motivational line each time you open the app</small></span>
                     <input type="checkbox" class="toggle" id="splashToggle" onchange="setSplash(this.checked)">
                 </label>
+                <label class="toggle-row">
+                    <span><strong>Sounds</strong><small>Records, badges, level-ups, finishing a workout and the rest timer</small></span>
+                    <input type="checkbox" class="toggle" id="soundToggle" onchange="setSounds(this.checked)">
+                </label>
                 <div class="form-group line-fields" style="margin-top:20px;">
                     <label class="form-label" for="settingsLang">Language</label>
                     <select class="form-input" id="settingsLang" onchange="setLanguage(this.value)">
@@ -734,6 +738,7 @@
 <!-- Automated checks: only with ?test in the address (see tests/) -->
 <script>if (/[?&]test\b/.test(location.search)) document.write('<script src="tests/setup.js"><\/script>');</script>
 <script src="js/core.js"></script>
+<script src="js/sound.js"></script>
 <script src="js/auth.js"></script>
 <script src="js/sync.js"></script>
 <script src="js/programs.js"></script>

@@ -1571,5 +1571,7 @@ I18N_PACKS.fr = {
         "Twisting only at the lower back": "Tourner uniquement avec le bas du dos",
         "Yanking the handle": "Tirer la poignée d’un coup sec",
         "Rest · next set at {}": "Repos · série suivante à {}",
+        "Sounds": "Sons",
+        "Records, badges, level-ups, finishing a workout and the rest timer": "Records, badges, passages de niveau, fin de séance et minuteur de repos",
     },
 };
