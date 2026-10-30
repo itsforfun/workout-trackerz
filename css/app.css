@@ -2088,3 +2088,22 @@ button.hero-score:active { opacity:0.7; }
 @media (prefers-reduced-motion: reduce) {
     @keyframes inkIn { from { opacity:0; } to { opacity:1; } }
 }
+
+/* ── Sets per muscle (v1.82) ── */
+.mw-sets { margin-top:var(--s3); border-top:1px solid rgba(240,232,216,0.06); padding-top:var(--s3); }
+.mw-sets summary { display:flex; justify-content:space-between; align-items:baseline; list-style:none; cursor:pointer; }
+.mw-sets summary::-webkit-details-marker { display:none; }
+.mw-sets summary span { font-size:0.85rem; font-weight:500; color:var(--text); }
+.mw-sets summary span::after { content:'›'; display:inline-block; margin-left:8px; color:var(--text-muted); transition:transform .25s var(--ease); }
+.mw-sets[open] summary span::after { transform:rotate(90deg); }
+.mw-sets summary small { font-size:0.72rem; color:var(--text-dim); }
+.ms-row { display:grid; grid-template-columns:92px 1fr 34px 82px; gap:var(--s2); align-items:center; padding:7px 0; font-size:0.8rem; }
+.ms-name { color:var(--text); }
+.ms-bar { position:relative; height:6px; border-radius:99px; background:rgba(240,232,216,0.07); }
+.ms-bar i { display:block; height:100%; border-radius:inherit; background:rgba(217,178,95,0.45); }
+.ms-row.in .ms-bar i, .ms-row.high .ms-bar i { background:var(--accent); }
+.ms-bar b { position:absolute; left:50%; top:-3px; bottom:-3px; width:1px; background:rgba(240,232,216,0.25); }
+.ms-n { text-align:right; font-variant-numeric:tabular-nums; color:var(--text); }
+.ms-status { font-size:0.7rem; color:var(--text-dim); text-align:right; }
+.ms-row.in .ms-status { color:var(--accent); }
+.ms-note { margin-top:var(--s2); font-size:0.72rem; line-height:1.5; color:var(--text-muted); }

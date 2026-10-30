@@ -356,6 +356,15 @@ const COACH_SCIENCE = [
         ],
     },
     {
+        title: 'Sets per muscle',
+        rule: 'Progress counts hard sets per muscle over the last 7 days and shows them against about 10–20 a week. A supporting muscle counts half a set.',
+        why: 'In a meta-analysis of 15 studies, more weekly sets meant more muscle growth, and 10 or more sets per muscle was the top group.',
+        note: 'About 20 as the upper end is a coaching convention for recovery, not a tested limit. If your goal isn’t muscle, fewer sets are fine.',
+        refs: [
+            ['Schoenfeld BJ, Ogborn D, Krieger JW. J Sports Sci. 2017;35(11):1073–1082. doi:10.1080/02640414.2016.1210197', 'Dose-response relationship between weekly resistance training volume and increases in muscle mass: A systematic review and meta-analysis'],
+        ],
+    },
+    {
         title: 'When a lift stalls',
         rule: 'A stall is the same weight and the same best set two sessions running. Each time it repeats, the coach climbs one step: +1 rep, then +1 set, then a slower tempo, then (isolation and machine lifts only) a drop set on the last set, and only then a reset about 10% lighter.',
         why: 'Progression can come from load, reps, sets or time under tension. Trying the cheapest change first keeps recovery intact; drop sets go last and only on small lifts, because taken to failure the big lifts cost more recovery than they return.',

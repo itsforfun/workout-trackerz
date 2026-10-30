@@ -96,5 +96,33 @@ function renderMuscleWeek() {
         ${bodyMapSvg({ weights, tap: 'openExerciseLibrary' })}
         <p class="mw-note">Brighter gold means more sets. Tap a muscle to see its exercises.</p>
         ${missing.length && Object.keys(sets).length ? `<p class="mw-missing"><span>Not trained this week:</span> ${muscleList(missing)}</p>` : ''}
+        ${muscleSetsHtml(sets)}
     `;
+}
+
+// Sets per muscle over the last 7 days against about 10–20 hard sets (10+ was the top group for growth in
+// Schoenfeld 2017; ~20 as the upper end is a coaching convention for recovery). Supporting work counts half.
+let muscleSetsOpen = false;
+
+function muscleSetsHtml(sets) {
+    const groups = MUSCLE_GROUPS.filter(g => sets[g.id] || MAJOR_GROUPS.includes(g.id))
+        .map(g => ({ ...g, n: Math.round((sets[g.id] || 0) * 2) / 2 }))
+        .sort((a, b) => b.n - a.n);
+    if (!groups.some(g => g.n)) return '';
+    const status = n => n >= 20 ? ['high', 'A lot'] : n >= 10 ? ['in', 'In range'] : n > 0 ? ['low', 'Room to add'] : ['none', 'None yet'];
+    return `
+        <details class="mw-sets" ${muscleSetsOpen ? 'open' : ''} ontoggle="muscleSetsOpen = this.open">
+            <summary><span>Sets per muscle</span><small>10–20 a week</small></summary>
+            ${groups.map(g => {
+                const [cls, label] = status(g.n);
+                return `
+                <div class="ms-row ${cls}">
+                    <span class="ms-name">${escapeHtml(g.name)}</span>
+                    <span class="ms-bar"><i style="width:${Math.min(100, g.n / 20 * 100)}%"></i><b></b></span>
+                    <span class="ms-n">${formatNum(g.n)}</span>
+                    <span class="ms-status">${label}</span>
+                </div>`;
+            }).join('')}
+            <p class="ms-note">Hard sets in the last 7 days; supporting muscles count half. More sets bring more growth, with 10 or more a week in the top group.</p>
+        </details>`;
 }

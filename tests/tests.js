@@ -415,6 +415,11 @@
         assert(sets.qd > 0 || sets.gl > 0, 'squat sets not counted');
         renderMuscleWeek();
         assert(document.querySelector('#muscleWeekCard .body-map'), 'card not drawn');
+        // Sets per muscle: the numbers behind the map, against 10–20 a week
+        const rows = [...document.querySelectorAll('#muscleWeekCard .ms-row')];
+        assert(rows.length >= MAJOR_GROUPS.length, 'sets per muscle list missing');
+        const first = rows[0];
+        equal(parseFloat(first.querySelector('.ms-n').textContent), Math.round(Math.max(...Object.values(sets)) * 2) / 2, 'top muscle sets');
     });
 
     await check('The Progress overview shows the level and all-time numbers first', () => {

@@ -69,7 +69,6 @@ Status: **Done** · **Check** (built, still needs a look on the iPhone or a smal
 
 **Other**
 - Odyr's Journal: new chapters for Saga II and beyond; a recorded narrator if people read the entries (2026-10-30)
-- Skadi follow-up from the spec: weekly glute-volume rollup (owner's partner spec, 2026-10-30)
 - For women, later: optional cycle tracking that informs readiness and deloads; a female figure in the exercise demos (suggested 2026-10-30)
 - Progress photos and body measurements, kept private
 - Own web address (for example odyr.app)
@@ -106,6 +105,7 @@ Status: **Done** · **Check** (built, still needs a look on the iPhone or a smal
 | 1.29 | 8-tier medals, trophy room, badge sheet, minting moment, signature and secret badges, "almost there" nudges |
 | 1.30–1.34 | Brand: Odyra, then Odyr; new icon; sign-in redesign; design carried across the app; thinker quotes |
 | 1.35–1.36 | French (whole app, reminders, quotes), Language setting, French review pass, decimal comma typing |
+| 1.82 | Sets per muscle on Progress: weekly hard sets per muscle against 10–20, with the source |
 | 1.81 | Stall ladder for every program: +1 rep, +1 set, slower tempo, drop set (isolation only), then a reset |
 | 1.80 | Odyr's Journal: a short story in Odyr's voice at every landmark, revealed line by line, read aloud by the phone's voice |
 | 1.79 | Trust basics: real account deletion (server function), Export all my data, privacy page in English and French |
