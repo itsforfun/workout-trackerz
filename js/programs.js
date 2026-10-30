@@ -147,7 +147,51 @@ const PROGRAMS = {
             { id:'slow-step-up', day:2, name:'Step-Up, 3-Second Lowering', meta:'3×8/leg, 1-1.5min', unit:'kg/DB', per:'leg', thresholds:[8,14,20,28,36,46], note:'Don\'t push off the back foot' },
             { id:'suitcase-carry', day:2, name:'Suitcase Carry', meta:'3×30m/side, 1-1.5min', unit:'kg/DB', per:'side', repLabel:'m', thresholds:[16,24,32,40,50,60], note:'Stay tall, don\'t lean' },
         ]
-    }
+    },
+    // Glute-first 4-day split for an intermediate lifter (owner's partner spec, 2026-10-30). Max 5 exercises a
+    // session; hip thrust twice a week is the main driver; glute medius and single-leg work for knee control.
+    skadi: {
+        name: 'Skadi',   // Norse goddess of the mountains, strong-legged skier and hunter
+        level: 2, perWeek: '4 days a week', equipment: 'Full gym',   // shown the same way on every program card
+        subtitle: 'Glutes first · 4 days',
+        gender: 'female',
+        days: ['Glutes & quads', 'Back & abs', 'Glutes & hamstrings', 'Arms & shoulders'],
+        coachRules: true,
+        // Mon 1, Tue 2, Wed cardio, Thu 3, Fri cardio, Sat 4, Sun rest; cardio stays easy so glutes recover
+        weekPlan: { 1: 0, 2: 1, 3: 'cardio', 4: 2, 5: 'cardio', 6: 3, 0: 'rest' },
+        cardioZones: { cardio: [2], rest: [1] },
+        warmup: {
+            common: [['Banded lateral walk', '2 × 15 steps each way'], ['Glute bridge', '2 × 12'], ['Single-leg balance', '2 × 30 s per leg'], ['Ankle wall stretch', '10 per side']],
+            days: [[], [], [], []],
+            note: 'The lateral walk and balance work build knee control: keep them every session. Training helps knees that cave in when you move; it does not change bone alignment.',
+        },
+        exercises: [
+            // Day 1: glutes and quads
+            { id:'sk-leg-ext', day:0, name:'Leg Extension', meta:'3×10-15, 1-1.5min', unit:'kg', thresholds:[25,40,55,72,90,110], note:'2 s squeeze at the top; drop set on the last set only' },
+            { id:'sk-leg-press', day:0, name:'Leg Press', meta:'3×8-12, 1-1.5min', unit:'kg', thresholds:[60,95,135,180,230,285], note:'Feet high on the platform for glutes; 3 s lowering' },
+            { id:'sk-thrust-a', day:0, name:'Barbell Hip Thrust', meta:'3×6-10, 2-3min', unit:'kg', thresholds:[60,100,140,180,220,260], noFailure:true, note:'Load first. 2 s pause at lockout; never to failure' },
+            { id:'sk-abduction', day:0, name:'Hip Abduction Machine', meta:'3×15-20, 1-1.5min', unit:'kg', thresholds:[25,35,50,65,80,100], note:'Lean forward about 20°, 2 s pause at the end' },
+            { id:'sk-goblet', day:0, name:'DB Goblet Squat', meta:'3×8-12, 1-1.5min', unit:'kg/DB', thresholds:[16,24,32,42,54,68], note:'3 s down, pause at the bottom (or a Smith squat, not both)' },
+            // Day 2: back and abs
+            { id:'sk-low-row', day:1, name:'Seated Cable Row', meta:'3×8-12, 1-1.5min', unit:'kg', thresholds:[25,38,52,68,86,105], note:'1 s squeeze, no body swing' },
+            { id:'sk-face-pull', day:1, name:'Cable Face Pull', meta:'3×12-15, 1-1.5min', unit:'kg', thresholds:[8,12,17,23,30,38], note:'Pause at the face, slow return' },
+            { id:'sk-pulldown', day:1, name:'Lat Pulldown', meta:'3×8-12, 1-1.5min', unit:'kg', thresholds:[25,38,52,68,86,105], note:'3 s lowering of the bar' },
+            { id:'sk-back-ext', day:1, name:'Back Extension', meta:'3×10-15, 1-1.5min', unit:'kg+', thresholds:[0,5,12,20,30,42], note:'Hold a plate at the chest; progress the plate' },
+            { id:'sk-crunch', day:1, name:'Cable Crunch', meta:'3×10-15, 1min', unit:'kg', thresholds:[10,15,22,30,38,48], note:'Or hanging knee raises; add load, not more reps' },
+            // Day 3: glutes and hamstrings
+            { id:'sk-rdl', day:2, name:'Romanian Deadlift', meta:'3×8-12, 2-3min', unit:'kg', thresholds:[35,55,75,100,130,160], noFailure:true, note:'3 s lowering; go about an inch deeper each month as flexibility allows' },
+            { id:'sk-thrust-b', day:2, name:'Barbell Hip Thrust', meta:'3×6-10, 2-3min', unit:'kg', thresholds:[60,100,140,180,220,260], noFailure:true, note:'Heaviest session of the week. 1.5 reps as an option; never to failure' },
+            { id:'sk-glute-hyper', day:2, name:'Glute Hyperextension', meta:'3×10-15, 1-1.5min', unit:'kg+', thresholds:[0,5,12,20,30,42], note:'Hold a plate; round the upper back slightly to bias glutes' },
+            { id:'sk-step-up', day:2, name:'DB Step-Up', meta:'3×8-10/leg, 1-1.5min', unit:'kg/DB', per:'leg', thresholds:[6,10,14,20,26,32], note:'Raise the box first, then hold dumbbells; 3 s lowering' },
+            { id:'sk-bulgarian', day:2, name:'Bulgarian Split Squat', meta:'3×8-10/leg, 1-1.5min', unit:'kg/DB', per:'leg', thresholds:[6,10,14,20,26,32], noFailure:true, note:'Front foot on a plate for a deeper stretch; never to failure' },
+            // Day 4: arms and shoulders
+            { id:'sk-lat-raise', day:3, name:'DB Lateral Raise', meta:'4×12-15, 1-1.5min', unit:'kg/DB', thresholds:[3,5,7,9,12,15], note:'Or the lean-away cable version; drop set on the last set' },
+            { id:'sk-shoulder-press', day:3, name:'Seated DB Shoulder Press', meta:'3×8-12, 1-1.5min', unit:'kg/DB', thresholds:[8,12,18,24,32,40], note:'Straight load progression' },
+            { id:'sk-chest-press', day:3, name:'Chest Press Machine', meta:'3×8-12, 1-1.5min', unit:'kg', thresholds:[20,30,42,56,72,90], note:'2 s stretch at the bottom' },
+            { id:'sk-curl', day:3, name:'Cable Bicep Curl', meta:'3×10-12, 1min', unit:'kg', thresholds:[10,15,20,26,32,40], note:'Rest-pause on the last set' },
+            { id:'sk-pushdown', day:3, name:'Rope Tricep Pushdown', meta:'3×10-12, 1min', unit:'kg', thresholds:[10,15,20,26,32,40], note:'Rest-pause on the last set' },
+        ],
+    },
 };
 
 // Optional 20-minute off-day mobility for Forge (was 9-5 Beast Mode), matched to the last workout day.

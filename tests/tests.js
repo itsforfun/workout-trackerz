@@ -888,6 +888,28 @@
         }
     });
 
+    await check('Skadi: four days of at most five lifts, never to failure on the main glute lifts', () => {
+        const prog = PROGRAMS.skadi;
+        equal(prog.days.length, 4, 'four days');
+        prog.days.forEach((_, d) => assert(prog.exercises.filter(e => e.day === d).length <= 5, `day ${d + 1} has more than 5 exercises`));
+        equal(weeklyLiftTarget(prog), 4, 'four lifting days in the week plan');
+        const guarded = prog.exercises.filter(e => e.noFailure).map(e => e.name);
+        ['Barbell Hip Thrust', 'Romanian Deadlift', 'Bulgarian Split Squat'].forEach(n => assert(guarded.includes(n), `${n} should never go to failure`));
+        const saved = currentProgram;
+        try {
+            selectProgram('skadi');
+            const ex = prog.exercises.find(e => e.id === 'sk-thrust-a');
+            activeWorkout = { rows: { [ex.id]: [{ kg: '60', reps: '8', done: true }] }, week: 0, day: 0, startedAt: Date.now() };
+            document.getElementById('toast').textContent = '';
+            rateSet(ex.id, 0, 0);
+            assert(/reps in reserve|répétitions en réserve/.test(document.getElementById('toast').textContent), 'no warning for an all-out hip thrust set');
+        } finally {
+            activeWorkout = null;
+            try { localStorage.removeItem(activeWorkoutKey()); } catch (e) { /* private mode */ }
+            selectProgram(saved);
+        }
+    });
+
     await check('Ticking a set shows the XP it earned', () => {
         const anchor = document.createElement('button');
         document.body.appendChild(anchor);

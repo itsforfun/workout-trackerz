@@ -42,6 +42,8 @@ function rateSet(exId, i, rir) {
             showToast(`Next set ${next.kg} ${setWeightUnit(ex)}, so you hit ${p.repMin}`);
         }
     }
+    // Lifts marked noFailure (the main glute drivers in Skadi): flag an all-out set
+    if (rir === 0 && ex.noFailure) showToast(`Keep 1–2 reps in reserve on ${ex.name}: failure here costs more recovery than it gives`);
     persistActiveWorkout();
     renderWorkoutCard(exId);
 }

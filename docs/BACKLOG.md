@@ -70,6 +70,7 @@ Status: **Done** · **Check** (built, still needs a look on the iPhone or a smal
 - Home-screen widgets (rings, streak), Live Activity for a ticking rest countdown on the lock screen (owner asked for it, 2026-10-29), Apple Watch app
 
 **Other**
+- Skadi follow-ups from the spec: suggest the escalation order (weight → rep → set → tempo → drop set) when a lift stalls; weekly glute-volume rollup (owner's partner spec, 2026-10-30)
 - For women, later: optional cycle tracking that informs readiness and deloads; a female figure in the exercise demos (suggested 2026-10-30)
 - Progress photos and body measurements, kept private
 - Own web address (for example odyr.app)
@@ -106,6 +107,7 @@ Status: **Done** · **Check** (built, still needs a look on the iPhone or a smal
 | 1.29 | 8-tier medals, trophy room, badge sheet, minting moment, signature and secret badges, "almost there" nudges |
 | 1.30–1.34 | Brand: Odyra, then Odyr; new icon; sign-in redesign; design carried across the app; thinker quotes |
 | 1.35–1.36 | French (whole app, reminders, quotes), Language setting, French review pass, decimal comma typing |
+| 1.74 | Skadi: women's 4-day glute-first program (knee-control warm-up, easy cardio days, max 5 lifts a session); warning when a set goes to failure on hip thrusts, RDLs or split squats |
 | 1.73 | Program menu split into Lifting and Cardio tabs, each numbered from 01 |
 | 1.72 | Program menu line now "The first step on any path is choosing it." (no repeated "Every") |
 | 1.71 | Program menu line: "Every path asks one thing of you first: to choose it." with a small twelve-week caption |
