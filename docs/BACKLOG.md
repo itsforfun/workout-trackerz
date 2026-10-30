@@ -101,6 +101,7 @@ Status: **Done** · **Check** (built, still needs a look on the iPhone or a smal
 | 1.29 | 8-tier medals, trophy room, badge sheet, minting moment, signature and secret badges, "almost there" nudges |
 | 1.30–1.34 | Brand: Odyra, then Odyr; new icon; sign-in redesign; design carried across the app; thinker quotes |
 | 1.35–1.36 | French (whole app, reminders, quotes), Language setting, French review pass, decimal comma typing |
+| 1.56 | Strength over time always in view: trend card at the top of Progress, a small line and % change on every lift, full chart by date across cycles, strength estimated from weight and reps |
 | 1.55 | Progress without repeats: each lift opens its chart and strength standards right under its row; level, badges and tiers each shown once; score breakdown opens from the Today rings; XP breakdown in the trophy room |
 | 1.54 | Three tabs (Today, Progress, Settings): Tracker becomes a Weekly log under each lift in Progress, Steps opens from the Today rings, no number shown in two places; +5 XP rises from each ticked set |
 | 1.53 | Progress overview at the top of the tab (level ring and rank, consistency, this week, streak, records, strength, badges); levels go to 150 and each level takes longer (new rank Titan) |

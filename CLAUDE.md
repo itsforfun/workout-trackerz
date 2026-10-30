@@ -429,3 +429,11 @@ reference/debug-screenshots/  ← Supabase key page, "Script error" console, Git
 - **Order:** overview (level hero + Streak, Records, Strength, Badges) → Lifts (one list) → this week's muscles → Pro card.
 - **The open lift:** `#liftPanel` (numbers, chart with the next standard as a dashed line, the I–VI strength standards bar, Weekly log) is moved right under its row (`placeLiftPanel`). Tapping a row opens it (`tapLift`); tapping the open row folds it. `selectProgressExercise(id)` always opens.
 - Each Progress part renders through `renderPart(name, fn)`: one part failing on odd saved data is reported to `error_log` instead of leaving the rest blank (still throws under `?test`).
+
+## 41. Strength over time, always in view (v1.56, 2026-10-30)
+- The owner couldn't find the per-exercise strength chart (it only showed after tapping a lift, and with one workout per lift it was a single dot). Now the trend is visible without tapping:
+  - **Strength card** at the top of Progress, under the level (`strengthCardHtml`, `overallStrength()`): % change since the first workout and a gold line; on each workout date, the average change of every lift trained so far. With one workout: "Your strength line starts after your next workout."
+  - **Every lift row** shows its own small line (`sparkSvg`) and its change (`strengthChange`), plus best weight and tier under the name.
+  - **The opened lift's chart** plots one point per workout by date across all cycles (`strengthHistory`: archived cycles + current), tooltip shows what was lifted. The "Change" tile became "Strength" (% since the first workout).
+- **Strength = estimated one-rep max** (`strengthOf`, Epley: kg × (1 + reps/30), best set of the workout), so more reps at the same weight counts as progress. Entries typed in the log without sets assume the bottom of the prescribed rep range. Reps-based lifts (pull-ups) use max reps. Deload entries are skipped. Tiers still use the best weight lifted, not this estimate.
+- The overview tile for tiers is now "Strength tier" ("Palier de force"), so it isn't confused with the Strength card or with Level in French.

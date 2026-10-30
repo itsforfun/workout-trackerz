@@ -16,6 +16,90 @@ function getLoggedWeeks(exId, source = progData()) {
     return logged;
 }
 
+// ── Strength over time: estimated one-rep max (weight and reps together, Epley) for every logged
+// workout of a lift, by date, across all its 12-week cycles. Reps-based lifts (pull-ups) use max reps. ──
+function strengthOf(ex, entry) {
+    const sets = (entrySets(entry) || []).filter(set => parseFloat(set.reps) > 0);
+    if (isRepsBased(ex)) {
+        const reps = sets.length ? Math.max(...sets.map(set => parseFloat(set.reps))) : parseFloat(entryKg(entry));
+        return reps > 0 ? reps : null;
+    }
+    const e1rm = (kg, reps) => kg * (1 + reps / 30);
+    const weighted = sets.filter(set => parseFloat(set.kg) > 0);
+    if (weighted.length) return Math.max(...weighted.map(set => e1rm(parseFloat(set.kg), parseFloat(set.reps))));
+    // Typed in the log without sets: assume the bottom of the prescribed rep range
+    const kg = parseFloat(entryKg(entry));
+    return kg > 0 ? e1rm(kg, getPrescription(ex).repMin || 8) : null;
+}
+
+// [{ date, value, kg, reps }] oldest first, one point per workout
+function strengthHistory(ex) {
+    const cycles = (metaFor('_archive')[currentProgram] || []).map(c => ({ start: c.start, data: c.data || {} }));
+    cycles.push({ start: metaFor('_cycleStart')[currentProgram], data: progData() });
+    const points = [];
+    cycles.forEach(({ start, data }) => {
+        const weeks = data[ex.id] || {};
+        for (let w = 0; w < WEEKS; w++) {
+            const entry = weeks[w];
+            if (!entry || entry.deload) continue;
+            const value = strengthOf(ex, entry);
+            if (!value) continue;
+            const date = (typeof entry === 'object' && entry.date) || (start ? addDays(start, 7 * w) : null);
+            if (!date) continue;
+            const sets = entrySets(entry) || [];
+            const top = sets.filter(set => parseFloat(set.reps) > 0).sort((a, b) => parseFloat(b.kg || 0) - parseFloat(a.kg || 0))[0];
+            points.push({ date, value, kg: parseFloat(entryKg(entry)), reps: top ? parseFloat(top.reps) : null });
+        }
+    });
+    return points.sort((a, b) => a.date.localeCompare(b.date));
+}
+
+// % change from the first workout to the latest (null with fewer than two)
+function strengthChange(history) {
+    if (history.length < 2) return null;
+    return (history[history.length - 1].value / history[0].value - 1) * 100;
+}
+
+// The whole program's strength: on each workout date, the average change of every lift trained so far
+function overallStrength() {
+    const lifts = PROGRAMS[currentProgram].exercises.map(strengthHistory).filter(h => h.length);
+    const dates = [...new Set(lifts.flatMap(h => h.map(p => p.date)))].sort();
+    const points = dates.map(date => {
+        const ratios = lifts.map(h => {
+            const upTo = h.filter(p => p.date <= date);
+            return upTo.length ? upTo[upTo.length - 1].value / h[0].value : null;
+        }).filter(r => r !== null);
+        return { date, value: (ratios.reduce((a, b) => a + b, 0) / ratios.length - 1) * 100 };
+    });
+    return { points, lifts: lifts.length };
+}
+
+function changeText(pct) {
+    if (pct === null) return '';
+    const rounded = Math.round(pct);
+    return `${rounded > 0 ? '+' : rounded < 0 ? '−' : ''}${Math.abs(rounded)}%`;
+}
+
+function changeClass(pct) {
+    return pct === null || Math.round(pct) === 0 ? 'flat' : pct > 0 ? 'up' : 'down';
+}
+
+// A small line (no axes) for a list of values; one value is a single dot
+function sparkSvg(values, { w = 64, h = 24, area = false } = {}) {
+    if (!values.length) return `<svg class="spark" viewBox="0 0 ${w} ${h}" aria-hidden="true"></svg>`;
+    const min = Math.min(...values), max = Math.max(...values);
+    const pad = 3;
+    const x = i => values.length === 1 ? w - pad : pad + (i / (values.length - 1)) * (w - pad * 2);
+    const y = v => max === min ? h / 2 : h - pad - ((v - min) / (max - min)) * (h - pad * 2);
+    const pts = values.map((v, i) => `${x(i).toFixed(1)},${y(v).toFixed(1)}`);
+    const last = pts[pts.length - 1].split(',');
+    return `<svg class="spark" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" aria-hidden="true">
+        ${area && values.length > 1 ? `<path class="spark-area" d="M${pts[0].split(',')[0]},${h} L${pts.join(' L')} L${last[0]},${h} Z"/>` : ''}
+        ${values.length > 1 ? `<polyline class="spark-line" points="${pts.join(' ')}"/>` : ''}
+        <circle class="spark-dot" cx="${last[0]}" cy="${last[1]}" r="2.6"/>
+    </svg>`;
+}
+
 function statTile(label, value, sub = '', color = '') {
     return `
         <div class="stat">
@@ -24,11 +108,6 @@ function statTile(label, value, sub = '', color = '') {
             <div class="stat-sub">${escapeHtml(sub)}</div>
         </div>
     `;
-}
-
-function previousCycle() {
-    const archive = metaFor('_archive')[currentProgram] || [];
-    return archive.length ? archive[archive.length - 1] : null;
 }
 
 // Each part draws on its own, so one failing part (odd saved data) can't leave the rest of the page blank
@@ -66,14 +145,16 @@ function renderProgress() {
         const best = getBestKg(ex.id);
         const tier = getTier(ex, best);
         const color = TIERS[tier].color;
+        const history = strengthHistory(ex);
+        const pct = strengthChange(history);
         return `
             <button class="progress-row" data-ex="${ex.id}" onclick="tapLift('${ex.id}')">
-                <div>
+                <div class="row-main">
                     <div class="row-name">${escapeHtml(ex.name)}</div>
-                    <div class="row-day">${escapeHtml(prog.days[ex.day])}</div>
+                    <div class="row-day">${best ? `${trackerToDisplay(ex, best)} ${escapeHtml(trackerUnit(ex))}` : escapeHtml(prog.days[ex.day])}${ex.thresholds && tier ? ` · <span style="color:${color}">${escapeHtml(tierName(tier))}</span>` : ''}</div>
                 </div>
-                <div class="row-best">${best ? `${trackerToDisplay(ex, best)} ${escapeHtml(trackerUnit(ex))}` : '—'}</div>
-                ${ex.thresholds ? `<span class="tier-badge" style="color:${color};border-color:${color};">${tierBadgeHtml(tier)}</span>` : '<span></span>'}
+                ${history.length ? sparkSvg(history.map(p => p.value)) : '<span></span>'}
+                <span class="row-change ${changeClass(pct)}">${pct !== null ? changeText(pct) : history.length ? 'New' : '—'}</span>
             </button>
         `;
     }).join('');
@@ -117,30 +198,29 @@ function renderProgressDetail(withLog = true) {
     const tier = getTier(ex, best);
     const unit = trackerUnit(ex);
     const show = v => trackerToDisplay(ex, v);
+    const history = strengthHistory(ex);
+    const strengthPct = strengthChange(history);
 
     // Start / best / change / tier
     let statsHtml;
     if (logged.length) {
         const start = logged[0];
         const bestEntry = logged.find(l => l.value === best);
-        const change = best - start.value;
-        const pct = start.value ? (change / start.value) * 100 : 0;
-        const changeShown = parseFloat(show(best)) - parseFloat(show(start.value));
         statsHtml =
             statTile('Start', show(start.value), `${unit} · W${start.week + 1}`) +
             statTile('Best', show(best), `${unit} · W${bestEntry.week + 1}`) +
-            statTile('Change', `${change >= 0 ? '+' : ''}${formatNum(Math.round(changeShown * 10) / 10)}`, `${pct >= 0 ? '+' : ''}${pct.toFixed(0)}%`, change > 0 ? 'var(--green)' : '') +
+            statTile('Strength', strengthPct === null ? '—' : changeText(strengthPct), strengthPct === null ? 'after 2 workouts' : 'since the first workout', strengthPct > 0 ? 'var(--green)' : '') +
             (thresholds
                 ? statTile('Tier', tierName(tier), TIERS[tier].pop === '—' ? '' : `top ${TIERS[tier].pop} of lifters`, TIERS[tier].color)
                 : statTile('Sessions', String(logged.length), 'weeks logged'));
     } else {
-        statsHtml = statTile('Start', '—') + statTile('Best', '—') + statTile('Change', '—') +
+        statsHtml = statTile('Start', '—') + statTile('Best', '—') + statTile('Strength', '—') +
             (thresholds ? statTile('Tier', tierName(0), '', TIERS[0].color) : statTile('Sessions', '0'));
     }
     document.getElementById('progressStats').innerHTML = statsHtml;
-    document.getElementById('liftPanel').classList.toggle('empty', !logged.length);
+    document.getElementById('liftPanel').classList.toggle('empty', !history.length);
 
-    renderProgressChart(ex, logged, thresholds, tier);
+    renderProgressChart(ex, history);
     renderTierTrack(ex, best, thresholds, tier);
     if (withLog) renderLiftLog();
 }
@@ -148,90 +228,61 @@ function renderProgressDetail(withLog = true) {
 const CHART_TICKS = { color: '#7f725f', font: { family: 'Inter', size: 10 } };
 const CHART_GRID = { color: 'rgba(61,52,44,0.6)' };
 
-function renderProgressChart(ex, logged, thresholds, tier) {
+// The lift's strength over time: one point per workout, by date, across every cycle
+function renderProgressChart(ex, history) {
     if (progressChart) {
         progressChart.destroy();
         progressChart = null;
     }
-    if (!logged.length || typeof Chart === 'undefined') return;
+    const note = document.getElementById('chartNote');
+    note.textContent = history.length === 1 ? 'Your line starts after your next workout of this lift.' : '';
+    if (!history.length || typeof Chart === 'undefined') return;
 
-    const show = v => parseFloat(trackerToDisplay(ex, v));
-    const values = Array(WEEKS).fill(null);
-    const setsByWeek = {};
-    logged.forEach(l => {
-        values[l.week] = show(l.value);
-        setsByWeek[l.week] = l.sets;
-    });
-
-    const datasets = [{
-        label: ex.name,
-        data: values,
-        borderColor: '#e6b84a',
-        backgroundColor: 'rgba(230,184,74,0.12)',
-        pointBackgroundColor: '#e6b84a',
-        pointRadius: 4,
-        borderWidth: 2,
-        tension: 0.25,
-        fill: true,
-        spanGaps: true,
-    }];
-    // Faint line for the same exercise in the previous 12-week cycle
-    const prev = previousCycle();
-    const prevLogged = prev ? getLoggedWeeks(ex.id, prev.data || {}) : [];
-    if (prevLogged.length) {
-        const prevValues = Array(WEEKS).fill(null);
-        prevLogged.forEach(l => { prevValues[l.week] = show(l.value); });
-        datasets.push({
-            label: 'Last cycle',
-            data: prevValues,
-            borderColor: 'rgba(168,149,120,0.55)',
-            pointRadius: 2,
-            borderWidth: 1.5,
-            tension: 0.25,
-            fill: false,
-            spanGaps: true,
-        });
-    }
-    // Dashed line at the next tier to aim for
-    if (thresholds && tier < 6) {
-        datasets.push({
-            label: `${tierName(tier + 1)} (${trackerToDisplay(ex, thresholds[tier])} ${trackerUnit(ex)})`,
-            data: Array(WEEKS).fill(show(thresholds[tier])),
-            borderColor: TIERS[tier + 1].color,
-            borderDash: [6, 4],
-            borderWidth: 1.5,
-            pointRadius: 0,
-            fill: false,
-        });
-    }
+    const repsBased = isRepsBased(ex);
+    const show = v => repsBased ? Math.round(v) : parseFloat(kgToDisplay(Math.round(v * 10) / 10));
+    const weightUnit = repsBased ? 'reps' : unitLabel(ex.unit);
 
     progressChart = new Chart(document.getElementById('progressChart'), {
         type: 'line',
-        data: { labels: Array.from({ length: WEEKS }, (_, w) => `W${w + 1}`), datasets },
+        data: {
+            labels: history.map(p => prettyDate(p.date)),
+            datasets: [{
+                label: repsBased ? 'Max reps' : 'Estimated 1-rep max',
+                data: history.map(p => show(p.value)),
+                borderColor: '#e6b84a',
+                backgroundColor: 'rgba(230,184,74,0.12)',
+                pointBackgroundColor: '#e6b84a',
+                pointRadius: history.length > 24 ? 0 : 4,
+                borderWidth: 2,
+                tension: 0.3,
+                fill: true,
+            }],
+        },
         options: {
             responsive: true,
             maintainAspectRatio: false,
             animation: { duration: 300 },
             interaction: { mode: 'index', intersect: false },
             plugins: {
-                legend: { labels: { ...CHART_TICKS, boxWidth: 14 } },
+                legend: { display: false },
                 tooltip: {
                     callbacks: {
-                        label: c => c.parsed.y === null ? null : `${c.dataset.label}: ${formatNum(c.parsed.y)} ${trackerUnit(ex)}`,
-                        // Reps per set from workout mode, e.g. "Sets: 10·10·9"
-                        afterBody: items => {
-                            const sets = setsByWeek[items[0].dataIndex];
-                            return sets && sets.length ? `Sets: ${sets.map(s => s.reps).join('·')} reps` : '';
+                        label: c => repsBased ? `${c.parsed.y} reps` : `${formatNum(c.parsed.y)} ${weightUnit} (estimated 1-rep max)`,
+                        // What was actually lifted, e.g. "Lifted 28 kg/DB × 10"
+                        afterLabel: c => {
+                            const p = history[c.dataIndex];
+                            return !repsBased && p.kg ? `Lifted ${kgToDisplay(p.kg)} ${weightUnit}${p.reps ? ` × ${p.reps}` : ''}` : '';
                         },
                     },
                 },
             },
             scales: {
-                x: { ticks: CHART_TICKS, grid: CHART_GRID },
+                x: { ticks: { ...CHART_TICKS, maxTicksLimit: 6, maxRotation: 0 }, grid: { display: false } },
                 y: {
                     ticks: CHART_TICKS,
                     grid: CHART_GRID,
-                    title: { display: true, text: trackerUnit(ex), color: '#6d5e4d', font: { family: 'DM Mono', size: 10 } },
+                    grace: '10%',
+                    title: { display: true, text: repsBased ? 'Max reps' : `Est. 1-rep max (${weightUnit})`, color: '#6d5e4d', font: { family: 'Inter', size: 10 } },
                 },
             },
         },
@@ -615,18 +666,38 @@ function renderOverview() {
                 <span class="ov-link">Trophy room ›</span>
             </div>
         </button>
+        ${strengthCardHtml()}
         <div class="ov-grid">
             ${tile('', "openTrophyRoom()", 'Streak', `<strong>${streak.streak}</strong><small>${streak.streak === 1 ? 'week' : 'weeks'}</small>`,
                 `<span>Best ${Math.max(stats.bestStreak, streak.streak)}</span>`)}
             ${tile('', "scrollToCard('liftsHead')", 'Records', `<strong>${stats.records}</strong>`,
                 weekRecs ? `<span class="ov-gold">+${weekRecs} this week</span>` : '<span>all time</span>')}
-            ${tile('', "scrollToCard('liftsHead')", 'Strength', `<span class="ov-tier" style="color:${TIERS[avgTier].color}">${escapeHtml(tierName(avgTier))}</span>`,
+            ${tile('', "scrollToCard('liftsHead')", 'Strength tier', `<span class="ov-tier" style="color:${TIERS[avgTier].color}">${escapeHtml(tierName(avgTier))}</span>`,
                 topTier ? `<span>Best: ${escapeHtml(tierName(topTier))}</span>` : '<span>Log a lift to get ranked</span>')}
             ${tile('', "openTrophyRoom()", 'Badges', `<strong>${earned}</strong><small>/${tracks.length * BADGE_TIERS.length}</small>`,
                 showcase.length ? `<span class="ov-medals">${showcase.map(t => medalSvg(badgeTier(t, stats), t.icon, 26)).join('')}</span>` : '<span>tiers earned</span>')}
         </div>
     `;
     rollNumbers(el);
+}
+
+// Strength card: the whole program's trend since the first workout, always in view
+function strengthCardHtml() {
+    const { points, lifts } = overallStrength();
+    if (!points.length) return '';
+    const pct = points.length > 1 ? points[points.length - 1].value : null;
+    return `
+        <button class="strength-card" onclick="scrollToCard('liftsHead')">
+            <div class="sc-head">
+                <span class="ov-kicker">Strength</span>
+                <span class="sc-since">since ${escapeHtml(prettyDate(points[0].date))}</span>
+            </div>
+            <div class="sc-value ${changeClass(pct)}">${pct === null ? '—' : changeText(pct)}</div>
+            ${sparkSvg(points.map(p => p.value), { w: 320, h: 72, area: true })}
+            <p class="sc-note">${pct === null
+                ? 'Your strength line starts after your next workout.'
+                : `Estimated from the weight and reps of ${lifts} ${lifts === 1 ? 'lift' : 'lifts'}. Tap a lift below for its own chart.`}</p>
+        </button>`;
 }
 
 function scrollToCard(id) {

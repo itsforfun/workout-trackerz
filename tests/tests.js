@@ -477,6 +477,28 @@
         closeTrophyRoom();
     });
 
+    await check('Strength over time: weight and reps together, by date, across cycles, always in view', () => {
+        const ex = PROGRAMS[currentProgram].exercises.find(e => e.thresholds && !isRepsBased(e));
+        // Epley: 100 kg × 10 ≈ 133 kg; 100 × 8 < 100 × 10 (more reps at the same weight counts as stronger)
+        const e1 = strengthOf(ex, { kg: '100', sets: [{ kg: '100', reps: 10 }] });
+        assert(Math.abs(e1 - 133.33) < 0.1, `estimated 1-rep max ${e1}`);
+        assert(strengthOf(ex, { kg: '100', sets: [{ kg: '100', reps: 8 }] }) < e1, 'more reps should mean stronger');
+        // A finished cycle keeps counting: its workouts come first on the timeline
+        allData._archive = { [currentProgram]: [{ start: '2026-01-05', end: '2026-03-30', data: { [ex.id]: { 0: { kg: '10', sets: [{ kg: '10', reps: 8 }], date: '2026-01-05' } } } }] };
+        const history = strengthHistory(ex);
+        equal(history[0].date, '2026-01-05', 'archived workout first');
+        assert(history.length >= 2 && history.every((p, i) => !i || p.date >= history[i - 1].date), 'not in date order');
+        assert(strengthChange(history) > 0, 'growth from the old cycle not counted');
+        showScreen('app');
+        switchTab('progress');
+        const card = document.querySelector('#progressOverview .strength-card');
+        assert(card && card.querySelector('.spark-line'), 'no strength trend card at the top of Progress');
+        assert(card.querySelector('.sc-value').textContent.trim().startsWith('+'), 'overall change not shown');
+        const trained = PROGRAMS[currentProgram].exercises.filter(e => strengthHistory(e).length).length;
+        assert(trained && document.querySelectorAll('.progress-row .spark').length === trained, 'every trained lift needs its trend on its row');
+        if (typeof Chart !== 'undefined') equal(progressChart.data.labels.length, strengthHistory(getExercise(progressExerciseId)).length, 'chart points = workouts');
+    });
+
     await check('Ticking a set shows the XP it earned', () => {
         const anchor = document.createElement('button');
         document.body.appendChild(anchor);
