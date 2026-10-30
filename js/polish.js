@@ -162,8 +162,8 @@ function showSplashAgain() {
     const splash = document.getElementById('splash');
     if (!splash || splashOff()) return;
     let deck = [];
-    try { deck = JSON.parse(localStorage.getItem('wt_quote_deck') || '[]'); } catch (e) { /* private mode */ }
-    if (!deck.length) deck = QUOTES.map((_, i) => i).sort(() => Math.random() - 0.5);
+    try { deck = JSON.parse(localStorage.getItem('wt_quote_deck') || '[]').filter(i => i < QUOTES.length && quoteFits(i)); } catch (e) { /* private mode */ }
+    if (!deck.length) deck = shuffledDeck();
     const index = deck.shift();
     try { localStorage.setItem('wt_quote_deck', JSON.stringify(deck)); } catch (e) { /* private mode */ }
     renderSplash(quoteAt(index));

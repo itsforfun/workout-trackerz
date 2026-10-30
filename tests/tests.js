@@ -543,6 +543,46 @@
         assert(document.querySelector(`.progress-row.active[data-ex="${elsewhere.id}"]`), 'that lift is not open');
     });
 
+    await check('Women and men each get their own standards, tier name, heart rate, programs and quotes', () => {
+        const prog = PROGRAMS.male;   // written for a 95 kg man
+        const upper = prog.exercises.find(e => e.thresholds && !isRepsBased(e) && !exerciseMuscles(e.name).main.some(g => LOWER_BODY.includes(g)));
+        const lower = prog.exercises.find(e => e.thresholds && !isRepsBased(e) && exerciseMuscles(e.name).main.some(g => LOWER_BODY.includes(g)));
+        const pull = prog.exercises.find(e => e.thresholds && isRepsBased(e));
+        const saved = currentProgram;
+        currentProgram = 'male';
+        try {
+            userProfile = { ...userProfile, gender: 'male', weight: 70 };
+            const man = [upper, lower, pull].map(e => getThresholds(e));
+            equal(tierName(6), 'God', 'top tier for a man');
+            userProfile = { ...userProfile, gender: 'female', weight: 70 };
+            const woman = [upper, lower, pull].map(e => getThresholds(e));
+            equal(tierName(6), 'Goddess', 'top tier for a woman, even on a men\'s program');
+            assert(Math.abs(woman[0][3] / man[0][3] - SEX_FACTOR.upper) < 0.02, 'upper-body standards not converted');
+            assert(Math.abs(woman[1][3] / man[1][3] - SEX_FACTOR.lower) < 0.02, 'lower-body standards not converted');
+            assert(woman[2][0] >= 1 && woman[2][5] < man[2][5], 'pull-up standards not converted');
+            equal(estimatedMaxHr(), Math.round(206 - 0.88 * userProfile.age), 'women\'s max heart rate');
+            // A man on a women's program gets men's standards
+            currentProgram = 'female';
+            userProfile = { ...userProfile, gender: 'male' };
+            const ex = PROGRAMS.female.exercises.find(e => e.thresholds && !isRepsBased(e));
+            assert(getThresholds(ex)[3] > ex.thresholds[3] * getStrengthMultiplier('female'), 'men not converted up');
+            // Program menu and quotes
+            userProfile = { ...userProfile, gender: 'female' };
+            rememberGender();
+            showScreen('selector');
+            const order = [...document.querySelectorAll('#programSelector .program-card:not(.custom-card)')]
+                .map(c => (c.getAttribute('onclick').match(/'([^']+)'/) || [])[1]).filter(id => PROGRAMS[id]);
+            assert(order.slice(0, 2).every(id => PROGRAMS[id].gender === 'female'), `women's programs not first: ${order.join(', ')}`);
+            equal(document.querySelector('#programSelector .program-index').textContent, '01', 'cards renumbered');
+            const maleOnly = QUOTES.map((_, i) => i).filter(i => !quoteFits(i));
+            assert(maleOnly.length && maleOnly.every(i => MALE_ONLY.test(Array.isArray(QUOTES[i]) ? QUOTES[i][0] : QUOTES[i])), 'male-only quotes not skipped');
+        } finally {
+            currentProgram = saved;
+            try { localStorage.removeItem('odyr_gender'); } catch (e) { /* private mode */ }
+            showScreen('app');
+        }
+    });
+
     await check('Ticking a set shows the XP it earned', () => {
         const anchor = document.createElement('button');
         document.body.appendChild(anchor);

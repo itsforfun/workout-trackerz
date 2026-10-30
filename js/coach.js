@@ -404,11 +404,12 @@ const COACH_SCIENCE = [
     },
     {
         title: 'Cardio zones',
-        rule: 'Max heart rate ≈ 208 − 0.7 × age; most cardio in Zone 2; 150 minutes of moderate activity a week.',
-        why: 'The Tanaka formula fits adults better than 220 − age. The talk test tracks the top of Zone 2. WHO recommends 150–300 moderate minutes a week. Intervals raise fitness fast; for fat loss, intervals and steady cardio work about equally.',
+        rule: 'Max heart rate ≈ 208 − 0.7 × age (women: 206 − 0.88 × age); most cardio in Zone 2; 150 minutes of moderate activity a week.',
+        why: 'The Tanaka formula fits adults better than 220 − age; for women the Gulati formula fits better, as the male-based formulas overestimate their max. The talk test tracks the top of Zone 2. WHO recommends 150–300 moderate minutes a week. Intervals raise fitness fast; for fat loss, intervals and steady cardio work about equally.',
         note: 'Formulas can be 10+ beats off for an individual; the talk test is a good check.',
         refs: [
             ['Tanaka H, Monahan KD, Seals DR. J Am Coll Cardiol. 2001;37(1):153–156.', 'Age-predicted maximal heart rate revisited'],
+            ['Gulati M, Shaw LJ, Thisted RA, et al. Circulation. 2010;122(2):130–137. doi:10.1161/CIRCULATIONAHA.110.939249', 'Heart rate response to exercise stress testing in asymptomatic women: the St. James Women Take Heart Project'],
             ['Persinger R, Foster C, Gibson M, et al. Med Sci Sports Exerc. 2004;36(9):1632–1636.', 'Consistency of the talk test for exercise prescription'],
             ['Bull FC, Al-Ansari SS, Biddle S, et al. Br J Sports Med. 2020;54(24):1451–1462.', 'World Health Organization 2020 guidelines on physical activity and sedentary behaviour'],
             ['Helgerud J, Høydal K, Wang E, et al. Med Sci Sports Exerc. 2007;39(4):665–671.', 'Aerobic high-intensity intervals improve VO2max more than moderate training'],

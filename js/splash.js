@@ -114,13 +114,31 @@ function renderSplash(entry) {
     quote.innerHTML = words.map((word, i) =>
         `<span class="w" style="--i:${i}" aria-hidden="true">${word.replace(/&/g, '&amp;').replace(/</g, '&lt;')}</span>`).join(' ');
 }
+// For women, skip the few classic lines written in male-only language ("strong men", "He who…")
+const MALE_ONLY = /\b(men|man|he|his|him|himself)\b/i;
+function quoteFits(i) {
+    let female = false;
+    try { female = localStorage.getItem('odyr_gender') === 'female'; } catch (e) { /* private mode */ }
+    const q = QUOTES[i];
+    return !female || !MALE_ONLY.test(Array.isArray(q) ? q[0] : q);
+}
+
+function shuffledDeck() {
+    const deck = QUOTES.map((_, i) => i).filter(quoteFits);
+    for (let i = deck.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [deck[i], deck[j]] = [deck[j], deck[i]];
+    }
+    return deck;
+}
+
 (function () {
     const splash = document.getElementById('splash');
     let off = false;
     let deck = [];
     try {
         off = localStorage.getItem('wt_splash_off') === '1';
-        deck = JSON.parse(localStorage.getItem('wt_quote_deck') || '[]').filter(i => i < QUOTES.length);
+        deck = JSON.parse(localStorage.getItem('wt_quote_deck') || '[]').filter(i => i < QUOTES.length && quoteFits(i));
         if (localStorage.getItem('wt_quote_count') !== String(QUOTES.length)) deck = [];
         localStorage.setItem('wt_quote_count', String(QUOTES.length));
     } catch (e) { /* private mode: still show a random quote */ }
@@ -128,13 +146,7 @@ function renderSplash(entry) {
         splash.remove();
         return;
     }
-    if (!deck.length) {
-        deck = QUOTES.map((_, i) => i);
-        for (let i = deck.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [deck[i], deck[j]] = [deck[j], deck[i]];
-        }
-    }
+    if (!deck.length) deck = shuffledDeck();
     const index = deck.shift();
     try { localStorage.setItem('wt_quote_deck', JSON.stringify(deck)); } catch (e) { /* private mode */ }
     renderSplash(quoteAt(index));

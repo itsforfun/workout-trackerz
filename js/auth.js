@@ -193,6 +193,7 @@ async function handleProfileSave(event) {
     const height = parseInt(document.getElementById('profileHeight').value);
 
     userProfile = { gender, age, weight, height, units: 'kg', lang: LANG };
+    rememberGender();
     logBodyweight(weight);
     // First login: no program chosen yet, so this saves selected_program: null
 
@@ -256,6 +257,7 @@ async function handleSettingsUpdate(event) {
 
     const weightChanged = !userProfile || Math.abs((userProfile.weight || 0) - weight) >= 0.05;
     userProfile = { ...userProfile, gender, age, weight, height, units };
+    rememberGender();
     if (weightChanged) logBodyweight(weight);
 
     // Re-rank tiers with the new personalized standards and units
@@ -292,6 +294,7 @@ function updateStandardsDisplay() {
 
     const programGender = PROGRAMS[currentProgram].gender;
     const baseWeight = getBaseWeight(programGender);
+    const converted = userGender() && userGender() !== programGender;
     const bmi = (userProfile.weight / Math.pow(userProfile.height / 100, 2)).toFixed(1);
     const strengthMultiplier = getStrengthMultiplier(programGender).toFixed(2);
 
@@ -299,6 +302,7 @@ function updateStandardsDisplay() {
         <strong>BMI:</strong> ${escapeHtml(bmi)}<br>
         <strong>Bodyweight:</strong> ${escapeHtml(kgToDisplay(userProfile.weight))}${usesLb() ? 'lb' : 'kg'}<br>
         <strong>Standards adjusted by:</strong> ${escapeHtml(strengthMultiplier)}x from the ${kgToDisplay(baseWeight)}${usesLb() ? 'lb' : 'kg'} reference lifter<br>
+        ${converted ? `<strong>Standards:</strong> ${userGender() === 'female' ? "converted to women's standards" : "converted to men's standards"}<br>` : ''}
         <em style="font-size:0.65rem; color:var(--text-muted);">Your tier thresholds are personalized to your bodyweight (pull-ups and other bodyweight-plus lifts are not scaled)</em>
     `;
 }

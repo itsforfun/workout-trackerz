@@ -4,7 +4,7 @@
 
 // Shown at the bottom of Settings so you can tell which version a phone is running.
 // Bump it with every deploy.
-const APP_VERSION = '1.57 · 30 Oct';
+const APP_VERSION = '1.58 · 30 Oct';
 
 const SUPABASE_URL = 'https://hcwbcxhblfjpdlkwykez.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_mEe_5g2UITyp5O-F9YRhRg_wTQWuOtf';
@@ -200,14 +200,37 @@ function getStrengthMultiplier(gender) {
     return Math.pow(userProfile.weight / getBaseWeight(gender), 0.67);
 }
 
+// The user's sex from the profile ('male' | 'female'), or null when not set
+function userGender() {
+    const g = userProfile && userProfile.gender;
+    return g === 'female' || g === 'male' ? g : null;
+}
+
+// Standards are written for one reference lifter (95 kg man or 65 kg woman). When the user's sex differs
+// (a woman on a men's program, or the other way round), they are converted at equal bodyweight: women lift
+// about 70% of men's numbers on upper-body lifts, about 80% on lower-body lifts and about 40% of the reps on
+// pull-ups. Approximations from strength-standard tables, like the thresholds themselves.
+const SEX_FACTOR = { upper: 0.7, lower: 0.8, reps: 0.4 };
+const LOWER_BODY = ['gl', 'qd', 'hm', 'ad', 'cf'];
+
+function sexFactor(exercise, standardGender) {
+    const user = userGender();
+    if (!user || user === standardGender) return 1;
+    const kind = isRepsBased(exercise) ? 'reps'
+        : exerciseMuscles(exercise.name).main.some(g => LOWER_BODY.includes(g)) ? 'lower' : 'upper';
+    return user === 'female' ? SEX_FACTOR[kind] : 1 / SEX_FACTOR[kind];
+}
+
 function getThresholds(exercise) {
     if (!exercise.thresholds) return null;
-    if (!userProfile || !userProfile.weight || UNSCALED_UNITS.includes(exercise.unit)) {
-        return exercise.thresholds;
-    }
-    // Scale against the reference lifter the thresholds were written for (custom programs keep the source program's)
-    const multiplier = getStrengthMultiplier(exercise.standardGender || PROGRAMS[currentProgram].gender);
-    return exercise.thresholds.map(t => Math.round(t * multiplier * 10) / 10);
+    // The reference lifter the thresholds were written for (custom programs keep the source program's)
+    const standardGender = exercise.standardGender || PROGRAMS[currentProgram].gender;
+    const factor = sexFactor(exercise, standardGender);
+    if (isRepsBased(exercise)) return exercise.thresholds.map(t => Math.max(1, Math.round(t * factor)));
+    // Bodyweight scaling, except for lifts measured on top of bodyweight
+    const multiplier = !userProfile || !userProfile.weight || UNSCALED_UNITS.includes(exercise.unit)
+        ? 1 : getStrengthMultiplier(standardGender);
+    return exercise.thresholds.map(t => Math.round(t * multiplier * factor * 10) / 10);
 }
 
 // ════════════════════════════════════════════
@@ -229,8 +252,32 @@ const SCREENS = {
 // Marks the page as scrolled, which turns on the fade under the status bar (see body::before)
 window.addEventListener('scroll', () => document.body.classList.toggle('scrolled', window.scrollY > 8), { passive: true });
 
+// Kept on the phone so the opening quote, shown before sign-in finishes, can follow it too
+function rememberGender() {
+    try { localStorage.setItem('odyr_gender', userGender() || ''); } catch (e) { /* private mode */ }
+}
+
+// Program menu: programs written for your sex first, the rest after (order otherwise unchanged)
+function orderProgramCards() {
+    const programOf = card => PROGRAMS[(card.getAttribute('onclick').match(/'([^']+)'/) || [])[1]];
+    const cards = [...document.querySelectorAll('#programSelector .program-card:not(.custom-card)')].filter(programOf);
+    if (!cards.length) return;
+    const gender = userGender() || 'male';
+    const after = cards[cards.length - 1].nextSibling;   // whatever follows the built-in programs stays after them
+    cards.map((card, i) => ({ card, i, rank: programOf(card).gender === gender ? 0 : 1 }))
+        .sort((a, b) => a.rank - b.rank || a.i - b.i)
+        .forEach(({ card }, i) => {
+            card.parentNode.insertBefore(card, after);
+            const index = card.querySelector('.program-index');
+            if (index) index.textContent = String(i + 1).padStart(2, '0');
+        });
+}
+
 function showScreen(name) {
-    if (name === 'selector') renderCustomProgramCards();
+    if (name === 'selector') {
+        renderCustomProgramCards();
+        orderProgramCards();
+    }
     Object.entries(SCREENS).forEach(([key, id]) => {
         document.getElementById(id).classList.toggle('active', key === name);
     });
@@ -240,6 +287,7 @@ function showScreen(name) {
 
 // Decide where a logged-in user lands once their data is loaded
 function routeAfterLogin() {
+    rememberGender();
     if (!userProfile || !userProfile.age || !userProfile.weight) {
         showScreen('profile');
     } else if (currentProgram) {

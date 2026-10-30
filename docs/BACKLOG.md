@@ -70,6 +70,7 @@ Status: **Done** · **Check** (built, still needs a look on the iPhone or a smal
 - Home-screen widgets (rings, streak), Live Activity for a ticking rest countdown on the lock screen (owner asked for it, 2026-10-29), Apple Watch app
 
 **Other**
+- For women, later: optional cycle tracking that informs readiness and deloads; a female figure in the exercise demos (suggested 2026-10-30)
 - Progress photos and body measurements, kept private
 - Own web address (for example odyr.app)
 - Program suggestion during sign-up (3 questions); the "Build it for me" generator exists but isn't part of onboarding
@@ -105,6 +106,7 @@ Status: **Done** · **Check** (built, still needs a look on the iPhone or a smal
 | 1.29 | 8-tier medals, trophy room, badge sheet, minting moment, signature and secret badges, "almost there" nudges |
 | 1.30–1.34 | Brand: Odyra, then Odyr; new icon; sign-in redesign; design carried across the app; thinker quotes |
 | 1.35–1.36 | French (whole app, reminders, quotes), Language setting, French review pass, decimal comma typing |
+| 1.58 | Made for women too: strength standards follow your sex on any program, Goddess top tier, women's max heart rate formula, women's programs first, program tags by focus, opening quotes without male-only language |
 | 1.57 | Harder badges: every track re-paced (Iron after a few sessions, Platinum ~1 year, Obsidian 6+ years), earned badges re-measured once against the new targets; Progress lists one workout's lifts at a time (segments, opening on the last workout done) |
 | 1.56 | Strength over time always in view: trend card at the top of Progress, a small line and % change on every lift, full chart by date across cycles, strength estimated from weight and reps |
 | 1.55 | Progress without repeats: each lift opens its chart and strength standards right under its row; level, badges and tiers each shown once; score breakdown opens from the Today rings; XP breakdown in the trophy room |

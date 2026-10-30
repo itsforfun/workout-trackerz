@@ -199,7 +199,7 @@ function tierBadgeHtml(tier) {
 }
 
 function tierName(tier) {
-    if (tier === 6) return PROGRAMS[currentProgram].gender === 'male' ? 'God' : 'Goddess';
+    if (tier === 6) return (userGender() || PROGRAMS[currentProgram].gender) === 'female' ? 'Goddess' : 'God';
     return TIERS[tier].name;
 }
 
