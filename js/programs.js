@@ -98,11 +98,11 @@ const PROGRAMS = {
             { id:'barbell-row', bar:true, day:0, name:'Barbell Row', meta:'3×10-12, 2min', unit:'kg', thresholds:[25,38,52,68,88,108], note:'Elbows flare, pull to lower chest' },
         ]
     },
-    // Joint-friendly full body for returning lifters, fat loss first; needs no trap bar or leg press.
+    // Joint-friendly full body for returning lifters; needs no trap bar or leg press.
     // Rest: 2-3 min after the first two lifts, 60-90 s after the rest.
     fullBody3: {
         name: 'Wayfarer',   // was "3-Day Full Body" (renamed v1.60): the road back, with walks and easy cardio
-        subtitle: 'Fat-loss full body · Mon / Wed / Fri',
+        subtitle: 'Full body · Mon / Wed / Fri + cardio',
         gender: 'male',
         heroTitle: 'REBUILD<br>STRONGER',
         heroSubtitle: 'Lose fat · Build muscle · Move well',
@@ -111,7 +111,7 @@ const PROGRAMS = {
         powerUnlockKg: 108.862,        // 240 lb: add low box jumps or sled pushes
         // 0 = Sunday … 6 = Saturday; numbers are lifting days (index into `days`)
         weekPlan: { 1: 0, 2: 'cardio', 3: 1, 4: 'cardio', 5: 2, 6: 'rest', 0: 'rest' },
-        // Joint-friendly fat loss: easy Zone 2 on cardio days, Zone 1 walks on rest days
+        // Joint-friendly: easy Zone 2 on cardio days, Zone 1 walks on rest days
         cardioZones: { cardio: [2], rest: [1] },
         warmup: {
             common: [['Bike or incline walk', '4 min'], ['Couch stretch', '30 s per side']],
@@ -122,14 +122,6 @@ const PROGRAMS = {
             ],
             note: 'Balance progression: eyes open → eyes closed → standing on a cushion.',
         },
-        habits: [
-            '8,000–10,000 steps',
-            'Stand or walk 1–2 min every 30–60 min at the desk',
-            '180–200 g protein',
-            '~500 kcal below maintenance',
-            '7+ hours sleep',
-            'Couch stretch once during the workday',
-        ],
         exercises: [
             // Day A — squat day
             { id:'goblet-box-squat', day:0, name:'Goblet Box Squat', meta:'3×6-10, 2-3min', unit:'kg/DB', thresholds:[16,24,32,40,50,60], note:'Sit back, touch the box, stand', upgrade:{ week:6, to:'Goblet Squat' } },

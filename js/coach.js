@@ -418,11 +418,23 @@ const COACH_SCIENCE = [
     },
     {
         title: 'Steps',
-        rule: 'A daily step goal, 10,000 by default; 8,000+ ticks the steps habit.',
+        rule: 'A daily step goal, 10,000 by default; reaching it ticks the steps habit.',
         why: 'Across 15 large studies, more daily steps were linked with lower risk of death, with benefits levelling off around 6,000–8,000 steps for older adults and 8,000–10,000 for younger adults.',
         note: 'These are observational links, not proof that steps alone cause the benefit.',
         refs: [
             ['Paluch AE, Bajpai S, Bassett DR, et al. Lancet Public Health. 2022;7(3):e219–e228.', 'Daily steps and all-cause mortality: a meta-analysis of 15 international cohorts'],
+        ],
+    },
+    {
+        title: 'Daily habits',
+        rule: 'Six daily habits chosen by your goal, not your program: steps, protein (1.6–2.2 g per kg), sleep (7+ hours), and eating a little under maintenance to lose fat, a little over to build muscle, or enough to recover.',
+        why: 'Training builds the stimulus; whether you lose fat or gain muscle depends mostly on what you eat, how you sleep and how much you move. Protein beyond about 1.6 g per kg a day added no more muscle on average. Losing about 0.5–1% of bodyweight a week keeps the most muscle while dieting; gaining about 0.25–0.5% a week limits fat gain while building.',
+        note: 'Ranges, not exact targets: needs differ between people. The calorie habits are a direction to follow, not a count the app checks.',
+        refs: [
+            ['Morton RW, Murphy KT, McKellar SR, et al. Br J Sports Med. 2018;52(6):376–384. doi:10.1136/bjsports-2017-097608', 'A systematic review, meta-analysis and meta-regression of the effect of protein supplementation on resistance training-induced gains in muscle mass and strength in healthy adults'],
+            ['Watson NF, Badr MS, Belenky G, et al. J Clin Sleep Med. 2015;11(8):931–952. doi:10.5664/jcsm.4950', 'Joint Consensus Statement of the American Academy of Sleep Medicine and Sleep Research Society on the Recommended Amount of Sleep for a Healthy Adult: Methodology and Discussion'],
+            ['Helms ER, Aragon AA, Fitschen PJ. J Int Soc Sports Nutr. 2014;11:20. doi:10.1186/1550-2783-11-20', 'Evidence-based recommendations for natural bodybuilding contest preparation: nutrition and supplementation'],
+            ['Iraki J, Fitschen P, Espinar S, Helms E. Sports (Basel). 2019;7(7):154. doi:10.3390/sports7070154', 'Nutrition Recommendations for Bodybuilders in the Off-Season: A Narrative Review'],
         ],
     },
     {
@@ -551,8 +563,9 @@ function tourSteps() {
         lifting
             ? { target: '#startWorkoutBtn', title: 'Start here', text: 'Today\'s session. Weights are filled in for you, and records and badges unlock as you go.' }
             : { target: '#cardioView', title: 'Cardio day', text: 'Pick a session in your zone and log it. Lifting is one tap away if you prefer.' },
-        { target: '.bottom-nav .tab-btn:nth-child(3)', title: 'Steps', text: 'Your daily steps from Apple Health, with a one-time setup.' },
-        { target: '.bottom-nav .tab-btn:nth-child(4)', title: 'Progress', text: 'Your level, badges, consistency and a chart for every lift.' },
+        { target: '#todayHero .hl-open', title: 'Steps', text: 'Tap Steps for your daily steps from Apple Health, with a one-time setup.' },
+        { target: '#habitsCard', title: 'Daily habits', text: 'Set by your goal in Settings. Fat loss or muscle comes from these, whatever program you follow.' },
+        { target: '.bottom-nav > .tab-btn[onclick="switchTab(\'progress\')"]', title: 'Progress', text: 'Your level, badges, strength over time and a chart for every lift.' },
     ];
 }
 
@@ -637,8 +650,7 @@ function weekXp(monday) {
         xp += Math.max(0, healthCardio(d) - loggedCardio(d));
         xp += Math.min(150, Math.floor(stepsOn(d) / 100));
         const done = habitsDone(d);
-        const prog = PROGRAMS[currentProgram];
-        xp += done * 10 + (prog.habits && done >= prog.habits.length ? 30 : 0);
+        xp += done * 10 + (done >= dailyHabits().length ? 30 : 0);
     }
     xp += weekRecords(monday).length * 50;
     xp += (allData._badgeLog || []).filter(b => inWeek(b.date)).reduce((sum, b) => sum + BADGE_TIERS[b.tier - 1].xp, 0);

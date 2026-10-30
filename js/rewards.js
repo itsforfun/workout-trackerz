@@ -65,9 +65,10 @@ function consistencyScore(end = todayStr()) {
         parts.push({ key: 'steps', label: 'Steps', weight: 20, ratio: Math.min(1, avg / stepGoal()), text: `${Math.round(avg).toLocaleString(LOCALE)} a day` });
     }
 
-    if (prog.habits && prog.habits.length) {
+    // Habits count once you've ticked one at least once (like steps once they've synced)
+    if (Object.keys(metaFor('_habits')).length) {
         const days = Array.from({ length: 7 }, (_, i) => addDays(today, -i));
-        const share = days.reduce((sum, d) => sum + habitsDone(d) / prog.habits.length, 0) / 7;
+        const share = days.reduce((sum, d) => sum + habitsDone(d) / dailyHabits().length, 0) / 7;
         parts.push({ key: 'habits', label: 'Habits', weight: 20, ratio: share, text: `${Math.round(share * 100)}% ticked` });
     }
 
@@ -109,11 +110,10 @@ function loggedCardio(date) {
         .reduce((sum, s) => sum + (s.minutes || 0), 0);
 }
 
-// Ticked habits on a date; the steps habit counts once 8,000 steps are synced
+// Ticked habits on a date; the steps habit counts once the step goal is synced
 function habitsDone(date) {
-    const prog = PROGRAMS[currentProgram];
     const done = new Set((metaFor('_habits')[date]) || []);
-    if (prog.habits && /steps/i.test(prog.habits[0]) && stepsOn(date) >= 8000) done.add(0);
+    if (stepsOn(date) >= stepGoal()) done.add(0);
     return done.size;
 }
 
@@ -233,11 +233,10 @@ function playerStats() {
     });
 
     // Habits, weigh-ins, consistency
-    const prog = PROGRAMS[currentProgram];
     Object.keys(metaFor('_habits')).forEach(date => {
         const done = habitsDone(date);
         st.habitTicks += done;
-        if (prog.habits && done >= prog.habits.length) st.perfectDays++;
+        if (done >= dailyHabits().length) st.perfectDays++;
     });
     st.weighIns = Array.isArray(allData._bodyweight) ? allData._bodyweight.length : 0;
 
@@ -251,9 +250,7 @@ function playerStats() {
         if (lifts >= liftTarget && cardio >= 150 && stepAvg >= goal) st.perfectWeeks++;
     });
     // All in: lifted, hit the step goal and ticked every habit on the same day
-    if (prog.habits && prog.habits.length) {
-        st.allInDays = new Set(workoutDates.filter(d => stepsOn(d) >= goal && habitsDone(d) >= prog.habits.length)).size;
-    }
+    st.allInDays = new Set(workoutDates.filter(d => stepsOn(d) >= goal && habitsDone(d) >= dailyHabits().length)).size;
     st.bestScore = Math.max(allData._bestScore || 0, consistencyScore().score);
     return st;
 }

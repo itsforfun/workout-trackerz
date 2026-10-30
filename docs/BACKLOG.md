@@ -106,6 +106,7 @@ Status: **Done** · **Check** (built, still needs a look on the iPhone or a smal
 | 1.29 | 8-tier medals, trophy room, badge sheet, minting moment, signature and secret badges, "almost there" nudges |
 | 1.30–1.34 | Brand: Odyra, then Odyr; new icon; sign-in redesign; design carried across the app; thinker quotes |
 | 1.35–1.36 | French (whole app, reminders, quotes), Language setting, French review pass, decimal comma typing |
+| 1.62 | Goal in your profile drives six daily habits in every program (protein for your weight, sleep, steps, eating for your goal), with sources; cardio zones and science in every program; program cards describe training, not fat loss or muscle; French names Enclume and Sentier |
 | 1.61 | Each program card promises its result under the name (e.g. Freyja: "Sculpt stronger glutes and an hourglass shape.") |
 | 1.60 | Programs renamed to fit the theme and what each does: Forge, Freyja, Anvil, Valkyrie, Wayfarer |
 | 1.59 | Program menu: "For you" shows the programs written for your sex, the others folded under "More programs" |

@@ -599,6 +599,47 @@
             `${card.querySelector('.program-title').textContent} has no promise`));
     });
 
+    await check('Habits follow your goal and cardio science is in every program; programs promise no fat loss or muscle', () => {
+        const saved = { profile: userProfile, program: currentProgram };
+        try {
+            ['fatloss', 'muscle', 'strength', 'general'].forEach(goal => {
+                userProfile = { ...saved.profile, goal, weight: 80 };
+                const habits = dailyHabits();
+                equal(habits.length, 6, `${goal} habit count`);
+                assert(/step goal/.test(habits[0]), `${goal}: steps must come first (auto-ticked)`);
+                assert(habits.includes('130–175 g protein'), `${goal}: protein not personalised (${habits[1]})`);
+            });
+            userProfile = { ...saved.profile, goal: 'fatloss', weight: 80 };
+            assert(/under maintenance/.test(dailyHabits().join(' ')), 'fat-loss habits');
+            userProfile = { ...saved.profile, goal: 'muscle', weight: 80 };
+            assert(/over maintenance/.test(dailyHabits().join(' ')), 'muscle habits');
+            showScreen('app');
+            Object.keys(PROGRAMS).filter(id => !id.startsWith('custom-')).forEach(id => {
+                currentProgram = id;
+                todayMode = null;
+                switchTab('today');
+                assert(document.querySelectorAll('#habitsCard .mobility-item').length === 6, `${id}: no daily habits`);
+                const entry = document.querySelector('#cardioEntry .cardio-entry');
+                const weekPlanOffDay = PROGRAMS[id].weekPlan && ['cardio', 'rest'].includes(PROGRAMS[id].weekPlan[new Date().getDay()]);
+                if (weekPlanOffDay) return;   // the cardio view is already on screen
+                assert(entry, `${id}: no cardio card`);
+                entry.click();
+                assert(document.querySelector('#cardioView .evidence-card'), `${id}: cardio science missing`);
+                assert(document.getElementById('liftView').style.display === 'none', `${id}: lifting still shown`);
+                document.querySelector('#cardioView .back-link.top').click();
+                assert(document.getElementById('liftView').style.display !== 'none', `${id}: back did not return to lifting`);
+            });
+            const cards = document.querySelectorAll('#programSelector .program-card:not(.custom-card):not(.build-card)');
+            cards.forEach(card => assert(!/lose fat|fat loss|fat-loss|build muscle/i.test(card.textContent), `${card.querySelector('.program-title').textContent} still promises a body result`));
+            equal(I18N_PACKS.fr.strings.Anvil, 'Enclume', 'French name for Anvil');
+            equal(I18N_PACKS.fr.strings.Wayfarer, 'Sentier', 'French name for Wayfarer');
+        } finally {
+            userProfile = saved.profile;
+            currentProgram = saved.program;
+            todayMode = null;
+        }
+    });
+
     await check('Ticking a set shows the XP it earned', () => {
         const anchor = document.createElement('button');
         document.body.appendChild(anchor);

@@ -4,7 +4,7 @@
 
 // Shown at the bottom of Settings so you can tell which version a phone is running.
 // Bump it with every deploy.
-const APP_VERSION = '1.61 · 30 Oct';
+const APP_VERSION = '1.62 · 30 Oct';
 
 const SUPABASE_URL = 'https://hcwbcxhblfjpdlkwykez.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_mEe_5g2UITyp5O-F9YRhRg_wTQWuOtf';
@@ -204,6 +204,30 @@ function getStrengthMultiplier(gender) {
 function userGender() {
     const g = userProfile && userProfile.gender;
     return g === 'female' || g === 'male' ? g : null;
+}
+
+// The goal from the profile: 'fatloss' | 'muscle' | 'strength' | 'general' (the default)
+function userGoal() {
+    const g = userProfile && userProfile.goal;
+    return ['fatloss', 'muscle', 'strength'].includes(g) ? g : 'general';
+}
+
+// Daily habits come from your goal, not your program: fat loss or muscle depends on eating, sleep and
+// movement, and every program works with every goal. The first habit is always steps (ticked by itself
+// once the step goal is synced). Protein is personalised to bodyweight (1.6–2.2 g/kg, Morton 2018).
+// Kept to six, in a fixed order, because ticks are stored by position (_habits[date] = [indexes]).
+function dailyHabits() {
+    const kg = userProfile && userProfile.weight;
+    const round5 = n => Math.round(n / 5) * 5;
+    const protein = kg ? `${round5(kg * 1.6)}–${round5(kg * 2.2)} g protein` : 'Protein at every meal';
+    const steps = `Hit your step goal (${stepGoal().toLocaleString(LOCALE)})`;
+    const desk = 'Stand or walk 1–2 min every hour at the desk';
+    return {
+        fatloss: [steps, protein, 'Eat a little under maintenance (lose ~0.5% of bodyweight a week)', 'Vegetables or fruit at two meals', '7+ hours sleep', 'Water or zero-calorie drinks, not sugary ones'],
+        muscle: [steps, protein, 'Eat a little over maintenance (gain ~0.25–0.5% of bodyweight a week)', 'Protein and carbs within a few hours of training', '7+ hours sleep', desk],
+        strength: [steps, protein, 'Eat enough to recover (around maintenance)', '7+ hours sleep', desk, '5 minutes of mobility for your tightest spot'],
+        general: [steps, protein, 'Vegetables or fruit at two meals', '7+ hours sleep', desk, '5 minutes of stretching'],
+    }[userGoal()];
 }
 
 // Standards are written for one reference lifter (95 kg man or 65 kg woman). When the user's sex differs

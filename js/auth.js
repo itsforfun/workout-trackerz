@@ -192,7 +192,8 @@ async function handleProfileSave(event) {
     const weight = parseFloat(document.getElementById('profileWeight').value);
     const height = parseInt(document.getElementById('profileHeight').value);
 
-    userProfile = { gender, age, weight, height, units: 'kg', lang: LANG };
+    const goal = document.getElementById('profileGoal').value || 'general';
+    userProfile = { gender, age, weight, height, goal, units: 'kg', lang: LANG };
     rememberGender();
     logBodyweight(weight);
     // First login: no program chosen yet, so this saves selected_program: null
@@ -256,7 +257,8 @@ async function handleSettingsUpdate(event) {
     const height = parseInt(document.getElementById('settingsHeight').value);
 
     const weightChanged = !userProfile || Math.abs((userProfile.weight || 0) - weight) >= 0.05;
-    userProfile = { ...userProfile, gender, age, weight, height, units };
+    const goal = document.getElementById('settingsGoal').value || 'general';
+    userProfile = { ...userProfile, gender, age, weight, height, goal, units };
     rememberGender();
     if (weightChanged) logBodyweight(weight);
 
@@ -272,6 +274,7 @@ function loadSettingsForm() {
 
     document.getElementById('settingsUnits').value = usesLb() ? 'lb' : 'kg';
     document.getElementById('settingsGender').value = userProfile.gender || 'male';
+    document.getElementById('settingsGoal').value = userGoal();
     document.getElementById('settingsAge').value = userProfile.age || '';
     document.getElementById('settingsWeightLabel').textContent = `Weight (${usesLb() ? 'lb' : 'kg'})`;
     document.getElementById('settingsWeight').value = userProfile.weight ? kgToDisplay(userProfile.weight) : '';

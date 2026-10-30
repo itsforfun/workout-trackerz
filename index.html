@@ -147,6 +147,15 @@
                     </select>
                 </div>
 
+                <div class="form-group">
+                    <label class="form-label">Your goal</label>
+                    <select class="form-input" id="profileGoal">
+                        <option value="fatloss">Lose fat</option>
+                        <option value="muscle">Build muscle</option>
+                        <option value="strength">Get stronger</option>
+                        <option value="general">Stay fit and healthy</option>
+                    </select>
+                </div>
                 <div class="metrics-grid">
                     <div class="form-group">
                         <label class="form-label">Age</label>
@@ -163,7 +172,7 @@
                 </div>
 
                 <div class="profile-info">
-                    Standards scale with your bodyweight, so a 60 kg and a 100 kg lifter are measured fairly.
+                    Standards scale with your bodyweight, so a 60 kg and a 100 kg lifter are measured fairly. Your goal sets your daily habits; every program works for every goal.
                 </div>
 
                 <button type="submit" class="auth-btn">Continue</button>
@@ -179,6 +188,7 @@
             <svg class="screen-mark" aria-hidden="true"><use href="#odyrMark"/></svg>
             <h1>CHOOSE YOUR PATH</h1>
             <p>Every program keeps its own twelve-week log.</p>
+            <p class="selector-note">Fat loss or muscle comes from your daily habits, set by your goal. Every program works for every goal.</p>
         </div>
 
         <div class="kicker selector-kicker" id="forYouKicker">For you</div>
@@ -186,15 +196,15 @@
             <button class="program-card" onclick="selectProgram('male')">
                 <div class="program-top"><span class="program-index">01</span><span class="program-tag">Push · Pull · Legs · 3 days</span></div>
                 <div class="program-title">Forge</div>
-                <div class="program-promise">Build muscle and real strength on three days a week.</div>
-                <div class="program-desc">Push, pull and legs: three sessions a week that forge real muscle and strength, built around a 9-to-5.</div>
-                <div class="program-specs"><div><span>Split</span>Push · Pull · Legs</div><div><span>Session</span>60–65 min</div><div><span>Focus</span>Size &amp; strength</div></div>
+                <div class="program-promise">Every muscle trained hard, three days a week.</div>
+                <div class="program-desc">Push, pull and legs: three focused sessions a week, each one hammering its muscles, built around a 9-to-5.</div>
+                <div class="program-specs"><div><span>Split</span>Push · Pull · Legs</div><div><span>Session</span>60–65 min</div><div><span>Focus</span>Each muscle, hard</div></div>
                 <div class="program-cta">Select program <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
             </button>
             <button class="program-card" onclick="selectProgram('female')">
                 <div class="program-top"><span class="program-index">02</span><span class="program-tag">Glutes &amp; shape · 3 days</span></div>
                 <div class="program-title">Freyja</div>
-                <div class="program-promise">Sculpt stronger glutes and an hourglass shape.</div>
+                <div class="program-promise">Glutes, shoulders and back, trained for the hourglass shape.</div>
                 <div class="program-desc">Named for the Norse goddess of beauty: a rolling A / B / C split that works glutes, shoulders and back in turn.</div>
                 <div class="program-specs"><div><span>Split</span>A · B · C rolling</div><div><span>Session</span>60–70 min</div><div><span>Focus</span>Glutes &amp; shape</div></div>
                 <div class="program-cta">Select program <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
@@ -202,7 +212,7 @@
             <button class="program-card" onclick="selectProgram('maleTotalBody')">
                 <div class="program-top"><span class="program-index">03</span><span class="program-tag">Full body · 1–2 days</span></div>
                 <div class="program-title">Anvil</div>
-                <div class="program-promise">Get strong on just one or two sessions a week.</div>
+                <div class="program-promise">The whole body, trained heavy, in one or two sessions a week.</div>
                 <div class="program-desc">One heavy session on the anvil: six barbell lifts that cover the whole body, for busy weeks and a basic gym.</div>
                 <div class="program-specs"><div><span>Split</span>Full body</div><div><span>Session</span>50–55 min</div><div><span>Kit</span>Basic gym</div></div>
                 <div class="program-cta">Select program <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
@@ -218,9 +228,9 @@
             <button class="program-card" onclick="selectProgram('fullBody3')">
                 <div class="program-top"><span class="program-index">05</span><span class="program-tag">Beginner · 3 days + cardio</span></div>
                 <div class="program-title">Wayfarer</div>
-                <div class="program-promise">Lose fat and get your strength back, gently on your joints.</div>
+                <div class="program-promise">Get your strength back, gently on your joints.</div>
                 <div class="program-desc">The road back for returning lifters: joint-friendly squats, hinges and carries, with walks and easy cardio between lifting days.</div>
-                <div class="program-specs"><div><span>Split</span>A · B · C + cardio</div><div><span>Session</span>~50 min</div><div><span>Focus</span>Fat loss &amp; strength</div></div>
+                <div class="program-specs"><div><span>Split</span>A · B · C + cardio</div><div><span>Session</span>~50 min</div><div><span>Focus</span>Joints &amp; strength</div></div>
                 <div class="program-cta">Select program <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
             </button>
         </div>
@@ -315,6 +325,7 @@
             </div>
             <div id="mobilityCard"></div>
             <div id="habitsCard"></div>
+            <div id="cardioEntry"></div>
         </div>
     </div>
 
@@ -395,6 +406,15 @@
                         </select>
                     </div>
 
+                    <div class="form-group">
+                    <label class="form-label">Your goal</label>
+                    <select class="form-input" id="settingsGoal">
+                        <option value="fatloss">Lose fat</option>
+                        <option value="muscle">Build muscle</option>
+                        <option value="strength">Get stronger</option>
+                        <option value="general">Stay fit and healthy</option>
+                    </select>
+                    </div>
                     <div class="form-group">
                         <label class="form-label">Weight units</label>
                         <select class="form-input" id="settingsUnits">

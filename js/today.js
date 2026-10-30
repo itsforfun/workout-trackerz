@@ -139,11 +139,14 @@ function renderToday() {
     scheduleNudges();
     document.getElementById('powerUnlock').innerHTML = powerUnlockHtml();
 
-    // Cardio and rest days of a week plan show cardio zones instead of the lifting days
+    // Cardio and rest days of a week plan show cardio zones instead of the lifting days; on any other day
+    // (and in every program) the Cardio card opens the same zones and science (todayMode 'cardio')
     const plan = prog.weekPlan ? prog.weekPlan[new Date().getDay()] : null;
     const offDay = plan === 'cardio' || plan === 'rest' ? plan : null;
-    renderCardioView(offDay, todayMode === 'lift');
-    document.getElementById('liftView').style.display = offDay && todayMode !== 'lift' ? 'none' : '';
+    const view = todayMode === 'cardio' ? 'cardio' : offDay;
+    renderCardioView(view, todayMode === 'lift', todayMode === 'cardio');
+    document.getElementById('liftView').style.display = view && todayMode !== 'lift' ? 'none' : '';
+    renderCardioEntry(!view || todayMode === 'lift');
 
     document.getElementById('dayStrip').innerHTML = prog.days.map((name, i) => `
         <button class="day-tab${i === todayDay ? ' active' : ''}" onclick="selectTodayDay(${i})">
@@ -291,24 +294,20 @@ let habitsOpen = false;
 
 function renderHabits() {
     const el = document.getElementById('habitsCard');
-    const prog = PROGRAMS[currentProgram];
-    if (!prog.habits) {
-        el.innerHTML = '';
-        return;
-    }
+    const habits = dailyHabits();
     const checked = new Set((metaFor('_habits')[todayStr()]) || []);
-    // The steps habit (first in the list) counts as done once 8,000 steps are synced today
-    const stepsAuto = /steps/i.test(prog.habits[0]) && stepsOn(todayStr()) >= 8000;
-    if (stepsAuto) checked.add(0);
+    // The steps habit (first in the list) counts as done once the step goal is synced today
+    if (stepsOn(todayStr()) >= stepGoal()) checked.add(0);
     const done = checked.size;
-    const total = prog.habits.length;
+    const total = habits.length;
     el.innerHTML = `
         <details class="mobility-card habits-card" ${habitsOpen ? 'open' : ''} ontoggle="habitsOpen = this.open">
             <summary>
                 <div class="habits-row"><h3>Daily habits</h3><span class="habits-count${done === total ? ' all' : ''}">${done}/${total}</span></div>
                 <div class="habits-bar"><span style="width:${Math.round((done / total) * 100)}%"></span></div>
             </summary>
-            ${prog.habits.map((habit, i) => `
+            <p class="habits-goal">For your goal: <strong>${escapeHtml(GOAL_NAMES[userGoal()])}</strong> · <button class="link-btn" onclick="switchTab('settings')">Change</button></p>
+            ${habits.map((habit, i) => `
                 <label class="mobility-item">
                     <input type="checkbox" ${checked.has(i) ? 'checked' : ''} onchange="toggleHabit(${i}, this.checked)">
                     ${escapeHtml(habit)}
@@ -317,6 +316,8 @@ function renderHabits() {
         </details>
     `;
 }
+
+const GOAL_NAMES = { fatloss: 'Lose fat', muscle: 'Build muscle', strength: 'Get stronger', general: 'Stay fit and healthy' };
 
 function toggleHabit(i, on) {
     haptic();
@@ -452,7 +453,23 @@ function setTodayMode(mode) {
     window.scrollTo(0, 0);
 }
 
-function renderCardioView(plan, showingLift) {
+// Every program: this week's cardio and a way into the zones, below the habits
+function renderCardioEntry(show) {
+    const el = document.getElementById('cardioEntry');
+    if (!show) {
+        el.innerHTML = '';
+        return;
+    }
+    const week = cardioWeek();
+    el.innerHTML = `
+        <button class="cardio-entry" onclick="setTodayMode('cardio')">
+            <span class="ce-text"><span class="ce-kicker">Cardio</span><strong>${week.moderate}<small> / 150 min this week</small></strong></span>
+            <span class="ce-link">Zones and science ›</span>
+            <span class="ce-bar"><span style="width:${Math.min(100, Math.round(week.moderate / 150 * 100))}%"></span></span>
+        </button>`;
+}
+
+function renderCardioView(plan, showingLift, chosen = false) {
     const el = document.getElementById('cardioView');
     if (!plan) {
         el.innerHTML = '';
@@ -498,11 +515,12 @@ function renderCardioView(plan, showingLift) {
 
     el.innerHTML = `
         <div class="cardio-head">
-            <div class="kicker">${plan === 'cardio' ? 'Cardio day' : 'Recovery day'}</div>
+            ${chosen ? '<button class="back-link top" onclick="setTodayMode(null)">← Back to lifting</button>' : ''}
+            <div class="kicker">${chosen ? 'Cardio' : plan === 'cardio' ? 'Cardio day' : 'Recovery day'}</div>
             <h2>Zone ${rec.zone} <span>${escapeHtml(rec.name)}</span></h2>
             <div class="cardio-target"><strong>${bpm(rec)}</strong> bpm · ${escapeHtml(rec.sessions[0][2])}</div>
         </div>
-        ${missedLiftDay() ? `<div class="coach-card compact"><div class="coach-kicker">Catch up</div><p>You missed a lifting day this week. ${escapeHtml(missedLiftDay())} fits in today instead of cardio.</p><button class="btn btn-primary" onclick="setTodayMode('lift')">Lift today</button></div>` : ''}
+        ${!chosen && missedLiftDay() ? `<div class="coach-card compact"><div class="coach-kicker">Catch up</div><p>You missed a lifting day this week. ${escapeHtml(missedLiftDay())} fits in today instead of cardio.</p><button class="btn btn-primary" onclick="setTodayMode('lift')">Lift today</button></div>` : ''}
         <div class="cardio-week">
             <div class="cardio-week-top">
                 <span>This week</span>
@@ -527,7 +545,7 @@ function renderCardioView(plan, showingLift) {
                 <li>The weekly bar counts toward the WHO minimum of 150 min: Zone 4–5 minutes count double and Zone 1 doesn't count.</li>
             </ul>
         </details>
-        <button class="back-link" onclick="setTodayMode('lift')">Lift today instead →</button>
+        ${chosen ? '' : `<button class="back-link" onclick="setTodayMode('lift')">Lift today instead →</button>`}
     `;
 }
 
