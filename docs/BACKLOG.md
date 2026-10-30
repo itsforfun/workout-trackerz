@@ -27,6 +27,10 @@ Status: **Done** · **Check** (built, still needs a look on the iPhone or a smal
 ## Next — not started
 
 **Sharing and motivation**
+- Weekly challenges: three small goals each Monday, picked from your own log ("one more rep on Bench", "150 cardio minutes"), with XP (suggested 2026-10-30)
+- Streak shield: one per month, keeps a streak alive through a missed week (suggested 2026-10-30)
+- "Then vs now" moments: monthly reminder of how far you've come (strength %, weight, workouts) (suggested 2026-10-30)
+- Guided first week for new accounts: a short checklist of quick wins (suggested 2026-10-30)
 - Share cards for a single new record and for level-ups (the summary and weekly recap can be shared already)
 - Share button on the badge sheet (for the share cards)
 - Friends and weekly challenges (steps or workouts), small private groups
