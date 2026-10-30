@@ -2107,3 +2107,8 @@ button.hero-score:active { opacity:0.7; }
 .ms-status { font-size:0.7rem; color:var(--text-dim); text-align:right; }
 .ms-row.in .ms-status { color:var(--accent); }
 .ms-note { margin-top:var(--s2); font-size:0.72rem; line-height:1.5; color:var(--text-muted); }
+
+/* ── Share from a moment (v1.83) ── */
+.record-share { margin-top:var(--s4); padding:10px 22px; border:0.5px solid rgba(217,178,95,0.5); border-radius:99px; background:rgba(217,178,95,0.08);
+    color:var(--accent); font:inherit; font-size:0.85rem; font-weight:500; cursor:pointer; pointer-events:auto; }
+.record-share[hidden] { display:none; }

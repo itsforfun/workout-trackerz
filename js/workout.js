@@ -313,11 +313,30 @@ function showRecord(ex, value, prev) {
         unit: repsBased ? 'reps' : setWeightUnit(ex),
         name: exerciseDisplayName(ex, activeWorkout ? activeWorkout.week : 0),
         sub: `Previous best ${repsBased ? `${prev} reps` : `${kgToDisplay(prev)} ${setWeightUnit(ex)}`} · ${gain}`,
+        share: {
+            kicker: tr('New record'),
+            title: tr(exerciseDisplayName(ex, activeWorkout ? activeWorkout.week : 0)),
+            line: momentDateLine(),
+            stats: [
+                [tr('New best'), repsBased ? String(value) : kgToDisplay(value), repsBased ? tr('reps') : setWeightUnit(ex)],
+                [tr('Previous'), repsBased ? String(prev) : kgToDisplay(prev), repsBased ? tr('reps') : setWeightUnit(ex)],
+                [tr('Gain'), gain, ''],
+                [tr('Program'), tr(PROGRAMS[currentProgram].name), ''],
+            ],
+            file: 'odyr-record',
+        },
     }));
 }
 
 // Full-screen gold moment (new record, achievement); closes itself after a few seconds
-function showMoment({ kicker, valueHtml, unit, name, sub, color = '', sound = 'record' }) {
+// share: an optional share card ({ kicker, title, line, stats, … } for openShareCard); the moment then shows a
+// Share button and stays a little longer
+let momentShare = null;
+
+function showMoment({ kicker, valueHtml, unit, name, sub, color = '', sound = 'record', share = null }) {
+    momentShare = share;
+    const shareBtn = document.getElementById('recordShare');
+    if (shareBtn) shareBtn.hidden = !share;
     // A badge moment takes its metal's colour; everything else is gold
     document.querySelector('#recordMoment .rr-fg').style.stroke = color;
     document.querySelector('#recordMoment .record-kicker').style.color = color;
@@ -334,7 +353,19 @@ function showMoment({ kicker, valueHtml, unit, name, sub, color = '', sound = 'r
     haptic();
     if (navigator.vibrate) navigator.vibrate([18, 90, 30]);
     clearTimeout(recordTimer);
-    recordTimer = setTimeout(closeRecord, 3400);
+    recordTimer = setTimeout(closeRecord, share ? 6000 : 3400);
+}
+
+function shareMoment() {
+    haptic();
+    const card = momentShare;
+    closeRecord();
+    if (card) openShareCard(card);
+}
+
+// The date line on moment share cards: "Thursday 30 October"
+function momentDateLine() {
+    return parseDate(todayStr()).toLocaleDateString(LOCALE, { weekday: 'long', day: 'numeric', month: 'long' });
 }
 
 function closeRecord() {

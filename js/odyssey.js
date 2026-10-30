@@ -151,7 +151,19 @@ function checkLandmarks() {
     const stop = reached % 10;
     queueMoment(() => showMoment(stop === 0
         ? { kicker: 'Saga complete', valueHtml: '<svg class="moment-mark" aria-hidden="true"><use href="#odyrMark"/></svg>', unit: '', name: LANDMARKS[10][0], sub: `${sagaName(saga)} begins. ${LANDMARKS[10][1]}`, sound: 'level' }
-        : { kicker: 'Landmark reached', valueHtml: '<svg class="moment-mark" aria-hidden="true"><use href="#odyrMark"/></svg>', unit: '', name: LANDMARKS[stop][0], sub: `${tr(LANDMARKS[stop][1])} ${tr('A new page waits in Odyr’s journal.')}`, sound: 'badge' }));
+        : { kicker: 'Landmark reached', valueHtml: '<svg class="moment-mark" aria-hidden="true"><use href="#odyrMark"/></svg>', unit: '', name: LANDMARKS[stop][0], sub: `${tr(LANDMARKS[stop][1])} ${tr('A new page waits in Odyr’s journal.')}`, sound: 'badge',
+            share: {
+                kicker: tr('Landmark reached'),
+                title: tr(LANDMARKS[stop][0]),
+                line: tr(LANDMARKS[stop][1]),
+                stats: [
+                    [tr('Saga'), ROMAN_SAGA[saga] || String(saga), ''],
+                    [tr('Leagues'), journey().total.toLocaleString(LOCALE), ''],
+                    [tr('Workouts'), String(allWorkoutDates().length), ''],
+                    [tr('Landmark'), `${stop} / 10`, ''],
+                ],
+                file: 'odyr-landmark',
+            } }));
 }
 
 // The Odyssey screen: the whole saga as a winding road, every landmark with its line, and how leagues are earned

@@ -30,7 +30,6 @@ Status: **Done** · **Check** (built, still needs a look on the iPhone or a smal
 - Streak shield: one per month, keeps a streak alive through a missed week (suggested 2026-10-30)
 - "Then vs now" moments: monthly reminder of how far you've come (strength %, weight, workouts) (suggested 2026-10-30)
 - Guided first week for new accounts: a short checklist of quick wins (suggested 2026-10-30)
-- Share cards for a single new record and for level-ups (the summary and weekly recap can be shared already)
 - Share button on the badge sheet (for the share cards)
 - Read-only progress sharing with a coach or training partner
 - Personal greeting with your name, and "What's new" notes after updates
@@ -105,6 +104,7 @@ Status: **Done** · **Check** (built, still needs a look on the iPhone or a smal
 | 1.29 | 8-tier medals, trophy room, badge sheet, minting moment, signature and secret badges, "almost there" nudges |
 | 1.30–1.34 | Brand: Odyra, then Odyr; new icon; sign-in redesign; design carried across the app; thinker quotes |
 | 1.35–1.36 | French (whole app, reminders, quotes), Language setting, French review pass, decimal comma typing |
+| 1.83 | Share cards from big moments: a new record, a level-up or a landmark has a Share button |
 | 1.82 | Sets per muscle on Progress: weekly hard sets per muscle against 10–20, with the source |
 | 1.81 | Stall ladder for every program: +1 rep, +1 set, slower tempo, drop set (isolation only), then a reset |
 | 1.80 | Odyr's Journal: a short story in Odyr's voice at every landmark, revealed line by line, read aloud by the phone's voice |

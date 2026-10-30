@@ -567,6 +567,23 @@ function showLevelMoment(xp) {
         name: `Level ${xp.level}`,
         sub: xp.level < MAX_LEVEL ? `${xp.toNext.toLocaleString(LOCALE)} XP to level ${xp.level + 1}` : 'Maximum level',
         sound: 'level',
+        share: (() => {
+            const stats = playerStats();
+            const streak = getStreakStats();
+            return {
+                kicker: tr('Level up'),
+                title: `${xp.level}`,
+                titleSub: tr(xp.rank),
+                line: momentDateLine(),
+                stats: [
+                    [tr('Total XP'), xp.total.toLocaleString(LOCALE), ''],
+                    [tr('Workouts'), String(stats.workouts), ''],
+                    [tr('Streak'), String(streak.streak), tr(streak.streak === 1 ? 'week' : 'weeks')],
+                    [tr('Badges'), String(badgeTracks().reduce((sum, t) => sum + badgeTier(t, stats), 0)), ''],
+                ],
+                file: 'odyr-level',
+            };
+        })(),
     });
 }
 

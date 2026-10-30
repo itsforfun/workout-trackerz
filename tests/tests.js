@@ -1085,6 +1085,45 @@
         showScreen('app');
     });
 
+    await check('Big moments can be shared: a record, a level-up and a landmark open a share card', () => {
+        const opened = [];
+        const real = window.openShareCard;
+        window.openShareCard = card => opened.push(card);
+        try {
+            const ex = PROGRAMS[currentProgram].exercises.find(e => e.thresholds && !isRepsBased(e));
+            momentQueue.length = 0;
+            showRecord(ex, 60, 50);
+            nextMoment();
+            assert(!document.getElementById('recordShare').hidden, 'no Share button on a record');
+            shareMoment();
+            equal(opened[0].file, 'odyr-record', 'record card');
+            assert(opened[0].stats.length === 4 && opened[0].title, 'record card content');
+            showLevelMoment(playerXp(playerStats()));
+            shareMoment();
+            equal(opened[1].file, 'odyr-level', 'level card');
+            delete allData._landmark;
+            checkLandmarks();
+            allData._landmark -= 1;
+            momentQueue.length = 0;
+            checkLandmarks();
+            nextMoment();
+            shareMoment();
+            assert(opened.some(c => c.file === 'odyr-landmark' || c.file === 'odyr-level'), 'landmark card');
+            // Every card really draws (the share sheet stand-in above doesn't)
+            opened.forEach(card => {
+                const canvas = drawShareCard(card);
+                assert(canvas && canvas.width === 1080 && canvas.height === 1920, `${card.file} did not draw`);
+            });
+            // A moment without a card has no Share button
+            showMoment({ kicker: 'Quest complete', valueHtml: '+75', unit: 'XP', name: 'Test', sub: '' });
+            assert(document.getElementById('recordShare').hidden, 'Share shown without a card');
+            closeRecord();
+        } finally {
+            window.openShareCard = real;
+            momentQueue.length = 0;
+        }
+    });
+
     await check('Ticking a set shows the XP it earned', () => {
         const anchor = document.createElement('button');
         document.body.appendChild(anchor);

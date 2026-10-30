@@ -263,7 +263,9 @@ function drawShareCard(card) {
 
     // Gold hairline, then records
     let ry = top + 590;
-    if (card.rows.length) {
+    // Rows (records) are optional: moment cards have none
+    const rows = card.rows || [];
+    if (rows.length) {
         const line = ctx.createLinearGradient(140, 0, W - 140, 0);
         line.addColorStop(0, 'rgba(217,178,95,0)');
         line.addColorStop(0.5, 'rgba(217,178,95,0.6)');
@@ -273,9 +275,9 @@ function drawShareCard(card) {
         ry += 80;
         ctx.fillStyle = gold;
         ctx.font = '600 26px Inter, sans-serif';
-        spacedText(ctx, card.rowsTitle.toUpperCase(), W / 2, ry, 6);
+        spacedText(ctx, (card.rowsTitle || '').toUpperCase(), W / 2, ry, 6);
         ry += 30;
-        card.rows.forEach(([name, value]) => {
+        rows.forEach(([name, value]) => {
             ry += 72;
             ctx.font = '400 40px Inter, sans-serif';
             ctx.fillStyle = cream;

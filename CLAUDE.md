@@ -559,3 +559,7 @@ reference/debug-screenshots/  ← Supabase key page, "Script error" console, Git
 ## 61. Sets per muscle (v1.82, 2026-10-30)
 - Under the weekly muscle map on Progress, a fold-out "Sets per muscle" list (`muscleSetsHtml` in js/anatomy.js, from `weeklyMuscleSets`): every muscle trained this week plus the major ones, sets over the last 7 days (supporting muscles count half), a bar to 20 with a mark at 10, and In range (10–20) / Room to add / A lot (20+). This is Skadi's glute-volume rollup, for every program.
 - Source in "How the coach works" → Sets per muscle: Schoenfeld, Ogborn & Krieger 2017 (doi 10.1080/02640414.2016.1210197, checked on PubMed): graded dose-response, 10+ sets per muscle the top group. The ~20 ceiling is labelled a coaching convention.
+
+## 62. Share big moments (v1.83, 2026-10-30)
+- `showMoment` takes an optional `share` card (same shape as `openShareCard`); the moment then shows a Share button (`#recordShare`, `shareMoment`) and stays 6 s instead of 3.4 s. Cards: **new record** (exercise, date, new best, previous, gain, program), **level-up** (level, rank, total XP, workouts, streak, badges), **landmark** (name, its line, saga, leagues, workouts, landmark n/10). `momentDateLine()` gives the date line.
+- `drawShareCard` now treats `rows` / `rowsTitle` as optional (moment cards have none; the first version failed with "Could not create the image"). The automated check draws every moment card for real.

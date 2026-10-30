@@ -1940,5 +1940,12 @@ I18N_PACKS.fr = {
         "Progress counts hard sets per muscle over the last 7 days and shows them against about 10–20 a week. A supporting muscle counts half a set.": "Progrès compte les séries difficiles par muscle sur les 7 derniers jours et les compare à environ 10 à 20 par semaine. Un muscle secondaire compte pour une demi-série.",
         "In a meta-analysis of 15 studies, more weekly sets meant more muscle growth, and 10 or more sets per muscle was the top group.": "Dans une méta-analyse de 15 études, plus de séries par semaine signifiait plus de croissance musculaire, et 10 séries ou plus par muscle formaient le meilleur groupe.",
         "About 20 as the upper end is a coaching convention for recovery, not a tested limit. If your goal isn’t muscle, fewer sets are fine.": "Environ 20 comme plafond est une convention de coaching pour la récupération, pas une limite testée. Si votre objectif n’est pas le muscle, moins de séries suffisent.",
+        "New best": "Nouveau record",
+        "Previous": "Précédent",
+        "Gain": "Progrès",
+        "Total XP": "XP au total",
+        "Saga": "Saga",
+        "Leagues": "Lieues",
+        "Landmark": "Étape",
     },
 };
