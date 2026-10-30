@@ -15,8 +15,8 @@ Status: **Done** · **Check** (built, still needs a look on the iPhone or a smal
 | French version (v1.35–1.36) | A native French speaker using it for a few days |
 | Decimals in French text | Show "62,5 kg" instead of "62.5 kg" (typing a comma already works) |
 | Badge rarity ("Top 25%") | Estimated for now; switch to real numbers once there are enough users |
-| "Delete my data" | Deletes the data but not the login; a real account deletion needs a small server function |
-| Backup download | Exports one program's log; a full "Export all my data" is still missing |
+| Account deletion (v1.79) | Deploy supabase/functions/delete-account in the Supabase dashboard; until then the app falls back to deleting data only |
+| Privacy page (v1.79) | Add a contact email address |
 | Name "Odyr" | Formal trademark search before charging money |
 | Summary and share cards (v1.38) | Try them after a real workout on the iPhone |
 | Crews (v1.66) | Run supabase-crews-setup.sql in Supabase, then try a crew with a friend |
@@ -60,7 +60,6 @@ Status: **Done** · **Check** (built, still needs a look on the iPhone or a smal
 
 **Reliability and trust**
 - More automated checks as features are added (badges, steps sync, reminders)
-- Privacy policy
 - Move the data into proper tables if the saved log grows large
 
 **Native iPhone app (costs $99/year for an Apple Developer account)**
@@ -106,6 +105,7 @@ Status: **Done** · **Check** (built, still needs a look on the iPhone or a smal
 | 1.29 | 8-tier medals, trophy room, badge sheet, minting moment, signature and secret badges, "almost there" nudges |
 | 1.30–1.34 | Brand: Odyra, then Odyr; new icon; sign-in redesign; design carried across the app; thinker quotes |
 | 1.35–1.36 | French (whole app, reminders, quotes), Language setting, French review pass, decimal comma typing |
+| 1.79 | Trust basics: real account deletion (server function), Export all my data, privacy page in English and French |
 | 1.78 | Calm Today: the workout right after the journey and week strip, quests folded into one line, the coach tip only when it matters |
 | 1.77 | First five minutes: Our pick for you (one question, one program), first-workout quest, Add to Home Screen card, crew invite links |
 | 1.76 | Week strip in every lifting program (suggested days when a program has none); cardio days shown as optional, Rest instead of Walk; off days open on a rest-day card with optional cardio or lift anyway |

@@ -221,8 +221,10 @@ async function handlePasswordReset() {
     }
 }
 
+// Delete the whole account: the server function (supabase/functions/delete-account) removes the login, and every
+// table follows it. Until that function is deployed, fall back to deleting the saved data only, and say so.
 async function handleDeleteAccount() {
-    const confirmation = prompt('WARNING: This will permanently delete your body metrics and workout data for every program.\n\nType "DELETE" to confirm:');
+    const confirmation = prompt('This permanently deletes your account and everything in it.\n\nType "DELETE" to confirm:');
     if (confirmation !== 'DELETE') return;
 
     // Stop pending saves so they can't re-create the row after it's deleted
@@ -230,19 +232,44 @@ async function handleDeleteAccount() {
     savePending = false;
     await saveChain;
 
-    const { error } = await sb
-        .from('user_data')
-        .delete()
-        .eq('user_id', currentUser.id);
-
-    if (error) {
-        showSettingsError('Failed to delete data: ' + error.message);
+    const { data, error } = await sb.functions.invoke('delete-account', { body: {} });
+    if (!error && data && data.deleted) {
+        alert('Your account and all your data have been deleted.');
+        await signOutAndReset();
         return;
     }
 
-    // Deleting the login itself needs a server-side admin key, which can't live in this page
-    alert('Your workout data and profile have been deleted.\n\nYour login (email) still exists. Ask the app owner if you want it removed as well.');
+    if (!confirm('Deleting the account isn\'t available right now. Delete your workout data and profile instead? Your login would stay.')) return;
+    const { error: rowError } = await sb.from('user_data').delete().eq('user_id', currentUser.id);
+    if (rowError) {
+        showSettingsError('Failed to delete data: ' + rowError.message);
+        return;
+    }
+    alert('Your workout data and profile have been deleted. Your login (email) still exists.');
     await signOutAndReset();
+}
+
+// Everything Odyr holds about you, in one readable file
+function exportAllData() {
+    haptic();
+    const file = {
+        exported: new Date().toISOString(),
+        app: `Odyr ${APP_VERSION}`,
+        account: { email: currentUser ? currentUser.email : null, created: currentUser ? currentUser.created_at : null },
+        profile: userProfile,
+        programs: Object.fromEntries(Object.entries(allData).filter(([key]) => !key.startsWith('_'))),
+        activity: Object.fromEntries(Object.entries(allData).filter(([key]) => key.startsWith("_"))),
+        steps: stepData,
+    };
+    const blob = new Blob([JSON.stringify(file, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `odyr-my-data-${todayStr()}.json`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
 // Until a cardio level was picked by hand, it follows the goal chosen in the form

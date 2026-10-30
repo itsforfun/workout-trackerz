@@ -599,14 +599,16 @@
                     <button class="btn" onclick="openScience()">How the coach works</button>
                     <button class="btn" onclick="startTour()">Replay the walkthrough</button>
                     <button class="btn" onclick="openRecap()">Last week's recap</button>
+                    <a class="btn" href="privacy.html" target="_blank" rel="noopener">Privacy</a>
                 </div>
 
                 <!-- Backup -->
                 <div class="day-label" style="margin-bottom:24px; margin-top:48px;">
                     <span class="day-name" style="font-size:1.3rem;">Backup</span>
                 </div>
-                <p class="settings-note">Everything already syncs to the cloud. A backup file is an extra copy of this program's log you can keep or restore.</p>
+                <p class="settings-note">Everything already syncs to the cloud. A backup file is an extra copy of this program's log you can keep or restore. "Export all my data" is everything Odyr holds about you, in one file.</p>
                 <div class="settings-actions">
+                    <button class="btn" onclick="exportAllData()">Export all my data</button>
                     <button class="btn" onclick="saveData()">Download backup</button>
                     <button class="btn" onclick="openImport()">Restore from backup</button>
                 </div>
@@ -615,11 +617,10 @@
                 <div class="danger-zone">
                     <h3>Danger zone</h3>
                     <p style="font-size:0.7rem; color:var(--text-dim); margin-bottom:16px;">
-                        This permanently deletes your body metrics and the workout data for every program. It cannot be undone.
-                        Your login (email) is kept — ask the app owner if you want it removed too.
+                        This permanently deletes your account: your login, body data, every program's log, steps, reminders and crew membership. It cannot be undone. Export your data first if you want a copy.
                     </p>
                     <button class="btn btn-danger" onclick="handleDeleteAccount()" style="width:100%;">
-                        Delete my data
+                        Delete my account
                     </button>
                 </div>
                 <p class="app-version" id="appVersion"></p>

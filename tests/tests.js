@@ -991,6 +991,40 @@
         }
     });
 
+    await check('Trust: delete my account calls the server, falls back honestly; export holds everything', async () => {
+        const real = { invoke: sb.functions.invoke, prompt: window.prompt, alert: window.alert, confirm: window.confirm, signOut: sb.auth.signOut };
+        const calls = [];
+        try {
+            window.prompt = () => 'DELETE';
+            window.alert = () => {};
+            sb.auth.signOut = async () => ({ error: null });
+            sb.functions.invoke = async (name) => { calls.push(name); return { data: { deleted: true }, error: null }; };
+            await handleDeleteAccount();
+            equal(calls[0], 'delete-account', 'server function not called');
+            equal(currentUser, null, 'not signed out after deleting');
+            // Function not deployed: offer to delete the data only, and say the login stays
+            loadFixture();
+            let asked = '';
+            window.confirm = msg => { asked = msg; return false; };
+            sb.functions.invoke = async () => ({ data: null, error: { message: 'not found' } });
+            await handleDeleteAccount();
+            assert(/login would stay|connexion resterait/i.test(asked), 'fallback should say the login stays');
+            assert(currentUser, 'cancelling the fallback should keep you signed in');
+            // Export: one file with profile, programs, activity and steps
+            let blob = null;
+            const realCreate = URL.createObjectURL;
+            URL.createObjectURL = b => { blob = b; return 'blob:test'; };
+            try { exportAllData(); } finally { URL.createObjectURL = realCreate; }
+            const file = JSON.parse(await blob.text());
+            assert(file.profile && file.programs && file.activity && 'steps' in file && file.account.email, 'export is missing parts');
+            assert(Object.keys(file.programs).length, 'export has no program logs');
+        } finally {
+            sb.functions.invoke = real.invoke; window.prompt = real.prompt; window.alert = real.alert; window.confirm = real.confirm; sb.auth.signOut = real.signOut;
+            loadFixture();
+            showScreen('app');
+        }
+    });
+
     await check('Ticking a set shows the XP it earned', () => {
         const anchor = document.createElement('button');
         document.body.appendChild(anchor);

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Odyr · Privacy</title>
+<meta name="theme-color" content="#16120f">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+    @font-face { font-family:'Instrument Serif'; src:url('fonts/instrument-serif-latin.woff2') format('woff2'); font-display:swap; }
+    :root { --bg:#16120f; --text:#efe6d6; --dim:#b3a58f; --muted:#7f725f; --accent:#d9b25f; --line:rgba(240,232,216,0.1); }
+    * { box-sizing:border-box; margin:0; padding:0; }
+    body { background:radial-gradient(620px 420px at 50% 0%, rgba(217,178,95,0.08), transparent 70%), var(--bg); color:var(--text);
+        font-family:Inter, system-ui, sans-serif; line-height:1.6; padding:56px 20px 80px; -webkit-font-smoothing:antialiased; }
+    main { max-width:640px; margin:0 auto; }
+    .mark { display:block; width:44px; height:44px; margin:0 auto 18px; }
+    h1 { font-family:'Bebas Neue', sans-serif; font-weight:400; font-size:2.6rem; letter-spacing:0.12em; text-align:center; line-height:1; }
+    .lead { font-family:'Instrument Serif', Georgia, serif; font-size:1.3rem; color:var(--dim); text-align:center; margin:10px auto 6px; max-width:30ch; }
+    .updated { text-align:center; font-size:0.7rem; letter-spacing:0.16em; text-transform:uppercase; color:var(--muted); }
+    .langs { text-align:center; margin:22px 0 8px; font-size:0.85rem; }
+    .langs a { color:var(--accent); text-decoration:none; margin:0 8px; }
+    section { margin-top:40px; }
+    h2 { font-size:0.68rem; font-weight:600; letter-spacing:0.18em; text-transform:uppercase; color:var(--muted); margin:34px 0 10px;
+        display:flex; align-items:center; gap:10px; }
+    h2::before { content:''; width:6px; height:6px; border-radius:50%; background:var(--accent); }
+    p, li { font-size:0.95rem; color:var(--dim); }
+    p + p { margin-top:10px; }
+    ul { list-style:none; }
+    li { padding:10px 0; border-top:1px solid var(--line); }
+    li:first-child { border-top:none; }
+    strong { color:var(--text); font-weight:500; }
+    .divider { height:1px; background:var(--line); margin:64px 0 0; }
+    a.back { display:inline-block; margin-top:48px; color:var(--accent); text-decoration:none; font-size:0.9rem; }
+</style>
+</head>
+<body>
+<main>
+    <svg class="mark" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="22" fill="none" stroke="#d9b25f" stroke-width="3.2" stroke-linecap="round" stroke-dasharray="125 150" transform="rotate(-62 32 32)"/><circle cx="50.5" cy="19.5" r="3.3" fill="#f2d891"/></svg>
+    <h1>Privacy</h1>
+    <p class="lead">Your training is yours. Odyr keeps only what the app needs.</p>
+    <p class="updated">Updated 30 October 2026</p>
+    <p class="langs"><a href="#en">English</a> · <a href="#fr">Français</a></p>
+
+    <section id="en">
+        <h2>In short</h2>
+        <p>Odyr keeps your training data so the app works on any phone you sign in on. There are no ads, nothing is sold, and nothing tracks you across other apps or websites.</p>
+
+        <h2>What Odyr keeps</h2>
+        <ul>
+            <li><strong>Your account:</strong> your email address. Passwords are handled by our sign-in provider; Odyr never sees them.</li>
+            <li><strong>Your profile:</strong> what you enter: sex, age, weight, height, goal, cardio level, units and language, and the name you choose for a crew.</li>
+            <li><strong>Your training:</strong> workouts, sets, cardio sessions, daily habits, weigh-ins, quests, badges and your journey.</li>
+            <li><strong>Steps:</strong> only if you set up the Apple Health shortcut: daily steps and exercise minutes.</li>
+            <li><strong>Crews:</strong> if you join one, your crewmates see your crew name, the name you chose and this week's leagues and workouts. Nothing else.</li>
+            <li><strong>Notifications:</strong> if you turn them on, what's needed to send rest alerts and reminders to your phone.</li>
+            <li><strong>Odyr Pro waitlist:</strong> your answers, if you joined it.</li>
+            <li><strong>Error reports:</strong> when something breaks, a technical note (the error, app version, screen and browser) so it can be fixed.</li>
+        </ul>
+
+        <h2>Where it lives</h2>
+        <p>Your data is stored with Supabase, our database provider. The app itself is served by GitHub Pages; fonts come from Google Fonts and two code libraries from jsDelivr and cdnjs, which see your device's address when they load, like any website. Your phone also keeps an offline copy so the app works without a connection.</p>
+
+        <h2>Who sees it</h2>
+        <p>Only you. Crewmates see the little listed above. Odyr doesn't sell or share your data with anyone.</p>
+
+        <h2>Your choices</h2>
+        <ul>
+            <li><strong>Export:</strong> Settings → Backup → Export all my data gives you everything in one file.</li>
+            <li><strong>Delete:</strong> Settings → Danger zone → Delete my account removes your login and all your data straight away. If you started a crew, it passes to another member so your friends keep it.</li>
+        </ul>
+
+        <h2>Health</h2>
+        <p>Odyr is for training, not medical advice. The coach's rules are explained, with sources, in Settings → Help → How the coach works. Check with a professional before starting if you have a health condition. Odyr is not meant for children under 13.</p>
+
+        <h2>Changes</h2>
+        <p>If this page changes, the date at the top changes with it.</p>
+    </section>
+
+    <div class="divider"></div>
+
+    <section id="fr" lang="fr">
+        <h2>En bref</h2>
+        <p>Odyr conserve vos données d’entraînement pour que l’app fonctionne sur chaque téléphone où vous vous connectez. Pas de publicité, rien n’est vendu, et rien ne vous suit sur d’autres apps ou sites.</p>
+
+        <h2>Ce qu’Odyr conserve</h2>
+        <ul>
+            <li><strong>Votre compte :</strong> votre adresse e-mail. Les mots de passe sont gérés par notre service de connexion ; Odyr ne les voit jamais.</li>
+            <li><strong>Votre profil :</strong> ce que vous saisissez : sexe, âge, poids, taille, objectif, niveau de cardio, unités et langue, et le nom choisi pour un équipage.</li>
+            <li><strong>Votre entraînement :</strong> séances, séries, cardio, habitudes quotidiennes, pesées, quêtes, badges et votre voyage.</li>
+            <li><strong>Les pas :</strong> seulement si vous installez le raccourci Santé : pas et minutes d’exercice par jour.</li>
+            <li><strong>Équipages :</strong> si vous en rejoignez un, vos coéquipiers voient le nom de l’équipage, le nom que vous avez choisi et les lieues et séances de la semaine. Rien d’autre.</li>
+            <li><strong>Notifications :</strong> si vous les activez, ce qu’il faut pour envoyer alertes de repos et rappels à votre téléphone.</li>
+            <li><strong>Liste d’attente Odyr Pro :</strong> vos réponses, si vous l’avez rejointe.</li>
+            <li><strong>Rapports d’erreur :</strong> quand quelque chose casse, une note technique (l’erreur, la version, l’écran et le navigateur) pour la corriger.</li>
+        </ul>
+
+        <h2>Où elles sont stockées</h2>
+        <p>Vos données sont stockées chez Supabase, notre fournisseur de base de données. L’app est servie par GitHub Pages ; les polices viennent de Google Fonts et deux bibliothèques de code de jsDelivr et cdnjs, qui voient l’adresse de votre appareil au chargement, comme tout site web. Votre téléphone garde aussi une copie hors ligne pour que l’app fonctionne sans connexion.</p>
+
+        <h2>Qui les voit</h2>
+        <p>Vous seul·e. Vos coéquipiers voient le peu indiqué plus haut. Odyr ne vend ni ne partage vos données.</p>
+
+        <h2>Vos choix</h2>
+        <ul>
+            <li><strong>Exporter :</strong> Réglages → Sauvegarde → Exporter toutes mes données vous donne tout dans un seul fichier.</li>
+            <li><strong>Supprimer :</strong> Réglages → Zone de danger → Supprimer mon compte efface immédiatement votre connexion et toutes vos données. Si vous avez créé un équipage, il passe à un autre membre pour que vos amis le gardent.</li>
+        </ul>
+
+        <h2>Santé</h2>
+        <p>Odyr sert à s’entraîner, pas à donner un avis médical. Les règles du coach sont expliquées, sources à l’appui, dans Réglages → Aide → Comment fonctionne le coach. Consultez un professionnel avant de commencer si vous avez un problème de santé. Odyr n’est pas destiné aux enfants de moins de 13 ans.</p>
+
+        <h2>Modifications</h2>
+        <p>Si cette page change, la date en haut change aussi.</p>
+    </section>
+
+    <a class="back" href="./">← Back to Odyr</a>
+</main>
+</body>
+</html>
