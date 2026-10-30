@@ -107,6 +107,7 @@ Status: **Done** · **Check** (built, still needs a look on the iPhone or a smal
 | 1.29 | 8-tier medals, trophy room, badge sheet, minting moment, signature and secret badges, "almost there" nudges |
 | 1.30–1.34 | Brand: Odyra, then Odyr; new icon; sign-in redesign; design carried across the app; thinker quotes |
 | 1.35–1.36 | French (whole app, reminders, quotes), Language setting, French review pass, decimal comma typing |
+| 1.75 | Program descriptions rewritten to sell: the story behind each name, then what the training focuses on |
 | 1.74 | Skadi: women's 4-day glute-first program (knee-control warm-up, easy cardio days, max 5 lifts a session); warning when a set goes to failure on hip thrusts, RDLs or split squats |
 | 1.73 | Program menu split into Lifting and Cardio tabs, each numbered from 01 |
 | 1.72 | Program menu line now "The first step on any path is choosing it." (no repeated "Every") |

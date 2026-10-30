@@ -519,3 +519,7 @@ reference/debug-screenshots/  ← Supabase key page, "Script error" console, Git
 - Warm-up every session: banded lateral walk, glute bridge, single-leg balance, ankle wall stretch. The warm-up note keeps the spec's honesty rule: training helps knees that cave in during movement (dynamic valgus); it does not change bone alignment. Hourglass copy speaks of shoulder and back width, never waist reduction.
 - **`noFailure` exercise flag** (any program can use it): rating a set "Max" (0 reps in reserve) on such a lift shows "Keep 1–2 reps in reserve on …" (`rateSet`, js/coach.js). Set on Skadi's hip thrusts, Romanian deadlift and Bulgarian split squat.
 - The spec's progression (double progression, stall = same weight and reps twice, 10% back after a week off) matches the existing coach rules (`coachRules: true`); its escalation order (weight → rep → set → tempo → drop set/rest-pause on isolation only) lives in the exercise notes for now.
+
+## 54. Program descriptions that sell (v1.75, 2026-10-30)
+- Every program card's description follows one pattern: a line of story behind the name (Freyja claimed half the fallen for her hall; the Valkyries chose who was worthy; Skadi chose her husband by his feet; the horizon moves as you walk toward it), then what the training actually focuses on, read from the program's exercises, never a body result. About 35–45 words. French versions are written for French readers, not translated word for word.
+- When adding a program, write its description the same way.
