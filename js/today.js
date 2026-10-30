@@ -47,8 +47,38 @@ function getStreakStats() {
 const HERO_RING_RADII = [84, 63, 42];
 let heroStepsRequested = false;
 
+// The week for any lifting program: its own plan, or a suggested one from its number of days. The rotation stays
+// flexible (train on another day and the next session moves up); the plan only shapes the strip and rest days.
+// 0 = Sunday … 6 = Saturday; numbers are lifting days, 'cardio' = an off day with optional cardio, 'rest' = Sunday.
+const SUGGESTED_WEEKS = {
+    1: { 2: 0, 5: 0 },                         // 1–2 days: Tue, Fri
+    2: { 1: 0, 4: 1 },
+    3: { 1: 0, 3: 1, 5: 2 },                   // Mon, Wed, Fri
+    4: { 1: 0, 2: 1, 4: 2, 6: 3 },
+    5: { 1: 0, 2: 1, 3: 2, 4: 3, 5: 4 },
+    6: { 1: 0, 2: 1, 3: 2, 4: 3, 5: 4, 6: 5 },
+};
+
+function weekPlanOf(prog = PROGRAMS[currentProgram]) {
+    if (!prog || isCardioProgram(prog)) return null;
+    if (prog.weekPlan) return prog.weekPlan;
+    const lifts = SUGGESTED_WEEKS[Math.min(6, prog.days.length)] || SUGGESTED_WEEKS[3];
+    const plan = {};
+    for (let d = 0; d < 7; d++) plan[d] = d in lifts ? lifts[d] : d === 0 ? 'rest' : 'cardio';
+    return plan;
+}
+
+// "Push", "A", "Glutes": short enough for the week strip
+function dayShortLabel(prog, index) {
+    if (prog.days.length === 1) return 'Lift';
+    const name = prog.days[index];
+    const letter = name.match(/^(?:Workout|Day)\s+([A-Z])\b/);
+    return letter ? letter[1] : name.split(/[\s·]+/)[0];
+}
+
 function weeklyLiftTarget(prog) {
-    if (prog.weekPlan) return Object.values(prog.weekPlan).filter(p => typeof p === 'number').length;
+    const plan = weekPlanOf(prog);
+    if (plan) return Object.values(plan).filter(p => typeof p === 'number').length;
     return prog.days.length === 1 ? 2 : prog.days.length;
 }
 
@@ -148,12 +178,15 @@ function renderToday() {
 
     // Cardio and rest days of a week plan show cardio zones instead of the lifting days; on any other day
     // (and in every program) the Cardio card opens the same zones and science (todayMode 'cardio')
-    const plan = prog.weekPlan ? prog.weekPlan[new Date().getDay()] : null;
+    // Lifting programs: an off day opens on a short rest-day card (optional cardio, or lift anyway)
+    const plan = (weekPlanOf(prog) || {})[new Date().getDay()];
     const offDay = plan === 'cardio' || plan === 'rest' ? plan : null;
-    const view = todayMode === 'cardio' ? 'cardio' : offDay;
-    renderCardioView(view, todayMode === 'lift', todayMode === 'cardio');
-    document.getElementById('liftView').style.display = view && todayMode !== 'lift' ? 'none' : '';
-    renderCardioEntry(!view || todayMode === 'lift');
+    const cardioOpen = todayMode === 'cardio';
+    const restDay = offDay && !todayMode;
+    renderCardioView(cardioOpen ? 'cardio' : null, false, cardioOpen);
+    renderRestDay(offDay, todayMode === 'lift');
+    document.getElementById('liftView').style.display = cardioOpen || restDay ? 'none' : '';
+    renderCardioEntry(!cardioOpen && !restDay);
 
     document.getElementById('dayStrip').innerHTML = prog.days.map((name, i) => `
         <button class="day-tab${i === todayDay ? ' active' : ''}" onclick="selectTodayDay(${i})">
@@ -240,7 +273,8 @@ const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 function renderWeekPlan() {
     const el = document.getElementById('weekPlan');
     const prog = PROGRAMS[currentProgram];
-    if (!prog.weekPlan) {
+    const weekPlan = weekPlanOf(prog);
+    if (!weekPlan) {
         el.innerHTML = '';
         return;
     }
@@ -249,17 +283,21 @@ function renderWeekPlan() {
     const sessions = programSessions();
     const days = [1, 2, 3, 4, 5, 6, 0].map((weekday, i) => {
         const date = addDays(monday, i);
-        const plan = prog.weekPlan[weekday];
-        const label = typeof plan === 'number' ? prog.days[plan].split(' ')[0] : plan === 'cardio' ? 'Cardio' : 'Walk';
+        const plan = weekPlan[weekday];
+        // Off days: optional cardio when cardio is on (dashed), otherwise rest; steps are a daily habit, not a day
+        const cardio = plan === 'cardio' && cardioTarget() > 0;
+        const label = typeof plan === 'number' ? dayShortLabel(prog, plan) : cardio ? 'Cardio' : 'Rest';
         const done = sessions.some(s => s.date === date && (s.type === 'workout' || s.type === 'cardio'));
         return `
-            <div class="wp-day${date === today ? ' today' : ''}${done ? ' done' : ''}${typeof plan === 'number' ? ' lift' : ''}">
+            <div class="wp-day${date === today ? ' today' : ''}${done ? ' done' : ''}${typeof plan === 'number' ? ' lift' : cardio ? ' optional' : ' rest'}">
                 <span class="wp-name">${WEEKDAYS[weekday]}</span>
                 <span class="wp-label">${escapeHtml(label)}</span>
             </div>`;
     }).join('');
 
-    el.innerHTML = `<div class="week-plan">${days}</div>`;
+    // Dashed days are explained once, under the strip
+    const optional = cardioTarget() > 0 && Object.values(weekPlan).includes('cardio');
+    el.innerHTML = `<div class="week-plan">${days}</div>${optional ? '<p class="wp-legend"><span></span>Cardio days are optional</p>' : ''}`;
 }
 
 // Warm-up for the selected day, plus the effort and pain rules
@@ -471,6 +509,35 @@ function setTodayMode(mode) {
     window.scrollTo(0, 0);
 }
 
+// An off day in a lifting program: recovery first, cardio optional, lifting one tap away
+function renderRestDay(offDay, showingLift) {
+    const el = document.getElementById('restDay');
+    if (!offDay) {
+        el.innerHTML = '';
+        return;
+    }
+    if (showingLift) {
+        el.innerHTML = '<button class="back-link" onclick="setTodayMode(null)">← Back to rest day</button>';
+        return;
+    }
+    const cardio = offDay === 'cardio' && cardioTarget() > 0;
+    const z = CARDIO_ZONES.find(c => c.zone === 2);
+    const hr = estimatedMaxHr();
+    const missed = missedLiftDay();
+    el.innerHTML = `
+        <div class="rest-day">
+            <div class="kicker">${cardio ? 'Rest day · cardio optional' : 'Rest day'}</div>
+            <h2>Recover</h2>
+            <p>Recovery is where the training takes hold. Your steps and habits still count today.</p>
+            ${cardio ? `<p class="rest-cardio">Feel like moving? Easy Zone 2 cardio helps recovery: <strong>${Math.round(hr * z.pct[0] / 100)}–${Math.round(hr * z.pct[1] / 100)} bpm</strong>, 20–40 min.</p>` : ''}
+            ${missed ? `<div class="coach-card compact"><div class="coach-kicker">Catch up</div><p>You missed a lifting day this week. ${escapeHtml(missed)} fits in today.</p></div>` : ''}
+            <div class="rest-actions">
+                ${cardio ? '<button class="btn" onclick="setTodayMode(\'cardio\')">Optional cardio</button>' : ''}
+                <button class="btn${missed ? ' btn-primary' : ''}" onclick="setTodayMode('lift')">${missed ? 'Lift today' : 'Lift anyway'}</button>
+            </div>
+        </div>`;
+}
+
 // Every program: this week's cardio and a way into the zones, below the habits
 function renderCardioEntry(show) {
     const el = document.getElementById('cardioEntry');
@@ -534,7 +601,7 @@ function renderCardioView(plan, showingLift, chosen = false) {
 
     el.innerHTML = `
         <div class="cardio-head">
-            ${chosen ? '<button class="back-link top" onclick="setTodayMode(null)">← Back to lifting</button>' : ''}
+            ${chosen ? '<button class="back-link top" onclick="setTodayMode(null)">← Back</button>' : ''}
             <div class="kicker">${chosen ? 'Cardio' : plan === 'cardio' ? 'Cardio day' : 'Recovery day'}</div>
             <h2>Zone ${rec.zone} <span>${escapeHtml(rec.name)}</span></h2>
             <div class="cardio-target"><strong>${bpm(rec)}</strong> bpm · ${escapeHtml(rec.sessions[0][2])}</div>

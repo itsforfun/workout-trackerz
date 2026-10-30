@@ -2018,3 +2018,18 @@ button.hero-score:active { opacity:0.7; }
 
 /* ── Program menu: Lifting | Cardio (v1.73) ── */
 .program-kinds { max-width:320px; margin:var(--s2) auto var(--s4); }
+
+/* ── Week strip in every lifting program: optional cardio, rest days, rest-day card (v1.76) ── */
+.wp-day.optional { background:transparent; border-style:dashed; border-color:rgba(240,232,216,0.16); }
+.wp-day.optional .wp-label { color:var(--text-dim); font-weight:500; }
+.wp-day.rest { background:transparent; border-color:transparent; }
+.wp-day.rest .wp-label { color:var(--text-muted); font-weight:500; }
+.wp-day.today.optional, .wp-day.today.rest { border-color:rgba(217,178,95,0.6); }
+.wp-legend { display:flex; align-items:center; gap:6px; margin:-4px 0 var(--s3); font-size:0.7rem; color:var(--text-muted); }
+.wp-legend span { width:14px; height:10px; border:1px dashed rgba(240,232,216,0.3); border-radius:3px; }
+.rest-day { margin:var(--s2) 0 var(--s4); }
+.rest-day h2 { font-family:var(--font-display); font-size:2.8rem; letter-spacing:0.04em; line-height:1; margin:4px 0 var(--s2); }
+.rest-day p { font-size:0.9rem; line-height:1.55; color:var(--text-dim); margin-bottom:var(--s2); }
+.rest-day .rest-cardio strong { color:var(--text); font-weight:500; }
+.rest-actions { display:flex; gap:var(--s2); margin-top:var(--s3); }
+.rest-actions .btn { flex:1; padding:14px; }

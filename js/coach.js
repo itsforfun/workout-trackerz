@@ -183,12 +183,13 @@ function lighterKg(ex, kg, factor) {
 // ── Catch-up: on a cardio or rest day, offer the lifting day missed earlier this week ──
 function missedLiftDay() {
     const prog = PROGRAMS[currentProgram];
-    if (!prog.weekPlan) return null;
+    const weekPlan = weekPlanOf(prog);
+    if (!weekPlan) return null;
     const monday = mondayOf(todayStr());
     const done = allWorkoutDates().filter(d => d >= monday).length;
     const planned = [];
     for (let date = monday; date < todayStr(); date = addDays(date, 1)) {
-        const plan = prog.weekPlan[parseDate(date).getDay()];
+        const plan = weekPlan[parseDate(date).getDay()];
         if (typeof plan === 'number') planned.push(plan);
     }
     return planned.length > done ? prog.days[getNextDay()] : null;
@@ -508,8 +509,11 @@ function coachInsight() {
         if (gain >= 0.1 && (!best || gain > best.gain)) best = { ex, gain };
     });
     const cardio = cardioWeek().moderate;
-    if (cardioTarget() && weekday >= 4 && cardio < cardioTarget() / 2) {
-        return { key: 'cardio', icon: 'cardio', text: `Cardio is at ${cardio} of ${cardioTarget()} minutes this week. A 30-minute Zone 2 session today makes a real dent.` };
+    // Talk about this week's cardio quest when there is one, so the tip and the quest never disagree
+    const cardioQuest = ((metaFor('_quests')[mondayOf(todayStr())] || {}).list || []).find(q => q.kind === 'cardio');
+    const cardioGoal = cardioQuest ? cardioQuest.target : cardioTarget();
+    if (cardioGoal && weekday >= 4 && cardio < cardioGoal / 2) {
+        return { key: 'cardio', icon: 'cardio', text: `Cardio is at ${cardio} of ${cardioGoal} minutes this week. A 30-minute Zone 2 session today makes a real dent.` };
     }
     if (Object.keys(stepData).length) {
         const avg = Array.from({ length: 7 }, (_, i) => stepsOn(addDays(today, -i))).reduce((a, b) => a + b, 0) / 7;
@@ -564,7 +568,7 @@ function tourSteps() {
         { target: '.hero-score', title: 'Consistency score', text: 'Your last 7 days in one number, from 0 to 100. Steady beats perfect.' },
         lifting
             ? { target: '#startWorkoutBtn', title: 'Start here', text: 'Today\'s session. Weights are filled in for you, and records and badges unlock as you go.' }
-            : { target: '#cardioView', title: 'Cardio day', text: 'Pick a session in your zone and log it. Lifting is one tap away if you prefer.' },
+            : { target: '#restDay', title: 'Rest day', text: 'Recovery comes first. Cardio is optional, and lifting is one tap away.' },
         { target: '#todayHero .hl-open', title: 'Steps', text: 'Tap Steps for your daily steps from Apple Health, with a one-time setup.' },
         { target: '#habitsCard', title: 'Daily habits', text: 'Set by your goal in Settings. Fat loss or muscle comes from these, whatever program you follow.' },
         { target: '.bottom-nav > .tab-btn[onclick="switchTab(\'progress\')"]', title: 'Progress', text: 'Your level, badges, strength over time and a chart for every lift.' },

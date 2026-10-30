@@ -523,3 +523,9 @@ reference/debug-screenshots/  ← Supabase key page, "Script error" console, Git
 ## 54. Program descriptions that sell (v1.75, 2026-10-30)
 - Every program card's description follows one pattern: a line of story behind the name (Freyja claimed half the fallen for her hall; the Valkyries chose who was worthy; Skadi chose her husband by his feet; the horizon moves as you walk toward it), then what the training actually focuses on, read from the program's exercises, never a body result. About 35–45 words. French versions are written for French readers, not translated word for word.
 - When adding a program, write its description the same way.
+
+## 55. Week strip in every lifting program; cardio optional (v1.76, 2026-10-30)
+- `weekPlanOf(prog)` (js/today.js): a program's own `weekPlan`, or a suggested week from its number of days (`SUGGESTED_WEEKS`: 1–2 days Tue/Fri, 3 days Mon/Wed/Fri, 4 days Mon/Tue/Thu/Sat …; other weekdays 'cardio', Sunday 'rest'). Cardio programs have none. Used by the week strip, `weeklyLiftTarget`, off days and the catch-up offer (`missedLiftDay`). Reminders still follow only programs with their own `weekPlan`. The rotation stays flexible: the plan only shapes the strip and off days.
+- **Strip:** lifting days show a short label (`dayShortLabel`: Push, A, Glutes; "Lift" for one-day programs); off days show "Cardio" in a dashed, quieter style when cardio is on, else "Rest"; "Walk" is gone (steps are a daily habit). One line under the strip: "Cardio days are optional".
+- **Off days** open on a rest-day card (`renderRestDay`, `#restDay`): "Recover", recovery first, your Zone 2 bpm if cardio is on, the catch-up offer, and buttons Optional cardio (zones + science, `todayMode = 'cardio'`) and Lift anyway / Lift today. The Cardio card on lifting days still opens the same zones.
+- The coach's cardio tip uses this week's cardio quest target when there is one, so the tip and the quest never disagree.

@@ -640,7 +640,7 @@
                 switchTab('today');
                 assert(document.querySelectorAll('#habitsCard .mobility-item').length === 6, `${id}: no daily habits`);
                 const entry = document.querySelector('#cardioEntry .cardio-entry');
-                const weekPlanOffDay = PROGRAMS[id].weekPlan && ['cardio', 'rest'].includes(PROGRAMS[id].weekPlan[new Date().getDay()]);
+                const weekPlanOffDay = weekPlanOf(PROGRAMS[id]) && ['cardio', 'rest'].includes(weekPlanOf(PROGRAMS[id])[new Date().getDay()]);
                 if (weekPlanOffDay) return;   // the cardio view is already on screen
                 assert(entry, `${id}: no cardio card`);
                 entry.click();
@@ -907,6 +907,39 @@
             activeWorkout = null;
             try { localStorage.removeItem(activeWorkoutKey()); } catch (e) { /* private mode */ }
             selectProgram(saved);
+        }
+    });
+
+    await check('Every lifting program has a week strip; off days are optional cardio or rest, never Walk', () => {
+        const saved = { program: currentProgram, profile: userProfile };
+        try {
+            ['male', 'female', 'maleTotalBody', 'femaleTotalBody', 'fullBody3', 'skadi'].forEach(id => {
+                selectProgram(id);
+                const plan = weekPlanOf(PROGRAMS[id]);
+                assert(plan, `${id}: no week plan`);
+                equal(Object.values(plan).filter(p => typeof p === 'number').length, weeklyLiftTarget(PROGRAMS[id]), `${id}: lifting days`);
+                renderWeekPlan();
+                const strip = document.getElementById('weekPlan').textContent;
+                equal(document.querySelectorAll('#weekPlan .wp-day').length, 7, `${id}: seven days`);
+                assert(!/Walk/.test(strip), `${id}: still says Walk`);
+            });
+            assert(!weekPlanOf(PROGRAMS.horizon), 'cardio programs have no lifting week');
+            // The rest-day card: cardio offered only when cardio is on
+            userProfile = { ...saved.profile, cardio: 'standard' };
+            renderRestDay('cardio', false);
+            assert(/Optional cardio|Cardio facultatif/.test(document.getElementById('restDay').textContent), 'no optional cardio on a cardio day');
+            document.querySelector('#restDay .rest-actions .btn').click();
+            equal(todayMode, 'cardio', 'optional cardio did not open the zones');
+            todayMode = null;
+            userProfile = { ...saved.profile, cardio: 'off' };
+            renderRestDay('cardio', false);
+            assert(!/Optional cardio|Cardio facultatif/.test(document.getElementById('restDay').textContent), 'cardio Off still offers cardio');
+            renderWeekPlan();
+            assert(!document.querySelector('#weekPlan .wp-day.optional'), 'cardio Off still shows optional cardio days');
+        } finally {
+            todayMode = null;
+            userProfile = saved.profile;
+            selectProgram(saved.program);
         }
     });
 
