@@ -356,6 +356,15 @@ const COACH_SCIENCE = [
         ],
     },
     {
+        title: 'When a lift stalls',
+        rule: 'A stall is the same weight and the same best set two sessions running. Each time it repeats, the coach climbs one step: +1 rep, then +1 set, then a slower tempo, then (isolation and machine lifts only) a drop set on the last set, and only then a reset about 10% lighter.',
+        why: 'Progression can come from load, reps, sets or time under tension. Trying the cheapest change first keeps recovery intact; drop sets go last and only on small lifts, because taken to failure the big lifts cost more recovery than they return.',
+        note: 'The order is a coaching convention (it follows the partner program spec), not something a single study ranks. A session without a weight jump is not a stall: at an intermediate stage, load goes up about weekly.',
+        refs: [
+            ['American College of Sports Medicine. Med Sci Sports Exerc. 2009;41(3):687–708.', 'American College of Sports Medicine position stand. Progression models in resistance training for healthy adults'],
+        ],
+    },
+    {
         title: 'Rating each set: Easy, Good, Hard, Max',
         rule: 'Each rating is "reps left in the tank": Easy ≈ 4+, Good ≈ 2–3, Hard ≈ 1, Max = 0.',
         why: 'The reps-in-reserve scale is a practical, studied way to rate effort in strength training. Going all the way to failure is not needed: a meta-analysis found no clear advantage for training to failure over stopping a little short, so the coach aims for sets that are hard but not all-out, and adjusts when they are clearly too easy or too hard.',
@@ -488,9 +497,11 @@ function coachInsight() {
     const stats = getStreakStats();
     const name = ex => exerciseDisplayName(ex, getCurrentWeek());
 
-    const stalled = prog.exercises.find(ex => !ex.assist && isStalled(ex.id));
+    // A lift stuck for 3+ sessions: say the ladder's next step for it
+    const stalled = prog.exercises.find(ex => !ex.assist && stallLength(ex.id) >= 3);
     if (stalled) {
-        return { key: `stall-${stalled.id}`, icon: 'record', text: `${name(stalled)} has stalled for 3 weeks. Next time drop the weight about 10% and build back up over two sessions.` };
+        const step = getProgression(stalled);
+        return { key: `stall-${stalled.id}-${stallLength(stalled.id)}`, icon: 'record', text: `${name(stalled)} is stuck. ${step ? step.text : ''}`.trim() };
     }
     const daysOff = daysSinceLastWorkout();
     if (daysOff !== null && daysOff >= 5) {

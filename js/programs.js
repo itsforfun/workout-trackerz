@@ -413,14 +413,68 @@ function getProgression(ex) {
         return { type: 'kg', label: `+${formatNum(step)}${unitShort}`, kg: next, reps: p.repMin,
             text: `Every set felt easy: go up to ${formatSetWeight(ex, next)}` };
     }
-    // Same weight three sessions running → hold it and chase one more rep
-    if (isStalled(ex.id)) {
-        return { type: 'reps', label: 'stall', kg: topKg, reps: Math.min(Math.max(...reps) + 1, p.repMax || 99),
-            text: `Same weight 3 sessions running — hold ${formatSetWeight(ex, topKg)} and chase +1 rep` };
-    }
+    // Stuck: the escalation ladder, one rung per stalled session, never skipping ahead
+    const stalled = stallLength(ex.id);
+    if (stalled >= 2) return stallStep(ex, stalled, topKg, Math.max(...reps), p);
     const best = Math.max(...reps);
     return { type: 'reps', label: 'reps', kg: topKg, reps: p.repMax || best + 1,
         text: p.repMax ? `Same weight, push for ${p.repMax} reps` : `Beat last time: ${best} reps` };
+}
+
+// ── Stall ladder (from Skadi's spec, for every program) ──
+// A stall is the same top weight AND the same best-set reps on consecutive sessions (a session without a weight
+// jump is not a stall: at this stage load goes up about weekly). Each further stalled session climbs one rung:
+//   2 → hold the weight, chase +1 rep · 3 → add a set · 4 → slow the tempo (3 s down, 1 s pause)
+//   5 → isolation/machine lifts only: drop set on the last set · then → reset ~10% lighter and rebuild
+function stallLength(exId) {
+    const weeks = progData()[exId] || {};
+    let first = null;
+    let n = 0;
+    for (let w = WEEKS - 1; w >= 0; w--) {
+        const sets = (entrySets(weeks[w]) || []).filter(s => parseInt(s.reps) > 0);
+        if (!sets.length || weeks[w].deload) continue;
+        const key = `${Math.max(...sets.map(s => parseFloat(s.kg) || 0))}|${Math.max(...sets.map(s => parseInt(s.reps)))}`;
+        if (first === null) first = key;
+        if (key !== first) break;
+        n++;
+    }
+    return n;
+}
+
+// Big multi-joint lifts never get drop sets; the guide's movement tells them apart
+const COMPOUND_MOVES = ['squatBar', 'squat', 'hinge', 'bridge', 'press', 'incline', 'vpress', 'row', 'pulldown', 'vpull', 'lunge', 'legpress', 'stepup', 'dip', 'pushup'];
+function isCompound(ex) {
+    const name = ex.name.toLowerCase();
+    const rule = typeof GUIDE_RULES !== 'undefined' && GUIDE_RULES.find(([re]) => re.test(name));
+    return !!(rule && COMPOUND_MOVES.includes(rule[1]));
+}
+
+function stallStep(ex, stalled, topKg, bestReps, p) {
+    const at = formatSetWeight(ex, topKg);
+    const sessions = `${stalled} sessions at ${at}`;
+    if (stalled === 2) {
+        return { type: 'reps', label: '+1 rep', kg: topKg, reps: Math.min(bestReps + 1, p.repMax || 99),
+            text: `${sessions}: hold the weight and chase one more rep` };
+    }
+    if (stalled === 3) {
+        return { type: 'sets', label: '+1 set', kg: topKg, reps: p.repMin || bestReps, extraSet: true,
+            text: `${sessions}: add one set today, same weight` };
+    }
+    if (stalled === 4) {
+        return { type: 'reps', label: 'tempo', kg: topKg, reps: p.repMin || bestReps,
+            text: `${sessions}: slow it down: 3 seconds down, 1 second pause, same weight` };
+    }
+    if (stalled === 5 && !isCompound(ex) && !ex.noFailure && !isRepsBased(ex)) {
+        return { type: 'reps', label: 'drop set', kg: topKg, reps: p.repMin || bestReps,
+            text: `${sessions}: on the last set only, go to failure, cut the weight by about 30% and keep going` };
+    }
+    // Reset about 10% lighter (a whole number of steps) and build back up
+    const inc = incrementKg(ex);
+    const lighter = isRepsBased(ex) || ex.assist ? topKg : Math.max(inc, Math.round(topKg * 0.9 / inc) * inc);
+    return { type: 'retry', label: 'reset', kg: lighter, reps: p.repMax || bestReps,
+        text: isRepsBased(ex) || ex.assist
+            ? `${sessions}: take an easier week on this one, then build back up`
+            : `${sessions}: reset to ${formatSetWeight(ex, lighter)} and build back up over two sessions` };
 }
 
 // True when the last three logged sessions all used the same top weight

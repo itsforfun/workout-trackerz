@@ -64,12 +64,12 @@
         assert(prog.kg < 26, 'weight goes down');
     });
 
-    await check('Same weight three sessions running → stall rule', () => {
+    await check('Same weight and reps three sessions running → the stall ladder adds a set', () => {
         const e = ex('incline-db-press');
         const p = getPrescription(e);
         const mid = Math.max(p.repMin, p.repMax - 2);
         allData.fullBody3[e.id] = Object.fromEntries([0, 1, 2].map(w => [w, { kg: '26', date: todayStr(), sets: Array(p.sets).fill(0).map(() => ({ kg: '26', reps: String(mid) })) }]));
-        equal(getProgression(e).label, 'stall', 'progression label');
+        equal(getProgression(e).label, '+1 set', 'progression label');
     });
 
     // ── Data ──
@@ -1044,6 +1044,40 @@
         assert(journalRead().has(0), 'page not marked as read');
         equal(journalUnreadCount(), unlocked - 1, 'unread count');
         closeOdyssey();
+    });
+
+    await check('Stall ladder: +1 rep, +1 set, tempo, drop set on isolation only, then a reset', () => {
+        const prog = PROGRAMS[currentProgram];
+        const iso = prog.exercises.find(e => e.thresholds && !isRepsBased(e) && !isCompound(e) && !e.noFailure && getPrescription(e).repMax);
+        const big = prog.exercises.find(e => e.thresholds && !isRepsBased(e) && isCompound(e) && getPrescription(e).repMax);
+        assert(iso && big, 'need an isolation and a compound lift');
+        const stall = (ex, n) => {
+            const p = getPrescription(ex);
+            const weeks = {};
+            for (let w = 0; w < n; w++) weeks[w] = { kg: '20', sets: Array.from({ length: p.sets }, () => ({ kg: '20', reps: String(p.repMin) })), date: addDays(todayStr(), -7 * (n - w)) };
+            progData()[ex.id] = weeks;
+            return getProgression(ex);
+        };
+        equal(stall(iso, 1).label, 'reps', 'one session is not a stall');
+        equal(stall(iso, 2).label, '+1 rep', 'second session at the same weight and reps');
+        const addSet = stall(iso, 3);
+        equal(addSet.label, '+1 set', 'third: add a set');
+        assert(addSet.extraSet, 'add-a-set step not flagged');
+        equal(stall(iso, 4).label, 'tempo', 'fourth: slower tempo');
+        equal(stall(iso, 5).label, 'drop set', 'fifth: drop set on an isolation lift');
+        equal(stall(big, 5).label, 'reset', 'a compound lift never gets a drop set');
+        const reset = stall(iso, 6);
+        equal(reset.label, 'reset', 'then a reset');
+        assert(reset.kg < 20 && reset.kg >= 17, `reset weight ${reset.kg}`);
+        // "+1 set" really adds a row to the workout
+        stall(iso, 3);
+        todayDay = iso.day;
+        activeWorkout = null;
+        beginWorkout(null);
+        equal(activeWorkout.rows[iso.id].length, getPrescription(iso).sets + 1, 'extra set not added');
+        activeWorkout = null;
+        try { localStorage.removeItem(activeWorkoutKey()); } catch (e) { /* private mode */ }
+        showScreen('app');
     });
 
     await check('Ticking a set shows the XP it earned', () => {

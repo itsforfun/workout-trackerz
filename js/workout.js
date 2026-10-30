@@ -47,7 +47,8 @@ function beginWorkout(readiness) {
     prog.exercises.filter(ex => ex.day === todayDay).forEach(ex => {
         const prefill = workoutPrefill(ex);
         const kg = factor < 1 ? lighterKg(ex, prefill.kg, factor) : prefill.kg;
-        const planned = getPrescription(ex).sets;
+        const extra = (getProgression(ex) || {}).extraSet ? 1 : 0;   // the stall ladder's "add a set"
+        const planned = getPrescription(ex).sets + extra;
         const sets = deloading ? Math.max(2, Math.round(planned * 0.6)) : low ? Math.max(2, planned - 1) : planned;
         rows[ex.id] = Array.from({ length: sets }, () => ({ kg, reps: '', target: prefill.target, done: false }));
     });

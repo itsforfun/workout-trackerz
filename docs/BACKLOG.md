@@ -16,7 +16,7 @@ Status: **Done** · **Check** (built, still needs a look on the iPhone or a smal
 | Decimals in French text | Show "62,5 kg" instead of "62.5 kg" (typing a comma already works) |
 | Badge rarity ("Top 25%") | Estimated for now; switch to real numbers once there are enough users |
 | Account deletion (v1.79) | Deploy supabase/functions/delete-account in the Supabase dashboard; until then the app falls back to deleting data only |
-| Privacy page (v1.79) | Add a contact email address |
+| Privacy page (v1.79) | Add a contact email address. Parked 2026-10-30: odyr.com is for sale on Afternic (premium), odyr.app is taken; getodyr.com / odyrapp.com / odyr.fit / odyr.io looked free. Plan: buy one at Cloudflare (~$10/yr) and forward hello@ to Gmail with Cloudflare Email Routing, or use a free odyr.app@gmail.com for now |
 | Name "Odyr" | Formal trademark search before charging money |
 | Summary and share cards (v1.38) | Try them after a real workout on the iPhone |
 | Crews (v1.66) | Run supabase-crews-setup.sql in Supabase, then try a crew with a friend |
@@ -69,7 +69,7 @@ Status: **Done** · **Check** (built, still needs a look on the iPhone or a smal
 
 **Other**
 - Odyr's Journal: new chapters for Saga II and beyond; a recorded narrator if people read the entries (2026-10-30)
-- Skadi follow-ups from the spec: suggest the escalation order (weight → rep → set → tempo → drop set) when a lift stalls; weekly glute-volume rollup (owner's partner spec, 2026-10-30)
+- Skadi follow-up from the spec: weekly glute-volume rollup (owner's partner spec, 2026-10-30)
 - For women, later: optional cycle tracking that informs readiness and deloads; a female figure in the exercise demos (suggested 2026-10-30)
 - Progress photos and body measurements, kept private
 - Own web address (for example odyr.app)
@@ -106,6 +106,7 @@ Status: **Done** · **Check** (built, still needs a look on the iPhone or a smal
 | 1.29 | 8-tier medals, trophy room, badge sheet, minting moment, signature and secret badges, "almost there" nudges |
 | 1.30–1.34 | Brand: Odyra, then Odyr; new icon; sign-in redesign; design carried across the app; thinker quotes |
 | 1.35–1.36 | French (whole app, reminders, quotes), Language setting, French review pass, decimal comma typing |
+| 1.81 | Stall ladder for every program: +1 rep, +1 set, slower tempo, drop set (isolation only), then a reset |
 | 1.80 | Odyr's Journal: a short story in Odyr's voice at every landmark, revealed line by line, read aloud by the phone's voice |
 | 1.79 | Trust basics: real account deletion (server function), Export all my data, privacy page in English and French |
 | 1.78 | Calm Today: the workout right after the journey and week strip, quests folded into one line, the coach tip only when it matters |
