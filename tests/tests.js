@@ -1025,6 +1025,27 @@
         }
     });
 
+    await check("Odyr's journal: a page per landmark reached, read line by line, marked as read", () => {
+        equal(JOURNAL.length, LANDMARKS.length, 'one page per landmark');
+        JOURNAL.forEach((t, i) => assert(t.split(/\s+/).length <= 95, `page ${i + 1} is too long`));
+        delete allData._journalRead;
+        const unlocked = journalUnlocked();
+        equal(unlocked, Math.min(JOURNAL.length, journey().stop + 1), 'pages unlocked by landmarks');
+        showScreen('app');
+        switchTab('today');
+        assert(/journal/i.test(document.getElementById('sagaCard').textContent), 'no new-page note on the saga card');
+        openOdyssey();
+        equal(document.querySelectorAll('#odysseyBody .journal-page:not(.sealed)').length, unlocked, 'unlocked pages listed');
+        equal(document.querySelectorAll('#odysseyBody .journal-page.sealed').length, JOURNAL.length - unlocked, 'sealed pages listed');
+        document.querySelector('#odysseyBody .journal-page:not(.sealed)').click();
+        assert(document.getElementById('journalModal').classList.contains('active'), 'page did not open');
+        assert(document.querySelectorAll('#journalBody .journal-text span').length > 2, 'text not split into lines');
+        closeJournal();
+        assert(journalRead().has(0), 'page not marked as read');
+        equal(journalUnreadCount(), unlocked - 1, 'unread count');
+        closeOdyssey();
+    });
+
     await check('Ticking a set shows the XP it earned', () => {
         const anchor = document.createElement('button');
         document.body.appendChild(anchor);

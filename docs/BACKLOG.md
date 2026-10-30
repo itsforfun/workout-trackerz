@@ -68,6 +68,7 @@ Status: **Done** · **Check** (built, still needs a look on the iPhone or a smal
 - Home-screen widgets (rings, streak), Live Activity for a ticking rest countdown on the lock screen (owner asked for it, 2026-10-29), Apple Watch app
 
 **Other**
+- Odyr's Journal: new chapters for Saga II and beyond; a recorded narrator if people read the entries (2026-10-30)
 - Skadi follow-ups from the spec: suggest the escalation order (weight → rep → set → tempo → drop set) when a lift stalls; weekly glute-volume rollup (owner's partner spec, 2026-10-30)
 - For women, later: optional cycle tracking that informs readiness and deloads; a female figure in the exercise demos (suggested 2026-10-30)
 - Progress photos and body measurements, kept private
@@ -105,6 +106,7 @@ Status: **Done** · **Check** (built, still needs a look on the iPhone or a smal
 | 1.29 | 8-tier medals, trophy room, badge sheet, minting moment, signature and secret badges, "almost there" nudges |
 | 1.30–1.34 | Brand: Odyra, then Odyr; new icon; sign-in redesign; design carried across the app; thinker quotes |
 | 1.35–1.36 | French (whole app, reminders, quotes), Language setting, French review pass, decimal comma typing |
+| 1.80 | Odyr's Journal: a short story in Odyr's voice at every landmark, revealed line by line, read aloud by the phone's voice |
 | 1.79 | Trust basics: real account deletion (server function), Export all my data, privacy page in English and French |
 | 1.78 | Calm Today: the workout right after the journey and week strip, quests folded into one line, the coach tip only when it matters |
 | 1.77 | First five minutes: Our pick for you (one question, one program), first-workout quest, Add to Home Screen card, crew invite links |

@@ -4,8 +4,8 @@
 // - Supabase (login + data) is never cached; the page keeps its own offline copy of your data.
 // - Push: shows the "rest over" notification sent by the rest-push Supabase function.
 // Bump CACHE when changing this file's caching rules.
-const CACHE = 'odyr-v51';
-const APP_SHELL = ['./', 'index.html', 'privacy.html', 'manifest.webmanifest', 'css/app.css', 'fonts/instrument-serif-latin.woff2', 'fonts/instrument-serif-latin-ext.woff2', 'lang/fr.js', 'js/i18n.js', 'js/splash.js', 'js/core.js', 'js/sound.js', 'js/auth.js', 'js/sync.js', 'js/programs.js', 'js/today.js', 'js/steps.js', 'js/builder.js', 'js/workout.js', 'js/cardio.js', 'js/guide.js', 'js/library.js', 'js/anatomy-data.js', 'js/anatomy.js', 'js/summary.js', 'js/rewards.js', 'js/odyssey.js', 'js/quests.js', 'js/crews.js', 'js/progress.js', 'js/coach.js', 'js/pro.js', 'js/diagnostics.js', 'js/tabbar.js', 'js/polish.js', 'js/main.js', 'icons/icon-180.png', 'icons/icon-192.png', 'icons/icon-512.png'];
+const CACHE = 'odyr-v52';
+const APP_SHELL = ['./', 'index.html', 'privacy.html', 'manifest.webmanifest', 'css/app.css', 'fonts/instrument-serif-latin.woff2', 'fonts/instrument-serif-latin-ext.woff2', 'lang/fr.js', 'js/i18n.js', 'js/splash.js', 'js/core.js', 'js/sound.js', 'js/auth.js', 'js/sync.js', 'js/programs.js', 'js/today.js', 'js/steps.js', 'js/builder.js', 'js/workout.js', 'js/cardio.js', 'js/guide.js', 'js/library.js', 'js/anatomy-data.js', 'js/anatomy.js', 'js/summary.js', 'js/rewards.js', 'js/odyssey.js', 'js/journal.js', 'js/quests.js', 'js/crews.js', 'js/progress.js', 'js/coach.js', 'js/pro.js', 'js/diagnostics.js', 'js/tabbar.js', 'js/polish.js', 'js/main.js', 'icons/icon-180.png', 'icons/icon-192.png', 'icons/icon-512.png'];
 const CDN_HOSTS = ['cdnjs.cloudflare.com', 'cdn.jsdelivr.net', 'fonts.googleapis.com', 'fonts.gstatic.com'];
 
 self.addEventListener('install', event => {

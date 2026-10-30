@@ -128,6 +128,7 @@ function renderSagaCard() {
             ${roadSvg(j.into, fromInto)}
             <div class="saga-next"><strong>${j.toNext.toLocaleString(LOCALE)}</strong> ${j.toNext === 1 ? 'league to' : 'leagues to'} <span>${escapeHtml(next[0])}</span> <span class="saga-open">›</span></div>
             ${crewLineHtml()}
+            ${journalUnreadCount() ? `<div class="saga-journal"><span class="jp-dot"></span>${journalUnreadCount() === 1 ? 'New page in Odyr’s journal' : `${journalUnreadCount()} new pages in Odyr’s journal`}</div>` : ''}
         </button>`;
     travelTo(el.querySelector('svg'), fromInto, j.into);
     rememberLeagues(j.total);
@@ -150,7 +151,7 @@ function checkLandmarks() {
     const stop = reached % 10;
     queueMoment(() => showMoment(stop === 0
         ? { kicker: 'Saga complete', valueHtml: '<svg class="moment-mark" aria-hidden="true"><use href="#odyrMark"/></svg>', unit: '', name: LANDMARKS[10][0], sub: `${sagaName(saga)} begins. ${LANDMARKS[10][1]}`, sound: 'level' }
-        : { kicker: 'Landmark reached', valueHtml: '<svg class="moment-mark" aria-hidden="true"><use href="#odyrMark"/></svg>', unit: '', name: LANDMARKS[stop][0], sub: LANDMARKS[stop][1], sound: 'badge' }));
+        : { kicker: 'Landmark reached', valueHtml: '<svg class="moment-mark" aria-hidden="true"><use href="#odyrMark"/></svg>', unit: '', name: LANDMARKS[stop][0], sub: `${tr(LANDMARKS[stop][1])} ${tr('A new page waits in Odyr’s journal.')}`, sound: 'badge' }));
 }
 
 // The Odyssey screen: the whole saga as a winding road, every landmark with its line, and how leagues are earned
@@ -195,6 +196,7 @@ function renderOdyssey() {
             ${stops}
             <circle class="road-traveller" cx="${tx.toFixed(1)}" cy="${ty.toFixed(1)}" r="8"/>
         </svg>
+        ${journalListHtml()}
         <div class="section-head"><h3>How you travel</h3><span>${j.total.toLocaleString(LOCALE)} leagues in all</span></div>
         <div class="odyssey-sources">
             <div><span>Workouts</span><strong>${s.workouts.toLocaleString(LOCALE)}</strong><small>${LEAGUES.workout} per workout</small></div>
