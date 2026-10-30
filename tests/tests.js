@@ -267,6 +267,38 @@
         closeRecap();
     });
 
+    await check('Locking the phone mid-rest puts the rest\'s end time on the lock screen', async () => {
+        const shown = [];
+        const closed = [];
+        const fakeReg = {
+            showNotification: async (title, options) => { shown.push({ title, options }); },
+            getNotifications: async () => shown.filter(n => !n.closed).map(n => ({ close: () => { n.closed = true; closed.push(n.title); } })),
+        };
+        const realSW = Object.getOwnPropertyDescriptor(Navigator.prototype, 'serviceWorker');
+        const realPerm = Object.getOwnPropertyDescriptor(Notification, 'permission');
+        const realAlerts = window.restAlertsOn;
+        Object.defineProperty(navigator, 'serviceWorker', { configurable: true, get: () => ({ ready: Promise.resolve(fakeReg) }) });
+        Object.defineProperty(Notification, 'permission', { configurable: true, get: () => 'granted' });
+        window.restAlertsOn = () => true;
+        try {
+            startRest(90, 'Barbell Row · 2 sets left');
+            await showRestOnLockScreen();
+            equal(shown.length, 1, 'notifications shown');
+            assert(/next set at/i.test(shown[0].title) || /série suivante/.test(shown[0].title), `title: ${shown[0].title}`);
+            equal(shown[0].options.tag, 'rest-timer', 'shares the "Rest over" tag so it gets replaced');
+            assert(shown[0].options.silent, 'locking the phone should not buzz');
+            stopRest();
+            await new Promise(resolve => setTimeout(resolve, 20));
+            equal(closed.length, 1, 'cleared when the rest stops');
+        } finally {
+            delete navigator.serviceWorker;
+            if (realSW) Object.defineProperty(Navigator.prototype, 'serviceWorker', realSW);
+            Object.defineProperty(Notification, 'permission', realPerm);
+            window.restAlertsOn = realAlerts;
+            stopRest();
+        }
+    });
+
     // ── Exercise guide ──
     await check('Every exercise in the app has a guide with a demo', () => {
         const names = new Set();

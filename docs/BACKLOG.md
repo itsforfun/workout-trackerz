@@ -64,7 +64,7 @@ Status: **Done** · **Check** (built, still needs a look on the iPhone or a smal
 **Native iPhone app (costs $99/year for an Apple Developer account)**
 - App Store app via Capacitor
 - Truly live steps and workouts from Apple Health (no Shortcut)
-- Home-screen widgets (rings, streak), Live Activity for the rest timer, Apple Watch app
+- Home-screen widgets (rings, streak), Live Activity for a ticking rest countdown on the lock screen (owner asked for it, 2026-10-29), Apple Watch app
 
 **Other**
 - Progress photos and body measurements, kept private
@@ -102,6 +102,7 @@ Status: **Done** · **Check** (built, still needs a look on the iPhone or a smal
 | 1.29 | 8-tier medals, trophy room, badge sheet, minting moment, signature and secret badges, "almost there" nudges |
 | 1.30–1.34 | Brand: Odyra, then Odyr; new icon; sign-in redesign; design carried across the app; thinker quotes |
 | 1.35–1.36 | French (whole app, reminders, quotes), Language setting, French review pass, decimal comma typing |
+| 1.51 | Rest on the lock screen: when the phone locks mid-rest, a notification shows when the rest ends and what's next, replaced by "Rest over" |
 | 1.50 | Tab bar collapses into a pill while scrolling down (back on scroll up, at the top or on a tap); gold glint on the chosen tab; bar steps aside under sheets |
 | 1.49 | Tab taps always register (no more taps lost to a tiny finger move) |
 | 1.48 | Tab bar redesigned: narrower than the content, lifted off the bottom, slimmer, lighter glass with a top highlight |

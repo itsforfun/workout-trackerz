@@ -560,6 +560,11 @@ function showToast(msg) {
 
 // Don't lose the last few keystrokes when the phone locks or the tab closes
 document.addEventListener('visibilitychange', () => {
+    // Resting when the phone locks: put the rest's end time on the lock screen; clear it when the app is back
+    if (activeWorkout && rest.interval) {
+        if (document.visibilityState === 'hidden') showRestOnLockScreen();
+        else clearRestFromLockScreen();
+    }
     if (document.visibilityState === 'hidden') flushSave();
     else if (currentUser && document.getElementById('page-steps').classList.contains('active')) renderSteps();
     else if (activeWorkout && rest.interval) tickRest();

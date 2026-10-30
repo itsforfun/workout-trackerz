@@ -1570,5 +1570,6 @@ I18N_PACKS.fr = {
         "Control the way back": "Contrôlez le retour",
         "Twisting only at the lower back": "Tourner uniquement avec le bas du dos",
         "Yanking the handle": "Tirer la poignée d’un coup sec",
+        "Rest · next set at {}": "Repos · série suivante à {}",
     },
 };

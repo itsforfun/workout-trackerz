@@ -486,7 +486,10 @@ function adjustRest(delta) {
 }
 
 function stopRest() {
-    if (rest.interval) cancelRestPush();
+    if (rest.interval) {
+        cancelRestPush();
+        clearRestFromLockScreen();
+    }
     clearInterval(rest.interval);
     rest.interval = null;
     const bar = document.getElementById('restBar');
@@ -826,6 +829,36 @@ function scheduleRestPush() {
         title: tr('Rest over'),
         body: tr(rest.label || 'Time for your next set'),
     }, { onConflict: 'user_id' }).then(({ error }) => { if (error) console.warn('Rest alert not scheduled:', error.message); });
+}
+
+// Lock screen during rest: web apps can't show a live countdown there (that is a native Live Activity),
+// so when the phone locks mid-rest a quiet notification shows when the rest ends and what's next.
+// It shares the tag of the "Rest over" push, which replaces it when the time is up.
+async function showRestOnLockScreen() {
+    if (!restAlertsOn() || !rest.interval || rest.endAt - Date.now() < 3000) return;
+    if (!('serviceWorker' in navigator) || !('Notification' in window) || Notification.permission !== 'granted') return;
+    try {
+        const reg = await navigator.serviceWorker.ready;
+        const at = new Date(rest.endAt).toLocaleTimeString(LOCALE, { hour: 'numeric', minute: '2-digit' });
+        await reg.showNotification(tr(`Rest · next set at ${at}`), {
+            body: tr(rest.label || 'Time for your next set'),
+            tag: 'rest-timer',
+            silent: true,
+            icon: 'icons/icon-192.png',
+            badge: 'icons/icon-192.png',
+            data: { restEndsAt: rest.endAt },
+        });
+    } catch (error) {
+        console.warn('Rest not shown on the lock screen:', error.message || error);
+    }
+}
+
+async function clearRestFromLockScreen() {
+    if (!('serviceWorker' in navigator)) return;
+    try {
+        const reg = await navigator.serviceWorker.ready;
+        (await reg.getNotifications({ tag: 'rest-timer' })).forEach(n => n.close());
+    } catch (error) { /* nothing to clear */ }
 }
 
 function cancelRestPush() {
