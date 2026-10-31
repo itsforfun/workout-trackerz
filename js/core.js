@@ -4,7 +4,7 @@
 
 // Shown at the bottom of Settings so you can tell which version a phone is running.
 // Bump it with every deploy.
-const APP_VERSION = '1.83 · 30 Oct';
+const APP_VERSION = '1.84 · 31 Oct';
 
 const SUPABASE_URL = 'https://hcwbcxhblfjpdlkwykez.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_mEe_5g2UITyp5O-F9YRhRg_wTQWuOtf';
@@ -206,10 +206,10 @@ function userGender() {
     return g === 'female' || g === 'male' ? g : null;
 }
 
-// The goal from the profile: 'fatloss' | 'muscle' | 'strength' | 'general' (the default)
+// The goal from the profile: 'fatloss' | 'muscle' | 'recomp' | 'strength' | 'general' (maintain, the default)
 function userGoal() {
     const g = userProfile && userProfile.goal;
-    return ['fatloss', 'muscle', 'strength'].includes(g) ? g : 'general';
+    return ['fatloss', 'muscle', 'recomp', 'strength'].includes(g) ? g : 'general';
 }
 
 // Weekly cardio target, chosen in Settings; until then it follows the goal (light for muscle and strength,
@@ -226,19 +226,24 @@ function cardioTarget() {
 
 // Daily habits come from your goal, not your program: fat loss or muscle depends on eating, sleep and
 // movement, and every program works with every goal. The first habit is always steps (ticked by itself
-// once the step goal is synced). Protein is personalised to bodyweight (1.6–2.2 g/kg, Morton 2018).
+// once the step goal is synced). Protein is personalised to bodyweight and goal (ISSN 2026 position stand:
+// 1.2–1.6 g/kg for general health, 1.6–2.2 with lifting, more in a deficit; 1.8–2.4 is our pick there).
 // Kept to six, in a fixed order, because ticks are stored by position (_habits[date] = [indexes]).
+const PROTEIN_RANGE = { general: [1.2, 1.6], muscle: [1.6, 2.2], strength: [1.6, 2.2], fatloss: [1.8, 2.4], recomp: [1.8, 2.4] };
+
 function dailyHabits() {
     const kg = userProfile && userProfile.weight;
     const round5 = n => Math.round(n / 5) * 5;
-    const protein = kg ? `${round5(kg * 1.6)}–${round5(kg * 2.2)} g protein` : 'Protein at every meal';
+    const [low, high] = PROTEIN_RANGE[userGoal()];
+    const protein = kg ? `${round5(kg * low)}–${round5(kg * high)} g protein` : 'Protein at every meal';
     const steps = `Hit your step goal (${stepGoal().toLocaleString(LOCALE)})`;
     const desk = 'Stand or walk 1–2 min every hour at the desk';
     return {
-        fatloss: [steps, protein, 'Eat a little under maintenance (lose ~0.5% of bodyweight a week)', 'Vegetables or fruit at two meals', '7+ hours sleep', 'Water or zero-calorie drinks, not sugary ones'],
+        fatloss: [steps, protein, 'Eat up to ~500 kcal under maintenance (lose ~0.5% of bodyweight a week)', 'Vegetables or fruit at two meals', '7+ hours sleep', 'Water or zero-calorie drinks, not sugary ones'],
         muscle: [steps, protein, 'Eat a little over maintenance (gain ~0.25–0.5% of bodyweight a week)', 'Protein and carbs within a few hours of training', '7+ hours sleep', desk],
+        recomp: [steps, protein, 'Eat around maintenance or slightly under (weight steady, waist slowly down)', 'Beat last week on one lift: a rep or a little weight', '7+ hours sleep', 'Vegetables or fruit at two meals'],
         strength: [steps, protein, 'Eat enough to recover (around maintenance)', '7+ hours sleep', desk, '5 minutes of mobility for your tightest spot'],
-        general: [steps, protein, 'Vegetables or fruit at two meals', '7+ hours sleep', desk, '5 minutes of stretching'],
+        general: [steps, protein, 'Eat around maintenance (weight steady within ~1 kg)', 'Vegetables or fruit at two meals', '7+ hours sleep', desk],
     }[userGoal()];
 }
 
@@ -349,7 +354,7 @@ function orderProgramCards() {
 const DAY_CHOICES = [['12', '1–2'], ['3', '3'], ['4', '4+']];
 
 function recommendedProgram(days, gender = userGender(), goal = userGoal()) {
-    const body = ['muscle', 'strength'].includes(goal);
+    const body = ['muscle', 'recomp', 'strength'].includes(goal);
     if (gender === 'female') return days === '12' ? 'femaleTotalBody' : days === '3' ? 'female' : 'skadi';
     if (days === '12') return 'maleTotalBody';
     if (days === '3') return body ? 'male' : 'fullBody3';

@@ -372,7 +372,7 @@ function renderHabits() {
     `;
 }
 
-const GOAL_NAMES = { fatloss: 'Lose fat', muscle: 'Build muscle', strength: 'Get stronger', general: 'Stay fit and healthy' };
+const GOAL_NAMES = { fatloss: 'Lose fat', muscle: 'Build muscle', recomp: 'Lose fat and build muscle', strength: 'Get stronger', general: 'Maintain and stay fit' };
 
 function toggleHabit(i, on) {
     haptic();
@@ -480,7 +480,8 @@ const CARDIO_EVIDENCE = [
     'Max heart rate is estimated as 208 − 0.7 × age (Tanaka et al., 2001), which fits adults better than 220 − age. For women it is 206 − 0.88 × age (Gulati et al., 2010): the older formulas overestimate it for women. Any formula can be 10+ beats off for one person, so check it against the talk test.',
     'The talk test (the point where talking gets hard) closely tracks the first ventilatory threshold, the top of Zone 2 (Persinger et al., 2004).',
     'WHO guidelines (2020): 150–300 minutes a week of moderate activity, or 75–150 of vigorous activity. A minute in Zone 4–5 counts as two.',
-    'For fat loss in people with overweight, interval training and steady cardio work about equally well (Wewege et al., 2017). Steady Zone 2 is easier to recover from alongside lifting.',
+    'For fat loss, a 2026 network meta-analysis ranked intervals (75+ minutes a week) slightly ahead of steady cardio over 8–16 weeks. The difference is modest, and steady Zone 2 is easier to recover from alongside lifting (Deng et al., 2026).',
+    'Cardio alongside lifting did not reduce strength or muscle gains for recreational lifters in an umbrella review of 17 meta-analyses; on days with both, lifting first may help a little (Held et al., 2026).',
     'The 4 × 4 interval protocol improved VO₂max more than steady training in a controlled trial (Helgerud et al., 2007).',
 ];
 

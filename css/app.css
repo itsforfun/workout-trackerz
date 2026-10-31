@@ -1245,6 +1245,7 @@
     .science-item summary span { font-size:0.95rem; font-weight:500; }
     .science-item summary span::after { content:' ›'; color:var(--text-muted); }
     .science-item[open] summary span::after { content:' ‹'; }
+    .science-yours { font-style:normal; font-size:0.62rem; font-weight:600; letter-spacing:0.16em; text-transform:uppercase; color:var(--accent); }
     .science-item summary small { font-size:0.76rem; color:var(--text-muted); line-height:1.45; }
     .science-item > p { font-size:0.84rem; line-height:1.6; color:var(--text-dim); margin-top:var(--s3); }
     .science-item > p.science-note { font-size:0.76rem; color:var(--text-muted); font-style:italic; margin-top:var(--s2); }

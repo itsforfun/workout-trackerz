@@ -627,13 +627,19 @@
     await check('Habits follow your goal and cardio science is in every program; programs promise no fat loss or muscle', () => {
         const saved = { profile: userProfile, program: currentProgram };
         try {
-            ['fatloss', 'muscle', 'strength', 'general'].forEach(goal => {
+            // Protein follows bodyweight and goal (80 kg): general health, lifting, dieting
+            const protein = { general: '95–130 g protein', muscle: '130–175 g protein', strength: '130–175 g protein', fatloss: '145–190 g protein', recomp: '145–190 g protein' };
+            Object.entries(protein).forEach(([goal, grams]) => {
                 userProfile = { ...saved.profile, goal, weight: 80 };
                 const habits = dailyHabits();
                 equal(habits.length, 6, `${goal} habit count`);
                 assert(/step goal/.test(habits[0]), `${goal}: steps must come first (auto-ticked)`);
-                assert(habits.includes('130–175 g protein'), `${goal}: protein not personalised (${habits[1]})`);
+                assert(habits.includes(grams), `${goal}: protein not personalised (${habits[1]})`);
+                assert(COACH_SCIENCE.some(sec => sec.goal === goal), `${goal}: no science section`);
+                equal(scienceSections()[0].goal, goal, `${goal}: its science section must come first`);
             });
+            userProfile = { ...saved.profile, goal: 'recomp', weight: 80 };
+            assert(/around maintenance/.test(dailyHabits().join(' ')), 'recomposition habits');
             userProfile = { ...saved.profile, goal: 'fatloss', weight: 80 };
             assert(/under maintenance/.test(dailyHabits().join(' ')), 'fat-loss habits');
             userProfile = { ...saved.profile, goal: 'muscle', weight: 80 };
@@ -825,7 +831,10 @@
             delete metaFor('_quests')[monday];
             assert(!questWeek(monday).list.some(q => q.kind === 'cardio'), 'cardio Off still gets a cardio quest');
             delete metaFor('_quests')[monday];
+            todayMode = 'lift';   // on a weekend or off day Today opens on the rest-day card instead
+            switchTab('today');
             assert(document.querySelector('#cardioEntry .cardio-entry'), 'cardio stays available when Off');
+            todayMode = null;
         } finally {
             userProfile = saved;
         }

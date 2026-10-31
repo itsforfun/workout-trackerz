@@ -240,12 +240,13 @@ const GEN_GOALS = {
     muscle: { name: 'Build Muscle', main: [3, 6, 10, 2.5], compound: [3, 8, 12, 2], accessory: [3, 10, 15, 1.5] },
     strength: { name: 'Get Stronger', main: [4, 4, 6, 3], compound: [3, 6, 10, 2], accessory: [3, 8, 12, 1.5] },
     fatloss: { name: 'Lean & Strong', main: [3, 8, 12, 2], compound: [3, 10, 12, 1.5], accessory: [3, 12, 15, 1] },
+    recomp: { name: 'Recomposition', main: [3, 6, 10, 2.5], compound: [3, 8, 12, 2], accessory: [3, 10, 15, 1.5] },
     general: { name: 'All-Round Fit', main: [3, 8, 12, 2], compound: [3, 8, 12, 2], accessory: [2, 10, 15, 1.5] },
 };
 
 let genDraft = null;
 const GEN_QUESTIONS = [
-    { key: 'goal', label: 'Goal', options: [['muscle', 'Build muscle'], ['strength', 'Get stronger'], ['fatloss', 'Lose fat'], ['general', 'Stay fit']] },
+    { key: 'goal', label: 'Goal', options: [['muscle', 'Build muscle'], ['strength', 'Get stronger'], ['fatloss', 'Lose fat'], ['recomp', 'Recomposition'], ['general', 'Maintain']] },
     { key: 'days', label: 'Days a week', options: [[2, '2'], [3, '3'], [4, '4'], [5, '5']] },
     { key: 'equipment', label: 'Equipment', options: [['gym', 'Full gym'], ['free', 'Barbell + dumbbells'], ['db', 'Dumbbells only']] },
     { key: 'minutes', label: 'Session length', options: [[45, '45 min'], [60, '60 min'], [75, '75 min']] },
@@ -358,9 +359,10 @@ const COACH_SCIENCE = [
     {
         title: 'Sets per muscle',
         rule: 'Progress counts hard sets per muscle over the last 7 days and shows them against about 10–20 a week. A supporting muscle counts half a set.',
-        why: 'In a meta-analysis of 15 studies, more weekly sets meant more muscle growth, and 10 or more sets per muscle was the top group.',
+        why: 'A 2025 meta-regression of 67 studies (over 2,000 people) found muscle growth keeps rising as weekly sets go up, with smaller gains for each extra set; counting a set for a supporting muscle as half a set fitted the data best. An earlier meta-analysis put 10 or more sets per muscle in the top group.',
         note: 'About 20 as the upper end is a coaching convention for recovery, not a tested limit. If your goal isn’t muscle, fewer sets are fine.',
         refs: [
+            ['Pelland JC, Remmert JF, Robinson ZP, et al. Sports Med. 2026;56(2):481–505.', 'The Resistance Training Dose Response: Meta-Regressions Exploring the Effects of Weekly Volume and Frequency on Muscle Hypertrophy and Strength Gains', '10.1007/s40279-025-02344-w'],
             ['Schoenfeld BJ, Ogborn D, Krieger JW. J Sports Sci. 2017;35(11):1073–1082. doi:10.1080/02640414.2016.1210197', 'Dose-response relationship between weekly resistance training volume and increases in muscle mass: A systematic review and meta-analysis'],
         ],
     },
@@ -416,17 +418,17 @@ const COACH_SCIENCE = [
     {
         title: 'How generated programs are built',
         rule: 'Each muscle trained about twice a week, roughly 10+ hard sets per muscle weekly, heavier sets for the main lifts and lighter, higher-rep accessories.',
-        why: 'Training a muscle twice a week tends to beat once a week for growth, more weekly sets give more growth up to a point, and a wide range of loads builds muscle when sets are hard enough.',
+        why: 'With the same weekly sets, training a muscle more often adds strength but changes muscle size little, so twice a week mainly keeps each session manageable. More weekly sets give more growth, with smaller gains for each extra set, and a wide range of loads builds muscle when sets are hard enough.',
         note: 'Exercise picks and joint-friendly swaps are coaching choices. If something hurts, swap it out.',
         refs: [
-            ['Schoenfeld BJ, Ogborn D, Krieger JW. Sports Med. 2016;46(11):1689–1697.', 'Effects of Resistance Training Frequency on Measures of Muscle Hypertrophy: A Systematic Review and Meta-Analysis'],
-            ['Schoenfeld BJ, Ogborn D, Krieger JW. J Sports Sci. 2017;35(11):1073–1082.', 'Dose-response relationship between weekly resistance training volume and increases in muscle mass: A systematic review and meta-analysis'],
+            ['Pelland JC, Remmert JF, Robinson ZP, et al. Sports Med. 2026;56(2):481–505.', 'The Resistance Training Dose Response: Meta-Regressions Exploring the Effects of Weekly Volume and Frequency on Muscle Hypertrophy and Strength Gains', '10.1007/s40279-025-02344-w'],
+            ['Schoenfeld BJ, Grgic J, Ogborn D, Krieger JW. J Strength Cond Res. 2017;31(12):3508–3523.', 'Strength and Hypertrophy Adaptations Between Low- vs. High-Load Resistance Training: A Systematic Review and Meta-analysis', '10.1519/JSC.0000000000002200'],
         ],
     },
     {
         title: 'Cardio zones',
         rule: 'Max heart rate ≈ 208 − 0.7 × age (women: 206 − 0.88 × age); most cardio in Zone 2; 150 minutes of moderate activity a week.',
-        why: 'The Tanaka formula fits adults better than 220 − age; for women the Gulati formula fits better, as the male-based formulas overestimate their max. The talk test tracks the top of Zone 2. WHO recommends 150–300 moderate minutes a week. Intervals raise fitness fast; for fat loss, intervals and steady cardio work about equally.',
+        why: 'The Tanaka formula fits adults better than 220 − age; for women the Gulati formula fits better, as the male-based formulas overestimate their max. The talk test tracks the top of Zone 2. WHO recommends 150–300 moderate minutes a week. Intervals raise fitness fast; for fat loss they give a modest edge over steady cardio in short studies, so steady cardio remains a fine choice.',
         note: 'Formulas can be 10+ beats off for an individual; the talk test is a good check.',
         refs: [
             ['Tanaka H, Monahan KD, Seals DR. J Am Coll Cardiol. 2001;37(1):153–156.', 'Age-predicted maximal heart rate revisited'],
@@ -434,7 +436,18 @@ const COACH_SCIENCE = [
             ['Persinger R, Foster C, Gibson M, et al. Med Sci Sports Exerc. 2004;36(9):1632–1636.', 'Consistency of the talk test for exercise prescription'],
             ['Bull FC, Al-Ansari SS, Biddle S, et al. Br J Sports Med. 2020;54(24):1451–1462.', 'World Health Organization 2020 guidelines on physical activity and sedentary behaviour'],
             ['Helgerud J, Høydal K, Wang E, et al. Med Sci Sports Exerc. 2007;39(4):665–671.', 'Aerobic high-intensity intervals improve VO2max more than moderate training'],
-            ['Wewege M, van den Berg R, Ward RE, Keech A. Obes Rev. 2017;18(6):635–646.', 'The effects of high-intensity interval training vs. moderate-intensity continuous training on body composition in overweight and obese adults: a systematic review and meta-analysis'],
+            ['Deng Z, Li Q, Ma M, et al. BMC Sports Sci Med Rehabil. 2026;18(1).', 'Efficacy of different high-intensity interval training versus moderate-intensity continuous training for body composition and cardiorespiratory fitness in obese/overweight patients: a systematic review and network meta-analysis', '10.1186/s13102-026-01686-w'],
+        ],
+    },
+    {
+        title: 'Cardio alongside lifting',
+        rule: 'Cardio at normal amounts doesn’t cost you muscle or strength. On days with both, lift first.',
+        why: 'An umbrella review of 17 meta-analyses found that adding cardio to lifting improved aerobic fitness while strength, power and muscle growth matched lifting alone; lifting before cardio trended slightly better. Sprint intervals added fitness without hurting strength. At the level of single muscle fibres there may be a small cost, larger with running than with cycling.',
+        note: 'Data on highly trained athletes are scarce, and “lift first” is a trend rather than a firm result. If your legs are the priority, cycling is the gentler choice.',
+        refs: [
+            ['Held S, Wolf L, Rappelt L, et al. Sports Med. 2026;56(6):1489–1512.', 'Maximizing Adaptations in Concurrent Training: An Umbrella Review of Meta-analyses', '10.1007/s40279-026-02401-y'],
+            ['Lundberg TR, Feuerbacher JF, Sünkeler M, Schumann M. Sports Med. 2022;52(10):2391–2403.', 'The Effects of Concurrent Aerobic and Strength Training on Muscle Fiber Hypertrophy: A Systematic Review and Meta-Analysis', '10.1007/s40279-022-01688-x'],
+            ['Ferraro-Farro D, Bandeira-Guimarães M, Blanco-Rambo E, et al. Int J Sports Med. 2026;47(10):747–759.', 'Does Sprint Interval Training Cause Interference in Concurrent Training? A Meta-Analysis Study', '10.1055/a-2820-4527'],
         ],
     },
     {
@@ -448,14 +461,74 @@ const COACH_SCIENCE = [
     },
     {
         title: 'Daily habits',
-        rule: 'Six daily habits chosen by your goal, not your program: steps, protein (1.6–2.2 g per kg), sleep (7+ hours), and eating a little under maintenance to lose fat, a little over to build muscle, or enough to recover.',
-        why: 'Training builds the stimulus; whether you lose fat or gain muscle depends mostly on what you eat, how you sleep and how much you move. Protein beyond about 1.6 g per kg a day added no more muscle on average. Losing about 0.5–1% of bodyweight a week keeps the most muscle while dieting; gaining about 0.25–0.5% a week limits fat gain while building.',
+        rule: 'Six daily habits chosen by your goal, not your program: steps, protein for your goal and bodyweight, sleep (7+ hours) and a direction for eating. Each goal has its own section below.',
+        why: 'Training builds the stimulus; whether you lose fat or gain muscle depends mostly on what you eat, how you sleep and how much you move. The 2026 position stand of the International Society of Sports Nutrition puts protein at 1.2–1.6 g per kg a day for general health and 1.6–2.2 g with resistance training, higher while dieting.',
         note: 'Ranges, not exact targets: needs differ between people. The calorie habits are a direction to follow, not a count the app checks.',
         refs: [
             ['Morton RW, Murphy KT, McKellar SR, et al. Br J Sports Med. 2018;52(6):376–384. doi:10.1136/bjsports-2017-097608', 'A systematic review, meta-analysis and meta-regression of the effect of protein supplementation on resistance training-induced gains in muscle mass and strength in healthy adults'],
             ['Watson NF, Badr MS, Belenky G, et al. J Clin Sleep Med. 2015;11(8):931–952. doi:10.5664/jcsm.4950', 'Joint Consensus Statement of the American Academy of Sleep Medicine and Sleep Research Society on the Recommended Amount of Sleep for a Healthy Adult: Methodology and Discussion'],
-            ['Helms ER, Aragon AA, Fitschen PJ. J Int Soc Sports Nutr. 2014;11:20. doi:10.1186/1550-2783-11-20', 'Evidence-based recommendations for natural bodybuilding contest preparation: nutrition and supplementation'],
-            ['Iraki J, Fitschen P, Espinar S, Helms E. Sports (Basel). 2019;7(7):154. doi:10.3390/sports7070154', 'Nutrition Recommendations for Bodybuilders in the Off-Season: A Narrative Review'],
+            ['Aragon AA, Campbell BI, Schoenfeld BJ, et al. J Int Soc Sports Nutr. 2026;23(1):2740266.', 'International Society of Sports Nutrition position stand: diets for body weight reduction', '10.1080/15502783.2026.2740266'],
+        ],
+    },
+    {
+        goal: 'fatloss',
+        title: 'Goal: lose fat',
+        rule: 'Eat up to about 500 kcal a day under maintenance, lose about 0.5% of bodyweight a week, keep lifting hard, and eat 1.8–2.4 g of protein per kg.',
+        why: 'Fat loss needs an energy deficit; the type of diet matters far less. The 2026 ISSN position stand finds low-carb and low-fat diets perform about the same, as do intermittent fasting and daily restriction, while very aggressive diets lose more muscle. Lifting and enough protein are what protect muscle in a deficit. In a meta-analysis, a deficit of about 500 kcal a day was enough to stop lean-mass gains, though strength still rose, so the deficit stays moderate.',
+        note: 'Maintenance calories are an estimate: let your weekly weight trend guide you. Plateaus are normal, partly because the body moves less while dieting, which is why steps stay a daily habit. 1.8–2.4 g is our pick within the published ranges.',
+        refs: [
+            ['Aragon AA, Campbell BI, Schoenfeld BJ, et al. J Int Soc Sports Nutr. 2026;23(1):2740266.', 'International Society of Sports Nutrition position stand: diets for body weight reduction', '10.1080/15502783.2026.2740266'],
+            ['Murphy C, Koehler K. Scand J Med Sci Sports. 2022;32(1):125–137.', 'Energy deficiency impairs resistance training gains in lean mass but not strength: A meta-analysis and meta-regression', '10.1111/sms.14075'],
+            ['Ashtary-Larky D, Mohammadi S. Health Sci Rep. 2026;9(7):e72803.', 'Weight Loss Plateau: Reasons, Challenges, and Solutions: A Narrative Review', '10.1002/hsr2.72803'],
+        ],
+    },
+    {
+        goal: 'muscle',
+        title: 'Goal: build muscle',
+        rule: 'Eat a little over maintenance (gain about 0.25–0.5% of bodyweight a week), eat 1.6–2.2 g of protein per kg, and do 10+ hard sets per muscle a week.',
+        why: 'In trained lifters, a larger calorie surplus mostly added fat rather than extra muscle or strength compared with a small one. More weekly sets keep adding muscle, with smaller gains for each extra set. Across 105 trials, lean mass kept rising with protein above 1.3 g per kg a day, but more slowly.',
+        note: 'Beginners can grow at maintenance; the surplus matters more as you get experienced. The surplus trial was small (17 lifters, 8 weeks).',
+        refs: [
+            ['Helms ER, Spence AJ, Sousa C, et al. Sports Med Open. 2023;9(1):102.', 'Effect of Small and Large Energy Surpluses on Strength, Muscle, and Skinfold Thickness in Resistance-Trained Individuals: A Parallel Groups Design', '10.1186/s40798-023-00651-y'],
+            ['Pelland JC, Remmert JF, Robinson ZP, et al. Sports Med. 2026;56(2):481–505.', 'The Resistance Training Dose Response: Meta-Regressions Exploring the Effects of Weekly Volume and Frequency on Muscle Hypertrophy and Strength Gains', '10.1007/s40279-025-02344-w'],
+            ['Tagawa R, Watanabe D, Ito K, et al. Nutr Rev. 2021;79(1):66–75.', 'Dose-response relationship between protein intake and muscle mass increase: a systematic review and meta-analysis of randomized controlled trials', '10.1093/nutrit/nuaa104'],
+        ],
+    },
+    {
+        goal: 'recomp',
+        title: 'Goal: lose fat and build muscle',
+        rule: 'Eat around maintenance or slightly under, keep protein high (1.8–2.4 g per kg), and keep adding reps or weight.',
+        why: 'Building muscle while losing fat is most realistic for beginners, people coming back after a break and people with more fat to lose. It allows a small calorie gap at most: in a meta-analysis, a deficit near 500 kcal a day stopped lean-mass gains. Lifting and enough protein are what let muscle grow while body fat falls.',
+        note: 'Progress is slow and the scale barely moves, so judge by your lifts, your waist and photos. Lean, experienced lifters usually do better alternating a gaining phase and a losing phase. Trials on recomposition itself are few; this section is a coaching summary of the studies above.',
+        refs: [
+            ['Murphy C, Koehler K. Scand J Med Sci Sports. 2022;32(1):125–137.', 'Energy deficiency impairs resistance training gains in lean mass but not strength: A meta-analysis and meta-regression', '10.1111/sms.14075'],
+            ['Aragon AA, Campbell BI, Schoenfeld BJ, et al. J Int Soc Sports Nutr. 2026;23(1):2740266.', 'International Society of Sports Nutrition position stand: diets for body weight reduction', '10.1080/15502783.2026.2740266'],
+            ['Tagawa R, Watanabe D, Ito K, et al. Nutr Rev. 2021;79(1):66–75.', 'Dose-response relationship between protein intake and muscle mass increase: a systematic review and meta-analysis of randomized controlled trials', '10.1093/nutrit/nuaa104'],
+        ],
+    },
+    {
+        goal: 'strength',
+        title: 'Goal: get stronger',
+        rule: 'Heavier main lifts (4–6 reps), eat around maintenance, 1.6–2.2 g of protein per kg.',
+        why: 'Heavy loads give the biggest gains in one-rep max, while muscle size grows across a wide range of loads. Strength kept rising even in a calorie deficit, unlike lean mass. Training a lift more often each week adds strength, with smaller gains each time, and periodised training gave more strength than unchanging training at the same volume.',
+        note: 'Strength is partly a skill: practice with good form counts. Eating around maintenance is a choice for recovery, not a tested number.',
+        refs: [
+            ['Schoenfeld BJ, Grgic J, Ogborn D, Krieger JW. J Strength Cond Res. 2017;31(12):3508–3523.', 'Strength and Hypertrophy Adaptations Between Low- vs. High-Load Resistance Training: A Systematic Review and Meta-analysis', '10.1519/JSC.0000000000002200'],
+            ['Pelland JC, Remmert JF, Robinson ZP, et al. Sports Med. 2026;56(2):481–505.', 'The Resistance Training Dose Response: Meta-Regressions Exploring the Effects of Weekly Volume and Frequency on Muscle Hypertrophy and Strength Gains', '10.1007/s40279-025-02344-w'],
+            ['Murphy C, Koehler K. Scand J Med Sci Sports. 2022;32(1):125–137.', 'Energy deficiency impairs resistance training gains in lean mass but not strength: A meta-analysis and meta-regression', '10.1111/sms.14075'],
+            ['Moesgaard L, Beck MM, Christiansen L, et al. Sports Med. 2022;52(7):1647–1666.', 'Effects of Periodization on Strength and Muscle Hypertrophy in Volume-Equated Resistance Training Programs: A Systematic Review and Meta-analysis', '10.1007/s40279-021-01636-1'],
+        ],
+    },
+    {
+        goal: 'general',
+        title: 'Goal: maintain and stay fit',
+        rule: 'Eat around maintenance (weight steady within about 1 kg), 1.2–1.6 g of protein per kg, strength training at least twice a week, and move every day.',
+        why: 'For general health, the 2026 ISSN position stand puts protein at 1.2–1.6 g per kg a day. WHO recommends muscle-strengthening work on 2 or more days a week plus 150–300 minutes of moderate activity. More daily steps are linked with a lower risk of death, levelling off around 8,000–10,000 for younger adults.',
+        note: 'Holding a weight you reached is a real goal, and the part most diets miss. If you aren’t trying to grow, fewer sets than the 10–20 range are fine.',
+        refs: [
+            ['Aragon AA, Campbell BI, Schoenfeld BJ, et al. J Int Soc Sports Nutr. 2026;23(1):2740266.', 'International Society of Sports Nutrition position stand: diets for body weight reduction', '10.1080/15502783.2026.2740266'],
+            ['Bull FC, Al-Ansari SS, Biddle S, et al. Br J Sports Med. 2020;54(24):1451–1462.', 'World Health Organization 2020 guidelines on physical activity and sedentary behaviour'],
+            ['Paluch AE, Bajpai S, Bassett DR, et al. Lancet Public Health. 2022;7(3):e219–e228.', 'Daily steps and all-cause mortality: a meta-analysis of 15 international cohorts'],
         ],
     },
     {
@@ -469,6 +542,12 @@ const COACH_SCIENCE = [
     },
 ];
 
+// The section for your goal comes first (and open); the other goals follow the general sections
+function scienceSections() {
+    const yours = COACH_SCIENCE.filter(section => section.goal === userGoal());
+    return [...yours, ...COACH_SCIENCE.filter(section => !yours.includes(section))];
+}
+
 function referenceLink(title, doi) {
     return doi ? `https://doi.org/${doi}` : `https://pubmed.ncbi.nlm.nih.gov/?term=${encodeURIComponent(title)}`;
 }
@@ -477,9 +556,9 @@ function openScience() {
     haptic();
     document.getElementById('scienceBody').innerHTML = `
         <p class="science-intro">Every rule the coach follows, why, and the research behind it. Where a number is a coaching judgement rather than a study result, it says so.</p>
-        ${COACH_SCIENCE.map(section => `
-            <details class="science-item">
-                <summary><span>${escapeHtml(section.title)}</span><small>${escapeHtml(section.rule)}</small></summary>
+        ${scienceSections().map(section => `
+            <details class="science-item${section.goal === userGoal() ? ' yours' : ''}"${section.goal === userGoal() ? ' open' : ''}>
+                <summary>${section.goal === userGoal() ? '<em class="science-yours">Your goal</em>' : ''}<span>${escapeHtml(section.title)}</span><small>${escapeHtml(section.rule)}</small></summary>
                 <p>${escapeHtml(section.why)}</p>
                 <p class="science-note">${escapeHtml(section.note)}</p>
                 <ol class="science-refs">

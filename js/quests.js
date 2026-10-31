@@ -14,7 +14,7 @@ function weekDays(monday) {
 }
 
 // The goal-led quest rotates weekly between the kinds that fit your goal
-const GOAL_QUESTS = { fatloss: ['cardio', 'steps'], muscle: ['habits', 'steps'], strength: ['habits', 'cardio'], general: ['cardio', 'steps', 'habits'] };
+const GOAL_QUESTS = { fatloss: ['cardio', 'steps'], muscle: ['habits', 'steps'], recomp: ['habits', 'steps'], strength: ['habits', 'cardio'], general: ['cardio', 'steps', 'habits'] };
 
 function makeQuests(monday) {
     const prog = PROGRAMS[currentProgram];
