@@ -4,7 +4,7 @@
 
 // Shown at the bottom of Settings so you can tell which version a phone is running.
 // Bump it with every deploy.
-const APP_VERSION = '1.85 · 1 Nov';
+const APP_VERSION = '1.86 · 1 Nov';
 
 const SUPABASE_URL = 'https://hcwbcxhblfjpdlkwykez.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_mEe_5g2UITyp5O-F9YRhRg_wTQWuOtf';
@@ -19,13 +19,31 @@ try {
     console.error('Supabase init error:', error);
 }
 
-// Charts draw on a canvas, so their labels are translated before each draw (the language engine is in js/i18n.js)
+// Charts draw on a canvas, so the page translator never sees their text: labels, axis titles and whatever
+// the tooltip callbacks return are translated here before each draw (the language engine is in js/i18n.js)
+const translatedCallbacks = new WeakSet();
 if (PACK && window.Chart) Chart.register({
     id: 'i18n',
     beforeUpdate(chart) {
         const data = chart.data;
         if (data.labels) data.labels = data.labels.map(l => (typeof l === 'string' ? tr(l) : l));
         data.datasets.forEach(ds => { if (typeof ds.label === 'string') ds.label = tr(ds.label); });
+        const options = chart.config.options || {};
+        Object.values(options.scales || {}).forEach(scale => {
+            if (scale.title && typeof scale.title.text === 'string') scale.title.text = tr(scale.title.text);
+        });
+        const callbacks = options.plugins && options.plugins.tooltip && options.plugins.tooltip.callbacks;
+        if (callbacks && !translatedCallbacks.has(callbacks)) {
+            translatedCallbacks.add(callbacks);
+            Object.keys(callbacks).forEach(key => {
+                const original = callbacks[key];
+                if (typeof original !== 'function') return;
+                callbacks[key] = function (...args) {
+                    const out = original.apply(this, args);
+                    return typeof out === 'string' && out ? tr(out) : out;
+                };
+            });
+        }
     },
 });
 

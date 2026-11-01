@@ -107,6 +107,7 @@ Status: **Done** · **Check** (built, still needs a look on the iPhone or a smal
 | 1.83 | Share cards from big moments: a new record, a level-up or a landmark has a Share button |
 | 1.84 | Goals: Lose fat and build muscle (recomposition) and Maintain; protein by goal; a science section per goal (yours first); newer sources for sets, frequency and cardio (Pelland 2025, Held 2026, Deng 2026, ISSN 2026) |
 | 1.85 | Plain sign-in error messages (EN + FR) instead of Supabase's technical English, e.g. "email rate limit exceeded" |
+| 1.86 | Lift chart fully translated: axis title and tooltip ("1RM estimé", "Soulevé 5 kg × 8") |
 | 1.82 | Sets per muscle on Progress: weekly hard sets per muscle against 10–20, with the source |
 | 1.81 | Stall ladder for every program: +1 rep, +1 set, slower tempo, drop set (isolation only), then a reset |
 | 1.80 | Odyr's Journal: a short story in Odyr's voice at every landmark, revealed line by line, read aloud by the phone's voice |

@@ -1187,6 +1187,24 @@
             document.getElementById('celebrate').classList.remove('show');
         });
 
+        await check('Lift chart: axis title and tooltip are in French', () => {
+            if (typeof Chart === 'undefined') return;
+            showScreen('app');
+            switchTab('progress');
+            const ex = dayLifts().find(e => !isRepsBased(e) && strengthHistory(e).some(p => p.kg));
+            assert(ex, 'no weighted lift with history in the fixture');
+            selectProgressExercise(ex.id);
+            progressChart.update();
+            const title = progressChart.options.scales.y.title.text;
+            assert(/^1RM estimé/.test(title), `axis title still English: ${title}`);
+            const point = strengthHistory(ex).findIndex(p => p.kg);
+            const item = { parsed: { y: 60 }, dataIndex: point, dataset: progressChart.data.datasets[0] };
+            const callbacks = progressChart.options.plugins.tooltip.callbacks;
+            const label = callbacks.label(item), after = callbacks.afterLabel(item);
+            assert(/1RM estimé/.test(label), `tooltip still English: ${label}`);
+            assert(/^Soulevé/.test(after), `tooltip still English: ${after}`);
+        });
+
         await check('Translation: plain text, patterns and values', () => {
             equal(tr('Settings'), 'Réglages', 'exact text');
             equal(tr('3 sets · 47 min'), '3 séries · 47 min', 'pattern with numbers');
