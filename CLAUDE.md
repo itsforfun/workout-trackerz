@@ -575,3 +575,7 @@ reference/debug-screenshots/  ← Supabase key page, "Script error" console, Git
 - The cause of "email rate limit exceeded": Supabase's built-in email sender allows only a few emails an hour for the whole project (confirmation is ON). Fix in the dashboard: turn off Confirm email (Authentication → Sign In / Providers → Email) or set up custom SMTP (Authentication → Emails → SMTP Settings, e.g. Brevo), then raise Authentication → Rate Limits.
 - v1.86: chart axis titles and tooltip callback text were still English in French (the `i18n` Chart.js plugin only translated labels and dataset names). The plugin in js/core.js now also translates every `scales.*.title.text` and wraps each tooltip callback so its returned text goes through `tr`. New charts get this for free; just add the English text to lang/fr.js.
 
+## 65. Walkthrough refresh (v1.87, 2026-11-01)
+- `tourSteps()` (js/coach.js) now has 10 stops: level, rings (the score in the middle is explained here, no separate stop), journey card, week strip, start (lifting / cardio program / rest day), weekly quests, steps, habits, the Progress tab, the Settings tab. The rings title and text follow the program and cardio setting (Two rings when cardio is Off; "Cardio sessions" on cardio programs), and the week text drops "optional cardio" when cardio is Off. Stops whose target isn't on screen are skipped as before.
+- When a Today card is added or removed, update the walkthrough too; the automated check fails if the journey, week, quests or Settings stop goes missing.
+

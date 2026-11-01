@@ -624,6 +624,29 @@
         showScreen('app');
     });
 
+    await check('Walkthrough covers the journey, week, quests and Settings, and fits the cardio setting', () => {
+        const saved = userProfile;
+        try {
+            showScreen('app');
+            todayMode = null;
+            switchTab('today');
+            const titles = tourSteps().map(s => s.title);
+            ['Your level', 'Your journey', 'Your week', 'Weekly quests', 'Steps', 'Daily habits', 'Progress', 'Settings'].forEach(t =>
+                assert(titles.includes(t), `walkthrough has no "${t}" stop`));
+            const shown = tourSteps().filter(s => { const el = document.querySelector(s.target); return el && el.getBoundingClientRect().width; });
+            assert(shown.length >= 9, `only ${shown.length} walkthrough stops can be shown`);
+            userProfile = { ...saved, cardio: 'off' };
+            switchTab('today');
+            equal(tourSteps()[1].title, 'Two rings', 'cardio Off: two rings');
+            assert(!/cardio minutes/.test(tourSteps()[1].text), 'cardio Off: rings text still mentions cardio');
+            userProfile = { ...saved, cardio: 'standard' };
+            switchTab('today');
+            equal(tourSteps()[1].title, 'Three rings', 'cardio on: three rings');
+        } finally {
+            userProfile = saved;
+        }
+    });
+
     await check('Sign-in errors from Supabase become plain messages', () => {
         equal(authMessage({ code: 'over_email_send_rate_limit', message: 'email rate limit exceeded' }), 'Too many sign-up or reset emails right now. Please try again in an hour.');
         equal(authMessage({ message: 'email rate limit exceeded' }), 'Too many sign-up or reset emails right now. Please try again in an hour.', 'message-only fallback');

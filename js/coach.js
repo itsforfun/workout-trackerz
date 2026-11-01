@@ -637,16 +637,34 @@ let tourStep = -1;
 
 function tourSteps() {
     const lifting = document.getElementById('liftView').style.display !== 'none';
+    const cardioProgram = isCardioProgram();
+    const cardioOn = cardioTarget() > 0;
+    // The rings change with the program and the cardio setting, so the text does too
+    const rings = cardioProgram
+        ? (cardioOn
+            ? 'Cardio sessions this week, cardio minutes toward your weekly target, and today\'s steps. A ring turns gold when it closes. The number in the middle is your consistency score: your last 7 days, from 0 to 100.'
+            : 'Cardio sessions this week and today\'s steps. A ring turns gold when it closes. The number in the middle is your consistency score: your last 7 days, from 0 to 100.')
+        : (cardioOn
+            ? 'Lifting this week, cardio minutes toward your weekly target, and today\'s steps. A ring turns gold when it closes. The number in the middle is your consistency score: your last 7 days, from 0 to 100.'
+            : 'Lifting this week and today\'s steps. A ring turns gold when it closes. The number in the middle is your consistency score: your last 7 days, from 0 to 100.');
+    const start = cardioProgram
+        ? { target: '#startWorkoutBtn', title: 'Start here', text: 'Today\'s session: each block, the zone to stay in and your heart rate. Odyr times every block for you.' }
+        : lifting
+            ? { target: '#startWorkoutBtn', title: 'Start here', text: 'Today\'s session. Weights are filled in for you, and records and badges unlock as you go.' }
+            : { target: '#restDay', title: 'Rest day', text: 'Recovery comes first. Cardio is optional, and lifting is one tap away.' };
     return [
         { target: '.hero-level', title: 'Your level', text: 'Everything you do earns XP: workouts, sets, records, cardio, steps and habits. Climb from Rookie to Mythic.' },
-        { target: '.hero-rings', title: 'Three rings', text: 'Lifting this week, cardio toward your weekly target, and today\'s steps. A ring turns gold when it closes.' },
-        { target: '.hero-score', title: 'Consistency score', text: 'Your last 7 days in one number, from 0 to 100. Steady beats perfect.' },
-        lifting
-            ? { target: '#startWorkoutBtn', title: 'Start here', text: 'Today\'s session. Weights are filled in for you, and records and badges unlock as you go.' }
-            : { target: '#restDay', title: 'Rest day', text: 'Recovery comes first. Cardio is optional, and lifting is one tap away.' },
+        { target: '.hero-rings', title: cardioOn ? 'Three rings' : 'Two rings', text: rings },
+        { target: '#sagaCard', title: 'Your journey', text: 'Workouts, cardio, steps and habits move you along Odyr\'s road. Each landmark unlocks a page of his journal. Tap the card to see the map.' },
+        { target: '#weekPlan', title: 'Your week', text: cardioOn
+            ? 'Lifting days are named; dashed days are optional cardio. Miss a day and the next session simply waits for you.'
+            : 'Lifting days are named; the others are for rest. Miss a day and the next session simply waits for you.' },
+        start,
+        { target: '#questsCard', title: 'Weekly quests', text: 'Three new goals every Monday, set from your log and your goal. Each one you complete is worth 75 XP.' },
         { target: '#todayHero .hl-open', title: 'Steps', text: 'Tap Steps for your daily steps from Apple Health, with a one-time setup.' },
         { target: '#habitsCard', title: 'Daily habits', text: 'Set by your goal in Settings. Fat loss or muscle comes from these, whatever program you follow.' },
         { target: '.bottom-nav > .tab-btn[onclick="switchTab(\'progress\')"]', title: 'Progress', text: 'Your level, badges, strength over time and a chart for every lift.' },
+        { target: '.bottom-nav > .tab-btn[onclick="switchTab(\'settings\')"]', title: 'Settings', text: 'Your goal, cardio level, language and sounds. Help → How the coach works explains every rule, with its sources.' },
     ];
 }
 
