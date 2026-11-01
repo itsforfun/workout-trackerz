@@ -64,6 +64,28 @@ function showNewPasswordForm() {
     showAuthError('Choose a new password for your account.', true);
 }
 
+// Supabase's own error texts are technical and English only ("email rate limit exceeded"), so each known
+// case gets a plain message instead (translated like any other text). Matched on the error code, with the
+// message text as a fallback for older error shapes.
+const AUTH_MESSAGES = [
+    [/over_email_send_rate_limit|email rate limit/i, 'Too many sign-up or reset emails right now. Please try again in an hour.'],
+    [/over_request_rate_limit|rate limit|too many requests/i, 'Too many attempts. Wait a minute, then try again.'],
+    [/invalid_credentials|invalid login credentials/i, 'Wrong email or password.'],
+    [/email_not_confirmed|email not confirmed/i, 'Confirm your email first: open the link we sent you, then log in.'],
+    [/user_already_exists|email_exists|already registered/i, 'An account already exists for this email. Log in instead, or tap "Forgot password?".'],
+    [/weak_password|password should/i, 'Choose a stronger password: at least 6 characters.'],
+    [/same_password|different from the old/i, 'Choose a password different from your current one.'],
+    [/email_address_invalid|invalid.*email|email.*invalid/i, 'That email address doesn’t look right.'],
+    [/AuthRetryableFetchError|failed to fetch|network/i, 'No connection. Check your internet and try again.'],
+];
+
+function authMessage(error) {
+    const text = [error && error.code, error && error.name, error && error.message].filter(Boolean).join(' ');
+    const match = AUTH_MESSAGES.find(([pattern]) => pattern.test(text));
+    if (!match) console.warn('Auth error:', error);
+    return match ? match[1] : 'Something went wrong. Please try again in a moment.';
+}
+
 function showAuthError(message, isInfo = false) {
     const errorEl = document.getElementById('authError');
     errorEl.textContent = message;
@@ -85,7 +107,7 @@ async function handleLogin(event) {
     const { data, error } = await sb.auth.signInWithPassword({ email, password });
 
     if (error) {
-        showAuthError(error.message);
+        showAuthError(authMessage(error));
     } else {
         currentUser = data.user;
         await enterApp();
@@ -112,7 +134,7 @@ async function handleSignup(event) {
     });
 
     if (error) {
-        showAuthError(error.message);
+        showAuthError(authMessage(error));
     } else if (data.session) {
         // Email confirmation is turned off in Supabase: we're already logged in
         currentUser = data.user;
@@ -133,7 +155,7 @@ async function handleForgotPassword() {
     }
     const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: appUrl() });
     if (error) {
-        showAuthError(error.message);
+        showAuthError(authMessage(error));
     } else {
         showAuthError(`If an account exists for ${email}, a reset link is on its way. Open it on this device.`, true);
     }
@@ -148,7 +170,7 @@ async function handleNewPassword(event) {
     }
     const { data, error } = await sb.auth.updateUser({ password });
     if (error) {
-        showAuthError(error.message);
+        showAuthError(authMessage(error));
         return;
     }
     recoveryMode = false;
@@ -214,7 +236,7 @@ async function handlePasswordReset() {
         const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: appUrl() });
 
         if (error) {
-            showSettingsError(error.message);
+            showSettingsError(authMessage(error));
         } else {
             showToast('Password reset email sent!');
         }

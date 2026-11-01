@@ -624,6 +624,15 @@
         showScreen('app');
     });
 
+    await check('Sign-in errors from Supabase become plain messages', () => {
+        equal(authMessage({ code: 'over_email_send_rate_limit', message: 'email rate limit exceeded' }), 'Too many sign-up or reset emails right now. Please try again in an hour.');
+        equal(authMessage({ message: 'email rate limit exceeded' }), 'Too many sign-up or reset emails right now. Please try again in an hour.', 'message-only fallback');
+        equal(authMessage({ code: 'invalid_credentials', message: 'Invalid login credentials' }), 'Wrong email or password.');
+        equal(authMessage({ code: 'user_already_exists', message: 'User already registered' }), 'An account already exists for this email. Log in instead, or tap "Forgot password?".');
+        equal(authMessage({ name: 'AuthRetryableFetchError', message: 'Failed to fetch' }), 'No connection. Check your internet and try again.');
+        equal(authMessage({ message: 'something new' }), 'Something went wrong. Please try again in a moment.');
+    });
+
     await check('Habits follow your goal and cardio science is in every program; programs promise no fat loss or muscle', () => {
         const saved = { profile: userProfile, program: currentProgram };
         try {
