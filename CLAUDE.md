@@ -34,7 +34,7 @@ Build a **real multi-user workout-tracking app** that:
 - Project URL: `https://hcwbcxhblfjpdlkwykez.supabase.co` (project "kevinwandji55@gmail.com's Project", org "kind", free plan)
 - Publishable key (safe in frontend, already in `index.html`): `sb_publishable_mEe_5g2UITyp5O-F9YRhRg_wTQWuOtf`
 - The original project (`nwmquradhhvfnanfmyjd`) no longer exists (DNS NXDOMAIN on 2026-10-27); the app was switched to the project above.
-- Auth → URL Configuration: Site URL and Redirect URL set to `https://itsforfun.github.io/workout-trackerz/`. Email confirmation is ON.
+- Auth → URL Configuration: Site URL and Redirect URL set to `https://itsforfun.github.io/workout-trackerz/`. Email confirmation is OFF since 2026-11-02 (verified: `mailer_autoconfirm: true`), because the built-in sender allows only a few emails an hour; sign-up logs straight in. Password-reset emails still use the built-in sender (same limit) until custom SMTP (e.g. Brevo) is set up.
 - The secret key the owner pasted in the old chat belonged to the deleted project, so it is dead. Never put a secret key in this repo.
 - `user_data` table + RLS created in the new project via `supabase-setup.sql` (verified 2026-10-27: anon read returns `[]`).
 - Unknown: whether the owner re-ran the SQL after the `profile` column was added. If the table is missing the column run:
