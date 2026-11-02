@@ -135,4 +135,5 @@ function renderQuests() {
                 </div>`;
             }).join('')}
         </details>`;
+    todayTip('quests');
 }

@@ -584,7 +584,7 @@ function renderRestDay(offDay, showingLift) {
                 ${cardio ? '<button class="btn" onclick="setTodayMode(\'cardio\')">Optional cardio</button>' : ''}
                 <button class="btn${missed ? ' btn-primary' : ''}" onclick="setTodayMode('lift')">${missed ? 'Lift today' : 'Lift anyway'}</button>
             </div>
-        </div>`;
+        </div>`;    todayTip('restday');
 }
 
 // Every program: this week's cardio and a way into the zones, below the habits

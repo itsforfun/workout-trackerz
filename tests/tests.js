@@ -624,12 +624,13 @@
         showScreen('app');
     });
 
-    await check('Walkthrough covers the journey, week, quests and Settings, and fits the cardio setting', () => {
+    await check('Full walkthrough (Replay) covers the journey, week, quests and Settings, and fits the cardio setting', () => {
         const saved = userProfile;
         try {
             showScreen('app');
             todayMode = null;
             switchTab('today');
+            tourFull = true;
             const titles = tourSteps().map(s => s.title);
             ['Your level', 'Your journey', 'Your week', 'Weekly quests', 'Steps', 'Daily habits', 'Progress', 'Settings'].forEach(t =>
                 assert(titles.includes(t), `walkthrough has no "${t}" stop`));
@@ -644,7 +645,44 @@
             equal(tourSteps()[1].title, 'Three rings', 'cardio on: three rings');
         } finally {
             userProfile = saved;
+            tourFull = false;
         }
+    });
+
+    await check('First visit: a 3-stop tour, then one-time tips that show once each', async () => {
+        showScreen('app');
+        todayMode = null;
+        switchTab('today');
+        tourFull = false;
+        equal(tourSteps().map(s => s.id).join(','), 'start,rings,nav', 'short tour stops');
+        assert(tourSteps().every(s => document.querySelector(s.target)), 'a short-tour stop has nothing to point at');
+        // Workout tips: first set, then effort and rest, each once
+        allData._tips = {};
+        hideCoachTip();
+        queueTip('wo-first');
+        await new Promise(r => setTimeout(r, 700));
+        equal(tipShowing, 'wo-first', 'first-workout tip not shown');
+        assert(document.getElementById('coachTip').classList.contains('show'), 'tip not visible');
+        queueTip('wo-first');
+        dismissCoachTip();
+        queueTip('wo-first');
+        await new Promise(r => setTimeout(r, 700));
+        assert(tipShowing !== 'wo-first', 'a seen tip came back');
+        // Today tips: not before the first workout, at most one per visit
+        hideCoachTip();
+        todayTipShown = false;
+        allData._tourDone = todayStr();
+        const real = allWorkoutDates;
+        window.allWorkoutDates = () => [];
+        todayTip('quests');
+        equal(tipQueue.length, 0, 'tip before the first workout');
+        window.allWorkoutDates = real;
+        todayTip('quests');
+        todayTip('restday');
+        equal(tipQueue.join(','), 'quests', 'more than one Today tip in a visit');
+        hideCoachTip();
+        resetTips();
+        assert(!tipSeen('wo-first'), 'Show tips again did not reset');
     });
 
     await check('Sign-in errors from Supabase become plain messages', () => {

@@ -2117,3 +2117,16 @@ button.hero-score:active { opacity:0.7; }
 .record-share { margin-top:var(--s4); padding:10px 22px; border:0.5px solid rgba(217,178,95,0.5); border-radius:99px; background:rgba(217,178,95,0.08);
     color:var(--accent); font:inherit; font-size:0.85rem; font-weight:500; cursor:pointer; pointer-events:auto; }
 .record-share[hidden] { display:none; }
+
+/* One-time coach tips (v1.90): one short line above the bottom bars, one at a time */
+.coach-tip { position:fixed; left:16px; right:16px; bottom:calc(env(safe-area-inset-bottom) + 112px); z-index:520; max-width:420px; margin:0 auto;
+    display:flex; align-items:center; gap:12px; padding:14px 14px 14px 16px; border-radius:18px; background:rgba(44,38,32,0.97);
+    box-shadow:0 0 0 0.5px rgba(220,200,158,0.35), 0 18px 40px -16px rgba(0,0,0,0.85);
+    opacity:0; transform:translateY(12px); pointer-events:none; transition:opacity 0.3s var(--ease), transform 0.3s var(--ease); }
+.coach-tip.show { opacity:1; transform:none; pointer-events:auto; }
+.coach-tip-dot { flex:none; width:7px; height:7px; border-radius:50%; background:var(--accent); box-shadow:0 0 10px rgba(217,178,95,0.7); }
+.coach-tip p { flex:1; font-size:0.84rem; line-height:1.45; color:var(--text); }
+.coach-tip button { flex:none; padding:8px 12px; border-radius:999px; border:none; background:rgba(240,232,216,0.1); color:var(--text); font:inherit; font-size:0.78rem; cursor:pointer; }
+body:has(#workoutScreen.active) .coach-tip { bottom:calc(env(safe-area-inset-bottom) + 150px); }
+@media (prefers-reduced-motion: reduce) { .coach-tip { transform:none; } }
+

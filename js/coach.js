@@ -663,9 +663,20 @@ function dismissInsight(key) {
 }
 
 // ── First-time walkthrough: a spotlight over each part of Today ──
+// The first visit gets a 3-stop tour (start, rings, the tab bar); everything else is taught by one-time tips
+// when it first matters. Settings → Help → Replay runs the full 10-stop tour.
 let tourStep = -1;
+let tourFull = false;
+
+const SHORT_TOUR = ['start', 'rings', 'nav'];
 
 function tourSteps() {
+    const steps = allTourSteps();
+    if (tourFull) return steps.filter(step => step.id !== 'nav');
+    return SHORT_TOUR.map(id => steps.find(step => step.id === id));
+}
+
+function allTourSteps() {
     const lifting = document.getElementById('liftView').style.display !== 'none';
     const cardioProgram = isCardioProgram();
     const cardioOn = cardioTarget() > 0;
@@ -678,13 +689,13 @@ function tourSteps() {
             ? 'Lifting this week, cardio minutes toward your weekly target, and today\'s steps. A ring turns gold when it closes. The number in the middle is your consistency score: your last 7 days, from 0 to 100.'
             : 'Lifting this week and today\'s steps. A ring turns gold when it closes. The number in the middle is your consistency score: your last 7 days, from 0 to 100.');
     const start = cardioProgram
-        ? { target: '#startWorkoutBtn', title: 'Start here', text: 'Today\'s session: each block, the zone to stay in and your heart rate. Odyr times every block for you.' }
+        ? { id: 'start', target: '#startWorkoutBtn', title: 'Start here', text: 'Today\'s session: each block, the zone to stay in and your heart rate. Odyr times every block for you.' }
         : lifting
-            ? { target: '#startWorkoutBtn', title: 'Start here', text: 'Today\'s session. Weights are filled in for you, and records and badges unlock as you go.' }
-            : { target: '#restDay', title: 'Rest day', text: 'Recovery comes first. Cardio is optional, and lifting is one tap away.' };
+            ? { id: 'start', target: '#startWorkoutBtn', title: 'Start here', text: 'Today\'s session. Weights are filled in for you, and records and badges unlock as you go.' }
+            : { id: 'start', target: '#restDay', title: 'Rest day', text: 'Recovery comes first. Cardio is optional, and lifting is one tap away.' };
     return [
         { target: '.hero-level', title: 'Your level', text: 'Everything you do earns XP: workouts, sets, records, cardio, steps and habits. Climb from Rookie to Mythic.' },
-        { target: '.hero-rings', title: cardioOn ? 'Three rings' : 'Two rings', text: rings },
+        { id: 'rings', target: '.hero-rings', title: cardioOn ? 'Three rings' : 'Two rings', text: rings },
         { target: '#sagaCard', title: 'Your journey', text: 'Workouts, cardio, steps and habits move you along Odyr\'s road. Each landmark unlocks a page of his journal. Tap the card to see the map.' },
         { target: '#weekPlan', title: 'Your week', text: cardioOn
             ? 'Lifting days are named; dashed days are optional cardio. Miss a day and the next session simply waits for you.'
@@ -695,11 +706,14 @@ function tourSteps() {
         { target: '#habitsCard', title: 'Daily habits', text: 'Set by your goal in Settings. Fat loss or muscle comes from these, whatever program you follow.' },
         { target: '.bottom-nav > .tab-btn[onclick="switchTab(\'progress\')"]', title: 'Progress', text: 'Your level, badges, strength over time and a chart for every lift.' },
         { target: '.bottom-nav > .tab-btn[onclick="switchTab(\'settings\')"]', title: 'Settings', text: 'Your goal, cardio level, language and sounds. Help → How the coach works explains every rule, with its sources.' },
+        { id: 'nav', target: '.bottom-nav', title: 'Everything else', text: 'Progress shows how far you’ve come; Settings holds your goal and help. The rest explains itself as you go.' },
     ];
 }
 
-function startTour() {
+function startTour(full = false) {
     if (!document.getElementById('mainApp').classList.contains('active')) return;
+    tourFull = full;
+    hideCoachTip();
     showTab('today');
     tourStep = 0;
     document.getElementById('tour').classList.add('show');
@@ -762,6 +776,74 @@ function maybeStartTour() {
             || document.querySelector('.modal-overlay.active');
         if (!allData._tourDone && !busy && document.getElementById('page-today').classList.contains('active')) startTour();
     }, 900);
+}
+
+// ── One-time tips: one short line the first time something matters, then never again ──
+// Seen tips are kept in workout_data._tips ({id: date}). One tip on screen at a time (the rest queue);
+// on Today at most one tip per visit, and none until the first workout is logged.
+const COACH_TIPS = {
+    'wo-first': 'Do the set, then tick it. Change the weight or reps first if they were different.',
+    'wo-effort': 'How did it feel? Your answer sets next time’s weight.',
+    'wo-rest': 'Rest counts down at the bottom. Form shows how to do an exercise; Swap changes it.',
+    'wo-summary': 'Your workout in one page. Your level and your journey just moved.',
+    journey: 'You moved along Odyr’s road. Tap the card to see the map and his journal.',
+    quests: 'Three quests every Monday, worth 75 XP each. Tap to see this week’s.',
+    restday: 'Rest day. Recovery comes first; cardio is optional.',
+    progress: 'Tap a lift to see its chart and your weekly log.',
+};
+const tipQueue = [];
+let tipShowing = null;
+let todayTipShown = false;
+
+function tipSeen(id) {
+    return !!(allData._tips && allData._tips[id]);
+}
+
+function queueTip(id) {
+    if (!COACH_TIPS[id] || tipSeen(id) || tipShowing === id || tipQueue.includes(id) || tourStep >= 0) return;
+    tipQueue.push(id);
+    if (!tipShowing) setTimeout(nextCoachTip, 600);
+}
+
+// Feature tips on Today and Progress: only once a workout is logged, one per visit, never during the tour
+function todayTip(id) {
+    if (todayTipShown || tipSeen(id) || !allData._tourDone || !allWorkoutDates().length) return;
+    todayTipShown = true;
+    queueTip(id);
+}
+
+function nextCoachTip() {
+    if (tipShowing) return;
+    const id = tipQueue.shift();
+    if (!id) return;
+    if (!allData._tips) allData._tips = {};
+    allData._tips[id] = todayStr();
+    scheduleSave();
+    tipShowing = id;
+    const el = document.getElementById('coachTip');
+    el.querySelector('p').textContent = COACH_TIPS[id];
+    el.classList.add('show');
+}
+
+function dismissCoachTip() {
+    haptic();
+    hideCoachTip(true);
+}
+
+function hideCoachTip(keepQueue = false) {
+    const el = document.getElementById('coachTip');
+    if (el) el.classList.remove('show');
+    tipShowing = null;
+    if (keepQueue) setTimeout(nextCoachTip, 350);
+    else tipQueue.length = 0;
+}
+
+function resetTips() {
+    haptic();
+    allData._tips = {};
+    todayTipShown = false;
+    scheduleSave();
+    showToast('Tips will show again as you go');
 }
 
 // ── Weekly recap: last Monday–Sunday as a short story, shown once each week ──

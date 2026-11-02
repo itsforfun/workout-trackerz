@@ -10,6 +10,7 @@ function openSummary(summary) {
     renderSummary(summary);
     showScreen('summary');
     playSound('complete');
+    queueTip('wo-summary');
     document.querySelector('#summaryScreen .workout-body').scrollTop = 0;
 }
 

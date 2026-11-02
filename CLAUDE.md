@@ -590,3 +590,10 @@ reference/debug-screenshots/  ← Supabase key page, "Script error" console, Git
 - "How the coach works" → Period symptoms (`women: true`, shown to women only): McNulty 2020 (performance changes trivially across phases; go by the individual), Blagrove 2020 (strength barely changes), Li 2026 (exercise eases PMS pain, fatigue and mood).
 - Owner's decision: keep it to this one line. No period calendar, predictions, fertility or phase-based training: that would turn Odyr into a health tracker and the evidence doesn't support phase-based plans.
 
+## 68. Short first tour + one-time tips (v1.90, 2026-11-02)
+- First visit: a 3-stop tour (`SHORT_TOUR`: start, rings, the tab bar "Everything else"). Settings → Help → Replay runs the full 10-stop tour (`startTour(true)`, `tourFull`). `allTourSteps()` holds every stop; stops used by the short tour have an `id`.
+- One-time tips (`COACH_TIPS`, `queueTip`, `todayTip`, js/coach.js; `#coachTip` in index.html): one line with a gold dot and "Got it", above the bottom bars (higher in workout mode so it clears the rest timer). Shown once each (`workout_data._tips` {id: date}), one at a time (queue), hidden when the screen changes.
+  - Workout: `wo-first` (when a workout opens), `wo-effort` and `wo-rest` (first ticked set), `wo-summary` (first summary).
+  - Today/Progress via `todayTip`: only after the first workout and the tour, at most one per visit: `journey` (leagues gained since the last visit), `quests`, `restday`, `progress` (lifting programs with data).
+- Settings → Help → Show tips again (`resetTips`). A new feature that needs explaining gets a tip here rather than a tour stop.
+

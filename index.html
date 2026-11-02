@@ -606,7 +606,8 @@
                 </div>
                 <div class="settings-actions">
                     <button class="btn" onclick="openScience()">How the coach works</button>
-                    <button class="btn" onclick="startTour()">Replay the walkthrough</button>
+                    <button class="btn" onclick="startTour(true)">Replay the walkthrough</button>
+                    <button class="btn" onclick="resetTips()">Show tips again</button>
                     <button class="btn" onclick="openRecap()">Last week's recap</button>
                     <a class="btn" href="privacy.html" target="_blank" rel="noopener">Privacy</a>
                 </div>
@@ -666,6 +667,12 @@
 </div>
 
 <!-- FIRST-TIME WALKTHROUGH -->
+<div class="coach-tip" id="coachTip" role="status">
+    <span class="coach-tip-dot"></span>
+    <p></p>
+    <button onclick="dismissCoachTip()">Got it</button>
+</div>
+
 <div class="tour" id="tour">
     <div class="tour-spot" id="tourSpot"></div>
     <div class="tour-card" id="tourCard">

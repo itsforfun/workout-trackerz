@@ -97,6 +97,7 @@ function highestWeekFor(exId) {
 function resumeWorkout() {
     renderWorkout();
     showScreen('workout');
+    queueTip('wo-first');
     updateWorkoutClock();
 }
 
@@ -226,6 +227,9 @@ function toggleSetDone(exId, i) {
         if (rowEl) rowEl.classList.add('pop');
         floatXp(rowEl && rowEl.querySelector('.set-check'), SET_XP);
         startRest(getPrescription(workoutExercise(exId)).restSec, nextUpLabel(exId));
+        if (tipShowing === 'wo-first') hideCoachTip(true);
+        queueTip('wo-effort');
+        queueTip('wo-rest');
         checkRecord(exId, i);
         checkGhost(exId, i);
         setBadgeNudge();

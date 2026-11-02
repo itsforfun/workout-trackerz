@@ -134,6 +134,7 @@ function renderProgress() {
     renderPart('muscles', renderMuscleWeek);
     if (liftDay === null || liftDay >= prog.days.length) liftDay = lastLiftDay(prog);
     renderPart('lifts', renderLifts);
+    if (hasData && !isCardioProgram(prog)) todayTip('progress');
 }
 
 // The workout day of the most recent lifting session, else the first

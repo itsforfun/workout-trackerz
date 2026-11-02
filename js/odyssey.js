@@ -132,6 +132,7 @@ function renderSagaCard() {
         </button>`;
     travelTo(el.querySelector('svg'), fromInto, j.into);
     rememberLeagues(j.total);
+    if (gained > 0) todayTip('journey');
 }
 
 // A landmark reached (or a saga completed) gets its moment; the first run stores where you are quietly
