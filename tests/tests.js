@@ -1126,6 +1126,45 @@
         showScreen('app');
     });
 
+    await check('Workout mode: remove a set, skip the rest, or one set of each when short on time', () => {
+        activeWorkout = null;
+        beginWorkout(null);
+        const exId = Object.keys(activeWorkout.rows)[0];
+        const rows = () => activeWorkout.rows[exId];
+        const start = rows().length;
+        addSet(exId);
+        equal(rows().length, start + 1, 'set not added');
+        assert(document.querySelector(`#wo_${exId} .wo-remove`), 'no Remove set button');
+        removeSet(exId);
+        equal(rows().length, start, 'set not removed');
+        rows()[rows().length - 1].done = true;
+        renderWorkoutCard(exId);
+        assert(!document.querySelector(`#wo_${exId} .wo-remove`), 'Remove set shown for a ticked set');
+        removeSet(exId);
+        equal(rows().length, start, 'a ticked set was removed');
+        activeWorkout.rows[exId] = [{ kg: '', reps: '', target: '', done: false }];
+        removeSet(exId);
+        equal(rows().length, 1, 'the last set was removed');
+        // Skip the rest: started exercise keeps only its done sets and counts as finished
+        activeWorkout.rows[exId] = [0, 1, 2].map(i => ({ kg: '50', reps: '8', target: '8', done: i === 0 }));
+        renderWorkout();
+        assert(document.querySelector(`#wo_${exId} .wo-skip`), 'no Skip the rest button');
+        skipRestOfSets(exId);
+        equal(rows().length, 1, 'skip the rest');
+        assert(document.getElementById(`wo_${exId}`).classList.contains('complete'), 'skipped exercise not finished');
+        // Short on time: one set of each unfinished exercise
+        const ids = Object.keys(activeWorkout.rows);
+        ids.slice(1).forEach(id => { while (activeWorkout.rows[id].length < 3) addSet(id); });
+        renderWorkout();
+        assert(document.querySelector('.wo-short'), 'no Short on time button');
+        shortOnTime();
+        ids.forEach(id => equal(activeWorkout.rows[id].length, 1, `short on time: ${id}`));
+        assert(!document.querySelector('.wo-short'), 'Short on time still offered after trimming');
+        activeWorkout = null;
+        try { localStorage.removeItem(activeWorkoutKey()); } catch (e) { /* private mode */ }
+        showScreen('app');
+    });
+
     await check('Big moments can be shared: a record, a level-up and a landmark open a share card', () => {
         const opened = [];
         const real = window.openShareCard;

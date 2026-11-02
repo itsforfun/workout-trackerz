@@ -141,10 +141,10 @@ function renderWorkout() {
                 </div>
                 <div class="plates" id="plates_${exId}">${platesHtml(exId)}</div>
                 ${rows.map((row, i) => setRowHtml(ex, i, row, exId)).join('')}
-                <button class="wo-add" onclick="addSet('${exId}')">+ Add set</button>
+                ${setActionsHtml(exId)}
             </div>
         `;
-    }).join('');
+    }).join('') + `<div id="woShort">${shortOnTimeHtml()}</div>`;
     updateWorkoutFocus();
 }
 
@@ -384,6 +384,59 @@ function nextUpLabel(exId) {
     return nextId ? `Next up: ${workoutExercise(nextId).name}` : 'Last set done — finish your workout';
 }
 
+// Under the sets: remove the last unticked set (always at least one left), skip the rest once a set is
+// done (the exercise counts as finished and the next one comes into focus), or add a set
+function setActionsHtml(exId) {
+    const rows = activeWorkout.rows[exId];
+    const canRemove = rows.length > 1 && !rows[rows.length - 1].done;
+    const canSkip = rows.some(r => r.done) && rows.some(r => !r.done);
+    return `
+        <div class="wo-add-row">
+            ${canRemove ? `<button class="wo-add wo-remove" onclick="removeSet('${exId}')">− Remove set</button>` : ''}
+            ${canSkip ? `<button class="wo-add wo-skip" onclick="skipRestOfSets('${exId}')">Skip the rest</button>` : ''}
+            <button class="wo-add" onclick="addSet('${exId}')">+ Add set</button>
+        </div>`;
+}
+
+function skipRestOfSets(exId) {
+    const rows = activeWorkout.rows[exId];
+    if (!rows.some(r => r.done)) return;
+    activeWorkout.rows[exId] = rows.filter(r => r.done);
+    haptic();
+    persistActiveWorkout();
+    renderWorkoutCard(exId);
+    updateWorkoutClock();
+}
+
+// Short on time (or keeping the end of the session for cardio): every unfinished exercise keeps one set.
+// Exercises already started keep the sets done; the others keep their first set. Sets can be added back.
+function shortOnTimeHtml() {
+    const trimmable = Object.values(activeWorkout.rows).some(rows => rows.filter(r => !r.done).length > (rows.some(r => r.done) ? 0 : 1));
+    return trimmable ? `<button class="wo-short" onclick="shortOnTime()">Short on time? One set of each</button>` : '';
+}
+
+function shortOnTime() {
+    Object.entries(activeWorkout.rows).forEach(([exId, rows]) => {
+        const done = rows.filter(r => r.done);
+        activeWorkout.rows[exId] = done.length ? done : rows.slice(0, 1);
+    });
+    haptic();
+    persistActiveWorkout();
+    renderWorkout();
+    updateWorkoutClock();
+    showToast('One set of each left. You can add sets back any time.');
+}
+
+function removeSet(exId) {
+    const rows = activeWorkout.rows[exId];
+    if (rows.length <= 1 || rows[rows.length - 1].done) return;
+    rows.pop();
+    haptic();
+    persistActiveWorkout();
+    renderWorkoutCard(exId);
+    updateWorkoutClock();
+}
+
 function addSet(exId) {
     const rows = activeWorkout.rows[exId];
     const last = rows[rows.length - 1];
@@ -402,8 +455,11 @@ function renderWorkoutCard(exId) {
     temp.innerHTML = rows.map((row, i) => setRowHtml(ex, i, row, exId)).join('');
     updatePlates(exId);
     card.querySelectorAll('.set-row').forEach(el => el.remove());
-    const addBtn = card.querySelector('.wo-add');
-    [...temp.children].forEach(el => card.insertBefore(el, addBtn));
+    const actions = card.querySelector('.wo-add-row');
+    [...temp.children].forEach(el => card.insertBefore(el, actions));
+    actions.outerHTML = setActionsHtml(exId);
+    const short = document.getElementById('woShort');
+    if (short) short.innerHTML = shortOnTimeHtml();
     window.scrollTo(0, scroll);
     const before = document.querySelector('.wo-card.current');
     const current = updateWorkoutFocus();

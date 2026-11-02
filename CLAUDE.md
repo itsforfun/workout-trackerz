@@ -579,3 +579,8 @@ reference/debug-screenshots/  ← Supabase key page, "Script error" console, Git
 - `tourSteps()` (js/coach.js) now has 10 stops: level, rings (the score in the middle is explained here, no separate stop), journey card, week strip, start (lifting / cardio program / rest day), weekly quests, steps, habits, the Progress tab, the Settings tab. The rings title and text follow the program and cardio setting (Two rings when cardio is Off; "Cardio sessions" on cardio programs), and the week text drops "optional cardio" when cardio is Off. Stops whose target isn't on screen are skipped as before.
 - When a Today card is added or removed, update the walkthrough too; the automated check fails if the journey, week, quests or Settings stop goes missing.
 
+## 66. Fewer sets when time is short (v1.88, 2026-11-02)
+- Under each exercise in workout mode (`setActionsHtml`, js/workout.js): **− Remove set** (the last unticked set; never a ticked one, never the last set), **Skip the rest** (once a set is done: drops the unticked sets, the exercise counts as finished and the next comes into focus) and **+ Add set**. Buttons stay on one line (`.wo-add-row`).
+- Below the exercises: **Short on time? One set of each** (`shortOnTime`, `#woShort`): started exercises keep their done sets, unstarted ones keep their first set, so you can get through everything once or save time for Zone 2 at the end. Shown only while there is something to trim; sets can be added back.
+- Skipped sets simply aren't logged, so next time the coach's usual "Complete all N sets" rule applies (no penalty beyond that).
+
