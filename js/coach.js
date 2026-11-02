@@ -122,12 +122,26 @@ const READINESS_QUESTIONS = [
     { key: 'soreness', label: 'Soreness', options: ['Very', 'A bit', 'None'] },
     { key: 'energy', label: 'Energy', options: ['Low', 'OK', 'High'] },
 ];
+// Optional for women (Settings → Period check-in): one more line. Strong symptoms make the session lighter,
+// mild ones keep it from being a push day. The answer only shapes today's session and is never saved.
+const PERIOD_QUESTION = { key: 'period', label: 'Period symptoms', options: ['Strong', 'Mild', 'Not today'] };
 let readinessDraft = null;
+
+function periodCheckOn() {
+    return userGender() === 'female' && !!(userProfile && userProfile.cycleCheck);
+}
+
+function readinessQuestions() {
+    return periodCheckOn() ? [...READINESS_QUESTIONS, PERIOD_QUESTION] : READINESS_QUESTIONS;
+}
 
 // Each answer scores 0–2 (higher = readier), so the total runs 0–6
 function readinessLevel(answers) {
     const score = READINESS_QUESTIONS.reduce((sum, q) => sum + (answers[q.key] ?? 1), 0);
-    return score <= 2 ? 'low' : score >= 5 ? 'high' : 'normal';
+    const level = score <= 2 ? 'low' : score >= 5 ? 'high' : 'normal';
+    if (answers.period === 0) return 'low';
+    if (answers.period === 1 && level === 'high') return 'normal';
+    return level;
 }
 
 function startWorkout() {
@@ -136,7 +150,7 @@ function startWorkout() {
         resumeWorkout();
         return;
     }
-    readinessDraft = { sleep: 1, soreness: 1, energy: 1 };
+    readinessDraft = { sleep: 1, soreness: 1, energy: 1, ...(periodCheckOn() ? { period: 2 } : {}) };
     renderReadiness();
     document.getElementById('readinessModal').classList.add('active');
 }
@@ -145,12 +159,13 @@ function renderReadiness() {
     const level = readinessLevel(readinessDraft);
     const deload = deloadInfo();
     document.getElementById('readinessBody').innerHTML = `
-        ${READINESS_QUESTIONS.map(q => `
+        ${readinessQuestions().map(q => `
             <div class="ready-q">
                 <span>${q.label}</span>
                 <div class="seg">${q.options.map((opt, v) => `<button class="${readinessDraft[q.key] === v ? 'on' : ''}" onclick="setReadiness('${q.key}', ${v})">${opt}</button>`).join('')}</div>
             </div>`).join('')}
         <p class="ready-note">${deload && deload.active ? 'Deload week: lighter weights and fewer sets today.'
+            : readinessDraft.period === 0 ? 'Period symptoms: about 10% lighter and one set fewer today. Go by how you feel.'
             : level === 'low' ? 'Taking it easier today: about 10% lighter and one set fewer per exercise. Smart, not soft.'
             : level === 'high' ? 'You\'re ready. Chase an extra rep on your last sets.'
             : 'Normal session. Weights are set from last time.'}</p>
@@ -170,7 +185,9 @@ function closeReadiness() {
 
 function confirmReadiness(skip) {
     closeReadiness();
-    beginWorkout(skip ? null : { ...readinessDraft, level: readinessLevel(readinessDraft) });
+    // The period answer only sets today's level; it isn't kept with the workout
+    const { period, ...answers } = readinessDraft;
+    beginWorkout(skip ? null : { ...answers, level: readinessLevel(readinessDraft) });
 }
 
 // Lighter version of a prefilled weight (display units), rounded to the plate step
@@ -397,6 +414,18 @@ const COACH_SCIENCE = [
         ],
     },
     {
+        women: true,
+        title: 'Period symptoms',
+        rule: 'With Period check-in on, strong symptoms make the session about 10% lighter with one set fewer, and mild ones keep it from being a push day. The coach never plans training by cycle phase.',
+        why: 'In a review of 78 studies, performance was at most trivially lower in the first days of the period, and strength barely changed across the cycle; the authors advise going by each woman’s own response rather than general rules. Symptoms such as cramps and fatigue vary a lot between women and months, so the check-in asks about them directly. Regular exercise eased pain, fatigue and low mood in women with premenstrual symptoms.',
+        note: 'Research on the cycle is still thin and often low quality. Your answer only shapes that day’s session and is not saved.',
+        refs: [
+            ['McNulty KL, Elliott-Sale KJ, Dolan E, et al. Sports Med. 2020;50(10):1813–1827.', 'The Effects of Menstrual Cycle Phase on Exercise Performance in Eumenorrheic Women: A Systematic Review and Meta-Analysis', '10.1007/s40279-020-01319-3'],
+            ['Blagrove RC, Bruinvels G, Pedlar CR. J Sci Med Sport. 2020;23(12):1220–1227.', 'Variations in strength-related measures during the menstrual cycle in eumenorrheic women: A systematic review and meta-analysis', '10.1016/j.jsams.2020.04.022'],
+            ['Li X, Ding F, Ma X, et al. BMC Womens Health. 2026;26(1):75.', 'A systematic review of exercise interventions on negative affect, pain, and fatigue in women with premenstrual syndrome', '10.1186/s12905-025-04242-9'],
+        ],
+    },
+    {
         title: 'Deload weeks',
         rule: 'When 2+ lifts stall, after two all-out sessions in a row, or after about 7 hard weeks: one week ~10% lighter with fewer sets.',
         why: 'Experienced strength and physique coaches use deloads to manage fatigue, usually 5–7 days every 4–6 weeks, mostly by cutting sets and effort. In a randomised trial, a week of no training mid-block left muscle growth unchanged but gave smaller strength gains, so the coach deloads by training lighter rather than stopping, and only when fatigue shows.',
@@ -544,8 +573,9 @@ const COACH_SCIENCE = [
 
 // The section for your goal comes first (and open); the other goals follow the general sections
 function scienceSections() {
-    const yours = COACH_SCIENCE.filter(section => section.goal === userGoal());
-    return [...yours, ...COACH_SCIENCE.filter(section => !yours.includes(section))];
+    const shown = COACH_SCIENCE.filter(section => !section.women || userGender() === 'female');
+    const yours = shown.filter(section => section.goal === userGoal());
+    return [...yours, ...shown.filter(section => !yours.includes(section))];
 }
 
 function referenceLink(title, doi) {

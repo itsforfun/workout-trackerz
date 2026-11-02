@@ -584,3 +584,9 @@ reference/debug-screenshots/  ← Supabase key page, "Script error" console, Git
 - Below the exercises: **Short on time? One set of each** (`shortOnTime`, `#woShort`): started exercises keep their done sets, unstarted ones keep their first set, so you can get through everything once or save time for Zone 2 at the end. Shown only while there is something to trim; sets can be added back.
 - Skipped sets simply aren't logged, so next time the coach's usual "Complete all N sets" rule applies (no penalty beyond that).
 
+## 67. Period check-in (v1.89, 2026-11-02)
+- Optional for women: Settings → Period check-in (`profile.cycleCheck`, the setting only shows when the form says female). When on, the workout check-in gets one more line, "Period symptoms: Strong / Mild / Not today" (`PERIOD_QUESTION`, `readinessQuestions()`). Strong → the session is 'low' (about 10% lighter, one set fewer); Mild → never a 'high' push day; otherwise unchanged (`readinessLevel`).
+- Privacy: the answer only sets that day's level; `confirmReadiness` drops it before the workout is stored, and sessions keep only the level. privacy.html says so.
+- "How the coach works" → Period symptoms (`women: true`, shown to women only): McNulty 2020 (performance changes trivially across phases; go by the individual), Blagrove 2020 (strength barely changes), Li 2026 (exercise eases PMS pain, fatigue and mood).
+- Owner's decision: keep it to this one line. No period calendar, predictions, fertility or phase-based training: that would turn Odyr into a health tracker and the evidence doesn't support phase-based plans.
+

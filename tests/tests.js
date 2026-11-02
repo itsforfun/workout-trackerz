@@ -1126,6 +1126,37 @@
         showScreen('app');
     });
 
+    await check('Period check-in: women only, optional, lightens the session and is never saved', () => {
+        const saved = userProfile;
+        try {
+            userProfile = { ...saved, gender: 'female', cycleCheck: false };
+            equal(readinessQuestions().length, 3, 'off by default');
+            userProfile = { ...saved, gender: 'male', cycleCheck: true };
+            equal(readinessQuestions().length, 3, 'never for men');
+            userProfile = { ...saved, gender: 'female', cycleCheck: true };
+            equal(readinessQuestions().length, 4, 'question missing when on');
+            equal(readinessLevel({ sleep: 2, soreness: 2, energy: 2, period: 0 }), 'low', 'strong symptoms lighten the session');
+            equal(readinessLevel({ sleep: 2, soreness: 2, energy: 2, period: 1 }), 'normal', 'mild symptoms: no push day');
+            equal(readinessLevel({ sleep: 2, soreness: 2, energy: 2, period: 2 }), 'high', 'no symptoms: unchanged');
+            assert(scienceSections().some(sec => sec.title === 'Period symptoms'), 'no science section for women');
+            activeWorkout = null;
+            showScreen('app');
+            startWorkout();
+            assert(document.getElementById('readinessBody').textContent.includes('Period symptoms'), 'question not in the check-in');
+            setReadiness('period', 0);
+            confirmReadiness(false);
+            equal(activeWorkout.readiness.level, 'low', 'session not lighter');
+            assert(!('period' in activeWorkout.readiness), 'period answer was kept with the workout');
+            userProfile = { ...saved, gender: 'male' };
+            assert(!scienceSections().some(sec => sec.title === 'Period symptoms'), 'period science shown to men');
+        } finally {
+            userProfile = saved;
+            activeWorkout = null;
+            try { localStorage.removeItem(activeWorkoutKey()); } catch (e) { /* private mode */ }
+            showScreen('app');
+        }
+    });
+
     await check('Workout mode: remove a set, skip the rest, or one set of each when short on time', () => {
         activeWorkout = null;
         beginWorkout(null);

@@ -110,6 +110,7 @@ Status: **Done** · **Check** (built, still needs a look on the iPhone or a smal
 | 1.86 | Lift chart fully translated: axis title and tooltip ("1RM estimé", "Soulevé 5 kg × 8") |
 | 1.87 | Walkthrough updated: 10 stops (level, rings + score, journey, week, start, quests, steps, habits, Progress, Settings); rings, start and week texts follow the program and cardio setting |
 | 1.88 | Workout mode: − Remove set, Skip the rest (after a set is done), and "Short on time? One set of each" for the whole workout |
+| 1.89 | Period check-in (women, optional): one line in the workout check-in; strong symptoms lighten the session, mild ones cap it at normal; answer never saved; science section (McNulty 2020, Blagrove 2020, Li 2026). Deliberately no calendar, predictions or phase-based plans |
 | 1.82 | Sets per muscle on Progress: weekly hard sets per muscle against 10–20, with the source |
 | 1.81 | Stall ladder for every program: +1 rep, +1 set, slower tempo, drop set (isolation only), then a reset |
 | 1.80 | Odyr's Journal: a short story in Odyr's voice at every landmark, revealed line by line, read aloud by the phone's voice |

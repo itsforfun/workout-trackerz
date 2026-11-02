@@ -294,6 +294,11 @@ function exportAllData() {
     setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
+// Period check-in is offered only when the form says female
+function showCycleSetting() {
+    document.getElementById('settingsCycleGroup').hidden = document.getElementById('settingsGender').value !== 'female';
+}
+
 // Until a cardio level was picked by hand, it follows the goal chosen in the form
 function cardioFollowsGoal(goal) {
     if (userProfile && userProfile.cardio) return;
@@ -317,7 +322,8 @@ async function handleSettingsUpdate(event) {
     const picked = document.getElementById('settingsCardio').value;
     const goalDefault = ['muscle', 'strength'].includes(goal) ? 'light' : 'standard';
     const cardio = !userProfile.cardio && picked === goalDefault ? undefined : picked;
-    userProfile = { ...userProfile, gender, age, weight, height, goal, cardio, units };
+    const cycleCheck = gender === 'female' && document.getElementById('settingsCycle').value === 'on';
+    userProfile = { ...userProfile, gender, age, weight, height, goal, cardio, units, cycleCheck };
     rememberGender();
     if (weightChanged) logBodyweight(weight);
 
@@ -335,6 +341,8 @@ function loadSettingsForm() {
     document.getElementById('settingsGender').value = userProfile.gender || 'male';
     document.getElementById('settingsGoal').value = userGoal();
     document.getElementById('settingsCardio').value = userCardio();
+    document.getElementById('settingsCycle').value = userProfile.cycleCheck ? 'on' : 'off';
+    showCycleSetting();
     document.getElementById('settingsAge').value = userProfile.age || '';
     document.getElementById('settingsWeightLabel').textContent = `Weight (${usesLb() ? 'lb' : 'kg'})`;
     document.getElementById('settingsWeight').value = userProfile.weight ? kgToDisplay(userProfile.weight) : '';
