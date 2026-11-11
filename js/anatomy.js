@@ -134,11 +134,16 @@ function renderMuscleWeek() {
     const missing = MAJOR_GROUPS.filter(g => !sets[g]);
     el.innerHTML = `
         <div class="mw-head"><span class="mw-kicker">This week's muscles</span><button class="mw-link" onclick="openExerciseLibrary()">Exercise library ›</button></div>
-        ${bodyMapSvg({ weights, tap: 'openExerciseLibrary' })}
+        <div class="body3d">
+            <div class="b3-stage"><span class="b3-corner tl"></span><span class="b3-corner tr"></span><span class="b3-corner bl"></span><span class="b3-corner br"></span></div>
+            <div class="b3-flat">${bodyMapSvg({ weights, tap: 'openExerciseLibrary' })}</div>
+        </div>
         <p class="mw-note">Brighter gold means more sets. Tap a muscle to see its exercises.</p>
+        <p class="mw-credit">3D anatomy: BodyParts3D, © DBCLS, CC BY 4.0</p>
         ${missing.length && Object.keys(sets).length ? `<p class="mw-missing"><span>Not trained this week:</span> ${muscleList(missing)}</p>` : ''}
         ${muscleSetsHtml(sets)}
     `;
+    mountBody3d(el.querySelector('.body3d'), weights);
 }
 
 // Sets per muscle over the last 7 days against about 10–20 hard sets (10+ was the top group for growth in

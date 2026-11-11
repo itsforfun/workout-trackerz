@@ -2026,6 +2026,8 @@ I18N_PACKS.fr = {
         "The order is a coaching convention (it follows the partner program spec), not something a single study ranks. A session without a weight jump is not a stall: at an intermediate stage, load goes up about weekly.": "Cet ordre est une convention de coaching (il suit le cahier des charges du programme), pas un classement issu d’une étude. Une séance sans hausse de charge n’est pas une stagnation : à un niveau intermédiaire, la charge monte à peu près chaque semaine.",
         "Sets per muscle": "Séries par muscle",
         "Body scan": "Analyse du corps",
+        "3D anatomy: BodyParts3D, © DBCLS, CC BY 4.0": "Anatomie 3D : BodyParts3D, © DBCLS, CC BY 4.0",
+        "Your muscles this week, in 3D. Drag to turn, tap a muscle for its exercises.": "Vos muscles de la semaine, en 3D. Faites glisser pour tourner, touchez un muscle pour ses exercices.",
         "Scan complete": "Analyse terminée",
         "+{#} more": "+{0} autres",
         "10–20 a week": "10 à 20 par semaine",

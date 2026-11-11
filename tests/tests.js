@@ -395,6 +395,18 @@
         });
     });
 
+    await check('The 3D body model has a mesh for every muscle group it can show', async () => {
+        const buf = await (await fetch(BODY_MODEL_URL)).arrayBuffer();
+        const view = new DataView(buf);
+        equal(view.getUint32(0, true), 0x46546C67, 'models/body.glb is a GLB');
+        const json = JSON.parse(new TextDecoder().decode(new Uint8Array(buf, 20, view.getUint32(12, true))));
+        const names = json.meshes.map(m => m.name);
+        // BodyParts3D has no rectus abdominis: abs light up on the abdominal wall ('ob')
+        MUSCLE_GROUPS.filter(g => g.id !== 'ab').forEach(g => assert(names.includes(`g_${g.id}`), `no 3D mesh for ${g.name}`));
+        assert(names.includes('bone'), 'no skeleton in the 3D body');
+        assert(buf.byteLength < 2.5 * 1024 * 1024, `3D body too heavy for a phone: ${Math.round(buf.byteLength / 1024)} KB`);
+    });
+
     await check('The body map lights the right muscles and filters the library', () => {
         const box = document.createElement('div');
         box.innerHTML = bodyMapSvg({ main: ['ch'], extra: ['tr'] });
