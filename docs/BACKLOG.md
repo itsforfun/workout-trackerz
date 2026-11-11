@@ -13,7 +13,7 @@ Status: **Done** · **Check** (built, still needs a look on the iPhone or a smal
 |---|---|
 | Calmer Today: one hero, rings row, tiles (v1.91) | Ask testers again; see it on the iPhone |
 | Gold body scan on Today and the summary (v1.92) | See it on the iPhone |
-| Turning 3D body on Progress (v1.93) | See it on the iPhone (speed, battery); male body only, no abs/lats meshes in BodyParts3D |
+| Turning 3D body on Progress (v1.93) | See it on the iPhone (speed, battery); male body only; abs and lats are fitted shapes (v1.94); female model candidate: CheRa on Sketchfab (CC BY), needs a Sketchfab sign-in to download |
 | Painted opening-screen backgrounds (Leonardo) | Parked 2026-11-11: women's hair doesn't match the knife style; API credits need a top-up |
 | Trophy room, design carried across the app, shorter quotes (v1.29–1.37) | See it on the iPhone |
 | French version (v1.35–1.36) | A native French speaker using it for a few days |

@@ -1,6 +1,7 @@
 // ── Turning 3D body on Progress (v1.93) ──
 // models/body.glb is built by tools/build-body.py from BodyParts3D (© DBCLS, CC BY 4.0): one mesh per Odyr
-// muscle group ('g_ch' …), 'rest' for other muscles and 'bone' for the skeleton. Three.js and the model load
+// muscle group ('g_ch' …; abs and lats are fitted shapes, BodyParts3D has neither), 'rest' for other muscles
+// and 'bone' for the skeleton. Three.js and the model load
 // only when Progress shows the card; the flat body map stays underneath as the fallback (no WebGL, offline
 // before the first load, or an error). It turns slowly, can be dragged, pauses off screen, and stands still
 // under Reduce Motion. Tapping a muscle opens its exercises.
@@ -49,7 +50,7 @@ function webglAvailable() {
     } catch (e) { return false; }
 }
 
-// Gold by weight (0 = untrained, 1 = 10+ sets); the abdominal wall carries abs as well as obliques
+// Gold by weight (0 = untrained, 1 = 10+ sets)
 function body3dColor(weight) {
     const rest = new THREE.Color('#2e2621');
     if (!weight) return rest;
@@ -61,7 +62,7 @@ function paintBody3d(weights) {
     if (!body3d) return;
     body3d.weights = weights;
     Object.entries(body3d.meshes).forEach(([group, mesh]) => {
-        const w = Math.max(weights[group] || 0, group === 'ob' ? weights.ab || 0 : 0);
+        const w = weights[group] || 0;
         mesh.material.color.copy(body3dColor(w));
         mesh.material.emissive.copy(new THREE.Color('#e6b84a')).multiplyScalar(w * w * 0.35);
         mesh.userData.weight = w;
