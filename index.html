@@ -372,29 +372,37 @@
     <!-- TODAY PAGE -->
     <div class="page active" id="page-today">
         <div class="container today-container">
-            <!-- Calm order (v1.78): where you stand, then today's workout without scrolling, then the rest -->
-            <div class="today-hero" id="todayHero"></div>
-            <div id="installCard"></div>
-            <div id="sagaCard"></div>
-            <div id="weekPlan"></div>
-            <div id="insightCard"></div>
+            <!-- One hero, then a grid (v1.91): today's workout first, the week as rings, everything else as tiles -->
             <div id="deloadCard"></div>
-            <div id="powerUnlock"></div>
             <div id="restDay"></div>
             <div id="cardioView"></div>
-            <div id="liftView">
-            <div class="day-strip" id="dayStrip"></div>
-            <div class="today-meta" id="todayMeta"></div>
-            <div id="todayMuscles"></div>
-            <div id="warmupCard"></div>
-            <div class="today-list" id="todayList"></div>
-            <div class="today-hint" id="todayHint"></div>
-            <button class="start-btn" id="startWorkoutBtn" onclick="startWorkout()"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l13-7.5z"/></svg> Start workout</button>
+            <div id="liftView" class="focus-card">
+                <div class="focus-kicker" id="todayKicker"></div>
+                <h2 class="focus-title" id="todayTitle"></h2>
+                <div class="today-meta" id="todayMeta"></div>
+                <div id="todayMuscles"></div>
+                <div class="today-hint" id="todayHint"></div>
+                <button class="start-btn" id="startWorkoutBtn" onclick="startWorkout()"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l13-7.5z"/></svg> Start workout</button>
+                <details class="focus-more" id="focusMore">
+                    <summary><span id="focusMoreLabel">Exercises and warm-up</span><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></summary>
+                    <div class="day-strip" id="dayStrip"></div>
+                    <div id="powerUnlock"></div>
+                    <div id="warmupCard"></div>
+                    <div class="today-list" id="todayList"></div>
+                </details>
             </div>
-            <div id="questsCard"></div>
-            <div id="habitsCard"></div>
-            <div id="cardioEntry"></div>
+            <div id="weekPlan"></div>
+            <div id="insightCard"></div>
+            <div class="today-hero" id="todayHero"></div>
+            <div id="sagaCard"></div>
+            <div class="today-tiles">
+                <div id="questsCard"></div>
+                <div id="habitsCard"></div>
+                <div id="levelTile"></div>
+                <div id="cardioEntry"></div>
+            </div>
             <div id="mobilityCard"></div>
+            <div id="installCard"></div>
         </div>
     </div>
 

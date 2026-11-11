@@ -2130,3 +2130,82 @@ button.hero-score:active { opacity:0.7; }
 body:has(#workoutScreen.active) .coach-tip { bottom:calc(env(safe-area-inset-bottom) + 150px); }
 @media (prefers-reduced-motion: reduce) { .coach-tip { transform:none; } }
 
+
+/* ═══ TODAY: ONE HERO, THEN A GRID (v1.91) ═══
+   Testers found Today overwhelming. The session is the hero; the week is a row of small rings;
+   journey, quests, habits, level and cardio are tiles; the exercise list folds under the hero. */
+.focus-card { padding:var(--s5) var(--s5) var(--s4); background:var(--raised); box-shadow:var(--lift); border-radius:var(--r-card); margin-bottom:var(--s3); }
+.focus-kicker { font-size:0.7rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--text-dim); }
+.focus-title { font-family:var(--font-display); font-weight:400; font-size:2.6rem; letter-spacing:0.04em; line-height:0.95; margin:6px 0 4px; text-transform:uppercase; }
+.focus-card .today-meta { margin:0 0 var(--s2); color:var(--text-dim); font-size:0.85rem; }
+.focus-card .today-muscles { margin:var(--s2) 0 var(--s3); padding:var(--s3); background:rgba(0,0,0,0.16); box-shadow:none; }
+.focus-card .today-muscles .bm-side { height:96px; }
+.focus-card .today-hint { margin:0 0 var(--s3); text-align:left; }
+.focus-card .today-hint:empty { display:none; }
+.focus-card .start-btn { width:100%; margin:0; }
+.focus-more { margin-top:var(--s3); }
+.focus-more > summary { display:flex; align-items:center; justify-content:center; gap:6px; padding:10px 0 2px; list-style:none; cursor:pointer; color:var(--text-dim); font-size:0.82rem; }
+.focus-more > summary::-webkit-details-marker { display:none; }
+.focus-more > summary svg { transition:transform 0.3s var(--ease); }
+.focus-more[open] > summary svg { transform:rotate(180deg); }
+.focus-more[open] > summary { margin-bottom:var(--s3); }
+.focus-more .day-strip:has(.day-tab:only-child) { display:none; }
+.focus-more .today-list { margin-bottom:0; }
+
+/* The week: a quiet row under the hero */
+#weekPlan .week-plan { gap:4px; margin:0 0 var(--s3); }
+#weekPlan .wp-day { padding:6px 0; background:none; border-color:transparent; }
+#weekPlan .wp-day.today { background:var(--raised); border-color:var(--border-bright); }
+#weekPlan .wp-legend { display:none; }
+#insightCard .insight { margin-bottom:var(--s3); }
+
+/* This week as small rings */
+.today-hero { display:block; padding:var(--s4); }
+.ring-head { display:flex; align-items:center; justify-content:space-between; gap:var(--s2); margin-bottom:var(--s3); }
+.ring-kicker { font-size:0.7rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--text-dim); }
+.ring-kicker strong { color:var(--text); font-weight:600; }
+.today-hero .hero-score { position:static; inset:auto; flex-direction:row; pointer-events:auto; transform:none; display:inline-flex; align-items:baseline; gap:4px; width:auto; height:auto; padding:5px 11px; border-radius:999px; border:1px solid var(--border-bright); background:none; color:var(--text-dim); font:inherit; font-size:0.78rem; cursor:pointer; }
+.today-hero .hero-score strong { color:var(--accent); font-size:0.95rem; font-weight:600; }
+.ring-tiles { display:grid; grid-template-columns:repeat(var(--n,3),1fr); gap:var(--s2); }
+.ring-tile { display:flex; flex-direction:column; align-items:center; gap:2px; padding:var(--s2) 0 0; background:none; border:none; color:var(--text); font:inherit; cursor:pointer; }
+div.ring-tile { cursor:default; }
+.rt-ring { width:64px; height:64px; margin-bottom:4px; }
+.rt-bg { fill:none; stroke:rgba(240,232,216,0.08); stroke-width:6; }
+.rt-fg { fill:none; stroke:var(--c); stroke-width:6; stroke-linecap:round; transform:rotate(-90deg); transform-origin:32px 32px; transition:stroke-dashoffset 1.1s var(--ease); }
+.rt-fg.closed { stroke:#e6b84a; }
+.rt-value { font-size:1.05rem; font-weight:300; }
+.rt-value small { font-size:0.72rem; color:var(--text-dim); }
+.rt-label { font-size:0.7rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-dim); }
+
+/* Tiles: two columns; an opened tile takes the full width */
+#sagaCard .saga-card { margin-bottom:var(--s3); }
+.today-tiles { display:grid; grid-auto-flow:dense; grid-template-columns:1fr 1fr; gap:var(--s3); margin-bottom:var(--s4); }
+.today-tiles > div:empty { display:none; }
+.today-tiles > div:has(details[open]) { grid-column:1 / -1; }
+.today-tiles > div > * { height:100%; margin:0 !important; }
+.today-tiles > div:has(details[open]) > * { height:auto; }
+.tile { display:flex; flex-direction:column; align-items:flex-start; gap:4px; width:100%; padding:var(--s4); border:none; border-radius:var(--r-card); background:var(--raised); box-shadow:var(--lift); color:var(--text); font:inherit; text-align:left; cursor:pointer; }
+.tile-kicker { font-size:0.68rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--text-dim); }
+.tile-kicker strong { color:var(--accent); font-weight:600; }
+.tile-big { font-family:var(--font-display); font-size:1.5rem; letter-spacing:0.04em; line-height:1; }
+.tile-sub { font-size:0.75rem; color:var(--text-dim); }
+.tile-bar { display:block; width:100%; height:4px; margin-top:auto; padding-top:0; border-radius:999px; background:rgba(240,232,216,0.08); overflow:hidden; }
+.tile-bar > span { display:block; height:100%; border-radius:inherit; background:var(--text); }
+.tile-bar.gold > span { background:var(--gold); }
+/* Quests, habits and cardio cards take the tile shape while closed */
+.today-tiles .quests-card:not([open]) > summary.quests-head { display:flex; flex-direction:column; align-items:flex-start; gap:8px; }
+.today-tiles .quests-card:not([open]) .quests-left { margin-left:0; }
+.today-tiles .quests-card, .today-tiles .habits-card, .today-tiles .cardio-entry { border-radius:var(--r-card); }
+.today-tiles .habits-card:not([open]) .habits-row h3 { font-family:inherit; font-size:0.68rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--text-dim); font-weight:400; }
+.today-tiles .habits-card:not([open]) .habits-count { font-family:var(--font-display); font-size:1.5rem; color:var(--text); }
+.today-tiles .habits-card:not([open]) .habits-row { flex-direction:column; align-items:flex-start; gap:4px; margin-bottom:10px; }
+.today-tiles .cardio-entry { display:flex; flex-direction:column; align-items:flex-start; gap:6px; }
+.today-tiles .cardio-entry .ce-link { font-size:0.75rem; margin-left:0; }
+.today-tiles .cardio-entry strong small { display:block; font-size:0.72rem; }
+#installCard:not(:empty) { margin-top:var(--s2); }
+.today-hero .hero-score span { font-size:0.7rem; letter-spacing:0.1em; margin:0; color:var(--text-dim); }
+.today-hero .hero-score strong { letter-spacing:0; line-height:1; }
+.today-hero .hero-rings svg.rt-ring { width:64px; height:64px; max-width:none; position:static; transform:none; }
+.ring-kicker { white-space:nowrap; }
+.today-tiles .quests-card:not([open]) .quests-dots i { width:12px; height:12px; }
+.today-tiles .quests-card:not([open]) .quests-kicker { font-size:0.68rem; letter-spacing:0.12em; }

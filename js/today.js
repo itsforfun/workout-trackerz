@@ -100,51 +100,45 @@ function renderTodayHero() {
         { label: 'Cardio', color: '#c98f66', value: cardio, target: cardioTarget(), text: `<span data-count="${cardio}" data-key="hero-cardio"></span><small>/${cardioTarget()} min</small>` },
         { label: 'Steps', color: '#b0a491', value: steps, target: goal, text: `<span data-count="${steps}" data-key="hero-steps" data-format="compact"></span><small>/${compactNum(goal)}</small>` },
     ].filter(ring => ring.target > 0);   // cardio set to Off: two rings
-    const circles = rings.map((ring, i) => {
-        const r = HERO_RING_RADII[i];
-        const c = 2 * Math.PI * r;
+    // This week as a row of small rings (Steps opens the Steps view); the score sits in the row's header
+    const R = 26;
+    const C = 2 * Math.PI * R;
+    const tiles = rings.map(ring => {
         const ratio = Math.min(1, ring.value / ring.target);
-        return `
-            <circle class="hr-bg" cx="100" cy="100" r="${r}" style="--c:${ring.color}"/>
-            <circle class="hr-fg${ratio >= 1 ? ' closed' : ''}" cx="100" cy="100" r="${r}" style="--c:${ring.color}"
-                stroke-dasharray="${c}" stroke-dashoffset="${c}" data-offset="${c * (1 - ratio)}"/>`;
+        const closed = ratio >= 1 ? ' closed' : '';
+        const inner = `
+            <svg class="rt-ring" viewBox="0 0 64 64" aria-hidden="true">
+                <circle class="rt-bg" cx="32" cy="32" r="${R}"/>
+                <circle class="rt-fg${closed}" cx="32" cy="32" r="${R}" stroke-dasharray="${C}" stroke-dashoffset="${C}" data-offset="${C * (1 - ratio)}"/>
+            </svg>
+            <span class="rt-value">${ring.text}</span>
+            <span class="rt-label">${ring.label}${ring.label === 'Steps' ? ' <span class="hl-chev" aria-hidden="true">›</span>' : ''}</span>`;
+        return ring.label === 'Steps'
+            ? `<button class="ring-tile hl-open${closed}" style="--c:${ring.color}" onclick="switchTab('steps')">${inner}</button>`
+            : `<div class="ring-tile${closed}" style="--c:${ring.color}">${inner}</div>`;
     }).join('');
     el.innerHTML = `
-        <button class="hero-level" onclick="openLevel()">
-            <span class="hlv-num">Level <strong data-count="${xp.level}" data-key="hero-level"></strong></span>
-            <span class="hlv-rank">${escapeHtml(xp.rank)}</span>
-            <span class="hlv-xp">${xp.level < MAX_LEVEL ? `${xp.toNext.toLocaleString(LOCALE)} XP to go` : 'Max level'}</span>
-            <span class="hlv-bar"><span style="width:${xp.span ? Math.round((xp.into / xp.span) * 100) : 100}%"></span></span>
-        </button>
         <div class="hero-rings">
-            <button class="hero-score" onclick="openScore()"><strong data-count="${consistency.score}" data-key="hero-score"></strong><span>score ›</span></button>
-            <svg viewBox="0 0 200 200" aria-hidden="true">
-                <defs><linearGradient id="heroGold" x1="0" y1="0" x2="1" y2="1">
-                    <stop offset="0" stop-color="#f2d891"/><stop offset="1" stop-color="#b38636"/>
-                </linearGradient></defs>
-                ${circles}
-            </svg>
-        </div>
-        <div class="hero-legend">
-            ${rings.map(ring => ring.label === 'Steps' ? `
-                <button class="hl-row hl-open${ring.value >= ring.target ? ' closed' : ''}" style="--c:${ring.color}" onclick="switchTab('steps')">
-                    <span class="hl-label">${ring.label} <span class="hl-chev" aria-hidden="true">›</span></span>
-                    <span class="hl-value">${ring.text}</span>
-                </button>` : `
-                <div class="hl-row${ring.value >= ring.target ? ' closed' : ''}" style="--c:${ring.color}">
-                    <span class="hl-label">${ring.label}</span>
-                    <span class="hl-value">${ring.text}</span>
-                </div>`).join('')}
-        </div>
-        <div class="hero-foot">
-            <span><strong>${stats.streak}</strong> ${stats.streak === 1 ? 'week' : 'weeks'} in a row</span>
-            <button class="hero-link" onclick="openAchievements()"><strong>${badgeCount()}</strong> badges →</button>
-        </div>
-    `;
+            <div class="ring-head">
+                <span class="ring-kicker">This week</span>
+                <button class="hero-score" onclick="openScore()"><span>Score</span> <strong data-count="${consistency.score}" data-key="hero-score"></strong> ›</button>
+            </div>
+            <div class="ring-tiles" style="--n:${rings.length}">${tiles}</div>
+        </div>`;
+    // Level: a tile in the grid below (the full picture lives on Progress and in the trophy room)
+    const levelEl = document.getElementById('levelTile');
+    if (levelEl) levelEl.innerHTML = `
+        <button class="hero-level tile" onclick="openLevel()">
+            <span class="tile-kicker">Level <strong data-count="${xp.level}" data-key="hero-level"></strong></span>
+            <span class="tile-big">${escapeHtml(xp.rank)}</span>
+            <span class="tile-sub">${xp.level < MAX_LEVEL ? `${xp.toNext.toLocaleString(LOCALE)} XP to go` : 'Max level'}</span>
+            <span class="tile-bar gold"><span style="width:${xp.span ? Math.round((xp.into / xp.span) * 100) : 100}%"></span></span>
+        </button>`;
     // Rings sweep in from empty
     rollNumbers(el);
+    if (levelEl) rollNumbers(levelEl);
     el.getBoundingClientRect();
-    setTimeout(() => el.querySelectorAll('.hr-fg').forEach(circle => { circle.style.strokeDashoffset = circle.dataset.offset; }), 30);
+    setTimeout(() => el.querySelectorAll('.rt-fg').forEach(circle => { circle.style.strokeDashoffset = circle.dataset.offset; }), 30);
 
     // Steps live in the Steps view (tap Steps under the rings); fetch today's count once so the ring is right on first open
     if (!heroStepsRequested && currentUser) {
@@ -194,8 +188,13 @@ function renderToday() {
             ${escapeHtml(name)}${i === nextDay && prog.days.length > 1 ? '<span class="up-next">UP NEXT</span>' : ''}
         </button>
     `).join('');
-    const activeTab = document.querySelector('.day-tab.active');
-    if (activeTab) activeTab.scrollIntoView({ block: 'nearest', inline: 'start' });
+    // The hero names the session; the other days, the warm-up and the exercise list fold under it
+    const weekday = new Date().toLocaleDateString(LOCALE, { weekday: 'long' });
+    document.getElementById('todayKicker').textContent = `${weekday.charAt(0).toUpperCase()}${weekday.slice(1)} · ${tr(todayDay === nextDay ? 'Up next' : 'Your pick')}`;
+    document.getElementById('todayTitle').textContent = prog.days[todayDay];
+    document.getElementById('focusMoreLabel').textContent = isCardioProgram(prog)
+        ? 'Session plan'
+        : prog.days.length > 1 ? 'Exercises, warm-up and other days' : 'Exercises and warm-up';
 
     // Cardio programs: the day's timed session instead of an exercise list
     if (isCardioProgram(prog)) {

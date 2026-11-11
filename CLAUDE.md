@@ -597,3 +597,10 @@ reference/debug-screenshots/  ← Supabase key page, "Script error" console, Git
   - Today/Progress via `todayTip`: only after the first workout and the tour, at most one per visit: `journey` (leagues gained since the last visit), `quests`, `restday`, `progress` (lifting programs with data).
 - Settings → Help → Show tips again (`resetTips`). A new feature that needs explaining gets a tip here rather than a tour stop.
 
+## 69. Calmer Today: one hero, then a grid (v1.91, 2026-11-11) — supersedes the order in section 57
+- Testers found Today overwhelming (~2,000px, 14 equal cards, workout below the fold) and preferred Progress's look. Today now fits about one phone screen:
+  - **Hero** (`#liftView.focus-card`): weekday · Up next / Your pick (`#todayKicker`), the session name (`#todayTitle`), meta + week select, the muscle map, the hint, Start. Other days (`#dayStrip`), power note, warm-up and the exercise list fold into `<details id="focusMore">` ("Exercises, warm-up and other days"; "Session plan" for cardio programs).
+  - Then the week strip (quiet, no legend), the coach insight, **rings row** (`renderTodayHero`: small rings `.ring-tile`/`.rt-fg`, Steps is `.hl-open`, the score is a pill `.hero-score` in the row header), the saga card, and **tiles** (`.today-tiles`, 2 columns, `grid-auto-flow:dense`): quests, habits, level (`#levelTile`, `.hero-level`), cardio. An opened quests/habits card spans the full width. Install card and mobility sit at the bottom.
+  - Streak and badge count left Today (they live on Progress).
+- Deload and rest-day cards still replace/precede the hero as before. New Today cards should be a tile or fold into the hero, not a new full-width card.
+

@@ -895,7 +895,7 @@
             assert(/\/300 min/.test(document.getElementById('todayHero').textContent), 'high target not on the ring');
             userProfile = { ...saved, goal: 'general', cardio: 'off' };
             switchTab('today');
-            equal(document.querySelectorAll('#todayHero .hr-fg').length, 2, 'cardio Off: two rings');
+            equal(document.querySelectorAll('#todayHero .rt-fg').length, 2, 'cardio Off: two rings');
             assert(!consistencyScore().parts.some(p => p.key === 'cardio'), 'cardio Off still in the score');
             const monday = mondayOf(todayStr());
             delete metaFor('_quests')[monday];

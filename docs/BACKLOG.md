@@ -11,6 +11,8 @@ Status: **Done** · **Check** (built, still needs a look on the iPhone or a smal
 
 | Item | What's left |
 |---|---|
+| Calmer Today: one hero, rings row, tiles (v1.91) | Ask testers again; see it on the iPhone |
+| Painted opening-screen backgrounds (Leonardo) | Parked 2026-11-11: women's hair doesn't match the knife style; API credits need a top-up |
 | Trophy room, design carried across the app, shorter quotes (v1.29–1.37) | See it on the iPhone |
 | French version (v1.35–1.36) | A native French speaker using it for a few days |
 | Decimals in French text | Show "62,5 kg" instead of "62.5 kg" (typing a comma already works) |

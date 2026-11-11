@@ -683,11 +683,11 @@ function allTourSteps() {
     // The rings change with the program and the cardio setting, so the text does too
     const rings = cardioProgram
         ? (cardioOn
-            ? 'Cardio sessions this week, cardio minutes toward your weekly target, and today\'s steps. A ring turns gold when it closes. The number in the middle is your consistency score: your last 7 days, from 0 to 100.'
-            : 'Cardio sessions this week and today\'s steps. A ring turns gold when it closes. The number in the middle is your consistency score: your last 7 days, from 0 to 100.')
+            ? 'Cardio sessions this week, cardio minutes toward your weekly target, and today\'s steps. A ring turns gold when it closes. Score, at the top right, is your consistency over the last 7 days, from 0 to 100.'
+            : 'Cardio sessions this week and today\'s steps. A ring turns gold when it closes. Score, at the top right, is your consistency over the last 7 days, from 0 to 100.')
         : (cardioOn
-            ? 'Lifting this week, cardio minutes toward your weekly target, and today\'s steps. A ring turns gold when it closes. The number in the middle is your consistency score: your last 7 days, from 0 to 100.'
-            : 'Lifting this week and today\'s steps. A ring turns gold when it closes. The number in the middle is your consistency score: your last 7 days, from 0 to 100.');
+            ? 'Lifting this week, cardio minutes toward your weekly target, and today\'s steps. A ring turns gold when it closes. Score, at the top right, is your consistency over the last 7 days, from 0 to 100.'
+            : 'Lifting this week and today\'s steps. A ring turns gold when it closes. Score, at the top right, is your consistency over the last 7 days, from 0 to 100.');
     const start = cardioProgram
         ? { id: 'start', target: '#startWorkoutBtn', title: 'Start here', text: 'Today\'s session: each block, the zone to stay in and your heart rate. Odyr times every block for you.' }
         : lifting
