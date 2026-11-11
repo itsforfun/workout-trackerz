@@ -12,6 +12,7 @@ Status: **Done** · **Check** (built, still needs a look on the iPhone or a smal
 | Item | What's left |
 |---|---|
 | Calmer Today: one hero, rings row, tiles (v1.91) | Ask testers again; see it on the iPhone |
+| Gold body scan on Today and the summary (v1.92) | See it on the iPhone |
 | Painted opening-screen backgrounds (Leonardo) | Parked 2026-11-11: women's hair doesn't match the knife style; API credits need a top-up |
 | Trophy room, design carried across the app, shorter quotes (v1.29–1.37) | See it on the iPhone |
 | French version (v1.35–1.36) | A native French speaker using it for a few days |
@@ -50,6 +51,7 @@ Status: **Done** · **Check** (built, still needs a look on the iPhone or a smal
 - Copy pass so every label and message speaks in one voice
 
 **Feel and polish**
+- HUD touches in gold from the sci-fi clip: reticle ticks on the rings, a scanner-style new record, the rest timer as a reticle (owner, 2026-11-11; the body scan was built first)
 - Light theme, and a choice of accent colour (gold, silver, rose)
 - Large titles that shrink into the top bar on scroll
 - Connected transitions (a lift expands smoothly into workout mode)

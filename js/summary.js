@@ -64,8 +64,7 @@ function renderSummary(sm) {
             const hit = musclesOf(sm.exercises.map(e => e.name));
             return hit.main.length ? `
                 <div class="section-head"><h3>Muscles trained</h3></div>
-                <div class="sum-muscles">${bodyMapSvg({ main: hit.main, extra: hit.extra })}
-                    <p>${muscleList(hit.main)}</p></div>` : '';
+                <div class="sum-muscles">${bodyScanHtml({ main: hit.main, extra: hit.extra, sets: scanSets(sm.exercises.map(e => [e.name, e.sets || 0])), key: `summary-${sm.date || ''}-${sm.day || ''}-${Date.now()}`, kicker: 'Scan complete' })}</div>` : '';
         })()}
         <div class="section-head"><h3>Exercises</h3></div>
         <div class="sum-list">

@@ -604,3 +604,8 @@ reference/debug-screenshots/  ← Supabase key page, "Script error" console, Git
   - Streak and badge count left Today (they live on Progress).
 - Deload and rest-day cards still replace/precede the hero as before. New Today cards should be a tile or fold into the hero, not a new full-width card.
 
+## 70. Gold body scan (v1.92, 2026-11-11)
+- The owner wanted the futuristic feel of a sci-fi medical HUD (skeleton scan, sweeping line, reticles, callouts) without losing the theme. Translated into Odyr's gold and ivory (no green): `bodyScanHtml({ main, extra, sets, key, compact, kicker })` in js/anatomy.js draws a dim body with the lit body on top, revealed by a gold line sweeping down (`clip-path`), gold corner brackets over a faint gold grid, then a DM Mono readout of sets per muscle with dotted leaders (`scanSets([[name, sets]])`, supporting muscles count half; top 4 on Today, 6 on the summary).
+- Used on Today's hero ("Body scan", sets from the prescription) and the post-workout summary ("Scan complete", sets actually done). The sweep plays once per session per `key` (`scansPlayed`), so re-renders show it settled. Reduce Motion: fades, no sweep.
+- Next HUD ideas the owner saw (not built): reticle tick marks on the rings, a scanner-style new record, the rest timer as a reticle. Keep the HUD look to these few places; Today must stay calm (section 69).
+

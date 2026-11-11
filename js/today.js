@@ -218,13 +218,10 @@ function renderToday() {
 
     renderWarmup(exercises);
     const hits = musclesOf(exercises.map(ex => exerciseDisplayName(ex, week)));
+    const scan = scanSets(exercises.map(ex => [exerciseDisplayName(ex, week), getPrescription(ex).sets]));
     document.getElementById('todayMuscles').innerHTML = hits.main.length ? `
-        <button class="today-muscles" onclick="openExerciseLibrary('${hits.main[0]}')">
-            ${bodyMapSvg({ main: hits.main, extra: hits.extra, compact: true })}
-            <span class="tm-text">
-                <span class="tm-kicker">This workout hits</span>
-                <span class="tm-main">${muscleList(hits.main)}</span>
-            </span>
+        <button class="today-muscles" onclick="openExerciseLibrary('${hits.main[0]}')" aria-label="${escapeHtml(tr('This workout hits'))}">
+            ${bodyScanHtml({ main: hits.main, extra: hits.extra, sets: scan, key: `today-${currentProgram}-${todayDay}`, compact: true })}
         </button>` : '';
 
     let readyToProgress = 0;

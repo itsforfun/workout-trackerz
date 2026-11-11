@@ -35,6 +35,47 @@ function bodyMapSvg({ main = [], extra = [], weights = null, tap = '', selected 
     </div>`;
 }
 
+// ── Gold body scan (v1.92): HUD feel in Odyr's colours ──
+// A dim body underneath, the lit body revealed by a sweeping gold line, corner brackets, and a readout of
+// sets per muscle. The sweep plays once per session per scan key (re-renders show it settled).
+const scansPlayed = new Set();
+
+function bodyScanHtml({ main = [], extra = [], sets = {}, key = '', compact = false, kicker = 'Body scan' } = {}) {
+    const fresh = key && !scansPlayed.has(key);
+    if (key) scansPlayed.add(key);
+    const rows = MUSCLE_GROUPS.filter(g => main.includes(g.id))
+        .map(g => [g, Math.round((sets[g.id] || 0) * 2) / 2])
+        .sort((a, b) => b[1] - a[1]);
+    const shown = rows.slice(0, compact ? 4 : 6);
+    return `
+        <div class="body-scan${compact ? ' compact' : ''}${fresh ? ' play' : ''}">
+            <div class="bs-figure">
+                <div class="bs-base">${bodyMapSvg({ compact })}</div>
+                <div class="bs-lit">${bodyMapSvg({ main, extra, compact })}</div>
+                <span class="bs-line" aria-hidden="true"></span>
+                <span class="bs-corner tl"></span><span class="bs-corner tr"></span><span class="bs-corner bl"></span><span class="bs-corner br"></span>
+            </div>
+            <div class="bs-read">
+                <span class="bs-kicker">${escapeHtml(kicker)}</span>
+                ${shown.map(([g, n], i) => `
+                    <span class="bs-row" style="--i:${i}"><span class="bs-name">${escapeHtml(g.name)}</span><i></i><strong>${n ? formatNum(n) : '·'}</strong></span>`).join('')}
+                ${rows.length > shown.length ? `<span class="bs-more">+${rows.length - shown.length} more</span>` : ''}
+                <span class="bs-foot">Sets per muscle</span>
+            </div>
+        </div>`;
+}
+
+// Sets per muscle group for a list of [exercise name, sets]; supporting muscles count half
+function scanSets(list) {
+    const sets = {};
+    list.forEach(([name, n]) => {
+        const m = exerciseMuscles(name);
+        m.main.forEach(g => { sets[g] = (sets[g] || 0) + n; });
+        m.extra.forEach(g => { sets[g] = (sets[g] || 0) + n / 2; });
+    });
+    return sets;
+}
+
 function bodyMapTap(event, fn) {
     const part = event.target.closest('[data-group]');
     if (part && typeof window[fn] === 'function') window[fn](part.dataset.group);
