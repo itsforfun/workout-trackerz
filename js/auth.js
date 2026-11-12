@@ -76,6 +76,8 @@ const AUTH_MESSAGES = [
     [/weak_password|password should/i, 'Choose a stronger password: at least 6 characters.'],
     [/same_password|different from the old/i, 'Choose a password different from your current one.'],
     [/email_address_invalid|invalid.*email|email.*invalid/i, 'That email address doesn’t look right.'],
+    [/anonymous_provider_disabled|anonymous sign-ins are disabled/i, 'Trying Odyr without an account isn’t available right now. Create an account to start.'],
+    [/email_conflict_identity_not_deletable|identity_already_exists/i, 'An account already exists for this email. Log in instead, or tap "Forgot password?".'],
     [/AuthRetryableFetchError|failed to fetch|network/i, 'No connection. Check your internet and try again.'],
 ];
 
@@ -112,6 +114,100 @@ async function handleLogin(event) {
         currentUser = data.user;
         await enterApp();
     }
+}
+
+// ── Try first, sign up later: a guest is a Supabase anonymous user (same row, same RLS). Saving progress
+// adds an email and password to that same user, so nothing moves. Needs Authentication → Sign In / Providers →
+// "Allow anonymous sign-ins" in the dashboard; until then the button stays hidden. ──
+function isGuest() {
+    return !!(currentUser && currentUser.is_anonymous && !currentUser.email);
+}
+
+async function refreshGuestStart() {
+    const el = document.getElementById('guestStart');
+    if (!el) return;
+    let known = null;
+    try { known = localStorage.getItem('odyr_guest_ok'); } catch (e) { /* private mode */ }
+    el.hidden = known !== '1';
+    try {
+        const res = await fetch(`${SUPABASE_URL}/auth/v1/settings`, { headers: { apikey: SUPABASE_KEY } });
+        const ok = !!(await res.json()).external?.anonymous_users;
+        el.hidden = !ok;
+        try { localStorage.setItem('odyr_guest_ok', ok ? '1' : '0'); } catch (e) { /* private mode */ }
+    } catch (e) { /* offline: keep what we knew */ }
+}
+
+async function startAsGuest() {
+    hideAuthError();
+    haptic();
+    const { data, error } = await sb.auth.signInAnonymously();
+    if (error) {
+        showAuthError(authMessage(error));
+        if (/anonymous/i.test(error.code || error.message || '')) document.getElementById('guestStart').hidden = true;
+        return;
+    }
+    currentUser = data.user;
+    await enterApp();
+}
+
+function openGuestSave() {
+    haptic();
+    document.getElementById('guestError').classList.remove('show');
+    document.getElementById('guestModal').classList.add('active');
+}
+
+function closeGuestSave() {
+    document.getElementById('guestModal').classList.remove('active');
+}
+
+async function saveGuestAccount(event) {
+    event.preventDefault();
+    const email = document.getElementById('guestEmail').value.trim();
+    const password = document.getElementById('guestPassword').value;
+    const errorEl = document.getElementById('guestError');
+    const button = document.getElementById('guestSubmit');
+    errorEl.classList.remove('show', 'info');
+    button.disabled = true;
+    await flushSave();
+    // Email first (links it to this user), then the password: Supabase needs the email before a password
+    let { data, error } = await sb.auth.updateUser({ email }, { emailRedirectTo: appUrl() });
+    if (!error && data.user && data.user.email) ({ data, error } = await sb.auth.updateUser({ password }));
+    button.disabled = false;
+    if (error) {
+        errorEl.textContent = authMessage(error);
+        errorEl.classList.add('show');
+        return;
+    }
+    currentUser = data.user;
+    if (!currentUser.email) {
+        // The project asks to confirm email changes: the link finishes it, then the password can be set
+        errorEl.textContent = `Almost there: open the link we sent to ${email}, then save your password here.`;
+        errorEl.classList.add('show', 'info');
+        return;
+    }
+    closeGuestSave();
+    renderGuestCard();
+    loadSettingsForm();
+    showToast('Progress saved. Log in with this email on any device.');
+}
+
+// On Today once a guest has trained: one quiet card to save it
+function renderGuestCard() {
+    const el = document.getElementById('guestCard');
+    if (!el) return;
+    if (!isGuest() || !allWorkoutDates().length) {
+        el.innerHTML = '';
+        return;
+    }
+    el.innerHTML = `
+        <div class="install-card guest-card">
+            <svg class="install-mark" aria-hidden="true"><use href="#odyrMark"/></svg>
+            <div class="install-text">
+                <strong>Save your progress</strong>
+                <span>Add an email so your workouts are safe and you can log in from any device.</span>
+                <button class="btn btn-primary install-btn" onclick="openGuestSave()">Save it</button>
+            </div>
+        </div>`;
 }
 
 async function handleSignup(event) {
@@ -182,6 +278,11 @@ async function handleNewPassword(event) {
 }
 
 async function handleLogout() {
+    if (isGuest()) {
+        if (!confirm('You haven’t saved your progress with an email yet. Logging out loses it for good. Log out anyway?')) return;
+        await signOutAndReset();
+        return;
+    }
     if (!confirm('Logout? Your progress is saved in the cloud.')) return;
     if (!(await flushSave()) && !confirm('Your latest changes could not be saved to the cloud and will be lost if you log out. Logout anyway?')) return;
     await signOutAndReset();
@@ -206,23 +307,45 @@ async function signOutAndReset() {
 //  PROFILE MANAGEMENT
 // ════════════════════════════════════════════
 
+// Days a week, asked in profile setup (1–2 / 3 / 4+), picks the first program
+let profileDays = null;
+
+function setProfileDays(days) {
+    haptic();
+    profileDays = days;
+    document.querySelectorAll('#profileDays .pp-day').forEach(b => b.classList.toggle('active', b.dataset.days === days));
+    document.getElementById('profileError').classList.remove('show');
+}
+
 async function handleProfileSave(event) {
     event.preventDefault();
 
     const gender = document.getElementById('profileGender').value;
     const age = parseInt(document.getElementById('profileAge').value);
     const weight = parseFloat(document.getElementById('profileWeight').value);
-    const height = parseInt(document.getElementById('profileHeight').value);
+    const height = parseInt(document.getElementById('profileHeight').value) || null;
+    const daysPerWeek = profileDays || (userProfile && userProfile.daysPerWeek);
+    if (!daysPerWeek) {
+        const errorEl = document.getElementById('profileError');
+        errorEl.textContent = 'Choose how many days a week you can train.';
+        errorEl.classList.add('show');
+        return;
+    }
 
     const goal = document.getElementById('profileGoal').value || 'general';
-    userProfile = { gender, age, weight, height, goal, units: 'kg', lang: LANG };
+    userProfile = { ...(userProfile || {}), gender, age, weight, height, goal, daysPerWeek, units: (userProfile && userProfile.units) || 'kg', lang: LANG };
     rememberGender();
     logBodyweight(weight);
-    // First login: no program chosen yet, so this saves selected_program: null
 
+    // A brand-new account goes straight to the program picked from days, sex and goal (one less screen);
+    // anyone who already chose or trained lands on the menu as before. "Programs" in the top bar changes it.
+    const firstTime = !currentProgram && !allWorkoutDates().length;
+    if (firstTime) currentProgram = recommendedProgram(daysPerWeek, gender, goal);
     if (await saveToCloud()) {
-        showScreen('selector');
+        if (firstTime) openProgram();
+        else showScreen('selector');
     } else {
+        if (firstTime) currentProgram = null;
         const errorEl = document.getElementById('profileError');
         errorEl.textContent = 'Could not save your profile. Check your connection and try again.';
         errorEl.classList.add('show');
@@ -314,7 +437,7 @@ async function handleSettingsUpdate(event) {
     // The weight box is shown in the units that were active when the form was filled
     const weightShown = parseFloat(document.getElementById('settingsWeight').value);
     const weight = Math.round(displayToKg(weightShown) * 10) / 10;
-    const height = parseInt(document.getElementById('settingsHeight').value);
+    const height = parseInt(document.getElementById('settingsHeight').value) || null;
 
     const weightChanged = !userProfile || Math.abs((userProfile.weight || 0) - weight) >= 0.05;
     const goal = document.getElementById('settingsGoal').value || 'general';
@@ -347,7 +470,9 @@ function loadSettingsForm() {
     document.getElementById('settingsWeightLabel').textContent = `Weight (${usesLb() ? 'lb' : 'kg'})`;
     document.getElementById('settingsWeight').value = userProfile.weight ? kgToDisplay(userProfile.weight) : '';
     document.getElementById('settingsHeight').value = userProfile.height || '';
-    document.getElementById('userEmail').textContent = currentUser.email;
+    document.getElementById('userEmail').textContent = isGuest() ? tr('Guest, no email yet') : currentUser.email;
+    document.getElementById('guestSaveBtn').hidden = !isGuest();
+    document.getElementById('resetPasswordBtn').hidden = isGuest();
     document.getElementById('userCreated').textContent = currentUser.created_at ? new Date(currentUser.created_at).toLocaleDateString(LOCALE) : '—';
 
     updateStandardsDisplay();
@@ -366,11 +491,11 @@ function updateStandardsDisplay() {
     const programGender = PROGRAMS[currentProgram].gender;
     const baseWeight = getBaseWeight(programGender);
     const converted = userGender() && userGender() !== programGender;
-    const bmi = (userProfile.weight / Math.pow(userProfile.height / 100, 2)).toFixed(1);
+    const bmi = userProfile.height ? (userProfile.weight / Math.pow(userProfile.height / 100, 2)).toFixed(1) : null;
     const strengthMultiplier = getStrengthMultiplier(programGender).toFixed(2);
 
     document.getElementById('standardsCalculation').innerHTML = `
-        <strong>BMI:</strong> ${escapeHtml(bmi)}<br>
+        ${bmi ? `<strong>BMI:</strong> ${escapeHtml(bmi)}<br>` : ''}
         <strong>Bodyweight:</strong> ${escapeHtml(kgToDisplay(userProfile.weight))}${usesLb() ? 'lb' : 'kg'}<br>
         <strong>Standards adjusted by:</strong> ${escapeHtml(strengthMultiplier)}x from the ${kgToDisplay(baseWeight)}${usesLb() ? 'lb' : 'kg'} reference lifter<br>
         ${converted ? `<strong>Standards:</strong> ${userGender() === 'female' ? "converted to women's standards" : "converted to men's standards"}<br>` : ''}

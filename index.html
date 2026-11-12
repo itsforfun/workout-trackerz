@@ -91,6 +91,10 @@
                 <button type="submit" class="auth-btn">Log in</button>
                 <button type="button" class="link-btn" onclick="handleForgotPassword()">Forgot password?</button>
             </form>
+            <div class="guest-start" id="guestStart" hidden>
+                <button type="button" class="guest-btn" onclick="startAsGuest()">Try it first, no account needed</button>
+                <p>Save your progress with an email whenever you like.</p>
+            </div>
             <button type="button" class="link-btn pl-story-link" onclick="showPrologue(() => showScreen('auth'))">The story of Odyr</button>
 
             <!-- NEW PASSWORD FORM (shown after clicking the reset link in the email) -->
@@ -173,6 +177,14 @@
                         <option value="general">Maintain and stay fit</option>
                     </select>
                 </div>
+                <div class="form-group">
+                    <label class="form-label">Days a week you can train</label>
+                    <div class="pp-days" id="profileDays">
+                        <button type="button" class="pp-day" data-days="12" onclick="setProfileDays('12')">1–2</button>
+                        <button type="button" class="pp-day" data-days="3" onclick="setProfileDays('3')">3</button>
+                        <button type="button" class="pp-day" data-days="4" onclick="setProfileDays('4')">4+</button>
+                    </div>
+                </div>
                 <div class="metrics-grid">
                     <div class="form-group">
                         <label class="form-label">Age</label>
@@ -184,15 +196,15 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label">Height (cm)</label>
-                        <input type="number" class="form-input" id="profileHeight" required min="100" max="250" placeholder="175">
+                        <input type="number" class="form-input" id="profileHeight" min="100" max="250" placeholder="Optional">
                     </div>
                 </div>
 
                 <div class="profile-info">
-                    Standards scale with your bodyweight, so a 60 kg and a 100 kg lifter are measured fairly. Your goal sets your daily habits; every program works for every goal.
+                    Standards scale with your bodyweight, so a 60 kg and a 100 kg lifter are measured fairly. We pick a program from your days and goal; you can change it any time.
                 </div>
 
-                <button type="submit" class="auth-btn">Continue</button>
+                <button type="submit" class="auth-btn">Start my journey</button>
             </form>
         </div>
     </div>
@@ -414,6 +426,7 @@
                 <div class="today-meta" id="todayMeta"></div>
                 <div id="todayMuscles"></div>
                 <div class="today-hint" id="todayHint"></div>
+                <div id="todayPick"></div>
                 <button class="start-btn" id="startWorkoutBtn" onclick="startWorkout()"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l13-7.5z"/></svg> Start workout</button>
                 <details class="focus-more" id="focusMore">
                     <summary><span id="focusMoreLabel">Exercises and warm-up</span><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></summary>
@@ -425,6 +438,7 @@
             </div>
             <div id="weekPlan"></div>
             <div id="insightCard"></div>
+            <div id="guestCard"></div>
             <div class="today-hero" id="todayHero"></div>
             <div id="sagaCard"></div>
             <div class="today-tiles">
@@ -561,7 +575,7 @@
                         </div>
                         <div class="form-group">
                             <label class="form-label">Height (cm)</label>
-                            <input type="number" class="form-input" id="settingsHeight" required min="100" max="250">
+                            <input type="number" class="form-input" id="settingsHeight" min="100" max="250">
                         </div>
                     </div>
 
@@ -602,7 +616,8 @@
                 </div>
 
                 <div class="settings-actions">
-                    <button class="btn" onclick="handlePasswordReset()">Reset password</button>
+                    <button class="btn btn-primary" id="guestSaveBtn" onclick="openGuestSave()" hidden>Save your progress</button>
+                    <button class="btn" id="resetPasswordBtn" onclick="handlePasswordReset()">Reset password</button>
                     <button class="btn" onclick="handleLogout()">Log out</button>
                 </div>
 
@@ -858,6 +873,30 @@
     <div class="modal">
         <div class="consistency-card" id="consistencyCard"></div>
         <div class="modal-actions"><button class="btn btn-primary" onclick="closeScore()">Done</button></div>
+    </div>
+</div>
+
+<!-- Guest accounts: save progress with an email (js/auth.js) -->
+<div class="modal-overlay" id="guestModal">
+    <div class="modal">
+        <div class="guest-sheet">
+            <div class="kicker">Save your progress</div>
+            <h3>Keep every workout</h3>
+            <p>Add an email and a password. Everything you've logged stays, and you can log in from any device.</p>
+            <div class="auth-error" id="guestError"></div>
+            <form class="line-fields" id="guestForm" onsubmit="saveGuestAccount(event)">
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-input" id="guestEmail" required autocomplete="email" placeholder="name@example.com">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-input" id="guestPassword" required minlength="6" autocomplete="new-password" placeholder="At least 6 characters">
+                </div>
+                <button type="submit" class="auth-btn" id="guestSubmit">Save my progress</button>
+            </form>
+        </div>
+        <div class="modal-actions"><button class="btn" onclick="closeGuestSave()">Not now</button></div>
     </div>
 </div>
 

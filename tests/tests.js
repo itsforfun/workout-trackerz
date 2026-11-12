@@ -1085,6 +1085,53 @@
         }
     });
 
+    await check('Faster first workout: days in the profile pick the program, no rest day before the first workout, guests', async () => {
+        const saved = { program: currentProgram, profile: userProfile, data: allData, user: currentUser };
+        try {
+            allData = {};
+            currentProgram = null;
+            userProfile = null;
+            currentUser = { id: 'guest-test', is_anonymous: true, email: '' };
+            showScreen('profile');
+            document.getElementById('profileGender').value = 'female';
+            document.getElementById('profileGoal').value = 'recomp';
+            document.getElementById('profileAge').value = '29';
+            document.getElementById('profileWeight').value = '62';
+            document.getElementById('profileHeight').value = '';
+            profileDays = null;
+            await handleProfileSave(new Event('submit'));
+            equal(currentProgram, null, 'saved without days a week');
+            setProfileDays('4');
+            await handleProfileSave(new Event('submit'));
+            equal(currentProgram, 'skadi', 'profile did not start the picked program');
+            equal(userProfile.height, null, 'height should be optional');
+            assert(document.getElementById('mainApp').classList.contains('active'), 'did not land on Today');
+            // Every day is a training day before the first workout, and the pick explains itself
+            assert(document.getElementById('liftView').style.display !== 'none', 'workout hidden before the first workout');
+            assert(/4/.test(document.getElementById('todayPick').textContent), 'no "picked for" line');
+            const near = nearestBadge();
+            assert(!near || near.p.value > 0, `${near && near.track.id} is "close" with nothing done`);
+            // Guests: no save card before training, one after; Settings offers saving, not a password reset
+            equal(document.getElementById('guestCard').innerHTML, '', 'guest card before any workout');
+            allData._sessions = { skadi: [{ date: todayStr(), day: 0, week: 0, type: 'workout', minutes: 40, sets: 12 }] };
+            renderToday();
+            assert(document.querySelector('#guestCard .guest-card'), 'no save card for a guest who trained');
+            equal(document.getElementById('todayPick').innerHTML, '', 'pick line after the first workout');
+            loadSettingsForm();
+            assert(!document.getElementById('guestSaveBtn').hidden, 'Settings hides Save your progress for a guest');
+            assert(document.getElementById('resetPasswordBtn').hidden, 'guest sees Reset password');
+            currentUser = { id: 'real', email: 'a@b.c' };
+            renderGuestCard();
+            equal(document.getElementById('guestCard').innerHTML, '', 'save card for a real account');
+        } finally {
+            currentUser = saved.user;
+            allData = saved.data;
+            userProfile = saved.profile;
+            selectProgram(saved.program);
+            showScreen('app');
+        }
+    });
+
     await check('First five minutes: our pick, the first quest, the install card, crew invite links', () => {
         const saved = { program: currentProgram, profile: userProfile, data: allData };
         try {

@@ -814,7 +814,8 @@ function nearestBadge(stats = playerStats()) {
     let best = null;
     badgeTracks().forEach(track => {
         const p = badgeProgress(track, stats);
-        if (p.next === null || track.label || !p.remaining) return;
+        // Only badges already under way: "Iron Comeback, one more to go" means nothing before a first break
+        if (p.next === null || track.label || !p.remaining || !(p.ratio > 0)) return;
         const close = p.ratio >= 0.9 || p.remaining <= 1;
         if (close && (!best || p.ratio > best.p.ratio)) best = { track, p };
     });

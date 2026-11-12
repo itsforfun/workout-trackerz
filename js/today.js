@@ -156,6 +156,7 @@ function renderToday() {
 
     renderTodayHero();
     renderInstallCard();
+    renderGuestCard();
     renderSagaCard();
     checkLandmarks();
     // Crew: load once (then the saga card shows the ship), afterwards keep my numbers this week current
@@ -175,7 +176,9 @@ function renderToday() {
     // (and in every program) the Cardio card opens the same zones and science (todayMode 'cardio')
     // Lifting programs: an off day opens on a short rest-day card (optional cardio, or lift anyway)
     const plan = (weekPlanOf(prog) || {})[new Date().getDay()];
-    const offDay = plan === 'cardio' || plan === 'rest' ? plan : null;
+    // Before the first workout ever, every day is a training day: a new account never opens on "Recover"
+    const firstWorkout = !allWorkoutDates().length;
+    const offDay = !firstWorkout && (plan === 'cardio' || plan === 'rest') ? plan : null;
     const cardioOpen = todayMode === 'cardio';
     const restDay = offDay && !todayMode;
     renderCardioView(cardioOpen ? 'cardio' : null, false, cardioOpen);
@@ -190,7 +193,8 @@ function renderToday() {
     `).join('');
     // The hero names the session; the other days, the warm-up and the exercise list fold under it
     const weekday = new Date().toLocaleDateString(LOCALE, { weekday: 'long' });
-    document.getElementById('todayKicker').textContent = `${weekday.charAt(0).toUpperCase()}${weekday.slice(1)} · ${tr(todayDay === nextDay ? 'Up next' : 'Your pick')}`;
+    document.getElementById('todayKicker').textContent = `${weekday.charAt(0).toUpperCase()}${weekday.slice(1)} · ${tr(firstWorkout ? 'Your first workout' : todayDay === nextDay ? 'Up next' : 'Your pick')}`;
+    renderTodayPick(prog, firstWorkout);
     document.getElementById('todayTitle').textContent = prog.days[todayDay];
     document.getElementById('focusMoreLabel').textContent = isCardioProgram(prog)
         ? 'Session plan'
@@ -514,6 +518,21 @@ window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); instal
 
 function isInstalled() {
     return navigator.standalone || (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches);
+}
+
+// Brand-new account: say why this program was chosen, with a way to change it (until the first workout)
+const DAYS_LABEL = { 12: '1–2 days a week', 3: '3 days a week', 4: '4+ days a week' };
+
+function renderTodayPick(prog, firstWorkout) {
+    const el = document.getElementById('todayPick');
+    if (!el) return;
+    const days = userProfile && userProfile.daysPerWeek;
+    const picked = firstWorkout && days && recommendedProgram(days) === currentProgram;
+    el.innerHTML = picked ? `
+        <div class="today-pick">
+            <span>Picked for ${DAYS_LABEL[days]}</span>
+            <button class="link-btn" onclick="switchProgram()">Change program</button>
+        </div>` : '';
 }
 
 function renderInstallCard() {

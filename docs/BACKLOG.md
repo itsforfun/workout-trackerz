@@ -11,6 +11,8 @@ Status: **Done** · **Check** (built, still needs a look on the iPhone or a smal
 
 | Item | What's left |
 |---|---|
+| Try without an account (v2.0) | Owner: Supabase → Authentication → Sign In / Providers → turn on "Allow anonymous sign-ins" (the button stays hidden until then); then try "Save your progress" once to confirm the email is added straight away |
+| Faster first workout (v2.0) | Watch a tester go from sign-up to the first set |
 | Calmer Today: one hero, rings row, tiles (v1.91) | Ask testers again; see it on the iPhone |
 | Gold body scan on Today and the summary (v1.92) | See it on the iPhone |
 | Home programs Hearth and Hearthfire (v1.98) | Try a session at home; consider recommending them in "Our pick for you" when someone has no gym |
@@ -35,6 +37,7 @@ Status: **Done** · **Check** (built, still needs a look on the iPhone or a smal
 **Sharing and motivation**
 - Streak shield: one per month, keeps a streak alive through a missed week (suggested 2026-10-30)
 - "Then vs now" moments: monthly reminder of how far you've come (strength %, weight, workouts) (suggested 2026-10-30)
+- Review follow-ups (2026-11-12): simplify the reward systems into one main progress line, faster loading (French file only for French, Chart.js on demand, pin supabase-js), merge saves per workout across devices, quieter coach card on rest days, smaller add/remove set buttons, hide the Steps ring until steps are connected
 - Guided first week for new accounts: a short checklist of quick wins (suggested 2026-10-30)
 - Share button on the badge sheet (for the share cards)
 - Read-only progress sharing with a coach or training partner
@@ -119,6 +122,7 @@ Status: **Done** · **Check** (built, still needs a look on the iPhone or a smal
 | 1.88 | Workout mode: − Remove set, Skip the rest (after a set is done), and "Short on time? One set of each" for the whole workout |
 | 1.89 | Period check-in (women, optional): one line in the workout check-in; strong symptoms lighten the session, mild ones cap it at normal; answer never saved; science section (McNulty 2020, Blagrove 2020, Li 2026). Deliberately no calendar, predictions or phase-based plans |
 | 1.90 | First five minutes: 3-stop first tour (full tour on Replay), one-time tips (first workout: tick, effort, rest/Form/Swap, summary; later: journey, quests, rest day, Progress), Settings → Help → Show tips again |
+| 2.0 | Faster first workout: days a week asked in profile setup, which starts the picked program straight away (menu skipped, "Picked for … · Change program" on Today); height optional; no rest-day screen before the first workout; "Try it first, no account needed" (guest account, saved later with an email from Today or Settings); badge nudges only for badges already under way |
 | 1.82 | Sets per muscle on Progress: weekly hard sets per muscle against 10–20, with the source |
 | 1.81 | Stall ladder for every program: +1 rep, +1 set, slower tempo, drop set (isolation only), then a reset |
 | 1.80 | Odyr's Journal: a short story in Odyr's voice at every landmark, revealed line by line, read aloud by the phone's voice |

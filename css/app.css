@@ -2376,3 +2376,17 @@ div.ring-tile { cursor:default; }
 .voice-row .form-input { flex:1; min-width:0; }
 .voice-try { flex:none; padding:9px 14px; font-size:0.8rem; }
 .line-fields .form-hint { display:block; margin-top:6px; font-size:0.72rem; color:var(--text-muted); }
+
+/* ── Faster first workout (v2.0): try as a guest, days a week in the profile, the pick on Today ── */
+.guest-start { margin-top:var(--s5); text-align:center; }
+.guest-start[hidden] { display:none; }
+.guest-btn { width:100%; padding:14px; border-radius:14px; border:1px solid rgba(230,184,74,0.45); background:rgba(230,184,74,0.06); color:var(--accent); font:inherit; font-size:0.95rem; font-weight:500; cursor:pointer; }
+.guest-btn:active { transform:scale(0.98); }
+.guest-start p { margin:var(--s2) 0 0; color:var(--text-muted); font-size:0.78rem; }
+#profileDays .pp-day { padding:10px; }
+.today-pick { display:flex; align-items:baseline; justify-content:center; gap:var(--s2); flex-wrap:wrap; margin:calc(var(--s2) * -1) 0 var(--s3); color:var(--text-dim); font-size:0.8rem; }
+.today-pick .link-btn { display:inline; width:auto; margin:0; color:var(--accent); font-size:inherit; }
+.guest-card { margin:0 0 var(--s3); grid-template-columns:40px 1fr; }
+.guest-sheet h3 { margin:var(--s1) 0 var(--s2); font-weight:300; letter-spacing:0.04em; }
+.guest-sheet p { color:var(--text-dim); font-size:0.88rem; line-height:1.5; margin:0 0 var(--s3); }
+.guest-sheet .auth-btn { margin-top:var(--s3); }
