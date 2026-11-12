@@ -147,11 +147,11 @@ function speakPrologue() {
     clearTimeout(prologueTurn);
     const step = prologueStep;
     const utterance = new SpeechSynthesisUtterance(tr(PROLOGUE[step].text));
-    utterance.lang = LOCALE;
+    utterance.lang = speechLocale();
     const voice = narrationVoice();
     if (voice) utterance.voice = voice;
     utterance.rate = 0.88;
-    utterance.pitch = 0.9;
+    utterance.pitch = narrationPitch();
     utterance.onend = () => {
         if (!prologueListening || prologueStep !== step) return;
         if (step < PROLOGUE.length - 1) {

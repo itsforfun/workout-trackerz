@@ -86,12 +86,74 @@ function closeJournal() {
 }
 
 // ── The narrator: the phone's own voice (free, offline), in the app's language ──
-function narrationVoice() {
-    const voices = window.speechSynthesis ? speechSynthesis.getVoices() : [];
-    const lang = LOCALE.slice(0, 2);
-    return voices.find(v => v.lang.startsWith(lang) && /Daniel|Thomas|Arthur|male/i.test(v.name))
-        || voices.find(v => v.lang.replace('_', '-').startsWith(LOCALE))
-        || voices.find(v => v.lang.startsWith(lang)) || null;
+// A deeper male voice for men, a female voice for women (from the profile, or the sex remembered on this phone
+// before sign-in); the phone's default voice when the sex isn't known yet. Enhanced/Premium voices come first.
+const MALE_VOICES = /\b(Daniel|Aaron|Arthur|Oliver|Gordon|Rishi|Fred|Alex|Tom|Lee|Thomas|Nicolas|Jacques|Henri|Paul)\b/i;
+const FEMALE_VOICES = /\b(Samantha|Ava|Allison|Susan|Victoria|Karen|Moira|Tessa|Serena|Martha|Catherine|Kate|Nicky|Zoe|Amélie|Amelie|Audrey|Aurélie|Aurelie|Marie|Chantal|Julie)\b/i;
+const NOVELTY_VOICES = /Grandpa|Grandma|Rocko|Eddy|Flo|Reed|Sandy|Shelley|Bad News|Bells|Boing|Bubbles|Cellos|Wobble|Whisper|Zarvox|Trinoids|Organ|Jester|Junior|Ralph|Superstar|Albert|Bahh|Hysterical|Good News/i;
+
+// Settings → Experience → Narrator voice (per phone): 'male' | 'female' | '' (automatic, follows the profile)
+function narratorChoice() {
+    try { return localStorage.getItem('odyr_voice') || ''; } catch (e) { return ''; }
+}
+
+function setNarratorVoice(value) {
+    try { localStorage.setItem('odyr_voice', value || ''); } catch (e) { /* private mode */ }
+    previewNarrator();
+}
+
+function previewNarrator() {
+    if (!window.speechSynthesis) return showToast('Your phone can’t read aloud here');
+    speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(tr('Before there were roads, there were wanderers.'));
+    utterance.lang = speechLocale();
+    const voice = narrationVoice();
+    if (voice) utterance.voice = voice;
+    utterance.rate = 0.9;
+    utterance.pitch = narrationPitch();
+    speechSynthesis.speak(utterance);
+}
+
+function narratorSex() {
+    const chosen = narratorChoice();
+    if (chosen === 'male' || chosen === 'female') return chosen;
+    const sex = typeof userGender === 'function' ? userGender() : null;
+    if (sex) return sex;
+    try { return localStorage.getItem('odyr_gender') || null; } catch (e) { return null; }
+}
+
+// The voice language: the app's locale, or the phone's own (English has no LOCALE set)
+function speechLocale() {
+    return LOCALE || navigator.language || 'en-US';
+}
+
+function narrationVoice(sex = narratorSex()) {
+    const all = window.speechSynthesis ? speechSynthesis.getVoices() : [];
+    const locale = speechLocale();
+    const lang = locale.slice(0, 2);
+    const voices = all.filter(v => v.lang.replace('_', '-').toLowerCase().startsWith(lang) && !NOVELTY_VOICES.test(v.name));
+    // Best first: Premium/Enhanced voices, then the most natural names, then the exact locale
+    const order = ['Daniel', 'Arthur', 'Aaron', 'Oliver', 'Gordon', 'Tom', 'Alex', 'Rishi', 'Thomas', 'Nicolas', 'Jacques', 'Henri', 'Paul', 'Lee', 'Fred',
+        'Ava', 'Samantha', 'Allison', 'Serena', 'Karen', 'Moira', 'Tessa', 'Kate', 'Martha', 'Catherine', 'Susan', 'Victoria', 'Nicky', 'Zoe',
+        'Audrey', 'Amélie', 'Amelie', 'Aurélie', 'Aurelie', 'Marie', 'Julie', 'Chantal'];
+    const rank = v => (/Premium|Enhanced|Neural/i.test(v.name) ? 0 : 1000)
+        + (order.findIndex(n => v.name.includes(n)) + 1 || 500)
+        + (v.lang.replace('_', '-') === locale ? 0 : 0.5);
+    const best = list => list.length ? [...list].sort((a, b) => rank(a) - rank(b))[0] : null;
+    if (sex === 'male') {
+        const male = voices.filter(v => MALE_VOICES.test(v.name) || /\bmale\b/i.test(v.name) && !/female/i.test(v.name));
+        if (male.length) return best(male);
+    }
+    if (sex === 'female') {
+        const female = voices.filter(v => FEMALE_VOICES.test(v.name) || /female/i.test(v.name));
+        if (female.length) return best(female);
+    }
+    return best(voices);
+}
+
+// A touch deeper for men, natural for women
+function narrationPitch(sex = narratorSex()) {
+    return sex === 'male' ? 0.82 : sex === 'female' ? 1.0 : 0.92;
 }
 
 function toggleNarration() {
@@ -99,11 +161,11 @@ function toggleNarration() {
     if (!window.speechSynthesis) return showToast('Your phone can’t read aloud here');
     if (speechSynthesis.speaking) return stopNarration();
     const utterance = new SpeechSynthesisUtterance(tr(JOURNAL[journalPage]));
-    utterance.lang = LOCALE;
+    utterance.lang = speechLocale();
     const voice = narrationVoice();
     if (voice) utterance.voice = voice;
     utterance.rate = 0.9;
-    utterance.pitch = 0.9;
+    utterance.pitch = narrationPitch();
     utterance.onend = () => { document.getElementById('journalListen').textContent = tr('Listen'); };
     speechSynthesis.speak(utterance);
     document.getElementById('journalListen').textContent = tr('Stop');

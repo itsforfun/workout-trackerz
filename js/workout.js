@@ -898,6 +898,8 @@ function renderPushStatus() {
     if (splashToggle) splashToggle.checked = !splashOff();
     const soundToggle = document.getElementById('soundToggle');
     if (soundToggle) soundToggle.checked = soundsOn();
+    const voiceSelect = document.getElementById('settingsVoice');
+    if (voiceSelect && typeof narratorChoice === 'function') voiceSelect.value = narratorChoice();
     const langSelect = document.getElementById('settingsLang');
     if (langSelect) langSelect.value = LANGUAGES[storedLang()] ? storedLang() : '';
 }

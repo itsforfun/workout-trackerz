@@ -412,6 +412,36 @@
         if (LANG === 'fr') PROLOGUE.forEach(p => assert(tr(p.text) !== p.text, `untranslated prologue panel: ${p.text}`));
     });
 
+    await check('The narrator speaks with a male voice for men and a female voice for women', () => {
+        if (!window.speechSynthesis) return;
+        const real = speechSynthesis.getVoices;
+        const lang = speechLocale().slice(0, 2);
+        const fake = (name, l = lang === 'fr' ? 'fr-FR' : 'en-US') => ({ name, lang: l });
+        speechSynthesis.getVoices = () => lang === 'fr'
+            ? [fake('Amélie'), fake('Thomas'), fake('Grandpa'), fake('Marie (Premium)')]
+            : [fake('Samantha'), fake('Daniel', 'en-GB'), fake('Eddy'), fake('Ava (Enhanced)'), fake('Aaron')];
+        try {
+            const male = narrationVoice('male').name;
+            const female = narrationVoice('female').name;
+            assert(MALE_VOICES.test(male), `men should hear a male voice, got ${male}`);
+            assert(FEMALE_VOICES.test(female), `women should hear a female voice, got ${female}`);
+            assert(!NOVELTY_VOICES.test(narrationVoice(null).name), 'never a novelty voice');
+            assert(lang === 'fr' ? female === 'Marie (Premium)' : female === 'Ava (Enhanced)', 'enhanced voices should come first');
+            assert(narrationPitch('male') < narrationPitch('female'), 'the male voice should sit lower');
+            // Settings → Narrator voice wins over the profile
+            const saved = userProfile;
+            userProfile = { ...saved, gender: 'male' };
+            equal(narratorSex(), 'male', 'automatic should follow the profile');
+            localStorage.setItem('odyr_voice', 'female');
+            equal(narratorSex(), 'female', 'a chosen voice should win over the profile');
+            assert(FEMALE_VOICES.test(narrationVoice().name), 'the chosen female voice should be used');
+            userProfile = saved;
+        } finally {
+            speechSynthesis.getVoices = real;
+            localStorage.removeItem('odyr_voice');
+        }
+    });
+
     await check('The 3D body model has a mesh for every muscle group it can show', async () => {
         const buf = await (await fetch(BODY_MODEL_URL)).arrayBuffer();
         const view = new DataView(buf);

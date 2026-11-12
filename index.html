@@ -623,6 +623,18 @@
                         <option value="fr" data-no-i18n>Français</option>
                     </select>
                 </div>
+                <div class="form-group line-fields">
+                    <label class="form-label" for="settingsVoice">Narrator voice</label>
+                    <div class="voice-row">
+                        <select class="form-input" id="settingsVoice" onchange="setNarratorVoice(this.value)">
+                            <option value="">Automatic (follows your profile)</option>
+                            <option value="male">Male voice</option>
+                            <option value="female">Female voice</option>
+                        </select>
+                        <button type="button" class="btn voice-try" onclick="previewNarrator()">Hear it</button>
+                    </div>
+                    <small class="form-hint">Reads the story of Odyr and his journal aloud</small>
+                </div>
 
                 <!-- Help -->
                 <div class="day-label" style="margin-bottom:24px; margin-top:48px;">

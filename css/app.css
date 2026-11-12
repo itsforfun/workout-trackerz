@@ -2372,3 +2372,7 @@ div.ring-tile { cursor:default; }
 .pl-tears .pl-tear { animation-name:plTearLong; }
 .pl-ripple { animation-delay:calc(0.4s + var(--i) * 0.5s + 2.2s); animation-duration:2.6s; }
 @keyframes plTearLong { 0% { opacity:0; transform:translateY(0); } 12% { opacity:1; } 82% { opacity:1; transform:translateY(84px); } 90%, 100% { opacity:0; transform:translateY(86px); } }
+.voice-row { display:flex; gap:10px; align-items:center; }
+.voice-row .form-input { flex:1; min-width:0; }
+.voice-try { flex:none; padding:9px 14px; font-size:0.8rem; }
+.line-fields .form-hint { display:block; margin-top:6px; font-size:0.72rem; color:var(--text-muted); }
