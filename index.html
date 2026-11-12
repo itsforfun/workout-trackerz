@@ -91,6 +91,7 @@
                 <button type="submit" class="auth-btn">Log in</button>
                 <button type="button" class="link-btn" onclick="handleForgotPassword()">Forgot password?</button>
             </form>
+            <button type="button" class="link-btn pl-story-link" onclick="showPrologue(() => showScreen('auth'))">The story of Odyr</button>
 
             <!-- NEW PASSWORD FORM (shown after clicking the reset link in the email) -->
             <form class="auth-form" id="newPasswordForm" onsubmit="handleNewPassword(event)">
@@ -126,6 +127,21 @@
 </div>
 
 <!-- PROFILE SETUP SCREEN -->
+<!-- PROLOGUE: the story of Odyr, once after sign-up (js/prologue.js) -->
+<div class="screen prologue-screen" id="prologueScreen" onclick="prologueNext(event)">
+    <div class="pl-dust" aria-hidden="true"><i style="--x:8%;--d:0s;--s:1"></i><i style="--x:19%;--d:3.1s;--s:0.7"></i><i style="--x:31%;--d:1.4s;--s:1.2"></i><i style="--x:44%;--d:5.2s;--s:0.8"></i><i style="--x:57%;--d:2.3s;--s:1"></i><i style="--x:68%;--d:4.4s;--s:0.6"></i><i style="--x:79%;--d:0.8s;--s:1.1"></i><i style="--x:90%;--d:3.7s;--s:0.8"></i><i style="--x:25%;--d:6.1s;--s:0.9"></i><i style="--x:62%;--d:7.0s;--s:0.7"></i></div>
+    <div class="pl-top">
+        <button class="pl-listen" id="prologueListen" onclick="togglePrologueVoice()">Listen</button>
+        <button class="pl-skip" id="prologueSkip" onclick="finishPrologue()">Skip</button>
+    </div>
+    <div class="pl-body" id="prologueBody"></div>
+    <div class="pl-foot">
+        <div class="pl-dots" id="prologueDots"></div>
+        <p class="pl-hint" id="prologueHint">Tap to continue</p>
+        <button class="auth-btn pl-begin" id="prologueBegin" onclick="finishPrologue()" hidden>Begin the journey</button>
+    </div>
+</div>
+
 <div class="screen profile-screen" id="profileScreen">
     <div class="profile-container">
         <div class="profile-card">
@@ -614,6 +630,7 @@
                 </div>
                 <div class="settings-actions">
                     <button class="btn" onclick="openScience()">How the coach works</button>
+                    <button class="btn" onclick="showPrologue(() => { showScreen('app'); switchTab('settings'); })">The story of Odyr</button>
                     <button class="btn" onclick="startTour(true)">Replay the walkthrough</button>
                     <button class="btn" onclick="resetTips()">Show tips again</button>
                     <button class="btn" onclick="openRecap()">Last week's recap</button>
@@ -894,6 +911,7 @@
 <script src="js/rewards.js"></script>
 <script src="js/odyssey.js"></script>
 <script src="js/journal.js"></script>
+<script src="js/prologue.js"></script>
 <script src="js/quests.js"></script>
 <script src="js/crews.js"></script>
 <script src="js/progress.js"></script>

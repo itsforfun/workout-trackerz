@@ -395,6 +395,23 @@
         });
     });
 
+    await check('The prologue tells the story in four panels, once per account, and always lets you skip', () => {
+        try { localStorage.removeItem(prologueKey()); } catch (e) { /* private mode */ }
+        let done = 0;
+        showPrologue(() => { done++; showScreen('app'); });
+        assert(document.getElementById('prologueScreen').classList.contains('active'), 'prologue not on screen');
+        assert(!document.getElementById('prologueSkip').hidden, 'no Skip on the first panel');
+        for (let i = 1; i < PROLOGUE.length; i++) prologueNext();
+        equal(prologueStep, PROLOGUE.length - 1, 'tapping should reach the last panel');
+        assert(!document.getElementById('prologueBegin').hidden, 'no Begin button on the last panel');
+        prologueNext();
+        equal(prologueStep, PROLOGUE.length - 1, 'tapping past the end should stay on the last panel');
+        finishPrologue();
+        equal(done, 1, 'Begin should continue to the next screen');
+        assert(prologueSeen(), 'the prologue should be remembered as seen');
+        if (LANG === 'fr') PROLOGUE.forEach(p => assert(tr(p.text) !== p.text, `untranslated prologue panel: ${p.text}`));
+    });
+
     await check('The 3D body model has a mesh for every muscle group it can show', async () => {
         const buf = await (await fetch(BODY_MODEL_URL)).arrayBuffer();
         const view = new DataView(buf);

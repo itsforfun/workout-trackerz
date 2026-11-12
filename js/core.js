@@ -4,7 +4,7 @@
 
 // Shown at the bottom of Settings so you can tell which version a phone is running.
 // Bump it with every deploy.
-const APP_VERSION = '1.94 · 11 Nov';
+const APP_VERSION = '1.96 · 12 Nov';
 
 const SUPABASE_URL = 'https://hcwbcxhblfjpdlkwykez.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_mEe_5g2UITyp5O-F9YRhRg_wTQWuOtf';
@@ -308,6 +308,7 @@ const SCREENS = {
     odyssey: 'odysseyScreen',
     cardio: 'cardioScreen',
     summary: 'summaryScreen',
+    prologue: 'prologueScreen',
 };
 
 // Marks the page as scrolled, which turns on the fade under the status bar (see body::before)
@@ -447,7 +448,9 @@ function showScreen(name) {
 function routeAfterLogin() {
     rememberGender();
     if (!userProfile || !userProfile.age || !userProfile.weight) {
-        showScreen('profile');
+        // A new account hears the story of Odyr once, then sets up their journey
+        if (typeof showPrologue === 'function' && !prologueSeen()) showPrologue(() => showScreen('profile'));
+        else showScreen('profile');
     } else if (currentProgram) {
         openProgram();
         if (loadActiveWorkout()) resumeWorkout();

@@ -2276,3 +2276,99 @@ div.ring-tile { cursor:default; }
 .b3-corner.br { bottom:8px; right:8px; border-bottom-width:1.5px; border-right-width:1.5px; }
 .mw-credit { margin-top:var(--s2); font-size:0.62rem; color:var(--text-muted); text-align:center; }
 .body3d:not(.live) ~ .mw-credit { display:none; }
+
+/* ═══ PROLOGUE: THE STORY OF ODYR (v1.95) ═══ */
+.prologue-screen { position:fixed; inset:0; z-index:60; display:none; flex-direction:column; align-items:center; justify-content:space-between;
+    padding:calc(env(safe-area-inset-top) + var(--ios-blur-band, 0px) + 18px) 28px calc(env(safe-area-inset-bottom) + 34px);
+    background:radial-gradient(ellipse at 50% 38%, rgba(230,184,74,0.08), transparent 62%), #14110e; cursor:pointer; user-select:none; -webkit-user-select:none; }
+.prologue-screen.active { display:flex; }
+.pl-skip { align-self:flex-end; padding:8px 4px; border:none; background:none; color:var(--text-muted); font:inherit; font-size:0.8rem; letter-spacing:0.08em; cursor:pointer; }
+.pl-skip[hidden] { visibility:hidden; display:block; }
+.pl-body { flex:1; display:flex; align-items:center; justify-content:center; width:100%; max-width:420px; }
+.pl-panel { display:flex; flex-direction:column; align-items:center; gap:34px; text-align:center; }
+.pl-text { font-family:'Instrument Serif', Georgia, serif; font-size:clamp(1.7rem, 7.4vw, 2.3rem); line-height:1.16; color:var(--text); text-wrap:balance; }
+.pl-text .w { display:inline-block; opacity:0; animation:wordIn 1.2s calc(0.5s + var(--i) * 110ms) cubic-bezier(.2,.8,.2,1) forwards; }
+.pl-art { width:96px; height:96px; overflow:visible; }
+.pl-road { width:170px; height:128px; }
+.pl-ring { fill:none; stroke:#e6b84a; stroke-width:5.8; stroke-linecap:round; stroke-dasharray:100; stroke-dashoffset:100; animation:plDraw 1.8s 0.2s cubic-bezier(.4,0,.2,1) forwards; }
+.pl-dot { fill:#f2d891; opacity:0; transform-origin:75.5px 25.8px; animation:popIn 0.5s 1.7s cubic-bezier(.2,1.4,.4,1) forwards; }
+.pl-hearth { fill:rgba(230,184,74,0.18); stroke:rgba(230,184,74,0.5); stroke-width:1.2; }
+.pl-tear { fill:#f2d891; opacity:0; animation:plTear 2.6s calc(0.4s + var(--i) * 0.5s) ease-in infinite; }
+.pl-path { fill:none; stroke:rgba(240,232,216,0.18); stroke-width:2; stroke-dasharray:2 5; }
+.pl-trail { fill:none; stroke:#e6b84a; stroke-width:2.4; stroke-linecap:round; stroke-dasharray:62 100; stroke-dashoffset:62; animation:plTrail 3.6s 0.6s cubic-bezier(.4,0,.2,1) forwards; }
+.pl-traveller { fill:#f2d891; }
+.pl-foot { display:flex; flex-direction:column; align-items:center; gap:16px; width:100%; max-width:360px; min-height:96px; }
+.pl-dots { display:flex; gap:8px; }
+.pl-dots i { width:6px; height:6px; border-radius:50%; background:rgba(240,232,216,0.2); transition:background 0.3s, transform 0.3s; }
+.pl-dots i.on { background:#e6b84a; transform:scale(1.25); }
+.pl-hint { font-size:0.72rem; letter-spacing:0.16em; text-transform:uppercase; color:var(--text-muted); animation:plPulse 2.4s 2.5s ease-in-out infinite both; }
+.pl-begin { width:100%; animation:rise 0.8s 1.6s cubic-bezier(.2,.8,.2,1) both; }
+.pl-story-link { display:block; margin:18px auto 0; color:var(--text-dim); font-family:'Instrument Serif', Georgia, serif; font-size:1.05rem; letter-spacing:0.01em; }
+@keyframes plDraw { to { stroke-dashoffset:0; } }
+@keyframes plTrail { to { stroke-dashoffset:0; } }
+@keyframes plTear { 0% { opacity:0; transform:translateY(0); } 15% { opacity:1; } 80% { opacity:0.9; } 100% { opacity:0; transform:translateY(52px); } }
+@keyframes plPulse { 0%, 100% { opacity:0.45; } 50% { opacity:1; } }
+@media (prefers-reduced-motion: reduce) {
+    .pl-tear { animation:plFade 0.8s calc(0.4s + var(--i) * 0.3s) ease both; transform:translateY(26px); }
+    .pl-trail { animation:none; stroke-dashoffset:0; }
+    .pl-ring { animation:plFadeRing 1s ease forwards; stroke-dashoffset:0; opacity:0; }
+    @keyframes plFade { from { opacity:0; } to { opacity:1; } }
+    @keyframes plFadeRing { to { opacity:1; } }
+}
+.prologue-screen { box-sizing:border-box; width:100%; max-width:100vw; overflow:hidden; }
+.pl-skip { margin-right:-4px; }
+
+/* Prologue, refined (v1.96): gold dust, a top bar with Listen and Skip, cross-fades, richer art */
+.prologue-screen { background:radial-gradient(ellipse at 50% 36%, rgba(230,184,74,0.10), transparent 58%), radial-gradient(ellipse at 50% 120%, rgba(201,143,102,0.10), transparent 55%), #120f0c; }
+.pl-top { display:flex; justify-content:space-between; align-items:center; width:100%; position:relative; z-index:2; }
+.pl-skip { align-self:auto; }
+.pl-listen { display:inline-flex; align-items:center; gap:6px; padding:7px 13px; border-radius:999px; border:1px solid rgba(230,184,74,0.35); background:none; color:#e6b84a; font:inherit; font-size:0.76rem; letter-spacing:0.08em; cursor:pointer; }
+.pl-listen::before { content:''; width:6px; height:6px; border-radius:50%; background:currentColor; opacity:0.5; }
+.pl-listen.on::before { opacity:1; animation:plPulse 1.2s ease-in-out infinite; }
+.pl-body { position:relative; }
+.pl-panel { position:absolute; inset:0; justify-content:center; animation:plIn 0.7s ease both; }
+.pl-panel.leaving { animation:plOut 0.55s ease forwards; pointer-events:none; }
+.pl-art { width:140px; height:140px; }
+.pl-road { width:200px; height:136px; }
+/* Gold dust drifting up through every panel */
+.pl-dust { position:absolute; inset:0; overflow:hidden; pointer-events:none; }
+.pl-dust i { position:absolute; left:var(--x); bottom:-10px; width:calc(3px * var(--s)); height:calc(3px * var(--s)); border-radius:50%; background:#f2d891; opacity:0; box-shadow:0 0 6px rgba(242,216,145,0.6); animation:plDust 9s var(--d) linear infinite; }
+/* Panel 1: a slowly turning reticle around the mark */
+.pl-reticle { transform-origin:70px 70px; animation:plSpin 40s linear infinite; }
+.pl-reticle circle { fill:none; stroke:rgba(230,184,74,0.28); stroke-width:1; stroke-dasharray:3 7; }
+.pl-reticle circle.fine { stroke:rgba(230,184,74,0.14); stroke-dasharray:40 8 4 8; }
+.pl-mark .pl-dot, .pl-dawn .pl-dot { filter:drop-shadow(0 0 4px rgba(242,216,145,0.9)); }
+/* Panel 2: ember, tears and ripples */
+.pl-glow { fill:rgba(230,184,74,0.12); animation:plBreath 3s ease-in-out infinite; }
+.pl-flame { fill:rgba(224,122,95,0.75); transform-origin:70px 114px; animation:plFlicker 1.6s ease-in-out infinite alternate; }
+.pl-flame.inner { fill:#f2d891; animation-duration:1.1s; }
+.pl-tear { filter:drop-shadow(0 0 3px rgba(242,216,145,0.8)); }
+.pl-ripple { fill:none; stroke:rgba(242,216,145,0.7); stroke-width:1; opacity:0; transform-box:fill-box; transform-origin:center; animation:plRipple 2.6s calc(0.4s + var(--i) * 0.5s + 2s) ease-out infinite; }
+/* Panel 3: horizon and the traveller's glow */
+.pl-ridge { fill:none; stroke:rgba(240,232,216,0.14); stroke-width:1.2; stroke-linejoin:round; }
+.pl-ridge.far { stroke:rgba(240,232,216,0.07); }
+.pl-traveller-glow { fill:rgba(242,216,145,0.25); }
+.pl-trail { stroke-dasharray:66 100; stroke-dashoffset:66; animation:plTrail 4.2s 0.5s cubic-bezier(.4,0,.2,1) forwards; }
+/* Panel 4: dawn behind the mark */
+.pl-sun { fill:rgba(230,184,74,0.16); transform-origin:70px 104px; animation:plRiseSun 3s 0.2s cubic-bezier(.2,.8,.2,1) both; }
+.pl-horizon { stroke:rgba(230,184,74,0.45); stroke-width:1; stroke-dasharray:128; stroke-dashoffset:128; animation:plDraw 1.6s 0.3s ease forwards; }
+@keyframes plIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:none; } }
+@keyframes plOut { to { opacity:0; transform:translateY(-12px); filter:blur(4px); } }
+@keyframes plDust { 0% { opacity:0; transform:translate(0,0); } 12% { opacity:0.7; } 85% { opacity:0.35; } 100% { opacity:0; transform:translate(18px,-92vh); } }
+@keyframes plSpin { to { transform:rotate(360deg); } }
+@keyframes plBreath { 0%, 100% { opacity:0.6; } 50% { opacity:1; } }
+@keyframes plFlicker { from { transform:scaleY(0.92) scaleX(1.04); } to { transform:scaleY(1.08) scaleX(0.96); } }
+@keyframes plRipple { 0% { opacity:0.8; transform:scale(0.2); } 100% { opacity:0; transform:scale(1.6); } }
+@keyframes plRiseSun { from { opacity:0; transform:translateY(24px) scale(0.9); } to { opacity:1; transform:none; } }
+@media (prefers-reduced-motion: reduce) {
+    .pl-dust, .pl-reticle, .pl-flame, .pl-ripple { animation:none; }
+    .pl-dust i { display:none; }
+    .pl-panel, .pl-panel.leaving { animation-name:plFade; }
+    .pl-panel.leaving { animation:plFadeOut 0.4s ease forwards; }
+    .pl-sun { animation:plFade 1s ease both; }
+    .pl-horizon { animation:none; stroke-dashoffset:0; }
+    @keyframes plFadeOut { to { opacity:0; } }
+}
+.pl-tears .pl-tear { animation-name:plTearLong; }
+.pl-ripple { animation-delay:calc(0.4s + var(--i) * 0.5s + 2.2s); animation-duration:2.6s; }
+@keyframes plTearLong { 0% { opacity:0; transform:translateY(0); } 12% { opacity:1; } 82% { opacity:1; transform:translateY(84px); } 90%, 100% { opacity:0; transform:translateY(86px); } }
