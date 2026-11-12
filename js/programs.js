@@ -192,6 +192,84 @@ const PROGRAMS = {
             { id:'sk-pushdown', day:3, name:'Rope Tricep Pushdown', meta:'3×10-12, 1min', unit:'kg', thresholds:[10,15,20,26,32,40], note:'Rest-pause on the last set' },
         ],
     },
+    // ── At home, no gym (v1.98): two 45-minute sessions alternated three times a week (A B A, then B A B).
+    // Bodyweight, resistance bands and a loaded backpack; every set ends 0–3 reps short of failure, which is what
+    // makes light loads build muscle (Lopez 2021). Each session opens with the same alignment primer (feet, knees,
+    // hips, ribs, neck). Reps are logged; backpack weight goes in the +kg box. No tiers: home loads vary too much.
+    hearth: {
+        name: 'Hearth',   // the first landmark on Odyr's road: home, where the journey starts
+        level: 1, perWeek: '3 days a week', equipment: 'Bands + backpack',
+        subtitle: 'Home · upper body first · 45 min',
+        gender: 'male',
+        home: true,
+        alternating: true,   // A and B alternate; the week strip shows "Lift" on lifting days
+        days: ['Session A', 'Session B'],
+        coachRules: true,
+        weekPlan: { 1: 0, 2: 'cardio', 3: 1, 4: 'cardio', 5: 0, 6: 'rest', 0: 'rest' },
+        cardioZones: { cardio: [2], rest: [1] },
+        warmup: {
+            common: [['Short-foot hold', '2 × 20 s per foot'], ['Wall angels', '10'], ['Chin tucks', '10, 2 s hold'], ['Dead bug', '8 per side'], ['Glute bridge', '12'], ['Band pull-apart', '15']],
+            days: [[], []],
+            note: 'Alignment primer: lift the arch without curling the toes, knee over the second toe, ribs stacked over the pelvis, chin gently tucked. Cool down with a hip flexor lunge stretch, a doorway chest stretch and a calf stretch. This improves posture and control; it does not change bone shape or promise to cure pain.',
+        },
+        exercises: [
+            // Session A: push, pull and legs
+            { id:'hh-pushup', day:0, name:'Feet-Elevated Push-Up', meta:'4×6-15, 0.5min', unit:'reps/+kg', thresholds:null, note:'Pair with the row. Feet on a chair, body in one line; backpack on once 15 is easy' },
+            { id:'hh-inverted-row', day:0, name:'Table Inverted Row', meta:'4×8-15, 1.5min', unit:'reps/+kg', thresholds:null, note:'Under a sturdy table, squeeze the shoulder blades back (or a band row)' },
+            { id:'hh-pike', day:0, name:'Pike Push-Up', meta:'3×6-12, 1.5min', unit:'reps/+kg', thresholds:null, note:'Hips high, head travels forward of the hands; feet on a chair to progress' },
+            { id:'hh-bulgarian', day:0, name:'Backpack Bulgarian Split Squat', meta:'3×8-12/leg, 1.5min', unit:'reps/+kg', per:'leg', thresholds:null, noFailure:true, note:'Back foot on the sofa, front knee over the second toe, arch lifted' },
+            { id:'hh-lat-raise', day:0, name:'Band Lateral Raise', meta:'3×15-25, 0.5min', unit:'reps/+kg', thresholds:null, note:'Pair with the face pull. Lead with the elbows, stop at shoulder height' },
+            { id:'hh-face-pull', day:0, name:'Band Face Pull', meta:'3×12-15, 1min', unit:'reps/+kg', thresholds:null, note:'Band anchored in the door at face height; thumbs back, pause' },
+            { id:'hh-curl', day:0, name:'Band Curl', meta:'2×10-15, 0.5min', unit:'reps/+kg', thresholds:null, note:'Pair with dips. Elbows still, slow on the way down (or a backpack curl)' },
+            { id:'hh-dips', day:0, name:'Chair Dips', meta:'2×10-15, 1min', unit:'reps/+kg', thresholds:null, note:'Shoulders down and back; stop at a comfortable depth' },
+            // Session B: pull, push, hinge and core
+            { id:'hh-pull-ups', day:1, name:'Pull-Ups', meta:'4×AMRAP, 0.5min', unit:'reps/+kg', thresholds:null, note:'Pair with the push-up. Doorway bar. Short of reps? Band-assisted, or a 3 s lowering from the top' },
+            { id:'hh-deficit-pushup', day:1, name:'Deficit Push-Up', meta:'4×6-12, 1.5min', unit:'reps/+kg', thresholds:null, note:'Hands on two books or chairs for a deeper stretch' },
+            { id:'hh-sl-rdl', day:1, name:'Single-Leg Romanian Deadlift', meta:'3×8-12/leg, 1.5min', unit:'reps/+kg', per:'leg', thresholds:null, noFailure:true, note:'Backpack in the opposite hand, hips square, arch of the standing foot lifted' },
+            { id:'hh-band-ohp', day:1, name:'Band Overhead Press', meta:'3×8-12, 1min', unit:'reps/+kg', thresholds:null, note:'Stand on the band, ribs down, press straight up' },
+            { id:'hh-pull-apart', day:1, name:'Band Pull-Apart', meta:'3×15-20, 0.5min', unit:'reps/+kg', thresholds:null, note:'Pair with the abduction. Arms straight, shoulder blades together' },
+            { id:'hh-side-abduction', day:1, name:'Side-Lying Hip Abduction', meta:'3×15-20/side, 1min', unit:'reps/+kg', per:'side', thresholds:null, note:'Top leg slightly behind, toes forward: upper glute, knees aligned' },
+            { id:'hh-calf', day:1, name:'Single-Leg Calf Raise', meta:'2×12-15/leg, 1min', unit:'reps/+kg', per:'leg', thresholds:null, note:'On a step, slow, keep the arch up at the top' },
+            { id:'hh-dead-bug', day:1, name:'Dead Bug', meta:'2×8-10/side, 1min', unit:'reps/+kg', per:'side', thresholds:null, note:'Low back stays on the floor, breathe out as the limbs reach' },
+        ],
+    },
+    hearthfire: {
+        name: 'Hearthfire',   // the fire kept burning at home while Odyr walked
+        level: 1, perWeek: '3 days a week', equipment: 'Bands + backpack',
+        subtitle: 'Home · glutes first · 45 min',
+        gender: 'female',
+        home: true,
+        alternating: true,
+        days: ['Session A', 'Session B'],
+        coachRules: true,
+        weekPlan: { 1: 0, 2: 'cardio', 3: 1, 4: 'cardio', 5: 0, 6: 'rest', 0: 'rest' },
+        cardioZones: { cardio: [2], rest: [1] },
+        warmup: {
+            common: [['Short-foot hold', '2 × 20 s per foot'], ['Wall angels', '10'], ['Chin tucks', '10, 2 s hold'], ['Dead bug', '8 per side'], ['Glute bridge', '12'], ['Band pull-apart', '15']],
+            days: [[], []],
+            note: 'Alignment primer: lift the arch without curling the toes, knee over the second toe, ribs stacked over the pelvis, chin gently tucked. Cool down with a hip flexor lunge stretch, a doorway chest stretch and a calf stretch. This improves posture and control; it does not change bone shape or promise to cure pain.',
+        },
+        exercises: [
+            // Session A: glutes and quads, then the upper frame
+            { id:'hf-sl-thrust', day:0, name:'Single-Leg Hip Thrust', meta:'4×8-15/leg, 1.5-2min', unit:'reps/+kg', per:'leg', thresholds:null, noFailure:true, note:'Shoulders on the sofa, backpack on the hip, 2 s squeeze at the top' },
+            { id:'hf-bulgarian', day:0, name:'Backpack Bulgarian Split Squat', meta:'3×8-12/leg, 1.5min', unit:'reps/+kg', per:'leg', thresholds:null, noFailure:true, note:'Slight forward lean for more glute; knee over the second toe' },
+            { id:'hf-bstance-rdl', day:0, name:'B-Stance Romanian Deadlift', meta:'3×10-12/leg, 1min', unit:'reps/+kg', per:'leg', thresholds:null, note:'Back toes only for balance, hips push back, flat back' },
+            { id:'hf-lateral-walk', day:0, name:'Band Lateral Walk', meta:'3×12/side, 0.5min', unit:'reps/+kg', per:'side', thresholds:null, note:'Pair with the abduction. Band above the knees, knees pushed out, steady steps' },
+            { id:'hf-side-abduction', day:0, name:'Side-Lying Hip Abduction', meta:'3×15-20/side, 1min', unit:'reps/+kg', per:'side', thresholds:null, note:'Top leg slightly behind, toes forward: the upper glute that rounds the shape' },
+            { id:'hf-pushup', day:0, name:'Incline Push-Up', meta:'3×6-12, 0.5min', unit:'reps/+kg', thresholds:null, note:'Pair with the row. Hands on the sofa; lower the incline as you get stronger' },
+            { id:'hf-band-row', day:0, name:'Band Row', meta:'3×10-15, 1min', unit:'reps/+kg', thresholds:null, note:'Band in the door at chest height, elbows back, chest tall' },
+            { id:'hf-lat-raise', day:0, name:'Band Lateral Raise', meta:'3×15-20, 0.5min', unit:'reps/+kg', thresholds:null, note:'Shoulder width frames the waist; lead with the elbows' },
+            // Session B: glutes and hamstrings, then back and shoulders
+            { id:'hf-frog-pump', day:1, name:'Banded Frog Pump', meta:'3×20-30, 1.5min', unit:'reps/+kg', thresholds:null, note:'Soles together, band above the knees, squeeze hard at the top; go close to failure' },
+            { id:'hf-step-up', day:1, name:'Backpack Step-Up', meta:'3×8-12/leg, 1.5min', unit:'reps/+kg', per:'leg', thresholds:null, note:'Sturdy chair, push through the front heel, 3 s lowering' },
+            { id:'hf-towel-curl', day:1, name:'Towel Slide Leg Curl', meta:'3×8-12, 1min', unit:'reps/+kg', thresholds:null, note:'Heels on a towel on a smooth floor, hips up, slide in and out slowly' },
+            { id:'hf-sl-bridge', day:1, name:'Single-Leg Glute Bridge', meta:'3×12-20/leg, 1min', unit:'reps/+kg', per:'leg', thresholds:null, note:'Pause 2 s at the top, ribs down, no arching' },
+            { id:'hf-pulldown', day:1, name:'Band Lat Pulldown', meta:'3×10-15, 0.5min', unit:'reps/+kg', thresholds:null, note:'Pair with Y-T-W. Band over the door, elbows down to the ribs' },
+            { id:'hf-ytw', day:1, name:'Prone Y-T-W Raise', meta:'3×8, 1min', unit:'reps/+kg', thresholds:null, note:'Face down, thumbs up, slow: upper back and posture' },
+            { id:'hf-band-ohp', day:1, name:'Band Overhead Press', meta:'3×8-12, 1min', unit:'reps/+kg', thresholds:null, note:'Stand on the band, ribs down, press straight up' },
+            { id:'hf-calf', day:1, name:'Single-Leg Calf Raise', meta:'2×12-15/leg, 1min', unit:'reps/+kg', per:'leg', thresholds:null, note:'On a step, slow, keep the arch up at the top' },
+        ],
+    },
 };
 
 // Optional 20-minute off-day mobility for Forge (was 9-5 Beast Mode), matched to the last workout day.

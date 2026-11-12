@@ -70,7 +70,7 @@ function weekPlanOf(prog = PROGRAMS[currentProgram]) {
 
 // "Push", "A", "Glutes": short enough for the week strip
 function dayShortLabel(prog, index) {
-    if (prog.days.length === 1) return 'Lift';
+    if (prog.days.length === 1 || prog.alternating) return 'Lift';   // alternating A/B: the next session decides
     const name = prog.days[index];
     const letter = name.match(/^(?:Workout|Day)\s+([A-Z])\b/);
     return letter ? letter[1] : name.split(/[\s·]+/)[0];

@@ -456,6 +456,7 @@ function renderWorkoutCard(exId) {
     const ex = workoutExercise(exId);
     const rows = activeWorkout.rows[exId];
     const card = document.getElementById(`wo_${exId}`);
+    if (!card || !rows) return;   // the card isn't on screen (e.g. rated from elsewhere): nothing to redraw
     temp.innerHTML = rows.map((row, i) => setRowHtml(ex, i, row, exId)).join('');
     updatePlates(exId);
     card.querySelectorAll('.set-row').forEach(el => el.remove());

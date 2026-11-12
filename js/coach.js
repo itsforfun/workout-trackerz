@@ -384,6 +384,30 @@ const COACH_SCIENCE = [
         ],
     },
     {
+        title: 'Training at home',
+        rule: 'Hearth and Hearthfire use bodyweight, bands and a backpack. Every work set ends 0–3 reps short of failure; when you reach the top of the range on every set, make it harder: load the backpack, then a 3 s lowering, then a pause, then a harder version.',
+        why: 'Across 28 studies, light, moderate and heavy loads taken close to failure built the same amount of muscle; heavy loads built more maximal strength. Push-ups matched to 40% of a bench press grew the chest and triceps like the bench press, and band training gave the same strength gains as machines and dumbbells.',
+        note: 'Without heavy loads, your one-rep max will rise more slowly than in a gym, and sets take more effort to reach the same closeness to failure. Glute shape is partly genetic, and fat can’t be lost from one spot.',
+        refs: [
+            ['Lopez P, Radaelli R, Taaffe DR, et al. Med Sci Sports Exerc. 2021;53(6):1206–1216.', 'Resistance Training Load Effects on Muscle Hypertrophy and Strength Gain: Systematic Review and Network Meta-analysis', '10.1249/MSS.0000000000002585'],
+            ['Kikuchi N, Nakazato K. J Exerc Sci Fit. 2017;15(1):37–42.', 'Low-load bench press and push-up induce similar muscle hypertrophy and strength gain', '10.1016/j.jesf.2017.06.003'],
+            ['Lopes JSS, Machado AF, Micheletti JK, et al. SAGE Open Med. 2019;7:2050312119831116.', 'Effects of training with elastic resistance versus conventional resistance on muscular strength: A systematic review and meta-analysis', '10.1177/2050312119831116'],
+            ['Plotkin DL, Rodas MA, Vigotsky AD, et al. Front Physiol. 2023;14:1279170.', 'Hip thrust and back squat training elicit similar gluteus muscle hypertrophy and transfer similarly to the deadlift', '10.3389/fphys.2023.1279170'],
+        ],
+    },
+    {
+        title: 'Alignment work',
+        rule: 'The home programs open with short-foot holds, wall angels, chin tucks, a dead bug, a glute bridge and band pull-aparts, and train the upper glute and single-leg control. Cues all session: arch lifted, knee over the second toe, ribs over the pelvis, chin gently tucked.',
+        why: 'Short-foot exercise done for 5 weeks or more improved the foot arch in most trials. Corrective exercise clearly improved forward head, rounded shoulders and upper-back rounding in recent meta-analyses. Hip strengthening helped knee pain and function.',
+        note: 'Honest limits: better posture angles did not consistently mean less pain or better function; hip strengthening helped knees without changing measured knee alignment; and long-term effects on the arch are unclear. None of this changes bone shape.',
+        refs: [
+            ['Hara S, Kitano M, Kudo S. J Back Musculoskelet Rehabil. 2023;36(1):21–33.', 'The effects of short foot exercises to treat flat foot deformity: A systematic review', '10.3233/BMR-210374'],
+            ['Khorramroo F, Rostami M, Bafrouei MJ. BMC Sports Sci Med Rehabil. 2026;18(1).', 'Corrective exercises strongly improve posture but fail to produce consistent clinical or functional benefits in patients with upper crossed syndrome', '10.1186/s13102-026-01707-8'],
+            ['Sepehri S, Sheikhhoseini R, Piri H, Sayyadi P. BMC Musculoskelet Disord. 2024;25(1):105.', 'The effect of various therapeutic exercises on forward head posture, rounded shoulder, and hyperkyphosis among people with upper crossed syndrome', '10.1186/s12891-024-07224-4'],
+            ['Raghava Neelapala YV, Bhagat M, Shah P. J Geriatr Phys Ther. 2020;43(2):89–98.', 'Hip Muscle Strengthening for Knee Osteoarthritis: A Systematic Review of Literature', '10.1519/JPT.0000000000000214'],
+        ],
+    },
+    {
         title: 'When a lift stalls',
         rule: 'A stall is the same weight and the same best set two sessions running. Each time it repeats, the coach climbs one step: +1 rep, then +1 set, then a slower tempo, then (isolation and machine lifts only) a drop set on the last set, and only then a reset about 10% lighter.',
         why: 'Progression can come from load, reps, sets or time under tension. Trying the cheapest change first keeps recovery intact; drop sets go last and only on small lifts, because taken to failure the big lifts cost more recovery than they return.',

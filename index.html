@@ -131,7 +131,7 @@
 <div class="screen prologue-screen" id="prologueScreen" onclick="prologueNext(event)">
     <div class="pl-dust" aria-hidden="true"><i style="--x:8%;--d:0s;--s:1"></i><i style="--x:19%;--d:3.1s;--s:0.7"></i><i style="--x:31%;--d:1.4s;--s:1.2"></i><i style="--x:44%;--d:5.2s;--s:0.8"></i><i style="--x:57%;--d:2.3s;--s:1"></i><i style="--x:68%;--d:4.4s;--s:0.6"></i><i style="--x:79%;--d:0.8s;--s:1.1"></i><i style="--x:90%;--d:3.7s;--s:0.8"></i><i style="--x:25%;--d:6.1s;--s:0.9"></i><i style="--x:62%;--d:7.0s;--s:0.7"></i></div>
     <div class="pl-top">
-        <button class="pl-listen" id="prologueListen" onclick="togglePrologueVoice()">Listen</button>
+        <span></span>
         <button class="pl-skip" id="prologueSkip" onclick="finishPrologue()">Skip</button>
     </div>
     <div class="pl-body" id="prologueBody"></div>
@@ -254,6 +254,22 @@
                     <div class="program-promise">Glutes first, four days a week, with knee control built in.</div>
                     <div class="program-desc">Named for the mountain goddess who chose her husband by his feet alone. Hip thrusts lead twice a week, every leg day trains glute medius and single-leg control, and a back and shoulder day builds width up top.</div>
                     <div class="program-specs"><div><span>Split</span>Glutes · Back · Glutes · Arms</div><div><span>Session</span>40–50 min</div><div><span>Equipment</span>Full gym</div></div>
+                    <div class="program-cta">Select program <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+                </button>
+                <button class="program-card" onclick="selectProgram('hearth')">
+                    <div class="program-top"><span class="program-index">00</span><span class="program-tag"><span class="lvl" aria-hidden="true"><i class="on"></i><i></i><i></i></span><span>Beginner</span> · <span>3 days a week</span></span></div>
+                    <div class="program-title">Hearth</div>
+                    <div class="program-promise">Shoulders, chest, back and arms at home, with legs never skipped.</div>
+                    <div class="program-desc">The hearth is where Odyr’s road begins: home. Push-ups, rows, pull-ups and presses for a wide upper body, single-leg work for strong legs, and an alignment warm-up for feet, knees, hips and neck in every 45-minute session.</div>
+                    <div class="program-specs"><div><span>Split</span>A · B alternating</div><div><span>Session</span>45 min</div><div><span>Equipment</span>Bands + backpack</div></div>
+                    <div class="program-cta">Select program <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+                </button>
+                <button class="program-card" onclick="selectProgram('hearthfire')">
+                    <div class="program-top"><span class="program-index">00</span><span class="program-tag"><span class="lvl" aria-hidden="true"><i class="on"></i><i></i><i></i></span><span>Beginner</span> · <span>3 days a week</span></span></div>
+                    <div class="program-title">Hearthfire</div>
+                    <div class="program-promise">Glutes three times a week at home, with shoulders and back for the frame.</div>
+                    <div class="program-desc">While Odyr walked, the fire at home never went out. Hip thrusts, split squats and Romanian deadlifts lead, upper-glute work keeps the knees aligned, and bands build shoulders and back, with an alignment warm-up every session.</div>
+                    <div class="program-specs"><div><span>Split</span>A · B alternating</div><div><span>Session</span>45 min</div><div><span>Equipment</span>Bands + backpack</div></div>
                     <div class="program-cta">Select program <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
                 </button>
                 <button class="program-card" onclick="selectProgram('fullBody3')">
@@ -633,7 +649,7 @@
                         </select>
                         <button type="button" class="btn voice-try" onclick="previewNarrator()">Hear it</button>
                     </div>
-                    <small class="form-hint">Reads the story of Odyr and his journal aloud</small>
+                    <small class="form-hint">Reads Odyr’s journal aloud</small>
                 </div>
 
                 <!-- Help -->

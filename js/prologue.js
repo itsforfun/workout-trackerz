@@ -1,7 +1,6 @@
-// ── Prologue: the story of Odyr (v1.95, refined v1.96) ──
+// ── Prologue: the story of Odyr (v1.95, refined v1.96; no voice since v1.98) ──
 // Four short panels shown once, right after a new account is created (before "About you"), and on demand
 // from the sign-in screen ("The story of Odyr") and Settings → Help. Tap anywhere to continue, Skip any time.
-// Listen reads each panel aloud with the phone's own voice (the journal's narrator) and turns the page itself.
 // Panels 1–2 follow the Norse sources (Óðr, Freyja's far-travelling husband who could not stay still; Freyja
 // weeps tears of red gold for him). Panels 3–4 are Odyr's own framing, not a claim about the myths.
 
@@ -13,8 +12,6 @@ const PROLOGUE = [
 ];
 let prologueStep = 0;
 let prologueDone = null;
-let prologueListening = false;
-let prologueTurn = null;
 
 function prologueKey() {
     return `odyr_prologue_${currentUser ? currentUser.id : ''}`;
@@ -101,16 +98,13 @@ function renderPrologue() {
     }
     document.getElementById('prologueDots').innerHTML = PROLOGUE.map((_, i) => `<i class="${i === prologueStep ? 'on' : ''}"></i>`).join('');
     document.getElementById('prologueBegin').hidden = !last;
-    document.getElementById('prologueHint').hidden = last || prologueListening;
+    document.getElementById('prologueHint').hidden = last;
     document.getElementById('prologueSkip').hidden = last;
-    document.getElementById('prologueListen').textContent = tr(prologueListening ? 'Stop' : 'Listen');
-    if (prologueListening) speakPrologue();
 }
 
 function showPrologue(onDone) {
     prologueStep = 0;
     prologueDone = onDone;
-    prologueListening = false;
     document.getElementById('prologueBody').innerHTML = '';
     renderPrologue();
     showScreen('prologue');
@@ -120,63 +114,11 @@ function prologueNext(event) {
     if (event && event.target.closest('button')) return;
     if (prologueStep >= PROLOGUE.length - 1) return;
     haptic();
-    clearTimeout(prologueTurn);
     prologueStep++;
     renderPrologue();
 }
 
-// ── Listen: the journal's narrator reads each panel, then turns the page ──
-function togglePrologueVoice() {
-    haptic();
-    if (!window.speechSynthesis) return showToast('Your phone can’t read aloud here');
-    prologueListening = !prologueListening;
-    if (!prologueListening) stopPrologueVoice();
-    renderPrologueControls();
-    if (prologueListening) speakPrologue();
-}
-
-function renderPrologueControls() {
-    document.getElementById('prologueListen').textContent = tr(prologueListening ? 'Stop' : 'Listen');
-    document.getElementById('prologueListen').classList.toggle('on', prologueListening);
-    document.getElementById('prologueHint').hidden = prologueStep === PROLOGUE.length - 1 || prologueListening;
-}
-
-function speakPrologue() {
-    if (!window.speechSynthesis) return;
-    speechSynthesis.cancel();
-    clearTimeout(prologueTurn);
-    const step = prologueStep;
-    const utterance = new SpeechSynthesisUtterance(tr(PROLOGUE[step].text));
-    utterance.lang = speechLocale();
-    const voice = narrationVoice();
-    if (voice) utterance.voice = voice;
-    utterance.rate = 0.88;
-    utterance.pitch = narrationPitch();
-    utterance.onend = () => {
-        if (!prologueListening || prologueStep !== step) return;
-        if (step < PROLOGUE.length - 1) {
-            prologueTurn = setTimeout(() => {
-                if (!prologueListening || prologueStep !== step) return;
-                prologueStep++;
-                renderPrologue();
-            }, 1100);
-        } else {
-            prologueListening = false;
-            renderPrologueControls();
-        }
-    };
-    // Let the words start rising before the voice begins
-    prologueTurn = setTimeout(() => speechSynthesis.speak(utterance), 500);
-}
-
-function stopPrologueVoice() {
-    clearTimeout(prologueTurn);
-    if (window.speechSynthesis) speechSynthesis.cancel();
-}
-
 function finishPrologue() {
-    prologueListening = false;
-    stopPrologueVoice();
     markPrologueSeen();
     const done = prologueDone;
     prologueDone = null;
