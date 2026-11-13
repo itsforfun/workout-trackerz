@@ -1085,6 +1085,31 @@
         }
     });
 
+    await check('Rest days: the rest card only after recent training, no lift advice on it, charts load on demand', () => {
+        const saved = { data: allData, plan: weekPlanOf, mode: todayMode };
+        const day = new Date().getDay();
+        try {
+            weekPlanOf = () => ({ [day]: 'rest' });
+            todayMode = null;
+            const prog = PROGRAMS[currentProgram];
+            allData = JSON.parse(JSON.stringify(saved.data));
+            allData._sessions = { [currentProgram]: [{ date: addDays(todayStr(), -1), day: 0, week: 0, type: 'workout', minutes: 40, sets: 12 }] };
+            equal(todayOffDay(prog), 'rest', 'trained yesterday: rest card');
+            const insight = coachInsight();
+            assert(!insight || !/stuck/.test(insight.text), 'lift advice on a rest day');
+            allData._sessions[currentProgram][0].date = addDays(todayStr(), -6);
+            equal(todayOffDay(prog), null, '6 days off should open on the workout');
+            allData._sessions = {};
+            equal(todayOffDay(prog), null, 'no rest card before the first workout');
+            equal(whenChartReady(() => {}), typeof Chart !== 'undefined', 'whenChartReady with Chart.js loaded');
+        } finally {
+            weekPlanOf = saved.plan;
+            todayMode = saved.mode;
+            allData = saved.data;
+            renderToday();
+        }
+    });
+
     await check('Faster first workout: days in the profile pick the program, no rest day before the first workout, guests', async () => {
         const saved = { program: currentProgram, profile: userProfile, data: allData, user: currentUser };
         try {

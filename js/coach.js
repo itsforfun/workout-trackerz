@@ -639,8 +639,10 @@ function coachInsight() {
     const stats = getStreakStats();
     const name = ex => exerciseDisplayName(ex, getCurrentWeek());
 
+    // A rest day stays a rest day: no lift advice while Today shows "Recover"
+    const restDay = todayOffDay(prog) && !todayMode;
     // A lift stuck for 3+ sessions: say the ladder's next step for it
-    const stalled = prog.exercises.find(ex => !ex.assist && stallLength(ex.id) >= 3);
+    const stalled = !restDay && prog.exercises.find(ex => !ex.assist && stallLength(ex.id) >= 3);
     if (stalled) {
         const step = getProgression(stalled);
         return { key: `stall-${stalled.id}-${stallLength(stalled.id)}`, icon: 'record', text: `${name(stalled)} is stuck. ${step ? step.text : ''}`.trim() };

@@ -130,7 +130,7 @@ function drawStepsChart(goal) {
         stepsChart.destroy();
         stepsChart = null;
     }
-    if (typeof Chart === 'undefined') return;
+    if (!whenChartReady(() => drawStepsChart(goal))) return;
     const days = Array.from({ length: 14 }, (_, i) => addDays(todayStr(), i - 13));
     const values = days.map(stepsOn);
     const empty = stepsLoaded && values.every(v => !v);

@@ -4,7 +4,7 @@
 // - Supabase (login + data) is never cached; the page keeps its own offline copy of your data.
 // - Push: shows the "rest over" notification sent by the rest-push Supabase function.
 // Bump CACHE when changing this file's caching rules.
-const CACHE = 'odyr-v72';
+const CACHE = 'odyr-v73';
 const APP_SHELL = ['./', 'index.html', 'privacy.html', 'manifest.webmanifest', 'css/app.css', 'fonts/instrument-serif-latin.woff2', 'fonts/instrument-serif-latin-ext.woff2', 'lang/fr.js', 'js/i18n.js', 'js/splash.js', 'js/core.js', 'js/sound.js', 'js/auth.js', 'js/sync.js', 'js/programs.js', 'js/today.js', 'js/steps.js', 'js/builder.js', 'js/workout.js', 'js/cardio.js', 'js/guide.js', 'js/library.js', 'js/anatomy-data.js', 'js/anatomy.js', 'js/body3d.js', 'js/summary.js', 'js/rewards.js', 'js/odyssey.js', 'js/journal.js', 'js/prologue.js', 'js/quests.js', 'js/crews.js', 'js/progress.js', 'js/coach.js', 'js/pro.js', 'js/diagnostics.js', 'js/tabbar.js', 'js/polish.js', 'js/main.js', 'icons/icon-180.png', 'icons/icon-192.png', 'icons/icon-512.png'];
 const CDN_HOSTS = ['cdnjs.cloudflare.com', 'cdn.jsdelivr.net', 'fonts.googleapis.com', 'fonts.gstatic.com'];
 
@@ -33,17 +33,28 @@ self.addEventListener('fetch', event => {
     // Everything else (Supabase) goes straight to the network
 });
 
+// Network first, but never wait long on weak signal (gyms!): after 3 s the saved copy opens the app
+// while the download carries on and refreshes the cache for next time.
+const NETWORK_WAIT_MS = 3000;
 async function networkFirst(request) {
     const cache = await caches.open(CACHE);
+    const cachedCopy = () => cache.match(request, { ignoreSearch: true })
+        .then(hit => hit || (request.mode === 'navigate' ? cache.match('index.html') : undefined));
+    // no-cache: always ask GitHub Pages for the newest file instead of the browser's 10-minute copy
+    const network = fetch(request.mode === 'navigate' ? request.url : request, { cache: 'no-cache' })
+        .then(response => {
+            if (response.ok) cache.put(request, response.clone());
+            return response;
+        });
+    network.catch(() => { /* handled below; this keeps a late failure from being reported */ });
+    const slow = new Promise(resolve => setTimeout(resolve, NETWORK_WAIT_MS)).then(cachedCopy);
     try {
-        // no-cache: always ask GitHub Pages for the newest page instead of the browser's 10-minute copy
-        const response = await fetch(request.mode === 'navigate' ? request.url : request, { cache: 'no-cache' });
-        if (response.ok) cache.put(request, response.clone());
-        return response;
+        const first = await Promise.race([network, slow]);
+        if (first) return first;
+        return await network;   // nothing saved yet: keep waiting for the network
     } catch (error) {
-        const cached = await cache.match(request, { ignoreSearch: true });
+        const cached = await cachedCopy();
         if (cached) return cached;
-        if (request.mode === 'navigate') return cache.match('index.html');
         throw error;
     }
 }

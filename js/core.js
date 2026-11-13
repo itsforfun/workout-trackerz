@@ -4,7 +4,7 @@
 
 // Shown at the bottom of Settings so you can tell which version a phone is running.
 // Bump it with every deploy.
-const APP_VERSION = '2.0 · 12 Nov';
+const APP_VERSION = '2.1 · 12 Nov';
 
 const SUPABASE_URL = 'https://hcwbcxhblfjpdlkwykez.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_mEe_5g2UITyp5O-F9YRhRg_wTQWuOtf';
@@ -22,7 +22,11 @@ try {
 // Charts draw on a canvas, so the page translator never sees their text: labels, axis titles and whatever
 // the tooltip callbacks return are translated here before each draw (the language engine is in js/i18n.js)
 const translatedCallbacks = new WeakSet();
-if (PACK && window.Chart) Chart.register({
+let chartI18nDone = false;
+function registerChartI18n() {
+if (!PACK || !window.Chart || chartI18nDone) return;
+chartI18nDone = true;
+Chart.register({
     id: 'i18n',
     beforeUpdate(chart) {
         const data = chart.data;
@@ -46,6 +50,27 @@ if (PACK && window.Chart) Chart.register({
         }
     },
 });
+}
+registerChartI18n();
+
+// Chart.js (~200 KB) is only needed on Progress and Steps, so it loads the first time a chart is drawn.
+// Returns true when it's ready; otherwise starts loading and calls redraw once it's there.
+const CHART_SRC = 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js';
+let chartLoading = null;
+function whenChartReady(redraw) {
+    if (window.Chart) return true;
+    if (!chartLoading) {
+        chartLoading = new Promise((resolve, reject) => {
+            const script = document.createElement('script');
+            script.src = CHART_SRC;
+            script.onload = resolve;
+            script.onerror = () => { chartLoading = null; reject(new Error('Chart.js did not load')); };
+            document.head.appendChild(script);
+        }).then(registerChartI18n);
+    }
+    chartLoading.then(redraw, () => { /* offline before the first chart: the numbers still show */ });
+    return false;
+}
 
 // ── Error reports: anything that breaks on a phone lands in the private error_log table
 // (supabase-errors-setup.sql; only readable in the Supabase dashboard). At most 5 per page load, no repeats.

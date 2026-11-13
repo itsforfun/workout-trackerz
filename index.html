@@ -31,7 +31,16 @@
     </symbol>
 </svg>
 
-<script src="lang/fr.js"></script>
+<!-- The French pack (200 KB) loads only for French: same choice as js/i18n.js (?lang=, Settings, then the phone) -->
+<script>(function () {
+    var code = new URLSearchParams(location.search).get('lang');
+    try { code = code || localStorage.getItem('odyr_lang'); } catch (e) { /* private mode */ }
+    if (!code) {
+        var prefs = navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || 'en'];
+        for (var i = 0; i < prefs.length && !code; i++) { var c = String(prefs[i]).slice(0, 2).toLowerCase(); if (c === 'en' || c === 'fr') code = c; }
+    }
+    if (code === 'fr' || /[?&]test\b/.test(location.search)) document.write('<script src="lang/fr.js"><\/script>');
+})();</script>
 <script src="js/i18n.js"></script>
 <!-- OPENING QUOTE: shown on every launch, then dissolves into the app (tap to skip) -->
 <div class="splash" id="splash" onclick="hideSplash()" data-no-i18n>
@@ -955,8 +964,10 @@
 
 <!-- The app, in load order (classic scripts share one global scope; see CLAUDE.md section 27) -->
 <!-- Libraries load after the opening quote is on screen (they used to delay the first paint) -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- Chart.js loads when the first chart is drawn (whenChartReady in js/core.js); the checks load it up front -->
+<script>if (/[?&]test\b/.test(location.search)) document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"><\/script>');</script>
+<!-- Pinned to one version so an update on Supabase's side never changes the app without a deploy -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
 <!-- Automated checks: only with ?test in the address (see tests/) -->
 <script>if (/[?&]test\b/.test(location.search)) document.write('<script src="tests/setup.js"><\/script>');</script>
 <script src="js/core.js"></script>

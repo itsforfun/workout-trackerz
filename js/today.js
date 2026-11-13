@@ -175,10 +175,8 @@ function renderToday() {
     // Cardio and rest days of a week plan show cardio zones instead of the lifting days; on any other day
     // (and in every program) the Cardio card opens the same zones and science (todayMode 'cardio')
     // Lifting programs: an off day opens on a short rest-day card (optional cardio, or lift anyway)
-    const plan = (weekPlanOf(prog) || {})[new Date().getDay()];
-    // Before the first workout ever, every day is a training day: a new account never opens on "Recover"
     const firstWorkout = !allWorkoutDates().length;
-    const offDay = !firstWorkout && (plan === 'cardio' || plan === 'rest') ? plan : null;
+    const offDay = todayOffDay(prog);
     const cardioOpen = todayMode === 'cardio';
     const restDay = offDay && !todayMode;
     renderCardioView(cardioOpen ? 'cardio' : null, false, cardioOpen);
@@ -518,6 +516,17 @@ window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); instal
 
 function isInstalled() {
     return navigator.standalone || (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches);
+}
+
+// Today's plan says rest or cardio, so Today opens on the rest-day card. Not before the first workout ever
+// (a new account never opens on "Recover"), and not after 5+ days off (rested enough: the workout comes first)
+function todayOffDay(prog = PROGRAMS[currentProgram]) {
+    const plan = (weekPlanOf(prog) || {})[new Date().getDay()];
+    if (plan !== 'cardio' && plan !== 'rest') return null;
+    if (!allWorkoutDates().length) return null;
+    const daysOff = daysSinceLastWorkout();
+    if (daysOff !== null && daysOff >= 5) return null;
+    return plan;
 }
 
 // Brand-new account: say why this program was chosen, with a way to change it (until the first workout)

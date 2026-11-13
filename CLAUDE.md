@@ -28,7 +28,7 @@ Build a **real multi-user workout-tracking app** that:
 - **Backend:** Supabase (auth + Postgres). Table created with `supabase-setup.sql`.
 - **Deployed (2026-10-27):** https://itsforfun.github.io/workout-trackerz/ — GitHub Pages from `main` / root of the public repo `itsforfun/workout-trackerz`. Pushing to `main` redeploys in ~1 min. GitHub CLI is at `~/.local/bin/gh` (signed in as itsforfun). `reference/` is git-ignored (private screenshots / paid program photos).
 - Previously (before Oct 27 2026): It was only ever tested inside the Claude mobile app's file preview, which showed `Uncaught Error: Script error.` (see `reference/debug-screenshots/`). It has never been confirmed working in a real browser.
-- **Libraries via CDN:** `@supabase/supabase-js@2` (jsDelivr), Chart.js 4.4.1 (cdnjs), Google Fonts (Bebas Neue, DM Mono, Playfair Display).
+- **Libraries via CDN:** `@supabase/supabase-js@2.118.0` (jsDelivr, pinned since v2.1), Chart.js 4.4.1 (cdnjs, loaded on demand since v2.1), Google Fonts (Bebas Neue, DM Mono, Playfair Display).
 
 ### Supabase config
 - Project URL: `https://hcwbcxhblfjpdlkwykez.supabase.co` (project "kevinwandji55@gmail.com's Project", org "kind", free plan)
@@ -645,3 +645,10 @@ reference/debug-screenshots/  ← Supabase key page, "Script error" console, Git
 - **Guests** (`isGuest`, `startAsGuest`, `refreshGuestStart` in js/auth.js): "Try it first, no account needed" on the sign-in screen signs in a Supabase **anonymous user** (same `user_data` row and RLS as anyone). The button only shows when the project allows it (`/auth/v1/settings` → `external.anonymous_users`, remembered as `odyr_guest_ok`). **Owner must turn on** Authentication → Sign In / Providers → "Allow anonymous sign-ins". After the first workout a "Save your progress" card shows on Today (`renderGuestCard`, `#guestCard`); Settings → Account shows "Guest, no email yet" and a Save button instead of Reset password. Saving (`guestModal`, `saveGuestAccount`) adds email, then password to the same user (`updateUser`), so nothing moves; if the project asks to confirm email changes, it says to open the link first. Logging out as a guest warns that the training is lost.
 - Coach insight fix: `nearestBadge` only nudges toward badges already under way (a new account used to see "Iron Comeback is close").
 - Version numbering moved to 2.0 here (after 1.99).
+
+## 77. Lighter launch + calmer rest days (v2.1, 2026-11-12)
+- **French only for French:** an inline script at the top of `<body>` (same choice as `storedLang`/`phoneLang` in js/i18n.js: `?lang=`, `odyr_lang`, then the phone) writes `<script src="lang/fr.js">` only for French (and under `?test`). English phones no longer download 200 KB of French. A new language needs adding to that script too. sw.js still precaches the pack so French works offline.
+- **Chart.js on demand** (`whenChartReady(redraw)` in js/core.js): returns true when Chart.js is there; otherwise loads it once and calls `redraw`. Used by the lift chart, bodyweight chart and steps chart. The French chart plugin registers once it loads (`registerChartI18n`). Test pages still load Chart.js up front. New charts: `if (!whenChartReady(() => drawIt())) return;`.
+- **supabase-js pinned** to 2.118.0 (`dist/umd/supabase.min.js`). Upgrade on purpose: change the URL, run the checks, deploy. Pick a version at least two weeks old.
+- **Service worker:** same-origin files are still network first, but after 3 s on weak signal (`NETWORK_WAIT_MS`) the saved copy opens the app while the download finishes and refreshes the cache.
+- **Rest days** (`todayOffDay(prog)` in js/today.js, used by `renderToday` and `coachInsight`): the rest card shows only when the plan says rest/cardio, the user has trained before, and the last workout was under 5 days ago (otherwise the workout comes first, so "Recover" and "6 days since your last workout" never appear together). While the rest card shows, the coach card gives no stalled-lift advice.

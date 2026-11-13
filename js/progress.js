@@ -282,7 +282,7 @@ function renderProgressChart(ex, history) {
     }
     const note = document.getElementById('chartNote');
     note.textContent = history.length === 1 ? 'Your line starts after your next workout of this lift.' : '';
-    if (!history.length || typeof Chart === 'undefined') return;
+    if (!history.length || !whenChartReady(() => renderProgressChart(ex, history))) return;
 
     const repsBased = isRepsBased(ex);
     const show = v => repsBased ? Math.round(v) : parseFloat(kgToDisplay(Math.round(v * 10) / 10));
@@ -433,7 +433,7 @@ function renderBodyweight() {
     }
     const wrap = document.querySelector('.bw-chart-wrap');
     wrap.style.display = log.length > 1 ? 'block' : 'none';
-    if (log.length < 2 || typeof Chart === 'undefined') return;
+    if (log.length < 2 || !whenChartReady(renderBodyweight)) return;
     bwChart = new Chart(document.getElementById('bwChart'), {
         type: 'line',
         data: {
