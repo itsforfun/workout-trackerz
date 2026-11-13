@@ -396,9 +396,9 @@ function setActionsHtml(exId) {
     const canSkip = rows.some(r => r.done) && rows.some(r => !r.done);
     return `
         <div class="wo-add-row">
-            ${canRemove ? `<button class="wo-add wo-remove" onclick="removeSet('${exId}')">− Remove set</button>` : ''}
             ${canSkip ? `<button class="wo-add wo-skip" onclick="skipRestOfSets('${exId}')">Skip the rest</button>` : ''}
-            <button class="wo-add" onclick="addSet('${exId}')">+ Add set</button>
+            ${canRemove ? `<button class="wo-add wo-chip wo-remove" onclick="removeSet('${exId}')" aria-label="Remove set">− Set</button>` : ''}
+            <button class="wo-add wo-chip" onclick="addSet('${exId}')" aria-label="Add set">+ Set</button>
         </div>`;
 }
 

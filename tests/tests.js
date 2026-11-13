@@ -328,7 +328,10 @@
             showLevelMoment(playerXp(playerStats())); closeRecord();
             celebrateTier(PROGRAMS.fullBody3.exercises[0], 2); closeCelebration();
             showRecord(PROGRAMS.fullBody3.exercises[0], 50, 40); closeRecord();
+            // The tick only plays on a visible screen; the test window may be hidden
+            Object.defineProperty(document, 'visibilityState', { configurable: true, get: () => 'visible' });
             rest.total = 90; rest.endAt = Date.now() + 2500; rest.beeped = false; rest.lastTick = null; tickRest();
+            delete document.visibilityState;
             rest.endAt = Date.now() - 10; tickRest();
             stopRest();
         } finally {
@@ -1082,6 +1085,63 @@
             todayMode = null;
             userProfile = saved.profile;
             selectProgram(saved.program);
+        }
+    });
+
+    await check('Two devices: saves merge instead of overwriting a workout logged elsewhere', async () => {
+        // The merge rules
+        const a = { date: '2026-11-10', type: 'workout', day: 0 };
+        const b = { date: '2026-11-09', type: 'workout', day: 1 };
+        const merged = mergeWorkoutData(
+            { _sessions: { p: [a] }, _bodyweight: [{ date: '2026-11-10', kg: 80 }], _habits: { d: [0, 2] }, _showcase: ['x'],
+              p: { lift: { 0: { kg: 50, sets: [{ kg: 50, reps: 8 }], date: '2026-11-03' } } } },
+            { _sessions: { p: [b, a] }, _bodyweight: [{ date: '2026-11-10', kg: 81 }, { date: '2026-11-01', kg: 82 }], _habits: { d: [1] }, _showcase: ['y'],
+              p: { lift: { 0: { kg: 55, sets: [{ kg: 55, reps: 8 }], date: '2026-11-05' }, 1: '60' } }, _tips: { t: 1 } });
+        equal(JSON.stringify(merged._sessions.p), JSON.stringify([b, a]), 'sessions from both devices, by date, no duplicate');
+        equal(merged._bodyweight.length, 2, 'one weigh-in per day');
+        equal(merged._bodyweight.find(e => e.date === '2026-11-10').kg, 80, 'this device wins the same day');
+        equal(JSON.stringify(merged._habits.d), '[0,1,2]', 'habit ticks from both');
+        equal(JSON.stringify(merged._showcase), '["x"]', 'other lists: this device wins');
+        equal(merged.p.lift[0].kg, 55, 'the more recent entry of a week wins whole');
+        equal(merged.p.lift[0].sets.length, 1, 'sets of two devices never mixed');
+        equal(merged.p.lift[1], '60', 'weeks only the other device logged are kept');
+        equal(merged._tips.t, 1, 'keys only the other device has are kept');
+
+        // A save when another device saved in between: read, merge, then write
+        const saved = { sb, data: allData, cloudAt, user: currentUser };
+        const remoteSession = { date: addDays(todayStr(), -2), type: 'workout', day: 1, week: 0, minutes: 30, sets: 9 };
+        const calls = [];
+        const fake = table => {
+            const q = { _cols: '' };
+            ['eq', 'order', 'limit'].forEach(n => { q[n] = () => q; });
+            q.select = cols => { q._cols = cols; return q; };
+            q.upsert = row => { calls.push(row); q._upsert = true; return q; };
+            q.maybeSingle = async () => q._upsert ? { data: { updated_at: 'after' }, error: null }
+                : q._cols === 'updated_at' ? { data: { updated_at: 'other-device' }, error: null }
+                : { data: { updated_at: 'other-device', workout_data: { _sessions: { [currentProgram]: [remoteSession] } } }, error: null };
+            return q;
+        };
+        try {
+            sb = { from: fake };
+            currentUser = currentUser || { id: 'u1' };
+            cloudAt = 'mine';
+            allData = JSON.parse(JSON.stringify(saved.data));
+            const before = programSessions().length;
+            assert(await writeToCloud(), 'save failed');
+            equal(programSessions().length, before + 1, 'the other device\'s workout was lost');
+            assert(calls[0].workout_data._sessions[currentProgram].some(s => s.date === remoteSession.date && s.sets === 9), 'merged log not saved');
+            equal(cloudAt, 'after', 'cloud version not remembered');
+            // Nobody else saved: no merge read, plain save
+            calls.length = 0;
+            const head = fake; let reads = 0;
+            sb = { from: t => { const q = head(t); const ms = q.maybeSingle; q.maybeSingle = async () => { if (!q._upsert) reads++; const r = await ms(); if (!q._upsert && q._cols === 'updated_at') r.data.updated_at = 'after'; return r; }; return q; } };
+            assert(await writeToCloud(), 'second save failed');
+            equal(reads, 1, 'read the whole log although nothing changed');
+        } finally {
+            sb = saved.sb;
+            allData = saved.data;
+            cloudAt = saved.cloudAt;
+            currentUser = saved.user;
         }
     });
 

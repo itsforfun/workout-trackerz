@@ -98,7 +98,10 @@ function renderTodayHero() {
     const rings = [
         { label: isCardioProgram() ? 'Sessions' : 'Lift', color: '#f3ece0', value: stats.thisWeek, target: liftTarget, text: `<span data-count="${stats.thisWeek}" data-key="hero-lift"></span><small>/${liftTarget}</small>` },
         { label: 'Cardio', color: '#c98f66', value: cardio, target: cardioTarget(), text: `<span data-count="${cardio}" data-key="hero-cardio"></span><small>/${cardioTarget()} min</small>` },
-        { label: 'Steps', color: '#b0a491', value: steps, target: goal, text: `<span data-count="${steps}" data-key="hero-steps" data-format="compact"></span><small>/${compactNum(goal)}</small>` },
+        // No steps ever (Shortcut not set up, nothing typed): an invitation instead of an empty 0/10k
+        stepsLoaded && !Object.keys(stepData).length
+            ? { label: 'Steps', color: '#b0a491', value: 0, target: goal, connect: true, text: '<small class="rt-connect">Connect</small>' }
+            : { label: 'Steps', color: '#b0a491', value: steps, target: goal, text: `<span data-count="${steps}" data-key="hero-steps" data-format="compact"></span><small>/${compactNum(goal)}</small>` },
     ].filter(ring => ring.target > 0);   // cardio set to Off: two rings
     // This week as a row of small rings (Steps opens the Steps view); the score sits in the row's header
     const R = 26;
@@ -114,7 +117,7 @@ function renderTodayHero() {
             <span class="rt-value">${ring.text}</span>
             <span class="rt-label">${ring.label}${ring.label === 'Steps' ? ' <span class="hl-chev" aria-hidden="true">›</span>' : ''}</span>`;
         return ring.label === 'Steps'
-            ? `<button class="ring-tile hl-open${closed}" style="--c:${ring.color}" onclick="switchTab('steps')">${inner}</button>`
+            ? `<button class="ring-tile hl-open${closed}${ring.connect ? ' connect' : ''}" style="--c:${ring.color}" onclick="switchTab('steps')">${inner}</button>`
             : `<div class="ring-tile${closed}" style="--c:${ring.color}">${inner}</div>`;
     }).join('');
     el.innerHTML = `

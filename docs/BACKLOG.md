@@ -37,7 +37,7 @@ Status: **Done** · **Check** (built, still needs a look on the iPhone or a smal
 **Sharing and motivation**
 - Streak shield: one per month, keeps a streak alive through a missed week (suggested 2026-10-30)
 - "Then vs now" moments: monthly reminder of how far you've come (strength %, weight, workouts) (suggested 2026-10-30)
-- Review follow-ups (2026-11-12): simplify the reward systems into one main progress line, merge saves per workout across devices, smaller add/remove set buttons, hide the Steps ring until steps are connected
+- Review follow-up (2026-11-12): simplify the reward systems into one main progress line
 - Guided first week for new accounts: a short checklist of quick wins (suggested 2026-10-30)
 - Share button on the badge sheet (for the share cards)
 - Read-only progress sharing with a coach or training partner
@@ -124,6 +124,7 @@ Status: **Done** · **Check** (built, still needs a look on the iPhone or a smal
 | 1.90 | First five minutes: 3-stop first tour (full tour on Replay), one-time tips (first workout: tick, effort, rest/Form/Swap, summary; later: journey, quests, rest day, Progress), Settings → Help → Show tips again |
 | 2.0 | Faster first workout: days a week asked in profile setup, which starts the picked program straight away (menu skipped, "Picked for … · Change program" on Today); height optional; no rest-day screen before the first workout; "Try it first, no account needed" (guest account, saved later with an email from Today or Settings); badge nudges only for badges already under way |
 | 2.1 | Lighter launch: French file only for French users, Chart.js loads with the first chart, Supabase library pinned to 2.118.0, 3-second fallback to the saved copy on weak signal; rest days: no "Recover" card after 5+ days off, no lift advice on the rest card |
+| 2.2 | Saves from two devices merge instead of overwriting (no lost workouts); set controls are small chips on the exercise in focus; Steps ring says "Connect" until steps exist |
 | 1.82 | Sets per muscle on Progress: weekly hard sets per muscle against 10–20, with the source |
 | 1.81 | Stall ladder for every program: +1 rep, +1 set, slower tempo, drop set (isolation only), then a reset |
 | 1.80 | Odyr's Journal: a short story in Odyr's voice at every landmark, revealed line by line, read aloud by the phone's voice |
