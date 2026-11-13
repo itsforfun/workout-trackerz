@@ -100,7 +100,7 @@ function checkQuests() {
         if (week.done[q.id] || questProgress(q, monday) < q.target) return;
         week.done[q.id] = todayStr();
         scheduleSave();
-        queueMoment(() => showMoment({ kicker: 'Quest complete', valueHtml: `+${QUEST_XP}`, unit: 'XP', name: questLabel(q), sub: 'Three new quests every Monday.', sound: 'badge' }));
+        if (revealed('quests')) queueMoment(() => showMoment({ kicker: 'Quest complete', valueHtml: `+${QUEST_XP}`, unit: 'XP', name: questLabel(q), sub: 'Three new quests every Monday.', sound: 'badge' }));
     });
 }
 
@@ -110,6 +110,10 @@ let questsOpen = false;
 function renderQuests() {
     const el = document.getElementById('questsCard');
     if (!el || !currentProgram) return;
+    if (!revealed('quests')) {   // quests join after the third workout
+        el.innerHTML = '';
+        return;
+    }
     const monday = mondayOf(todayStr());
     const week = questWeek(monday);
     const daysLeft = Math.round((parseDate(addDays(monday, 6)) - parseDate(todayStr())) / 86400000) + 1;

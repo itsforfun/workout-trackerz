@@ -709,18 +709,17 @@ function allTourSteps() {
     // The rings change with the program and the cardio setting, so the text does too
     const rings = cardioProgram
         ? (cardioOn
-            ? 'Cardio sessions this week, cardio minutes toward your weekly target, and today\'s steps. A ring turns gold when it closes. Score, at the top right, is your consistency over the last 7 days, from 0 to 100.'
-            : 'Cardio sessions this week and today\'s steps. A ring turns gold when it closes. Score, at the top right, is your consistency over the last 7 days, from 0 to 100.')
+            ? 'Cardio sessions this week, cardio minutes toward your weekly target, and today\'s steps. A ring turns gold when it closes.'
+            : 'Cardio sessions this week and today\'s steps. A ring turns gold when it closes.')
         : (cardioOn
-            ? 'Lifting this week, cardio minutes toward your weekly target, and today\'s steps. A ring turns gold when it closes. Score, at the top right, is your consistency over the last 7 days, from 0 to 100.'
-            : 'Lifting this week and today\'s steps. A ring turns gold when it closes. Score, at the top right, is your consistency over the last 7 days, from 0 to 100.');
+            ? 'Lifting this week, cardio minutes toward your weekly target, and today\'s steps. A ring turns gold when it closes.'
+            : 'Lifting this week and today\'s steps. A ring turns gold when it closes.');
     const start = cardioProgram
         ? { id: 'start', target: '#startWorkoutBtn', title: 'Start here', text: 'Today\'s session: each block, the zone to stay in and your heart rate. Odyr times every block for you.' }
         : lifting
             ? { id: 'start', target: '#startWorkoutBtn', title: 'Start here', text: 'Today\'s session. Weights are filled in for you, and records and badges unlock as you go.' }
             : { id: 'start', target: '#restDay', title: 'Rest day', text: 'Recovery comes first. Cardio is optional, and lifting is one tap away.' };
     return [
-        { target: '.hero-level', title: 'Your level', text: 'Everything you do earns XP: workouts, sets, records, cardio, steps and habits. Climb from Rookie to Mythic.' },
         { id: 'rings', target: '.hero-rings', title: cardioOn ? 'Three rings' : 'Two rings', text: rings },
         { target: '#sagaCard', title: 'Your journey', text: 'Workouts, cardio, steps and habits move you along Odyr\'s road. Each landmark unlocks a page of his journal. Tap the card to see the map.' },
         { target: '#weekPlan', title: 'Your week', text: cardioOn
@@ -730,7 +729,7 @@ function allTourSteps() {
         { target: '#questsCard', title: 'Weekly quests', text: 'Three new goals every Monday, set from your log and your goal. Each one you complete is worth 75 XP.' },
         { target: '#todayHero .hl-open', title: 'Steps', text: 'Tap Steps for your daily steps from Apple Health, with a one-time setup.' },
         { target: '#habitsCard', title: 'Daily habits', text: 'Set by your goal in Settings. Fat loss or muscle comes from these, whatever program you follow.' },
-        { target: '.bottom-nav > .tab-btn[onclick="switchTab(\'progress\')"]', title: 'Progress', text: 'Your level, badges, strength over time and a chart for every lift.' },
+        { target: '.bottom-nav > .tab-btn[onclick="switchTab(\'progress\')"]', title: 'Progress', text: 'Your level, your consistency score, strength over time and a chart for every lift.' },
         { target: '.bottom-nav > .tab-btn[onclick="switchTab(\'settings\')"]', title: 'Settings', text: 'Your goal, cardio level, language and sounds. Help → How the coach works explains every rule, with its sources.' },
         { id: 'nav', target: '.bottom-nav', title: 'Everything else', text: 'Progress shows how far you’ve come; Settings holds your goal and help. The rest explains itself as you go.' },
     ];
@@ -813,7 +812,8 @@ const COACH_TIPS = {
     'wo-rest': 'Rest counts down at the bottom. Form shows how to do an exercise; Swap changes it.',
     'wo-summary': 'Your workout in one page. Your level and your journey just moved.',
     journey: 'You moved along Odyr’s road. Tap the card to see the map and his journal.',
-    quests: 'Three quests every Monday, worth 75 XP each. Tap to see this week’s.',
+    quests: 'New: weekly quests. Three goals every Monday, worth 75 XP each. Tap to see this week’s.',
+    badges: 'New: badges. The ones you’ve earned so far are waiting in the trophy room on Progress.',
     restday: 'Rest day. Recovery comes first; cardio is optional.',
     progress: 'Tap a lift to see its chart and your weekly log.',
 };

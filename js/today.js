@@ -93,8 +93,6 @@ function renderTodayHero() {
     const cardio = cardioWeek().moderate;
     const steps = stepsOn(todayStr());
     const goal = stepGoal();
-    const consistency = consistencyScore();
-    const xp = playerXp(playerStats());
     const rings = [
         { label: isCardioProgram() ? 'Sessions' : 'Lift', color: '#f3ece0', value: stats.thisWeek, target: liftTarget, text: `<span data-count="${stats.thisWeek}" data-key="hero-lift"></span><small>/${liftTarget}</small>` },
         { label: 'Cardio', color: '#c98f66', value: cardio, target: cardioTarget(), text: `<span data-count="${cardio}" data-key="hero-cardio"></span><small>/${cardioTarget()} min</small>` },
@@ -124,22 +122,11 @@ function renderTodayHero() {
         <div class="hero-rings">
             <div class="ring-head">
                 <span class="ring-kicker">This week</span>
-                <button class="hero-score" onclick="openScore()"><span>Score</span> <strong data-count="${consistency.score}" data-key="hero-score"></strong> ›</button>
             </div>
             <div class="ring-tiles" style="--n:${rings.length}">${tiles}</div>
         </div>`;
-    // Level: a tile in the grid below (the full picture lives on Progress and in the trophy room)
-    const levelEl = document.getElementById('levelTile');
-    if (levelEl) levelEl.innerHTML = `
-        <button class="hero-level tile" onclick="openLevel()">
-            <span class="tile-kicker">Level <strong data-count="${xp.level}" data-key="hero-level"></strong></span>
-            <span class="tile-big">${escapeHtml(xp.rank)}</span>
-            <span class="tile-sub">${xp.level < MAX_LEVEL ? `${xp.toNext.toLocaleString(LOCALE)} XP to go` : 'Max level'}</span>
-            <span class="tile-bar gold"><span style="width:${xp.span ? Math.round((xp.into / xp.span) * 100) : 100}%"></span></span>
-        </button>`;
     // Rings sweep in from empty
     rollNumbers(el);
-    if (levelEl) rollNumbers(levelEl);
     el.getBoundingClientRect();
     setTimeout(() => el.querySelectorAll('.rt-fg').forEach(circle => { circle.style.strokeDashoffset = circle.dataset.offset; }), 30);
 
@@ -265,6 +252,15 @@ function renderToday() {
 
     renderMobility();
     renderHabits();
+    layoutTodayTiles();
+}
+
+// Tiles sit two to a row; one left alone at the end (quests not open yet, cardio card hidden) takes the full row
+function layoutTodayTiles() {
+    const tiles = [...document.querySelectorAll('.today-tiles > div')];
+    tiles.forEach(t => t.classList.remove('wide'));
+    const shown = tiles.filter(t => t.innerHTML.trim());
+    if (shown.length % 2) shown[shown.length - 1].classList.add('wide');
 }
 
 // ── Programs with a weekly plan, warm-up, daily habits and a power milestone (Wayfarer) ──

@@ -13,6 +13,7 @@ Status: **Done** · **Check** (built, still needs a look on the iPhone or a smal
 |---|---|
 | Try without an account (v2.0) | Owner: Supabase → Authentication → Sign In / Providers → turn on "Allow anonymous sign-ins" (the button stays hidden until then); then try "Save your progress" once to confirm the email is added straight away |
 | Faster first workout (v2.0) | Watch a tester go from sign-up to the first set |
+| Rewards step by step (v2.3) | Ask testers whether week one feels calmer; tune the 3-workout / 2-week thresholds if needed |
 | Calmer Today: one hero, rings row, tiles (v1.91) | Ask testers again; see it on the iPhone |
 | Gold body scan on Today and the summary (v1.92) | See it on the iPhone |
 | Home programs Hearth and Hearthfire (v1.98) | Try a session at home; consider recommending them in "Our pick for you" when someone has no gym |
@@ -37,7 +38,6 @@ Status: **Done** · **Check** (built, still needs a look on the iPhone or a smal
 **Sharing and motivation**
 - Streak shield: one per month, keeps a streak alive through a missed week (suggested 2026-10-30)
 - "Then vs now" moments: monthly reminder of how far you've come (strength %, weight, workouts) (suggested 2026-10-30)
-- Review follow-up (2026-11-12): simplify the reward systems into one main progress line
 - Guided first week for new accounts: a short checklist of quick wins (suggested 2026-10-30)
 - Share button on the badge sheet (for the share cards)
 - Read-only progress sharing with a coach or training partner
@@ -125,6 +125,7 @@ Status: **Done** · **Check** (built, still needs a look on the iPhone or a smal
 | 2.0 | Faster first workout: days a week asked in profile setup, which starts the picked program straight away (menu skipped, "Picked for … · Change program" on Today); height optional; no rest-day screen before the first workout; "Try it first, no account needed" (guest account, saved later with an email from Today or Settings); badge nudges only for badges already under way |
 | 2.1 | Lighter launch: French file only for French users, Chart.js loads with the first chart, Supabase library pinned to 2.118.0, 3-second fallback to the saved copy on weak signal; rest days: no "Recover" card after 5+ days off, no lift advice on the rest card |
 | 2.2 | Saves from two devices merge instead of overwriting (no lost workouts); set controls are small chips on the exercise in focus; Steps ring says "Connect" until steps exist |
+| 2.3 | Rewards step by step: quests after the 3rd workout, badges after two weeks (earned quietly until then), earlier accounts keep everything; score and level moved from Today to Progress; a lone Today tile takes the full row |
 | 1.82 | Sets per muscle on Progress: weekly hard sets per muscle against 10–20, with the source |
 | 1.81 | Stall ladder for every program: +1 rep, +1 set, slower tempo, drop set (isolation only), then a reset |
 | 1.80 | Odyr's Journal: a short story in Odyr's voice at every landmark, revealed line by line, read aloud by the phone's voice |

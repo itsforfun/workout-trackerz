@@ -695,6 +695,8 @@ function renderOverview() {
     const tracks = badgeTracks();
     const earned = tracks.reduce((sum, t) => sum + badgeTier(t, stats), 0);
     const showcase = showcaseTracks(stats).filter(t => badgeTier(t, stats) > 0).slice(0, 3);
+    const badgesOpen = revealed('badges');
+    const score = consistencyScore();
     const tile = (cls, onclick, kicker, value, sub) => `
         <button class="ov-tile ${cls}" onclick="${onclick}">
             <span class="ov-kicker">${kicker}</span>
@@ -707,7 +709,7 @@ function renderOverview() {
             <div class="ov-hero-text">
                 <div class="ov-rank">${escapeHtml(xp.rank)}</div>
                 <p class="ov-line">${xp.level < MAX_LEVEL ? `${xp.toNext.toLocaleString(LOCALE)} XP to level ${xp.level + 1}` : 'Maximum level'}</p>
-                <span class="ov-link">Trophy room ›</span>
+                <span class="ov-link">${badgesOpen && showcase.length ? `<span class="ov-medals">${showcase.map(t => medalSvg(badgeTier(t, stats), t.icon, 22)).join('')}</span>` : ''}${badgesOpen ? `${earned} badges · ` : ''}Trophy room ›</span>
             </div>
         </button>
         ${strengthCardHtml()}
@@ -718,8 +720,8 @@ function renderOverview() {
                 weekRecs ? `<span class="ov-gold">+${weekRecs} this week</span>` : '<span>all time</span>')}
             ${tile('', "scrollToCard('liftsHead')", 'Strength tier', `<span class="ov-tier" style="color:${TIERS[avgTier].color}">${escapeHtml(tierName(avgTier))}</span>`,
                 topTier ? `<span>Best: ${escapeHtml(tierName(topTier))}</span>` : '<span>Log a lift to get ranked</span>')}
-            ${tile('', "openTrophyRoom()", 'Badges', `<strong>${earned}</strong><small>/${tracks.length * BADGE_TIERS.length}</small>`,
-                showcase.length ? `<span class="ov-medals">${showcase.map(t => medalSvg(badgeTier(t, stats), t.icon, 26)).join('')}</span>` : '<span>tiers earned</span>')}
+            ${tile('', "openScore()", 'Score', `<strong>${score.score}</strong><small>/100</small>`,
+                '<span>consistency, last 7 days</span>')}
         </div>
     `;
     rollNumbers(el);

@@ -538,10 +538,10 @@
         other.click();
     });
 
-    await check('The score breakdown opens from the Today rings; XP sources live in the trophy room', () => {
+    await check('The score breakdown opens from Progress; XP sources live in the trophy room', () => {
         showScreen('app');
-        switchTab('today');
-        document.querySelector('#todayHero .hero-score').click();
+        switchTab('progress');
+        document.querySelector('#progressOverview .ov-tile[onclick="openScore()"]').click();
         assert(document.getElementById('scoreModal').classList.contains('active'), 'score sheet did not open');
         assert(document.querySelectorAll('#consistencyCard .cp-row').length, 'no score parts');
         closeScore();
@@ -693,17 +693,17 @@
             switchTab('today');
             tourFull = true;
             const titles = tourSteps().map(s => s.title);
-            ['Your level', 'Your journey', 'Your week', 'Weekly quests', 'Steps', 'Daily habits', 'Progress', 'Settings'].forEach(t =>
+            ['Your journey', 'Your week', 'Weekly quests', 'Steps', 'Daily habits', 'Progress', 'Settings'].forEach(t =>
                 assert(titles.includes(t), `walkthrough has no "${t}" stop`));
             const shown = tourSteps().filter(s => { const el = document.querySelector(s.target); return el && el.getBoundingClientRect().width; });
-            assert(shown.length >= 9, `only ${shown.length} walkthrough stops can be shown`);
+            assert(shown.length >= 8, `only ${shown.length} walkthrough stops can be shown`);
             userProfile = { ...saved, cardio: 'off' };
             switchTab('today');
-            equal(tourSteps()[1].title, 'Two rings', 'cardio Off: two rings');
-            assert(!/cardio minutes/.test(tourSteps()[1].text), 'cardio Off: rings text still mentions cardio');
+            equal(tourSteps()[0].title, 'Two rings', 'cardio Off: two rings');
+            assert(!/cardio minutes/.test(tourSteps()[0].text), 'cardio Off: rings text still mentions cardio');
             userProfile = { ...saved, cardio: 'standard' };
             switchTab('today');
-            equal(tourSteps()[1].title, 'Three rings', 'cardio on: three rings');
+            equal(tourSteps()[0].title, 'Three rings', 'cardio on: three rings');
         } finally {
             userProfile = saved;
             tourFull = false;
@@ -1085,6 +1085,50 @@
             todayMode = null;
             userProfile = saved.profile;
             selectProgram(saved.program);
+        }
+    });
+
+    await check('Rewards step by step: quests after 3 workouts, badges after 2 weeks, earlier accounts keep everything', () => {
+        const saved = { data: allData };
+        const session = (daysAgo) => ({ date: addDays(todayStr(), -daysAgo), day: 0, week: 0, type: 'workout', minutes: 40, sets: 12 });
+        try {
+            // A brand-new account: nothing yet
+            allData = { _tourDone: true };
+            showScreen('app');
+            switchTab('today');
+            equal(document.getElementById('questsCard').innerHTML, '', 'quests before any workout');
+            assert(!document.querySelector('#todayHero .hero-score'), 'score still on Today');
+            assert(!document.querySelector('.hero-level'), 'level tile still on Today');
+            // Two workouts: still no quests; third: quests open and stay open
+            allData._sessions = { [currentProgram]: [session(3), session(1)] };
+            equal(revealed('quests'), false, 'quests open after 2 workouts');
+            allData._sessions[currentProgram].push(session(0));
+            equal(revealed('quests'), true, 'quests closed after 3 workouts');
+            allData._sessions[currentProgram].pop();
+            equal(revealed('quests'), true, 'quests should stay open');
+            renderToday();
+            assert(document.querySelector('#questsCard .quests-card, #questsCard button, #questsCard div'), 'no quests card once open');
+            // Badges: earned quietly, no moment, trophy room says when they open
+            momentQueue.length = 0;
+            equal(revealed('badges'), false, 'badges open after 3 days');
+            assert(nearestBadgeText() === null, 'badge nudge before badges open');
+            checkAchievements();
+            equal(momentQueue.length, 0, 'badge moment before badges open');
+            renderTrophyRoom();
+            assert(document.querySelector('#trophyBody .reveal-lock'), 'no lock in the trophy room');
+            assert(!document.querySelector('#trophyBody .badge-grid'), 'badge grid before badges open');
+            allData._sessions[currentProgram].push(session(15));
+            equal(revealed('badges'), true, 'badges closed after 15 days');
+            renderTrophyRoom();
+            assert(document.querySelector('#trophyBody .badge-grid'), 'no badge grid once open');
+            // Someone who trained before v2.3: everything stays
+            allData = { _sessions: { [currentProgram]: [session(1)] } };
+            assert(revealed('quests') && revealed('badges'), 'an existing account lost quests or badges');
+        } finally {
+            momentQueue.length = 0;
+            allData = saved.data;
+            showScreen('app');
+            renderToday();
         }
     });
 

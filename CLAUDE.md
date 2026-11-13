@@ -659,3 +659,12 @@ reference/debug-screenshots/  ← Supabase key page, "Script error" console, Git
 - **Set controls** (`setActionsHtml`): small "− Set" / "+ Set" chips at the right and a quiet "Skip the rest" link, shown only on the exercise in focus (or one opened by tap).
 - **Steps ring**: until any steps exist (Shortcut or typed), it shows "Connect" over a dashed ring instead of 0/10k; it still opens the Steps view.
 - The sound check forces `visibilityState` to visible, so it no longer fails when the test window is hidden.
+
+## 79. Rewards step by step (v2.3, 2026-11-13) — supersedes the level/score placement in sections 39, 55 and 69
+- From the app review: too many reward systems on day one. Now (`revealed(feature)`, `REVEAL_RULES`, `revealDaysLeft` in js/rewards.js; opened once and kept in `workout_data._reveal` {feature: date}):
+  - **Week one:** workouts, rings, the journey card (the journal already opens landmark by landmark), habits, cardio.
+  - **Quests** after the 3rd workout (`renderQuests` shows nothing before; quest completions before that are recorded quietly, no moment). The `quests` tip announces them.
+  - **Badges** two weeks after the first workout. Before that they are earned and dated quietly (no minting moments, no badge nudges in the coach card or during workouts); the trophy room shows the level and XP plus "Badges open after two weeks of training · N days to go". The `badges` tip announces them.
+  - Accounts that trained before v2.3 (no `_reveal` yet and at least one workout) keep everything (`'before'`).
+- **Score and level left Today.** The rings row has no score pill and the level tile is gone. Progress holds both: the level hero (with "N badges · Trophy room ›" and pinned medals once badges are open) and a **Score** tile (opens the score sheet) in place of the Badges tile. The weekly recap still shows the score. Walkthrough: no level stop; the rings text no longer mentions the score.
+- Today's tiles: a tile left alone at the end of the grid spans the full row (`layoutTodayTiles`).

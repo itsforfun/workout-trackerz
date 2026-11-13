@@ -2181,6 +2181,7 @@ div.ring-tile { cursor:default; }
 #sagaCard .saga-card { margin-bottom:var(--s3); }
 .today-tiles { display:grid; grid-auto-flow:dense; grid-template-columns:1fr 1fr; gap:var(--s3); margin-bottom:var(--s4); }
 .today-tiles > div:empty { display:none; }
+.today-tiles > div.wide { grid-column:1 / -1; }
 .today-tiles > div:has(details[open]) { grid-column:1 / -1; }
 .today-tiles > div > * { height:100%; margin:0 !important; }
 .today-tiles > div:has(details[open]) > * { height:auto; }
@@ -2401,3 +2402,9 @@ div.ring-tile { cursor:default; }
 .wo-card:not(.current):not(.expanded) .wo-add-row { display:none; }
 .ring-tile.connect .rt-bg { stroke-dasharray:3 5; }
 .ring-tile .rt-connect { color:var(--accent); font-size:0.72rem; font-weight:500; letter-spacing:0.02em; }
+
+/* ── Rewards step by step (v2.3) ── */
+.reveal-lock { display:flex; flex-direction:column; align-items:center; gap:var(--s2); margin:var(--s5) 0; padding:var(--s5) var(--s4); border-radius:var(--r-card); background:var(--raised); text-align:center; }
+.reveal-lock strong { font-weight:500; font-size:1rem; }
+.reveal-lock span { color:var(--text-dim); font-size:0.85rem; line-height:1.5; }
+.ov-link .ov-medals { display:inline-flex; gap:2px; vertical-align:middle; margin-right:6px; }

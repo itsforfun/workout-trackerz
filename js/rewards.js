@@ -451,6 +451,32 @@ function badgeCount() {
 // Badge tiers (_badges { track: tier }), the day each tier was earned (_badgeDates { track: { tier: date } }),
 // specials (_specials { id: date }) and the level (_level) are stored so they never go backwards.
 // The first run stores what was already earned quietly; after that each new tier, special or level gets a moment.
+// ── Rewards appear step by step (v2.3): week one is workouts, rings and the journey; quests join after the
+// third workout, badges after two weeks of training. Each one opens once and stays open (_reveal {feature: date}).
+// Accounts that already trained before v2.3 keep everything.
+const REVEAL_RULES = { quests: { workouts: 3 }, badges: { days: 14 } };
+
+function revealed(feature) {
+    if (!allData._reveal) allData._reveal = allWorkoutDates().length ? { quests: 'before', badges: 'before' } : {};
+    if (allData._reveal[feature]) return true;
+    const dates = allWorkoutDates().sort();
+    const rule = REVEAL_RULES[feature];
+    const open = rule.workouts ? dates.length >= rule.workouts : dates.length > 0 && daysBetween(dates[0], todayStr()) >= rule.days;
+    if (open) {
+        allData._reveal[feature] = todayStr();
+        scheduleSave();
+        if (typeof queueTip === 'function') queueTip(feature === 'quests' ? 'quests' : 'badges');
+    }
+    return open;
+}
+
+function revealDaysLeft(feature) {
+    const dates = allWorkoutDates().sort();
+    const rule = REVEAL_RULES[feature];
+    if (rule.workouts) return Math.max(0, rule.workouts - dates.length);
+    return dates.length ? Math.max(1, rule.days - daysBetween(dates[0], todayStr())) : rule.days;
+}
+
 function checkAchievements() {
     if (!currentUser || !currentProgram) return [];
     const stats = playerStats();
@@ -496,6 +522,7 @@ function checkAchievements() {
     const dates = allData._badgeDates || (allData._badgeDates = {});
     const specials = allData._specials || (allData._specials = {});
     const moments = [];
+    const badgesOpen = revealed('badges');   // before that, badges are earned and dated quietly
 
     badgeTracks().forEach(track => {
         const tier = track.goals.filter(g => (stats[track.stat] || 0) >= g).length;
@@ -505,14 +532,14 @@ function checkAchievements() {
             const trackDates = dates[track.id] || (dates[track.id] = {});
             for (let t = had + 1; t <= tier; t++) if (!trackDates[t] && !quiet) trackDates[t] = todayStr();
             if (!quiet) (allData._badgeLog || (allData._badgeLog = [])).push({ track: track.id, tier, date: todayStr() });
-            moments.push(() => showBadgeMoment(track, tier));
+            if (badgesOpen) moments.push(() => showBadgeMoment(track, tier));
             changed = true;
         }
     });
     specialBadges().forEach(sp => {
         if (!specials[sp.id] && (stats[sp.stat] || 0) >= (sp.goal || 1)) {
             specials[sp.id] = todayStr();
-            moments.push(() => showSpecialMoment(sp));
+            if (badgesOpen) moments.push(() => showSpecialMoment(sp));
             changed = true;
         }
     });
@@ -654,6 +681,7 @@ function renderTrophyRoom() {
     const specials = allData._specials || {};
     const pinned = allData._showcase || [];
     const earnedTiers = tracks.reduce((sum, t) => sum + badgeTier(t, stats), 0);
+    const badgesOpen = revealed('badges');
     const card = track => {
         const p = badgeProgress(track, stats);
         const pips = BADGE_TIERS.map((t, i) => `<i style="${i < p.tier ? `background:${t.color}` : ''}"></i>`).join('');
@@ -679,11 +707,17 @@ function renderTrophyRoom() {
             ${levelRing(xp)}
             <div class="th-rank">${escapeHtml(xp.rank)}</div>
             <p class="th-line">${xp.level < MAX_LEVEL ? `${xp.toNext.toLocaleString(LOCALE)} XP to level ${xp.level + 1}` : 'Maximum level'}</p>
-            <div class="th-sub">${earnedTiers} of ${tracks.length * BADGE_TIERS.length} tiers · ${Object.keys(specials).length} of ${specialBadges().length} special</div>
+            ${badgesOpen ? `<div class="th-sub">${earnedTiers} of ${tracks.length * BADGE_TIERS.length} tiers · ${Object.keys(specials).length} of ${specialBadges().length} special</div>` : ''}
             ${nextRank ? `<div class="th-sub">${escapeHtml(nextRank[1])} at level ${nextRank[0]}</div>` : ''}
             ${xpSourcesHtml(xp)}
         </div>
-        <div class="showcase">
+        ${badgesOpen ? '' : `
+        <div class="reveal-lock">
+            ${medalSvg(0, 'lift', 72)}
+            <strong>Badges open after two weeks of training</strong>
+            <span>${revealDaysLeft('badges')} ${revealDaysLeft('badges') === 1 ? 'day' : 'days'} to go. Every one you earn until then is kept.</span>
+        </div>`}
+        ${badgesOpen ? `<div class="showcase">
             ${[0, 1, 2].map(i => {
                 const id = pinned[i];
                 const track = id && tracks.find(t => t.id === id);
@@ -710,7 +744,7 @@ function renderTrophyRoom() {
                         <span class="achievement-sub">${got ? escapeHtml(prettyDate(got)) : 'Locked'}</span>
                     </button>`;
             }).join('')}
-        </div>
+        </div>` : ''}
     `;
 }
 
@@ -823,6 +857,7 @@ function nearestBadge(stats = playerStats()) {
 }
 
 function nearestBadgeText(stats) {
+    if (!revealed('badges')) return null;
     const near = nearestBadge(stats);
     if (!near) return null;
     const { track, p } = near;
@@ -833,7 +868,7 @@ function nearestBadgeText(stats) {
 
 // During a workout: a quiet note when one more set earns a Set Machine tier
 function setBadgeNudge() {
-    if (!activeWorkout) return;
+    if (!activeWorkout || !revealed('badges')) return;
     const stats = playerStats();
     const done = Object.values(activeWorkout.rows).flat().filter(r => r.done).length;
     const track = badgeTracks().find(t => t.id === 'sets');
