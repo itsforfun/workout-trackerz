@@ -514,6 +514,7 @@ function finishWorkout() {
     const prs = [];
     // What the summary screen shows (display units)
     const xpBefore = playerXp(playerStats());
+    const leaguesBefore = journey().total;
     const records = [];
     const exercises = [];
     let volume = 0;
@@ -582,6 +583,7 @@ function finishWorkout() {
         tierUps: tierUps.map(t => ({ name: exerciseDisplayName(t.ex, w.week), tier: t.tier })),
         xpGained: Math.max(0, xpAfter.total - xpBefore.total), xp: xpAfter, levelUp: xpAfter.level > xpBefore.level,
         deload: !!w.deload,
+        leagues: { from: leaguesBefore, to: journey().total },
     });
 }
 
@@ -594,11 +596,15 @@ function startRest(seconds, label = '') {
     rest.beeped = false;
     rest.label = label;
     document.getElementById('restNext').textContent = label;
+    const tale = restTale();
+    document.getElementById('restTaleText').textContent = tale;
+    document.getElementById('restTale').hidden = !tale;
     scheduleRestPush();
     clearInterval(rest.interval);
     rest.interval = setInterval(tickRest, 250);
     const bar = document.getElementById('restBar');
     bar.classList.remove('done');
+    bar.classList.toggle('has-tale', !!tale);
     bar.classList.add('show');
     tickRest();
 }

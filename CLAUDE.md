@@ -674,3 +674,13 @@ reference/debug-screenshots/  ← Supabase key page, "Script error" console, Git
 - Rest days: the same element moves under the rest card (`#restBody`) and opens on This week. Cardio programs show This week only, and nothing when no lifting was logged. The Progress card (`#muscleWeekCard`) is gone. The post-workout summary keeps its flat "Scan complete".
 - Loading: the flat map shows first; Three.js and the model start 900 ms later, never with Data Saver (`navigator.connection.saveData`), and are cached after the first view. `mountBody3d` keeps one load at a time (`body3dMounting`), and a ResizeObserver keeps the canvas right when the card moves.
 - v2.5: a one-line **colour legend** under the body (`.bh-legend`): dark to gold, `0 · 3 · 6+ sets` on Session and `0 · 5 · 10+ sets` on This week. `BODY_FULL` holds both scales, and `bodyWeights` uses it, so colour and legend cannot disagree.
+
+## 81. Saga batch 1: alive during training (v2.6, 2026-11-23)
+- From the saga review (backlog holds batches 2 and 3: Trials, Crossroads, Relics; Sagas II–III, Freyja's letters, crew expeditions, a saga written from your log).
+- **Fake travel fixed:** Today could draw before steps loaded, then report them as "+N leagues". `renderSagaCard` and `checkLandmarks` now wait for `stepsLoaded`, and the remembered total never goes down.
+- **Workout card:** `#todaySaga` / `sessionSagaLine()`: "+20 leagues · 42 to Iron Pass", or in gold "This session takes you to Iron Pass".
+- **Summary:** `summarySagaHtml` + `playSummarySaga`: the traveller walks this workout's leagues (`summary.leagues {from, to}`); taps through to the journey; remembers the total so Today doesn't announce it again.
+- **Rest-Fire Tales** (`REST_TALES` in js/journal.js, `restTale()`): fireside lines about the current stretch, shown in the rest bar only. One new line per workout, the same one across its rests, four per stretch (10 stretches), max 100 characters; `_tales` {"saga-stop": lines seen}, `activeWorkout.tale`. Inspired by temptation bundling (Milkman 2014, doi 10.1287/mnsc.2013.1784): the story is only available while training.
+- **Cliffhangers** (`JOURNAL_HOOKS`): each page ends on the thread of someone walking ahead of Odyr, ending at the Gate with a warm gold tear (Freyja got ahead of him: Saga II's opening). The newest page shows the leagues to the next landmark.
+- **Logout fix (same version):** `signOutAndReset` now clears steps and crew, which used to carry over to the next account logged in without closing the app.
+- **Rest buttons (same version):** a later `.rest-actions` rule for the rest-day card had shrunk the timer's −15s / +15s / Skip buttons; `.rest-bar .rest-actions` makes them full width again.

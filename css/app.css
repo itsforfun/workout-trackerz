@@ -2434,3 +2434,25 @@ div.ring-tile { cursor:default; }
 .bh-legend i { flex:1; height:4px; }
 .bh-legend i.low { border-radius:2px 0 0 2px; background:linear-gradient(90deg, #2e2621, #a5823d); }
 .bh-legend i.high { border-radius:0 2px 2px 0; background:linear-gradient(90deg, #a5823d, #f0c35a); }
+
+/* ── Saga batch 1 (v2.6) ── */
+.today-saga { margin:0 0 var(--s3); text-align:center; font-size:0.78rem; color:var(--text-dim); }
+.today-saga .gold, .sum-saga .gold { color:var(--accent); font-weight:500; }
+.sum-saga { display:block; width:100%; margin:var(--s4) 0 0; padding:var(--s4); border:none; border-radius:var(--r-card); background:var(--raised); box-shadow:var(--lift); color:var(--text); font:inherit; text-align:left; cursor:pointer; }
+.sum-saga-top { display:flex; justify-content:space-between; align-items:baseline; font-size:0.66rem; font-weight:600; letter-spacing:0.16em; text-transform:uppercase; color:var(--text-muted); }
+.sum-saga-top strong { font-size:0.9rem; font-weight:500; letter-spacing:0; text-transform:none; color:var(--accent); }
+.sum-saga-next { display:block; font-size:0.82rem; color:var(--text-dim); }
+.rest-tale { max-width:640px; margin:0 auto; padding:var(--s3) var(--s4) 0; }
+.rest-tale[hidden] { display:none; }
+.rest-tale span { display:block; margin-bottom:3px; font-size:0.56rem; font-weight:600; letter-spacing:0.18em; text-transform:uppercase; color:var(--accent); }
+.rest-tale p { margin:0; font-family:'Instrument Serif', serif; font-size:1.02rem; line-height:1.25; color:var(--text); animation:taleIn 0.7s ease both; }
+@keyframes taleIn { from { opacity:0; } to { opacity:1; } }
+.rest-bar.has-tale .rest-content { padding-top:var(--s3); }
+body:has(.rest-bar.show.has-tale) .coach-tip { bottom:calc(env(safe-area-inset-bottom) + 225px); }
+body:has(.rest-bar.show.has-tale) #workoutScreen .workout-body { padding-bottom:calc(240px + env(safe-area-inset-bottom)); }
+.journal-modal p.journal-hook { margin:var(--s4) 0 0; padding-top:var(--s3); border-top:1px solid rgba(230,184,74,0.22); font-family:'Instrument Serif', Georgia, serif; font-style:italic; font-size:1.18rem; line-height:1.35; color:var(--accent); animation:taleIn 1s ease both; animation-delay:calc(var(--n, 3) * 0.45s + 0.3s); }
+.journal-modal p.journal-next { margin:var(--s2) 0 var(--s3); font-size:0.74rem; color:var(--text-muted); }
+/* The rest-day card also uses .rest-actions: keep the timer's three buttons full width and easy to tap */
+.rest-bar .rest-actions { display:grid; grid-template-columns:repeat(3,1fr); margin-top:0; }
+.rest-bar.has-tale { background:rgba(36,32,27,0.985); }
+.rest-bar.has-tale.done { background:rgba(58,48,32,0.985); }

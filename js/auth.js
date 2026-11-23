@@ -299,6 +299,12 @@ async function signOutAndReset() {
     userProfile = null;
     allData = {};
     offlineMode = false;
+    // Nothing of this account may carry over to the next one on this phone
+    stepData = {};
+    stepsLoaded = false;
+    heroStepsRequested = false;
+    crew = null;
+    crewState = 'idle';
     showScreen('auth');
     showAuthForm('login');
 }

@@ -8,6 +8,7 @@ let summaryOpen = false;
 function openSummary(summary) {
     lastSummary = summary;
     renderSummary(summary);
+    if (summary.leagues) playSummarySaga(summary.leagues.from, summary.leagues.to);
     showScreen('summary');
     playSound('complete');
     queueTip('wo-summary');
@@ -50,6 +51,7 @@ function renderSummary(sm) {
             ${stat('Volume', sm.volume.toLocaleString(LOCALE), sm.units)}
             ${stat('Records', sm.records.length)}
         </div>
+        ${sm.leagues ? summarySagaHtml(sm.leagues.from, sm.leagues.to) : ''}
         ${sm.records.length ? `
             <div class="section-head"><h3>New records</h3></div>
             <div class="sum-list">

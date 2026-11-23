@@ -833,6 +833,7 @@
         equal(j.into, j.total % SAGA_LENGTH, 'leagues into the saga');
         assert(j.toNext > 0 && j.toNext <= 100, 'leagues to the next landmark');
         // Since your last visit
+        stepsLoaded = true;
         try { localStorage.setItem(`odyr_leagues_${currentUser.id}`, String(Math.max(0, j.total - 30))); } catch (e) { /* private mode */ }
         showScreen('app');
         switchTab('today');
@@ -855,6 +856,63 @@
         assert(document.getElementById('odysseyScreen').classList.contains('active'), 'journey screen did not open');
         equal(document.querySelectorAll('#odysseyBody .road-label').length, LANDMARKS.length, 'every landmark named');
         closeOdyssey();
+    });
+
+    await check('Saga: no fake travel, the session line, the summary road, rest tales, journal cliffhangers', async () => {
+        // Steps arriving after the first draw are not new travel
+        const days = {};
+        for (let i = 0; i < 20; i++) days[addDays(todayStr(), -i)] = { steps: 10000 };
+        const realSteps = stepData;
+        stepData = days;
+        const full = journey().total;
+        rememberLeagues(full);
+        stepData = {};
+        stepsLoaded = false;
+        renderSagaCard();
+        equal(lastSeenLeagues(), full, 'an incomplete total lowered the last visit');
+        stepData = days;
+        stepsLoaded = true;
+        renderSagaCard();
+        assert(!document.querySelector('#sagaCard .saga-gain'), 'steps arriving late looked like new leagues');
+        stepData = realSteps;
+        // The workout card says what this session does
+        const j = journey();
+        assert(sessionSagaLine().includes(LANDMARKS[j.next][0]), 'session line has no next landmark');
+        // Summary road
+        const html = summarySagaHtml(195, 215);
+        assert(/You reached/.test(html) && html.includes(LANDMARKS[2][0]), 'landmark reached not on the summary');
+        // Tales: four per stretch, short, one new line per workout, kept across its rests
+        equal(REST_TALES.length, 10, 'a tale for every stretch');
+        REST_TALES.flat().forEach(t => assert(t.length <= 100 && tr(t).length <= 110, `tale too long: ${t}`));
+        equal(JOURNAL_HOOKS.length, JOURNAL.length, 'a cliffhanger per page');
+        allData._tales = {};
+        activeWorkout = { rows: {}, week: 0, day: 0, startedAt: Date.now() };
+        const first = restTale();
+        assert(first, 'no tale');
+        equal(restTale(), first, 'the tale changed between rests');
+        const key = `${j.saga}-${j.stop}`;
+        equal(allData._tales[key], 1, 'tale counted once');
+        activeWorkout = { rows: {}, week: 0, day: 0, startedAt: Date.now() };
+        assert(restTale() !== first, 'the next workout should tell the next line');
+        allData._tales[key] = 4;
+        activeWorkout = { rows: {}, week: 0, day: 0, startedAt: Date.now() };
+        equal(restTale(), '', 'no line once the stretch is told');
+        activeWorkout = null;
+        // Logging out leaves nothing for the next account
+        const kept = { user: currentUser, program: currentProgram, profile: userProfile, data: allData, steps: stepData, loaded: stepsLoaded, hero: heroStepsRequested, crew, crewState };
+        stepData = { [todayStr()]: { steps: 9000 } };
+        crew = { id: 'someone-elses' };
+        crewState = 'ready';
+        await signOutAndReset();
+        equal(Object.keys(stepData).length, 0, 'steps carried over to the next account');
+        equal(crew, null, 'crew carried over to the next account');
+        equal(crewState, 'idle', 'crew state not reset');
+        currentUser = kept.user; currentProgram = kept.program; userProfile = kept.profile; allData = kept.data;
+        stepData = kept.steps; stepsLoaded = kept.loaded; heroStepsRequested = kept.hero; crew = kept.crew; crewState = kept.crewState;
+        showScreen('app');
+        openJournal(0);
+        assert(document.querySelector('#journalBody .journal-hook').textContent.length, 'no cliffhanger on the page');
+        closeJournal();
     });
 
     await check('Your ghost: you four weeks ago, beaten once per workout', () => {

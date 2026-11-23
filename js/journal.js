@@ -18,6 +18,54 @@ const JOURNAL = [
     'The gate is open. I thought I would feel finished. I don’t. Beyond it the road goes on, brighter and steeper, and I find that I am glad. Somewhere behind me Freyja is searching, and they say her tears turn to gold. I will leave a mark at every gate, so she knows I passed this way stronger than I left. Then I walk on.',
 ];
 
+// The thread that pulls you to the next landmark: the last line of each page (someone is walking ahead of Odyr)
+const JOURNAL_HOOKS = [
+    "At the edge of the firelight I found fresh footprints heading north. Someone left just before me.",
+    "The prints go on through the snow. Whoever it is, they are not resting either.",
+    "At the top, a cold campfire and a strip of grey cloth. I am only a day behind now.",
+    "Beside my reflection, for one breath, I saw a second face. When I turned, nobody.",
+    "The smith went quiet when I described the prints. “You are not the first to follow them,” she said.",
+    "As I left, she called after me: “The one ahead of you stopped at Stormreach. Hurry.”",
+    "At dawn, new prints circled my camp. Whoever I am following has started following me.",
+    "The wolves were not hunting. They were running from something beyond the bridge.",
+    "On the last plank someone had carved one word, the cuts still fresh: “Closer.”",
+    "Among the echoes, one voice was not mine. It said my name and laughed.",
+    "Beyond the gate, the prints end. In their place lies a single gold tear, still warm.",
+];
+
+// Rest-Fire Tales: fireside stories of the place you are in, one new line per workout, readable only while
+// resting between sets. Four per stretch of road; `_tales` {"saga-stop": lines seen}.
+const REST_TALES = [
+    ["They say this fire was lit by the first traveller, who swore it would never go out.", "Every wanderer adds one log before leaving. Nobody remembers a day it burned low.", "An old woman here counts those who leave. None, she says, ever come back the same.", "Add your log, she tells you. The road is easier when something waits behind you."],
+    ["In Frostwood, the trees keep the shape of the wind that bent them a hundred winters ago.", "Hunters here sleep with their boots on. Those who take them off don’t get up early.", "A stream runs under the ice. Put your ear to it and you can hear it still moving.", "Nothing stops in Frostwood. It only slows down and waits for spring."],
+    ["Miners cut Iron Pass by hand, one hammer blow at a time, for forty years.", "Each one left a nail in the rock. Climbers still hold on to them today.", "A goat lives on the ledge. It has watched more people turn back than any innkeeper.", "At the summit stands a cairn. Everyone who makes it adds a stone, however small."],
+    ["Fishers on Mirror Fjord row at dawn, before the wind can break the water.", "They say the fjord shows you as you will be, not as you are. Few look for long.", "A boy once threw his sword in to see how deep it went. It is still falling.", "The water here tastes of iron. The locals say that is why they live so long."],
+    ["The forge has not gone cold in three hundred years. Four families share the bellows.", "Apprentices spend their first year only sweeping. The second, only carrying coal.", "The finest blade here took nine years. The smith says eight of them were patience.", "Nobody buys a sword at Ember Forge. You work for it, or you leave without one."],
+    ["The tower has no door on the road side. Those inside choose whom they come down to meet.", "Soldiers pass below it with straighter backs, though no one has ever seen a face above.", "Legend says the Valkyries keep a list of those who kept walking when nobody could see.", "Nobody knows if their name is on it. Most walk as though it might be."],
+    ["Sailors call it Stormreach because no ship has ever left on the day it planned to.", "The houses here are built low and roped to the rock, like boats that never sail.", "Locals never ask if a storm is coming. They ask how long you can keep going in it.", "After the worst gale they ring one bell. It means: all still here, back to work."],
+    ["Shepherds leave Wolf Hollow at dusk. The wolves have the night, and everyone respects it.", "Here, they say, the oldest wolf walks last, so that no one in the pack is left behind.", "On still nights they howl one by one, each checking the others are still there.", "A pack, the shepherds say, is whoever notices when you stop."],
+    ["No one knows who built the Long Bridge. Every village swears it was their grandfather.", "Each plank carries a name. Whoever replaces a rotten one carves their own.", "A ferryman once offered a way around it. He went broke. People prefer to cross.", "Halfway over, tradition says you stop, look back once, and never again."],
+    ["The Hall of Echoes was once a king’s treasury. All it holds now is sound.", "Whisper a promise here and it comes back for days. Liars don’t stay the night.", "Old warriors visit to hear their own names. The echo remembers them younger.", "Sing here with a friend and the hall makes you a choir of hundreds."],
+];
+
+// The line for this workout: chosen at its first rest and kept for all of them (also after a resume)
+function restTale() {
+    if (!activeWorkout) return '';
+    if (activeWorkout.tale === undefined) {
+        const j = journey();
+        const key = `${j.saga}-${j.stop}`;
+        const seen = (allData._tales && allData._tales[key]) || 0;
+        const text = REST_TALES[j.stop] && REST_TALES[j.stop][seen];
+        activeWorkout.tale = text || null;
+        if (text) {
+            allData._tales = { ...(allData._tales || {}), [key]: seen + 1 };
+            scheduleSave();
+        }
+        persistActiveWorkout();
+    }
+    return activeWorkout.tale || '';
+}
+
 // Pages unlocked so far: one per landmark reached (all of them once a saga is complete)
 function journalUnlocked() {
     const j = journey();
@@ -66,7 +114,9 @@ function openJournal(i) {
     document.getElementById('journalBody').innerHTML = `
         <div class="journal-kicker">Odyr’s journal · ${escapeHtml(sagaName(1))}</div>
         <h2 class="journal-title">${escapeHtml(LANDMARKS[i][0])}</h2>
-        <p class="journal-text" data-no-i18n>${sentences.map((s, n) => `<span style="--n:${n}">${escapeHtml(s)}</span>`).join(' ')}</p>`;
+        <p class="journal-text" data-no-i18n>${sentences.map((s, n) => `<span style="--n:${n}">${escapeHtml(s)}</span>`).join(' ')}</p>
+        <p class="journal-hook" style="--n:${sentences.length}" data-no-i18n>${escapeHtml(tr(JOURNAL_HOOKS[i]))}</p>
+        ${journalNextHtml(i)}`;
     document.getElementById('journalListen').textContent = tr('Listen');
     document.getElementById('journalModal').classList.add('active');
     const read = journalRead();
@@ -75,6 +125,12 @@ function openJournal(i) {
         allData._journalRead = [...read].sort((a, b) => a - b);
         scheduleSave();
     }
+}
+
+// Under the newest page: how far the next one is
+function journalNextHtml(i) {
+    const j = journey();
+    return i === j.stop ? `<p class="journal-next">${j.toNext.toLocaleString(LOCALE)} ${j.toNext === 1 ? 'league' : 'leagues'} to ${escapeHtml(tr(LANDMARKS[j.next][0]))}</p>` : '';
 }
 
 function closeJournal() {
@@ -160,7 +216,7 @@ function toggleNarration() {
     haptic();
     if (!window.speechSynthesis) return showToast('Your phone can’t read aloud here');
     if (speechSynthesis.speaking) return stopNarration();
-    const utterance = new SpeechSynthesisUtterance(tr(JOURNAL[journalPage]));
+    const utterance = new SpeechSynthesisUtterance(`${tr(JOURNAL[journalPage])} ${tr(JOURNAL_HOOKS[journalPage])}`);
     utterance.lang = speechLocale();
     const voice = narrationVoice();
     if (voice) utterance.voice = voice;

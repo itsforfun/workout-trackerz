@@ -133,7 +133,7 @@ function renderTodayHero() {
     // Steps live in the Steps view (tap Steps under the rings); fetch today's count once so the ring is right on first open
     if (!heroStepsRequested && currentUser) {
         heroStepsRequested = true;
-        loadSteps().then(ok => { if (ok) { checkAchievements(); renderTodayHero(); } });
+        loadSteps().then(ok => { if (ok) { checkAchievements(); renderTodayHero(); } renderSagaCard(); checkLandmarks(); });
     }
 }
 
@@ -183,6 +183,7 @@ function renderToday() {
     const weekday = new Date().toLocaleDateString(LOCALE, { weekday: 'long' });
     document.getElementById('todayKicker').textContent = `${weekday.charAt(0).toUpperCase()}${weekday.slice(1)} · ${tr(firstWorkout ? 'Your first workout' : todayDay === nextDay ? 'Up next' : 'Your pick')}`;
     renderTodayPick(prog, firstWorkout);
+    document.getElementById('todaySaga').innerHTML = sessionSagaLine();
     document.getElementById('todayTitle').textContent = prog.days[todayDay];
     document.getElementById('focusMoreLabel').textContent = isCardioProgram(prog)
         ? 'Session plan'

@@ -114,7 +114,8 @@ function renderSagaCard() {
     if (!el) return;
     const j = journey();
     const seen = lastSeenLeagues();
-    const gained = seen === null ? 0 : Math.max(0, j.total - seen);
+    // Steps arrive after the first draw: only count travel once they're in, or they'd look like new leagues
+    const gained = seen === null || !stepsLoaded ? 0 : Math.max(0, j.total - seen);
     // Starting point of the glide: last visit's spot in this saga (the Hearth if a saga was completed since)
     const fromTotal = seen === null ? j.total : Math.min(j.total, seen);
     const fromInto = Math.floor(fromTotal / SAGA_LENGTH) === j.saga - 1 ? fromTotal % SAGA_LENGTH : 0;
@@ -131,12 +132,45 @@ function renderSagaCard() {
             ${journalUnreadCount() ? `<div class="saga-journal"><span class="jp-dot"></span>${journalUnreadCount() === 1 ? 'New page in Odyr’s journal' : `${journalUnreadCount()} new pages in Odyr’s journal`}</div>` : ''}
         </button>`;
     travelTo(el.querySelector('svg'), fromInto, j.into);
-    rememberLeagues(j.total);
+    if (stepsLoaded) rememberLeagues(Math.max(seen || 0, j.total));   // a failed steps load never lowers it
     if (gained > 0) todayTip('journey');
+}
+
+// On the workout card: what this session does for the journey
+function sessionSagaLine() {
+    const j = journey();
+    const next = LANDMARKS[j.next][0];
+    return j.toNext <= LEAGUES.workout
+        ? `<span class="gold">This session takes you to ${escapeHtml(next)}</span>`
+        : `+${LEAGUES.workout} leagues · ${j.toNext} to ${escapeHtml(next)}`;
+}
+
+// On the post-workout summary: the traveller walks the leagues this workout earned
+function summarySagaHtml(from, to) {
+    const saga = Math.floor(to / SAGA_LENGTH);
+    const into = to % SAGA_LENGTH;
+    const fromInto = Math.floor(from / SAGA_LENGTH) === saga ? from % SAGA_LENGTH : 0;
+    const j = journey();
+    const crossed = Math.floor(to / 100) > Math.floor(from / 100);
+    const landmark = crossed ? LANDMARKS[Math.floor(to / 100) % 10 === 0 ? 10 : Math.floor(to / 100) % 10][0] : '';
+    return `
+        <button class="sum-saga" onclick="closeSummary(); openOdyssey()">
+            <span class="sum-saga-top"><span>Your journey</span><strong>+${(to - from).toLocaleString(LOCALE)} ${to - from === 1 ? 'league' : 'leagues'}</strong></span>
+            ${roadSvg(into, fromInto)}
+            <span class="sum-saga-next">${crossed ? `<span class="gold">You reached ${escapeHtml(landmark)}</span>` : `${j.toNext} ${j.toNext === 1 ? 'league' : 'leagues'} to ${escapeHtml(LANDMARKS[j.next][0])}`}</span>
+        </button>`;
+}
+
+function playSummarySaga(from, to) {
+    const svg = document.querySelector('#summaryBody .sum-saga svg');
+    const saga = Math.floor(to / SAGA_LENGTH);
+    if (svg) setTimeout(() => travelTo(svg, Math.floor(from / SAGA_LENGTH) === saga ? from % SAGA_LENGTH : 0, to % SAGA_LENGTH), 450);
+    rememberLeagues(to);   // seen here, so Today doesn't announce the same leagues again
 }
 
 // A landmark reached (or a saga completed) gets its moment; the first run stores where you are quietly
 function checkLandmarks() {
+    if (!stepsLoaded) return;   // the total isn't complete yet
     const j = journey();
     const reached = Math.floor(j.total / 100);
     const had = allData._landmark;
