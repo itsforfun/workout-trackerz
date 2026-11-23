@@ -148,13 +148,14 @@ function currentTrial() {
 function checkTrials() {
     if (!currentProgram || !stepsLoaded) return;
     currentTrial();
+    if (typeof checkExpedition === 'function') checkExpedition();
     const trials = sagaState().trials;
     let changed = false;
     Object.values(trials).forEach(t => {
         if (t.done || trialProgress(t) < t.target) return;
         t.done = todayStr();
         changed = true;
-        const relic = RELICS[t.stop];
+        const relic = sagaWorld(t.saga).relics[t.stop];
         queueMoment(() => showMoment({ kicker: 'Trial complete', valueHtml: relicSvg(t.stop, 92), unit: '', name: relic.name, sub: `${tr(t.name)} · ${tr(relic.line)}`, sound: 'badge' }));
     });
     if (changed) {
@@ -175,7 +176,7 @@ function relicSvg(i, size = 44, earned = true) {
 function sagaTrialHtml() {
     const t = currentTrial();
     if (!t) return '';
-    if (t.done) return `<div class="saga-trial done"><span>Trial complete</span><strong>${escapeHtml(RELICS[t.stop].name)}</strong></div>`;
+    if (t.done) return `<div class="saga-trial done"><span>Trial complete</span><strong>${escapeHtml(sagaWorld(t.saga).relics[t.stop].name)}</strong></div>`;
     const n = trialProgress(t);
     return `
         <div class="saga-trial">
@@ -190,7 +191,7 @@ function sagaForkHtml() {
     const cross = pendingCrossroad();
     return cross === null ? '' : `
         <button class="saga-fork" onclick="openCrossroads()">
-            <span>Crossroads</span><strong>${escapeHtml(CROSSROADS[cross].title)}</strong><em>Choose your path ›</em>
+            <span>Crossroads</span><strong>${escapeHtml(sagaWorld(journey().saga).crossroads[cross].title)}</strong><em>Choose your path ›</em>
         </button>`;
 }
 
@@ -199,7 +200,7 @@ function openCrossroads() {
     const cross = pendingCrossroad();
     if (cross === null) return;
     haptic();
-    const c = CROSSROADS[cross];
+    const c = sagaWorld(journey().saga).crossroads[cross];
     document.getElementById('crossroadsBody').innerHTML = `
         <div class="kicker">Crossroads</div>
         <h3 class="cross-title">${escapeHtml(c.title)}</h3>
@@ -226,7 +227,7 @@ function choosePath(id) {
     sagaState().paths[`${j.saga}-${cross}`] = id;
     scheduleSave();
     closeCrossroads();
-    showToast(tr(CROSSROADS[cross].story[id]));
+    showToast(tr(sagaWorld(j.saga).crossroads[cross].story[id]));
     if (document.getElementById('odysseyScreen').classList.contains('active')) renderOdyssey();
     renderSagaCard();
 }
@@ -243,8 +244,8 @@ function trialsSectionHtml() {
                 ${relicSvg(t.stop, 42, !!t.done)}
                 <div class="trial-text">
                     <strong>${escapeHtml(t.name)}</strong>
-                    <small>${escapeHtml(t.done ? RELICS[t.stop].name : trialGoal(t))}</small>
-                    ${t.path ? `<em>${escapeHtml(CROSSROADS[crossroadOf(t.stop)].story[t.path])}</em>` : ''}
+                    <small>${escapeHtml(t.done ? sagaWorld(t.saga).relics[t.stop].name : trialGoal(t))}</small>
+                    ${t.path ? `<em>${escapeHtml(sagaWorld(t.saga).crossroads[crossroadOf(t.stop)].story[t.path])}</em>` : ''}
                 </div>
                 <span class="trial-n">${t.done ? 'Done' : `${n.toLocaleString(LOCALE)}/${t.target.toLocaleString(LOCALE)}`}</span>
             </div>`;
@@ -260,13 +261,15 @@ function trialsSectionHtml() {
 }
 
 function relicsSectionHtml() {
-    const done = Object.values(sagaState().trials).filter(t => t.done);
+    const saga = journey().saga;
+    const relics = sagaWorld(saga).relics;
+    const done = Object.values(sagaState().trials).filter(t => t.done && worldIndex(t.saga) === worldIndex(saga));
     const count = i => done.filter(t => t.stop === i).length;
-    const earned = RELICS.filter((_, i) => count(i)).length;
+    const earned = relics.filter((_, i) => count(i)).length;
     return `
-        <div class="section-head"><h3>Relics</h3><span>${earned} of ${RELICS.length}</span></div>
+        <div class="section-head"><h3>Relics</h3><span>${earned} of ${relics.length}</span></div>
         <div class="relic-grid">
-            ${RELICS.map((r, i) => {
+            ${relics.map((r, i) => {
                 const n = count(i);
                 return `
                 <button class="relic-cell${n ? '' : ' locked'}" onclick="showToast('${escapeHtml(tr(n ? r.line : 'Finish this stretch’s Trial to earn it.')).replace(/'/g, '&#39;')}')">

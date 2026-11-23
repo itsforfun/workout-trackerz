@@ -119,11 +119,12 @@ function renderSagaCard() {
     // Starting point of the glide: last visit's spot in this saga (the Hearth if a saga was completed since)
     const fromTotal = seen === null ? j.total : Math.min(j.total, seen);
     const fromInto = Math.floor(fromTotal / SAGA_LENGTH) === j.saga - 1 ? fromTotal % SAGA_LENGTH : 0;
-    const next = LANDMARKS[j.next];
+    const places = landmarksOf(j.saga);
+    const next = places[j.next];
     el.innerHTML = `
         <button class="saga-card" onclick="openOdyssey()">
             <div class="saga-top">
-                <span class="saga-kicker">${escapeHtml(sagaName(j.saga))} · <span>${escapeHtml(LANDMARKS[j.stop][0])}</span></span>
+                <span class="saga-kicker">${escapeHtml(sagaName(j.saga))} · <span>${escapeHtml(places[j.stop][0])}</span></span>
                 ${gained ? `<span class="saga-gain">+${gained.toLocaleString(LOCALE)} ${gained === 1 ? 'league' : 'leagues'} since your last visit</span>` : ''}
             </div>
             ${roadSvg(j.into, fromInto)}
@@ -132,6 +133,7 @@ function renderSagaCard() {
             ${crewLineHtml()}
             ${journalUnreadCount() ? `<div class="saga-journal"><span class="jp-dot"></span>${journalUnreadCount() === 1 ? 'New page in Odyr’s journal' : `${journalUnreadCount()} new pages in Odyr’s journal`}</div>` : ''}
         </button>
+        ${sagaLetterHtml()}
         ${sagaForkHtml()}`;
     travelTo(el.querySelector('svg'), fromInto, j.into);
     if (stepsLoaded) rememberLeagues(Math.max(seen || 0, j.total));   // a failed steps load never lowers it
@@ -141,7 +143,7 @@ function renderSagaCard() {
 // On the workout card: what this session does for the journey
 function sessionSagaLine() {
     const j = journey();
-    const next = LANDMARKS[j.next][0];
+    const next = landmarksOf(j.saga)[j.next][0];
     return j.toNext <= LEAGUES.workout
         ? `<span class="gold">This session takes you to ${escapeHtml(next)}</span>`
         : `+${LEAGUES.workout} leagues · ${j.toNext} to ${escapeHtml(next)}`;
@@ -154,12 +156,13 @@ function summarySagaHtml(from, to) {
     const fromInto = Math.floor(from / SAGA_LENGTH) === saga ? from % SAGA_LENGTH : 0;
     const j = journey();
     const crossed = Math.floor(to / 100) > Math.floor(from / 100);
-    const landmark = crossed ? LANDMARKS[Math.floor(to / 100) % 10 === 0 ? 10 : Math.floor(to / 100) % 10][0] : '';
+    const tens = Math.floor(to / 100) % 10;
+    const landmark = crossed ? landmarksOf(tens === 0 ? Math.floor(to / SAGA_LENGTH) : saga + 1)[tens || 10][0] : '';
     return `
         <button class="sum-saga" onclick="closeSummary(); openOdyssey()">
             <span class="sum-saga-top"><span>Your journey</span><strong>+${(to - from).toLocaleString(LOCALE)} ${to - from === 1 ? 'league' : 'leagues'}</strong></span>
             ${roadSvg(into, fromInto)}
-            <span class="sum-saga-next">${crossed ? `<span class="gold">You reached ${escapeHtml(landmark)}</span>` : `${j.toNext} ${j.toNext === 1 ? 'league' : 'leagues'} to ${escapeHtml(LANDMARKS[j.next][0])}`}</span>
+            <span class="sum-saga-next">${crossed ? `<span class="gold">You reached ${escapeHtml(landmark)}</span>` : `${j.toNext} ${j.toNext === 1 ? 'league' : 'leagues'} to ${escapeHtml(landmarksOf(j.saga)[j.next][0])}`}</span>
             ${sagaTrialHtml()}
         </button>`;
 }
@@ -187,13 +190,14 @@ function checkLandmarks() {
     scheduleSave();
     const saga = Math.floor(reached / 10) + 1;
     const stop = reached % 10;
+    const places = landmarksOf(stop === 0 ? saga - 1 : saga);
     queueMoment(() => showMoment(stop === 0
-        ? { kicker: 'Saga complete', valueHtml: '<svg class="moment-mark" aria-hidden="true"><use href="#odyrMark"/></svg>', unit: '', name: LANDMARKS[10][0], sub: `${sagaName(saga)} begins. ${LANDMARKS[10][1]}`, sound: 'level' }
-        : { kicker: 'Landmark reached', valueHtml: '<svg class="moment-mark" aria-hidden="true"><use href="#odyrMark"/></svg>', unit: '', name: LANDMARKS[stop][0], sub: `${tr(LANDMARKS[stop][1])} ${tr('A new page waits in Odyr’s journal.')}`, sound: 'badge',
+        ? { kicker: 'Saga complete', valueHtml: '<svg class="moment-mark" aria-hidden="true"><use href="#odyrMark"/></svg>', unit: '', name: places[10][0], sub: `${sagaName(saga)} begins. ${places[10][1]}`, sound: 'level' }
+        : { kicker: 'Landmark reached', valueHtml: '<svg class="moment-mark" aria-hidden="true"><use href="#odyrMark"/></svg>', unit: '', name: places[stop][0], sub: `${tr(places[stop][1])} ${tr('A new page waits in Odyr’s journal.')}`, sound: 'badge',
             share: {
                 kicker: tr('Landmark reached'),
-                title: tr(LANDMARKS[stop][0]),
-                line: tr(LANDMARKS[stop][1]),
+                title: tr(places[stop][0]),
+                line: tr(places[stop][1]),
                 stats: [
                     [tr('Saga'), ROMAN_SAGA[saga] || String(saga), ''],
                     [tr('Leagues'), journey().total.toLocaleString(LOCALE), ''],
@@ -223,7 +227,8 @@ function renderOdyssey() {
     const point = t => [180 + Math.sin(t * Math.PI * 4.5) * 92, H - 60 - t * (H - 120)];
     const pts = Array.from({ length: 121 }, (_, i) => point(i / 120).map(n => n.toFixed(1)).join(','));
     const [tx, ty] = point(j.into / SAGA_LENGTH);
-    const stops = LANDMARKS.map(([name], i) => {
+    const places = landmarksOf(j.saga);
+    const stops = places.map(([name], i) => {
         const [x, y] = point(i / 10);
         const passed = i * 100 <= j.into;
         const left = x > 180;
@@ -235,10 +240,10 @@ function renderOdyssey() {
     const s = j.sources;
     document.getElementById('odysseyBody').innerHTML = `
         <div class="odyssey-hero">
-            <div class="kicker">${escapeHtml(sagaName(j.saga))}</div>
-            <h2>${escapeHtml(LANDMARKS[j.stop][0])}</h2>
-            <p class="odyssey-line">${escapeHtml(LANDMARKS[j.stop][1])}</p>
-            <div class="odyssey-stats"><span><strong>${j.into.toLocaleString(LOCALE)}</strong> of ${SAGA_LENGTH.toLocaleString(LOCALE)} leagues</span><span><strong>${j.toNext.toLocaleString(LOCALE)}</strong> ${j.toNext === 1 ? 'league to' : 'leagues to'} <span>${escapeHtml(LANDMARKS[j.next][0])}</span></span></div>
+            <div class="kicker">${escapeHtml(sagaName(j.saga))} · ${escapeHtml(sagaWorld(j.saga).title)}</div>
+            <h2>${escapeHtml(places[j.stop][0])}</h2>
+            <p class="odyssey-line">${escapeHtml(places[j.stop][1])}</p>
+            <div class="odyssey-stats"><span><strong>${j.into.toLocaleString(LOCALE)}</strong> of ${SAGA_LENGTH.toLocaleString(LOCALE)} leagues</span><span><strong>${j.toNext.toLocaleString(LOCALE)}</strong> ${j.toNext === 1 ? 'league to' : 'leagues to'} <span>${escapeHtml(places[j.next][0])}</span></span></div>
         </div>
         <div id="crewCard"></div>
         <svg class="odyssey-map" viewBox="0 0 360 ${H}" aria-hidden="true">
@@ -249,6 +254,7 @@ function renderOdyssey() {
         </svg>
         ${trialsSectionHtml()}
         ${relicsSectionHtml()}
+        ${yourSagaHtml()}
         ${journalListHtml()}
         <div class="section-head"><h3>How you travel</h3><span>${j.total.toLocaleString(LOCALE)} leagues in all</span></div>
         <div class="odyssey-sources">

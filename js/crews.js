@@ -59,6 +59,25 @@ function crewShip() {
     return { sailed, goal, ratio: Math.min(1, sailed / goal) };
 }
 
+// A new destination every week, the same for the whole crew, drawn from all three sagas
+function crewExpedition(monday = mondayOf(todayStr())) {
+    const places = [1, 2, 3].flatMap(saga => landmarksOf(saga).slice(1).map(l => l[0]));
+    return places[weekIndex(monday) % places.length];
+}
+
+function expeditionsDone() {
+    return Object.keys(allData._expeditions || {}).length;
+}
+
+function checkExpedition() {
+    if (!crew || !crew.members || !crew.members.length) return;
+    const monday = mondayOf(todayStr());
+    if ((allData._expeditions || {})[monday] || crewShip().sailed < crewShip().goal) return;
+    allData._expeditions = { ...(allData._expeditions || {}), [monday]: crewExpedition(monday) };
+    scheduleSave();
+    queueMoment(() => showMoment({ kicker: 'Expedition complete', valueHtml: '<svg class="moment-mark" aria-hidden="true"><use href="#odyrMark"/></svg>', unit: '', name: crewExpedition(monday), sub: `${crew.name} · ${tr('A new destination next Monday.')}`, sound: 'level' }));
+}
+
 // ── Joining and leaving ──
 function crewDisplayName() {
     return (userProfile && userProfile.displayName) || '';
@@ -210,8 +229,9 @@ function renderCrew() {
                 <button class="crew-code" onclick="shareCrewCode()"><span>${escapeHtml(crew.code)}</span>Share</button>
             </div>
             <div class="crew-ship">
-                <div class="crew-ship-top"><span>The ship this week</span><strong>${ship.sailed.toLocaleString(LOCALE)}<small> / ${ship.goal.toLocaleString(LOCALE)} leagues</small></strong></div>
+                <div class="crew-ship-top"><span>Expedition to ${escapeHtml(crewExpedition())}</span><strong>${ship.sailed.toLocaleString(LOCALE)}<small> / ${ship.goal.toLocaleString(LOCALE)} leagues</small></strong></div>
                 <div class="crew-ship-bar"><span style="width:${Math.round(ship.ratio * 100)}%"></span><i style="left:${Math.round(ship.ratio * 100)}%"></i></div>
+                ${expeditionsDone() ? `<div class="crew-exp">${expeditionsDone()} ${expeditionsDone() === 1 ? 'expedition' : 'expeditions'} completed</div>` : ''}
             </div>
             ${members.map(m => {
                 const me = m.user_id === currentUser.id;
@@ -233,5 +253,5 @@ const HORN_ICON = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" s
 function crewLineHtml() {
     if (!crew) return '';
     const ship = crewShip();
-    return `<div class="saga-crew"><span>${escapeHtml(crew.name)}</span> ${ship.sailed.toLocaleString(LOCALE)} / ${ship.goal.toLocaleString(LOCALE)} leagues this week</div>`;
+    return `<div class="saga-crew"><span>${escapeHtml(crew.name)}</span> Expedition to ${escapeHtml(crewExpedition())} · ${ship.sailed.toLocaleString(LOCALE)}/${ship.goal.toLocaleString(LOCALE)}</div>`;
 }

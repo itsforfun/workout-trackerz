@@ -55,7 +55,8 @@ function restTale() {
         const j = journey();
         const key = `${j.saga}-${j.stop}`;
         const seen = (allData._tales && allData._tales[key]) || 0;
-        const text = REST_TALES[j.stop] && REST_TALES[j.stop][seen];
+        const tales = sagaWorld(j.saga).tales[j.stop];
+        const text = tales && tales[seen];
         activeWorkout.tale = text || null;
         if (text) {
             allData._tales = { ...(allData._tales || {}), [key]: seen + 1 };
@@ -66,10 +67,19 @@ function restTale() {
     return activeWorkout.tale || '';
 }
 
-// Pages unlocked so far: one per landmark reached (all of them once a saga is complete)
-function journalUnlocked() {
+// Pages have one id across the three worlds: world × 11 + page
+const PAGES_PER_SAGA = 11;
+let journalView = null;   // the saga shown in the list (null: the one you're on)
+
+function latestWorld() {
+    return Math.min(2, journey().saga - 1);
+}
+
+// Pages unlocked in a world: one per landmark reached, all of them once that saga is complete
+function journalUnlocked(world = latestWorld()) {
     const j = journey();
-    return j.saga > 1 ? JOURNAL.length : Math.min(JOURNAL.length, j.stop + 1);
+    if (j.saga > world + 1) return PAGES_PER_SAGA;
+    return j.saga === world + 1 ? Math.min(PAGES_PER_SAGA, j.stop + 1) : 0;
 }
 
 function journalRead() {
@@ -79,58 +89,84 @@ function journalRead() {
 function journalUnreadCount() {
     const read = journalRead();
     let n = 0;
-    for (let i = 0; i < journalUnlocked(); i++) if (!read.has(i)) n++;
+    for (let w = 0; w <= latestWorld(); w++) {
+        for (let i = 0; i < journalUnlocked(w); i++) if (!read.has(w * PAGES_PER_SAGA + i)) n++;
+    }
     return n;
 }
 
-// The journal on the journey screen: every page, unlocked or sealed
+function setJournalView(world) {
+    haptic();
+    journalView = world;
+    const el = document.getElementById('journalList');
+    if (el) el.outerHTML = journalListHtml();
+}
+
+// The journal on the journey screen: every page, unlocked or sealed, one saga at a time
 function journalListHtml() {
-    const unlocked = journalUnlocked();
+    const latest = latestWorld();
+    const w = journalView === null ? latest : Math.min(journalView, latest);
+    const world = sagaWorld(w + 1);
+    const unlocked = journalUnlocked(w);
     const read = journalRead();
     return `
-        <div class="section-head"><h3>Odyr’s journal</h3><span>${unlocked} of ${JOURNAL.length} pages</span></div>
+        <div id="journalList">
+        <div class="section-head"><h3>Odyr’s journal</h3><span>${unlocked} of ${world.pages.length} pages</span></div>
+        ${latest ? `<div class="journal-sagas">${Array.from({ length: latest + 1 }, (_, n) => `<button class="${n === w ? 'on' : ''}" onclick="setJournalView(${n})">${escapeHtml(sagaName(n + 1))}</button>`).join('')}</div>` : ''}
         <div class="journal-list">
-            ${JOURNAL.map((text, i) => i < unlocked ? `
-                <button class="journal-page${read.has(i) ? '' : ' new'}" onclick="openJournal(${i})">
+            ${world.pages.map((text, i) => {
+                const id = w * PAGES_PER_SAGA + i;
+                return i < unlocked ? `
+                <button class="journal-page${read.has(id) ? '' : ' new'}" onclick="openJournal(${id})">
                     <span class="jp-num">${ROMAN_SAGA[i + 1] || i + 1}</span>
-                    <span class="jp-text"><strong>${escapeHtml(LANDMARKS[i][0])}</strong><small data-no-i18n>${escapeHtml(tr(text).split(/(?<=[.!?”»])\s+/)[0])}</small></span>
-                    ${read.has(i) ? '' : '<span class="jp-dot" aria-label="New"></span>'}
+                    <span class="jp-text"><strong>${escapeHtml(world.landmarks[i][0])}</strong><small data-no-i18n>${escapeHtml(tr(text).split(/(?<=[.!?”»])\s+/)[0])}</small></span>
+                    ${read.has(id) ? '' : '<span class="jp-dot" aria-label="New"></span>'}
                 </button>` : `
                 <div class="journal-page sealed">
                     <span class="jp-num">${ROMAN_SAGA[i + 1] || i + 1}</span>
-                    <span class="jp-text"><strong>Sealed</strong><small>Reach ${escapeHtml(LANDMARKS[i][0])} to read this page</small></span>
-                </div>`).join('')}
+                    <span class="jp-text"><strong>Sealed</strong><small>Reach ${escapeHtml(world.landmarks[i][0])} to read this page</small></span>
+                </div>`;
+            }).join('')}
+        </div>
         </div>`;
 }
 
 // ── Reading a page: the text appears sentence by sentence, like ink drying ──
 let journalPage = null;
 
-function openJournal(i) {
+function pageParts(id) {
+    const w = Math.floor(id / PAGES_PER_SAGA);
+    const i = id % PAGES_PER_SAGA;
+    const world = sagaWorld(w + 1);
+    return { w, i, world, text: world.pages[i], hook: world.hooks[i] };
+}
+
+function openJournal(id) {
     haptic();
-    journalPage = i;
-    const text = tr(JOURNAL[i]);
+    journalPage = id;
+    const { w, i, world, text: page, hook } = pageParts(id);
+    const text = tr(page);
     const sentences = text.split(/(?<=[.!?”»])\s+/);
     document.getElementById('journalBody').innerHTML = `
-        <div class="journal-kicker">Odyr’s journal · ${escapeHtml(sagaName(1))}</div>
-        <h2 class="journal-title">${escapeHtml(LANDMARKS[i][0])}</h2>
+        <div class="journal-kicker">Odyr’s journal · ${escapeHtml(sagaName(w + 1))}</div>
+        <h2 class="journal-title">${escapeHtml(world.landmarks[i][0])}</h2>
         <p class="journal-text" data-no-i18n>${sentences.map((s, n) => `<span style="--n:${n}">${escapeHtml(s)}</span>`).join(' ')}</p>
-        <p class="journal-hook" style="--n:${sentences.length}" data-no-i18n>${escapeHtml(tr(JOURNAL_HOOKS[i]))}</p>
-        ${journalNextHtml(i)}`;
+        <p class="journal-hook" style="--n:${sentences.length}" data-no-i18n>${escapeHtml(tr(hook))}</p>
+        ${journalNextHtml(w, i)}`;
     document.getElementById('journalListen').textContent = tr('Listen');
     document.getElementById('journalModal').classList.add('active');
     const read = journalRead();
-    if (!read.has(i)) {
-        read.add(i);
+    if (!read.has(id)) {
+        read.add(id);
         allData._journalRead = [...read].sort((a, b) => a - b);
         scheduleSave();
     }
 }
 
 // Under the newest page: how far the next one is
-function journalNextHtml(i) {
+function journalNextHtml(w, i) {
     const j = journey();
-    return i === j.stop ? `<p class="journal-next">${j.toNext.toLocaleString(LOCALE)} ${j.toNext === 1 ? 'league' : 'leagues'} to ${escapeHtml(tr(LANDMARKS[j.next][0]))}</p>` : '';
+    return j.saga === w + 1 && i === j.stop ? `<p class="journal-next">${j.toNext.toLocaleString(LOCALE)} ${j.toNext === 1 ? 'league' : 'leagues'} to ${escapeHtml(tr(sagaWorld(j.saga).landmarks[j.next][0]))}</p>` : '';
 }
 
 function closeJournal() {
@@ -216,7 +252,7 @@ function toggleNarration() {
     haptic();
     if (!window.speechSynthesis) return showToast('Your phone can’t read aloud here');
     if (speechSynthesis.speaking) return stopNarration();
-    const utterance = new SpeechSynthesisUtterance(`${tr(JOURNAL[journalPage])} ${tr(JOURNAL_HOOKS[journalPage])}`);
+    const utterance = new SpeechSynthesisUtterance(`${tr(pageParts(journalPage).text)} ${tr(pageParts(journalPage).hook)}`);
     utterance.lang = speechLocale();
     const voice = narrationVoice();
     if (voice) utterance.voice = voice;

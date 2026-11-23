@@ -2498,3 +2498,26 @@ body:has(.rest-bar.show.has-tale) #workoutScreen .workout-body { padding-bottom:
 .relic-cell small { font-size:0.56rem; color:var(--accent); }
 .relic-cell.locked span { color:var(--text-muted); }
 #recordValue .relic { display:block; margin:0 auto; }
+
+/* ── Saga batch 3 (v2.8): letters, journal by saga, Your Saga, expeditions ── */
+.saga-letter { display:grid; grid-template-columns:28px 1fr auto; gap:var(--s3); align-items:center; width:100%; margin:0 0 var(--s3); padding:var(--s3) var(--s4); border:1px solid rgba(230,184,74,0.4); border-radius:var(--r-inner); background:rgba(230,184,74,0.07); color:var(--text); font:inherit; text-align:left; cursor:pointer; }
+.sl-seal { width:24px; height:24px; border-radius:50%; background:radial-gradient(circle at 35% 30%, #f2d891, #b38636 70%); box-shadow:0 0 12px rgba(242,216,145,0.45); }
+.saga-letter strong { display:block; font-weight:500; font-size:0.9rem; }
+.saga-letter small { display:block; font-size:0.72rem; color:var(--text-dim); }
+.saga-letter em { font-style:normal; font-size:0.76rem; color:var(--accent); white-space:nowrap; }
+.letter-modal p.letter-text { margin:var(--s3) 0 var(--s2); font-family:'Instrument Serif', Georgia, serif; font-size:1.42rem; line-height:1.35; color:var(--text); animation:taleIn 1s ease both; }
+.letter-modal p.letter-sign { margin:0 0 var(--s4); text-align:right; font-family:'Instrument Serif', Georgia, serif; font-style:italic; font-size:1.2rem; color:var(--accent); }
+.journal-sagas { display:flex; gap:4px; margin-bottom:var(--s3); padding:3px; border-radius:11px; background:rgba(240,232,216,0.05); }
+.journal-sagas button { flex:1; min-height:34px; border:none; border-radius:8px; background:none; color:var(--text-muted); font:inherit; font-size:0.76rem; cursor:pointer; }
+.journal-sagas button.on { background:rgba(230,184,74,0.15); color:var(--accent); }
+.chapter-list { display:flex; flex-direction:column; gap:var(--s2); margin-bottom:var(--s5); }
+.chapter { padding:var(--s3) var(--s4); border-radius:var(--r-inner); background:var(--raised); }
+.chapter-top { display:flex; justify-content:space-between; align-items:baseline; gap:var(--s2); }
+.chapter-top strong { font-family:var(--font-display); font-size:1.15rem; font-weight:400; letter-spacing:0.05em; }
+.chapter-top span { flex:none; font-size:0.6rem; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; color:var(--accent); }
+.chapter small { display:block; margin-bottom:6px; font-size:0.7rem; color:var(--text-muted); }
+.chapter p { margin:0 0 3px; font-family:'Instrument Serif', Georgia, serif; font-size:1.04rem; line-height:1.3; color:var(--text); }
+.chapter-more summary { padding:var(--s2) 0; list-style:none; text-align:center; font-size:0.78rem; color:var(--text-dim); cursor:pointer; }
+.chapter-more summary::-webkit-details-marker { display:none; }
+.chapter-more .chapter { margin-bottom:var(--s2); }
+.crew-exp { margin-top:6px; font-size:0.72rem; color:var(--accent); }

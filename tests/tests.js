@@ -969,6 +969,75 @@
         allData = fixture;
     });
 
+    await check('Sagas II and III, letters, crew expeditions, Your Saga from the log', async () => {
+        stepsLoaded = true;
+        const today = todayStr();
+        const realSteps = stepData;
+        stepData = {};
+        const session = (daysAgo, extra = {}) => ({ date: addDays(today, -daysAgo), day: 0, week: 0, type: 'workout', minutes: 40, sets: 12, ...extra });
+        // Every world is complete, and Saga IV comes back round to the first
+        [1, 2, 3].forEach(saga => {
+            const w = sagaWorld(saga);
+            equal(w.landmarks.length, 11, 'landmarks');
+            equal(w.pages.length, 11, 'pages');
+            equal(w.hooks.length, 11, 'cliffhangers');
+            equal(w.tales.length, 10, 'tales');
+            equal(w.relics.length, 10, 'relics');
+            equal(w.crossroads.length, 2, 'crossroads');
+            w.pages.forEach(t => assert(t.split(/\s+/).length <= 95, 'page too long'));
+            w.tales.flat().forEach(t => assert(t.length <= 100 && tr(t).length <= 110, `tale too long: ${t}`));
+            w.relics.forEach(r => assert(r.rune, 'relic without a rune'));
+        });
+        equal(sagaWorld(4).title, sagaWorld(1).title, 'Saga IV starts the worlds again');
+        // Saga II: 1,040 leagues puts you on its first stretch, with its own pages and tale
+        const fixture = allData;
+        allData = { _tourDone: today, _journalRead: [], _sessions: { [currentProgram]: Array.from({ length: 52 }, (_, i) => session(i + 1)) } };
+        const j = journey();
+        equal(j.saga, 2, 'in Saga II');
+        equal(landmarksOf(j.saga)[j.stop][0], 'Salt Harbour', 'first place of Saga II');
+        equal(journalUnlocked(0), 11, 'Saga I pages all open');
+        equal(journalUnlocked(1), 1, 'Saga II opens page by page');
+        equal(journalUnreadCount(), 12, 'unread across sagas');
+        openJournal(11);
+        assert(allData._journalRead.includes(11), 'Saga II page not marked read');
+        assert(/gold tear|larme d’or/.test(document.getElementById('journalBody').textContent), 'wrong page');
+        closeJournal();
+        activeWorkout = { rows: {}, week: 0, day: 0, startedAt: Date.now() };
+        equal(restTale(), sagaWorld(2).tales[0][0], 'tale from Saga II');
+        activeWorkout = null;
+        openOdyssey();
+        assert(document.querySelectorAll('#odysseyBody .journal-sagas button').length === 2, 'no saga switch in the journal');
+        closeOdyssey();
+        // Your Saga: one chapter per landmark passed, written from the log
+        const chapters = sagaChapters();
+        equal(chapters.length, Math.floor(j.total / 100), 'a chapter per landmark');
+        assert(chapterLines(chapters[0]).length >= 2, 'chapter too short');
+        assert(/workouts/.test(chapterLines(chapters[1])[0]), 'chapter ignores the log');
+        // Letters: only after a week away, once
+        allData = { _tourDone: today, _sessions: { [currentProgram]: [session(3)] } };
+        equal(pendingLetter(), null, 'a letter after 3 days');
+        allData._sessions[currentProgram] = [session(9)];
+        assert(pendingLetter(), 'no letter after 9 days');
+        openLetter();
+        assert(document.getElementById('letterModal').classList.contains('active'), 'letter did not open');
+        closeLetter();
+        equal(pendingLetter(), null, 'the same letter came twice');
+        // Expedition: same place all week, a moment once when the ship arrives
+        const savedCrew = crew;
+        momentQueue.length = 0;
+        crew = { id: 'c', name: 'Crew', code: 'ABC123', members: [{ user_id: currentUser.id, display_name: 'A', week_start: mondayOf(today), week_leagues: 120, week_workouts: 3 }] };
+        checkExpedition();
+        assert(allData._expeditions[mondayOf(today)], 'expedition not completed');
+        assert(momentQueue.length === 1 || document.getElementById('recordMoment').classList.contains('show'), 'no expedition moment');
+        momentQueue.length = 0;
+        closeRecord();
+        checkExpedition();
+        equal(momentQueue.length, 0, 'expedition moment twice');
+        crew = savedCrew;
+        allData = fixture;
+        stepData = realSteps;
+    });
+
     await check('Your ghost: you four weeks ago, beaten once per workout', () => {
         const ex = PROGRAMS[currentProgram].exercises.find(e => e.thresholds && !isRepsBased(e));
         const old = addDays(todayStr(), -40);
