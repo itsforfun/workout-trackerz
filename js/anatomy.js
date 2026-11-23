@@ -123,27 +123,87 @@ function weeklyMuscleSets(end = todayStr()) {
     return sets;
 }
 
-// Progress tab: the muscles trained over the last 7 days (10+ sets = full gold); tap a muscle to see its exercises
 const MAJOR_GROUPS = ['ch', 'sh', 'ub', 'gl', 'qd', 'hm', 'ab'];
 
-function renderMuscleWeek() {
-    const el = document.getElementById('muscleWeekCard');
+// ── One body on Today (v2.4): the turning 3D figure shows today's session or the last 7 days, with the sets
+// beside it. Rest days show it under the rest card, on This week. The flat map stays as the fallback. ──
+let bodyMode = null;       // 'session' | 'week'; null = follow the day
+let bodySession = null;
+let bodyRestDay = false;
+let bodyMountTimer = null;
+
+function bodyWeights(sets, mode) {
+    return Object.fromEntries(Object.entries(sets).filter(([, n]) => n > 0)
+        .map(([g, n]) => [g, mode === 'session' ? Math.min(1, 0.3 + n / 8) : Math.min(1, n / 10)]));
+}
+
+function renderTodayBody(session = bodySession, restDay = bodyRestDay) {
+    const el = document.getElementById('todayMuscles');
     if (!el) return;
-    const sets = weeklyMuscleSets();
-    const weights = Object.fromEntries(Object.entries(sets).map(([g, n]) => [g, Math.min(1, n / 10)]));
-    const missing = MAJOR_GROUPS.filter(g => !sets[g]);
-    el.innerHTML = `
-        <div class="mw-head"><span class="mw-kicker">This week's muscles</span><button class="mw-link" onclick="openExerciseLibrary()">Exercise library ›</button></div>
-        <div class="body3d">
-            <div class="b3-stage"><span class="b3-corner tl"></span><span class="b3-corner tr"></span><span class="b3-corner bl"></span><span class="b3-corner br"></span></div>
-            <div class="b3-flat">${bodyMapSvg({ weights, tap: 'openExerciseLibrary' })}</div>
-        </div>
-        <p class="mw-note">Brighter gold means more sets. Tap a muscle to see its exercises.</p>
-        <p class="mw-credit">3D anatomy: BodyParts3D, © DBCLS, CC BY 4.0</p>
-        ${missing.length && Object.keys(sets).length ? `<p class="mw-missing"><span>Not trained this week:</span> ${muscleList(missing)}</p>` : ''}
-        ${muscleSetsHtml(sets)}
-    `;
-    mountBody3d(el.querySelector('.body3d'), weights);
+    bodySession = session;
+    bodyRestDay = restDay;
+    const week = weeklyMuscleSets();
+    const hasWeek = Object.values(week).some(n => n > 0);
+    // Keep the element (and its live canvas) and move it to whichever card is on screen
+    const home = restDay ? document.getElementById('restBody') : document.getElementById('liftView');
+    if (el.parentElement !== home) {
+        if (restDay) home.appendChild(el);
+        else home.insertBefore(el, document.getElementById('todayHint'));
+    }
+    if (!session && !hasWeek) {
+        if (typeof unmountBody3d === 'function') unmountBody3d();
+        el.innerHTML = '';
+        return;
+    }
+    const mode = !session ? 'week' : bodyMode || (restDay ? 'week' : 'session');
+    const sets = mode === 'session' ? session.sets : week;
+    if (!el.querySelector('.body-hero')) {
+        el.innerHTML = `
+            <div class="body-hero">
+                <div class="bh-main">
+                    <div class="body3d">
+                        <div class="b3-stage"><span class="b3-corner tl"></span><span class="b3-corner tr"></span><span class="b3-corner bl"></span><span class="b3-corner br"></span></div>
+                        <div class="b3-flat"></div>
+                    </div>
+                    <div class="bh-read"></div>
+                </div>
+                <div class="bh-sets"></div>
+                <p class="mw-credit">3D anatomy: BodyParts3D, © DBCLS, CC BY 4.0</p>
+            </div>`;
+    }
+    const weights = bodyWeights(sets, mode);
+    const rows = MUSCLE_GROUPS.filter(g => (mode === 'session' ? session.main.includes(g.id) : sets[g.id] > 0))
+        .map(g => [g, Math.round((sets[g.id] || 0) * 2) / 2])
+        .sort((a, b) => b[1] - a[1]);
+    const shown = rows.slice(0, 4);
+    const missing = mode === 'week' && hasWeek ? MAJOR_GROUPS.filter(g => !week[g]) : [];
+    el.querySelector('.b3-flat').innerHTML = bodyMapSvg({ weights, tap: 'openExerciseLibrary', compact: true });
+    el.querySelector('.bh-read').innerHTML = `
+        ${session ? `<div class="bh-seg" role="group">
+            <button class="${mode === 'session' ? 'on' : ''}" onclick="setBodyMode('session')">Session</button>
+            <button class="${mode === 'week' ? 'on' : ''}" onclick="setBodyMode('week')">This week</button>
+        </div>` : '<span class="bs-kicker">This week</span>'}
+        <span class="bs-foot">Sets per muscle</span>
+        ${shown.map(([g, n]) => `<span class="bs-row"><span class="bs-name">${escapeHtml(g.name)}</span><i></i><strong>${n ? formatNum(n) : '·'}</strong></span>`).join('')}
+        ${rows.length > shown.length ? `<span class="bs-more">+${rows.length - shown.length} more</span>` : ''}
+        ${!rows.length ? '<span class="bh-empty">Nothing trained yet this week</span>' : ''}
+        ${missing.length ? `<p class="bh-missing"><span>Not trained this week:</span> ${muscleList(missing)}</p>` : ''}
+        <button class="mw-link" onclick="openExerciseLibrary()">Exercise library ›</button>`;
+    el.querySelector('.bh-sets').innerHTML = hasWeek ? muscleSetsHtml(week) : '';
+    const box = el.querySelector('.body3d');
+    if (typeof mountBody3d !== 'function' || (navigator.connection && navigator.connection.saveData)) return;
+    // The first load waits a moment, so the page and the Start button are there first
+    if (window.THREE) mountBody3d(box, weights);
+    else {
+        clearTimeout(bodyMountTimer);
+        bodyMountTimer = setTimeout(() => mountBody3d(box, weights), 900);
+    }
+}
+
+function setBodyMode(mode) {
+    haptic();
+    bodyMode = mode;
+    renderTodayBody();
 }
 
 // Sets per muscle over the last 7 days against about 10–20 hard sets (10+ was the top group for growth in

@@ -1,8 +1,8 @@
-// ── Turning 3D body on Progress (v1.93) ──
+// ── Turning 3D body, on Today since v2.4 (v1.93) ──
 // models/body.glb is built by tools/build-body.py from BodyParts3D (© DBCLS, CC BY 4.0): one mesh per Odyr
 // muscle group ('g_ch' …; abs and lats are fitted shapes, BodyParts3D has neither), 'rest' for other muscles
 // and 'bone' for the skeleton. Three.js and the model load
-// only when Progress shows the card; the flat body map stays underneath as the fallback (no WebGL, offline
+// only when Today shows the card; the flat body map stays underneath as the fallback (no WebGL, offline
 // before the first load, or an error). It turns slowly, can be dragged, pauses off screen, and stands still
 // under Reduce Motion. Tapping a muscle opens its exercises.
 
@@ -70,24 +70,30 @@ function paintBody3d(weights) {
     body3d.dirty = true;
 }
 
+let body3dMounting = null;   // the load in progress, so repeated renders never build two canvases
+
 async function mountBody3d(el, weights) {
     if (!el || !webglAvailable()) return;
     if (body3d && body3d.el === el) { paintBody3d(weights); return; }
+    if (body3dMounting && body3dMounting.el === el) { body3dMounting.weights = weights; return; }
     unmountBody3d();
+    const job = body3dMounting = { el, weights };
     try {
         await loadThree();
         const gltf = await loadBodyModel();
-        if (!el.isConnected) return;
-        buildBody3d(el, gltf.scene.clone(true), weights);
+        if (body3dMounting !== job || !el.isConnected) return;
+        buildBody3d(el, gltf.scene.clone(true), job.weights);
     } catch (e) {
         console.warn('3D body unavailable, keeping the flat map', e);
+    } finally {
+        if (body3dMounting === job) body3dMounting = null;
     }
 }
 
 function buildBody3d(el, model, weights) {
     const canvas = document.createElement('canvas');
     canvas.className = 'b3-canvas';
-    canvas.setAttribute('aria-label', tr('Your muscles this week, in 3D. Drag to turn, tap a muscle for its exercises.'));
+    canvas.setAttribute('aria-label', tr('Your muscles in 3D. Drag to turn, tap a muscle for its exercises.'));
     canvas.setAttribute('role', 'img');
     el.querySelector('.b3-stage').appendChild(canvas);
 
@@ -137,8 +143,8 @@ function buildBody3d(el, model, weights) {
 
     body3d = { el, renderer, scene, camera, root, meshes, ring2, angle: 0.5, spin: 0, dirty: true, visible: true, last: 0 };
     paintBody3d(weights);
-    resizeBody3d();
     el.classList.add('live');
+    resizeBody3d();
 
     // Drag to turn; a tap (little movement) picks a muscle
     let down = null;
@@ -168,6 +174,10 @@ function buildBody3d(el, model, weights) {
         body3d.observer.observe(el);
     }
     body3d.onResize = () => resizeBody3d();
+    if ('ResizeObserver' in window) {   // the card can move or appear after the canvas is built
+        body3d.sizer = new ResizeObserver(() => resizeBody3d());
+        body3d.sizer.observe(el.querySelector('.b3-stage'));
+    }
     window.addEventListener('resize', body3d.onResize);
     body3d.frame = requestAnimationFrame(tickBody3d);
 }
@@ -175,8 +185,9 @@ function buildBody3d(el, model, weights) {
 function resizeBody3d() {
     if (!body3d) return;
     const stage = body3d.el.querySelector('.b3-stage');
-    const w = stage.clientWidth || 300;
-    const h = stage.clientHeight || 360;
+    const w = stage.clientWidth;
+    const h = stage.clientHeight;
+    if (!w || !h) return;   // hidden for now
     body3d.renderer.setSize(w, h, false);
     body3d.camera.aspect = w / h;
     body3d.camera.updateProjectionMatrix();
@@ -221,6 +232,10 @@ function unmountBody3d() {
     if (!body3d) return;
     cancelAnimationFrame(body3d.frame);
     if (body3d.observer) body3d.observer.disconnect();
+    if (body3d.sizer) body3d.sizer.disconnect();
+    const canvas = body3d.renderer.domElement;
+    if (canvas && canvas.parentNode) canvas.parentNode.removeChild(canvas);
+    body3d.el.classList.remove('live');
     window.removeEventListener('resize', body3d.onResize);
     body3d.scene.traverse(obj => { if (obj.isMesh && obj.material && obj.material.dispose) obj.material.dispose(); });
     body3d.renderer.dispose();

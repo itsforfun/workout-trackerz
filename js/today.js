@@ -211,10 +211,7 @@ function renderToday() {
     renderWarmup(exercises);
     const hits = musclesOf(exercises.map(ex => exerciseDisplayName(ex, week)));
     const scan = scanSets(exercises.map(ex => [exerciseDisplayName(ex, week), getPrescription(ex).sets]));
-    document.getElementById('todayMuscles').innerHTML = hits.main.length ? `
-        <button class="today-muscles" onclick="openExerciseLibrary('${hits.main[0]}')" aria-label="${escapeHtml(tr('This workout hits'))}">
-            ${bodyScanHtml({ main: hits.main, extra: hits.extra, sets: scan, key: `today-${currentProgram}-${todayDay}`, compact: true })}
-        </button>` : '';
+    renderTodayBody(hits.main.length ? { main: hits.main, sets: scan } : null, !!restDay);
 
     let readyToProgress = 0;
     document.getElementById('todayList').innerHTML = exercises.map((ex, idx) => {

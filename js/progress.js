@@ -131,7 +131,6 @@ function renderProgress() {
     const hasData = prog.exercises.some(ex => getLoggedWeeks(ex.id).length) || (isCardioProgram(prog) && workoutSessions().length > 0);
     document.getElementById('page-progress').classList.toggle('is-empty', !hasData);
     renderPart('overview', renderOverview);
-    renderPart('muscles', renderMuscleWeek);
     if (liftDay === null || liftDay >= prog.days.length) liftDay = lastLiftDay(prog);
     renderPart('lifts', renderLifts);
     if (hasData && !isCardioProgram(prog)) todayTip('progress');

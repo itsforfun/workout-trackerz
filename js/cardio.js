@@ -117,7 +117,7 @@ function renderCardioDay(prog, week, nextDay) {
     const weekOptions = Array.from({ length: WEEKS }, (_, w) =>
         `<option value="${w}"${w === week ? ' selected' : ''}>Week ${w + 1}</option>`).join('');
     document.getElementById('todayMeta').innerHTML = `${s.minutes} min · Zone ${s.zone} · <select class="week-select" onchange="selectTodayWeek(this.value)">${weekOptions}</select>`;
-    document.getElementById('todayMuscles').innerHTML = '';
+    renderTodayBody(null, !!(todayOffDay(prog) && !todayMode));
     document.getElementById('warmupCard').innerHTML = '';
     document.getElementById('todayHint').textContent = `Zone ${s.zone} for you: ${zoneBpm(s.zone)}`;
     document.getElementById('todayList').innerHTML = s.rows.map(([title, detail], idx) => `

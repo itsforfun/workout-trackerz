@@ -474,13 +474,30 @@
         const sets = weeklyMuscleSets();
         assert(Object.keys(sets).length, 'no muscles counted from the sample week');
         assert(sets.qd > 0 || sets.gl > 0, 'squat sets not counted');
-        renderMuscleWeek();
-        assert(document.querySelector('#muscleWeekCard .body-map'), 'card not drawn');
+        showScreen('app');
+        todayMode = 'lift';
+        switchTab('today');
+        bodyMode = 'week';
+        renderTodayBody();
+        const body = document.getElementById('todayMuscles');
+        assert(body.querySelector('.body-hero .body3d'), 'one body on Today');
+        assert(!document.getElementById('muscleWeekCard'), 'a second body is still on Progress');
+        assert(body.querySelector('.bh-seg .on').textContent.length, 'no Session / This week switch');
         // Sets per muscle: the numbers behind the map, against 10–20 a week
-        const rows = [...document.querySelectorAll('#muscleWeekCard .ms-row')];
+        const rows = [...body.querySelectorAll('.ms-row')];
         assert(rows.length >= MAJOR_GROUPS.length, 'sets per muscle list missing');
         const first = rows[0];
         equal(parseFloat(first.querySelector('.ms-n').textContent), Math.round(Math.max(...Object.values(sets)) * 2) / 2, 'top muscle sets');
+        bodyMode = 'session';
+        renderTodayBody();
+        assert(body.querySelector('.bh-seg button.on').getAttribute('onclick').includes('session'), 'switch to Session');
+        assert(body.querySelectorAll('.bh-read .bs-row').length, 'no session sets');
+        renderTodayBody(bodySession, true);
+        equal(body.parentElement.id, 'restBody', 'body not under the rest card');
+        renderTodayBody(bodySession, false);
+        equal(body.parentElement.id, 'liftView', 'body not back in the workout card');
+        bodyMode = null;
+        todayMode = null;
     });
 
     await check('The Progress overview shows the level and all-time numbers first', () => {

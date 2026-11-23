@@ -2408,3 +2408,25 @@ div.ring-tile { cursor:default; }
 .reveal-lock strong { font-weight:500; font-size:1rem; }
 .reveal-lock span { color:var(--text-dim); font-size:0.85rem; line-height:1.5; }
 .ov-link .ov-medals { display:inline-flex; gap:2px; vertical-align:middle; margin-right:6px; }
+
+/* ── One body on Today (v2.4): the turning figure beside its sets, Session | This week ── */
+#todayMuscles:empty, #restBody:empty { display:none; }
+#restBody { margin-bottom:var(--s3); padding:var(--s3); border-radius:var(--r-card); background:var(--raised); box-shadow:var(--lift); }
+.body-hero { margin:var(--s2) 0 var(--s3); padding:var(--s2); border-radius:var(--r-inner); background:radial-gradient(150px 200px at 25% 45%, rgba(217,178,95,0.08), transparent 75%), rgba(0,0,0,0.16); }
+#restBody .body-hero { margin:0; background:none; padding:0; }
+.bh-main { display:grid; grid-template-columns:minmax(0,46%) minmax(0,1fr); gap:var(--s3); align-items:stretch; }
+.bh-main .body3d { min-height:250px; display:flex; align-items:center; justify-content:center; }
+.bh-main .b3-stage { width:100%; height:250px; margin:0; }
+.bh-main .b3-flat { width:100%; }
+.bh-main .b3-flat .bm-side { height:120px; }
+.bh-read { display:flex; flex-direction:column; justify-content:center; gap:7px; min-width:0; padding:var(--s1) var(--s1) var(--s1) 0; }
+.bh-seg { display:flex; padding:2px; margin-bottom:4px; border-radius:9px; background:rgba(240,232,216,0.06); }
+.bh-seg button { flex:1 1 auto; min-width:0; min-height:32px; padding:0 5px; border:none; border-radius:7px; background:none; color:var(--text-muted); font:inherit; font-size:0.64rem; font-weight:500; cursor:pointer; white-space:nowrap; }
+.bh-seg button.on { background:rgba(230,184,74,0.16); color:var(--accent); }
+.bh-read .bs-row { animation:none; opacity:1; transform:none; }
+.bh-empty, .bh-missing { margin:0; font-size:0.7rem; line-height:1.35; color:var(--text-dim); }
+.bh-missing span { color:var(--text-muted); }
+.bh-read .mw-link { align-self:flex-start; max-width:100%; padding:6px 0 0; font-size:0.66rem; text-align:left; white-space:nowrap; }
+.body-hero .mw-sets { margin-top:var(--s2); padding:var(--s2) var(--s1) var(--s1); }
+.body-hero .mw-credit { margin:4px 0 0; font-size:0.56rem; }
+.body-hero:not(:has(.body3d.live)) .mw-credit { display:none; }

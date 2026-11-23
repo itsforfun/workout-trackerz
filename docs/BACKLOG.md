@@ -13,6 +13,7 @@ Status: **Done** · **Check** (built, still needs a look on the iPhone or a smal
 |---|---|
 | Try without an account (v2.0) | Owner: Supabase → Authentication → Sign In / Providers → turn on "Allow anonymous sign-ins" (the button stays hidden until then); then try "Save your progress" once to confirm the email is added straight away |
 | Faster first workout (v2.0) | Watch a tester go from sign-up to the first set |
+| One 3D body on Today (v2.4) | See it on the iPhone: loading on mobile data, battery, turning while scrolling |
 | Rewards step by step (v2.3) | Ask testers whether week one feels calmer; tune the 3-workout / 2-week thresholds if needed |
 | Calmer Today: one hero, rings row, tiles (v1.91) | Ask testers again; see it on the iPhone |
 | Gold body scan on Today and the summary (v1.92) | See it on the iPhone |
@@ -126,6 +127,7 @@ Status: **Done** · **Check** (built, still needs a look on the iPhone or a smal
 | 2.1 | Lighter launch: French file only for French users, Chart.js loads with the first chart, Supabase library pinned to 2.118.0, 3-second fallback to the saved copy on weak signal; rest days: no "Recover" card after 5+ days off, no lift advice on the rest card |
 | 2.2 | Saves from two devices merge instead of overwriting (no lost workouts); set controls are small chips on the exercise in focus; Steps ring says "Connect" until steps exist |
 | 2.3 | Rewards step by step: quests after the 3rd workout, badges after two weeks (earned quietly until then), earlier accounts keep everything; score and level moved from Today to Progress; a lone Today tile takes the full row |
+| 2.4 | One turning 3D body on Today with a Session / This week switch, sets per muscle and untrained muscles; the duplicate body on Progress is gone |
 | 1.82 | Sets per muscle on Progress: weekly hard sets per muscle against 10–20, with the source |
 | 1.81 | Stall ladder for every program: +1 rep, +1 set, slower tempo, drop set (isolation only), then a reset |
 | 1.80 | Odyr's Journal: a short story in Odyr's voice at every landmark, revealed line by line, read aloud by the phone's voice |
