@@ -732,8 +732,9 @@
     });
 
     await check('First visit: a 3-stop tour, then one-time tips that show once each', async () => {
-        // A first-visit tour still timed from an earlier render would clear the tip being checked
+        // Tips stay silent during a tour: close one an earlier check's render may have opened, and stop a late one
         allData._tourDone = todayStr();
+        if (tourStep >= 0) endTour();
         showScreen('app');
         todayMode = null;
         switchTab('today');
