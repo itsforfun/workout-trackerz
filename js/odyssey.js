@@ -128,9 +128,11 @@ function renderSagaCard() {
             </div>
             ${roadSvg(j.into, fromInto)}
             <div class="saga-next"><strong>${j.toNext.toLocaleString(LOCALE)}</strong> ${j.toNext === 1 ? 'league to' : 'leagues to'} <span>${escapeHtml(next[0])}</span> <span class="saga-open">›</span></div>
+            ${sagaTrialHtml()}
             ${crewLineHtml()}
             ${journalUnreadCount() ? `<div class="saga-journal"><span class="jp-dot"></span>${journalUnreadCount() === 1 ? 'New page in Odyr’s journal' : `${journalUnreadCount()} new pages in Odyr’s journal`}</div>` : ''}
-        </button>`;
+        </button>
+        ${sagaForkHtml()}`;
     travelTo(el.querySelector('svg'), fromInto, j.into);
     if (stepsLoaded) rememberLeagues(Math.max(seen || 0, j.total));   // a failed steps load never lowers it
     if (gained > 0) todayTip('journey');
@@ -158,6 +160,7 @@ function summarySagaHtml(from, to) {
             <span class="sum-saga-top"><span>Your journey</span><strong>+${(to - from).toLocaleString(LOCALE)} ${to - from === 1 ? 'league' : 'leagues'}</strong></span>
             ${roadSvg(into, fromInto)}
             <span class="sum-saga-next">${crossed ? `<span class="gold">You reached ${escapeHtml(landmark)}</span>` : `${j.toNext} ${j.toNext === 1 ? 'league' : 'leagues'} to ${escapeHtml(LANDMARKS[j.next][0])}`}</span>
+            ${sagaTrialHtml()}
         </button>`;
 }
 
@@ -225,6 +228,7 @@ function renderOdyssey() {
         const passed = i * 100 <= j.into;
         const left = x > 180;
         return `
+            ${relicEarnedAt(i, j.saga) ? `<circle class="road-relic" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="11"/>` : ''}
             <circle class="road-stop${passed ? ' passed' : ''}" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${i === 0 || i === 10 ? 7 : 5}"/>
             <text class="road-label${passed ? ' passed' : ''}" x="${(left ? x - 14 : x + 14).toFixed(1)}" y="${(y + 4).toFixed(1)}" text-anchor="${left ? 'end' : 'start'}">${escapeHtml(name)}</text>`;
     }).join('');
@@ -243,6 +247,8 @@ function renderOdyssey() {
             ${stops}
             <circle class="road-traveller" cx="${tx.toFixed(1)}" cy="${ty.toFixed(1)}" r="8"/>
         </svg>
+        ${trialsSectionHtml()}
+        ${relicsSectionHtml()}
         ${journalListHtml()}
         <div class="section-head"><h3>How you travel</h3><span>${j.total.toLocaleString(LOCALE)} leagues in all</span></div>
         <div class="odyssey-sources">

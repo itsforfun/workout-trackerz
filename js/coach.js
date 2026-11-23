@@ -813,6 +813,7 @@ const COACH_TIPS = {
     'wo-summary': 'Your workout in one page. Your level and your journey just moved.',
     journey: 'You moved along Odyr’s road. Tap the card to see the map and his journal.',
     quests: 'New: weekly quests. Three goals every Monday, worth 75 XP each. Tap to see this week’s.',
+    trials: 'New: Trials. Each stretch of the road has a challenge, and finishing it earns a Relic.',
     badges: 'New: badges. The ones you’ve earned so far are waiting in the trophy room on Progress.',
     restday: 'Rest day. Recovery comes first; cardio is optional.',
     progress: 'Tap a lift to see its chart and your weekly log.',

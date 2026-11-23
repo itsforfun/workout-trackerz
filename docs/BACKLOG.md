@@ -78,7 +78,6 @@ Status: **Done** · **Check** (built, still needs a look on the iPhone or a smal
 - Home-screen widgets (rings, streak), Live Activity for a ticking rest countdown on the lock screen (owner asked for it, 2026-10-29), Apple Watch app
 
 **Other**
-- Saga batch 2 (review 2026-11-23): Trials at landmarks tied to real lifts, Crossroads (choose Mountain / Coast / Forest), Relics on your map
 - Saga batch 3: Sagas II and III (the gold tear: Freyja got ahead of Odyr), Freyja's letters after time off, crew expeditions, Your Saga written from your own log
 - Odyr's Journal: new chapters for Saga II and beyond; a recorded narrator if people read the entries (2026-10-30)
 - For women, later: optional cycle tracking that informs readiness and deloads; a female figure in the exercise demos (suggested 2026-10-30)
@@ -132,6 +131,7 @@ Status: **Done** · **Check** (built, still needs a look on the iPhone or a smal
 | 2.4 | One turning 3D body on Today with a Session / This week switch, sets per muscle and untrained muscles; the duplicate body on Progress is gone |
 | 2.5 | Colour legend under the 3D body, with one clear scale for Session (6+ sets) and This week (10+ sets) |
 | 2.6 | Saga batch 1: no more fake league gains, "this session takes you to…", the traveller walks on the summary, Rest-Fire Tales during rest, a cliffhanger on every journal page |
+| 2.7 | Saga batch 2: a Trial on every stretch of road, Crossroads with three paths (Mountain, Coast, Forest), ten rune Relics on the journey map |
 | 1.82 | Sets per muscle on Progress: weekly hard sets per muscle against 10–20, with the source |
 | 1.81 | Stall ladder for every program: +1 rep, +1 set, slower tempo, drop set (isolation only), then a reset |
 | 1.80 | Odyr's Journal: a short story in Odyr's voice at every landmark, revealed line by line, read aloud by the phone's voice |

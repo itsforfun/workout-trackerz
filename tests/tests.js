@@ -915,6 +915,60 @@
         closeJournal();
     });
 
+    await check('Saga: Trials from your log, Relics, Crossroads that set the next Trials', () => {
+        stepsLoaded = true;
+        momentQueue.length = 0;
+        const today = todayStr();
+        const session = (date, sets = 12) => ({ date, day: 0, week: 0, type: 'workout', minutes: 40, sets });
+        // A brand-new account has no Trial yet
+        const fixture = allData;
+        allData = { _tourDone: today };
+        equal(currentTrial(), null, 'a Trial before the first workout');
+        // First stretch: what was done today doesn't count, the next workouts do
+        allData = { _tourDone: today, _landmark: 0, _sessions: { [currentProgram]: [session(today)] } };
+        const first = currentTrial();
+        equal(first.name, 'Cold Start', 'first Trial');
+        equal(trialProgress(first), 0, 'a workout before the Trial began counted');
+        allData._sessions[currentProgram].push(session(today));
+        equal(trialProgress(first), 1, 'next workout not counted');
+        allData._sessions[currentProgram].push(session(today));
+        checkTrials();
+        assert(allData._saga.trials[first.key].done, 'Trial not finished');
+        assert(momentQueue.length === 1 || document.getElementById('recordMoment').classList.contains('show'), 'no Relic moment');
+        momentQueue.length = 0;
+        closeRecord();
+        checkTrials();
+        equal(momentQueue.length, 0, 'the Relic moment came twice');
+        assert(/Frost Thorn|Épine/.test(relicsSectionHtml()), 'Relic not in the collection');
+        // Crossroads at Mirror Fjord: no Trial until a path is chosen; the path sets it
+        allData = { _tourDone: today, _landmark: 3, _sessions: { [currentProgram]: Array.from({ length: 16 }, (_, i) => session(addDays(today, -i - 1))) } };
+        equal(journey().stop, 3, 'at Mirror Fjord');
+        equal(pendingCrossroad(), 0, 'fork not offered');
+        equal(currentTrial(), null, 'a Trial before the choice');
+        openCrossroads();
+        equal(document.querySelectorAll('#crossroadsBody .cross-path').length, 3, 'three paths');
+        choosePath('forest');
+        assert(!document.getElementById('crossroadsModal').classList.contains('active'), 'sheet stayed open');
+        equal(pendingCrossroad(), null, 'fork still offered');
+        const t = currentTrial();
+        equal(t.name, 'Deep Roots', 'the Forest sets the Trial');
+        equal(t.path, 'forest', 'path kept');
+        // Every stretch and path has a Trial and a Relic; Trials stay winnable without cardio or steps
+        for (let stop = 0; stop < 10; stop++) ['mountain', 'coast', 'forest'].forEach(p => assert(trialDefinition(stop, p).name && RELICS[stop].rune, `stretch ${stop}`));
+        const savedProfile = userProfile;
+        userProfile = { ...savedProfile, cardio: 'off' };
+        const realSteps = stepData;
+        stepData = {};
+        ['coast'].forEach(p => [3, 4, 5, 6, 7, 8].forEach(stop => assert(!['cardio', 'steps'].includes(trialDefinition(stop, p).kind), `unwinnable Trial at ${stop}`)));
+        userProfile = savedProfile;
+        stepData = realSteps;
+        // The journey screen shows it all
+        openOdyssey();
+        assert(document.querySelector('#odysseyBody .trial-row') && document.querySelectorAll('#odysseyBody .relic-cell').length === 10, 'Trials or Relics missing');
+        closeOdyssey();
+        allData = fixture;
+    });
+
     await check('Your ghost: you four weeks ago, beaten once per workout', () => {
         const ex = PROGRAMS[currentProgram].exercises.find(e => e.thresholds && !isRepsBased(e));
         const old = addDays(todayStr(), -40);

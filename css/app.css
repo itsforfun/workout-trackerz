@@ -2456,3 +2456,45 @@ body:has(.rest-bar.show.has-tale) #workoutScreen .workout-body { padding-bottom:
 .rest-bar .rest-actions { display:grid; grid-template-columns:repeat(3,1fr); margin-top:0; }
 .rest-bar.has-tale { background:rgba(36,32,27,0.985); }
 .rest-bar.has-tale.done { background:rgba(58,48,32,0.985); }
+
+/* ── Saga batch 2 (v2.7): Trials, Crossroads, Relics ── */
+.saga-trial { display:grid; grid-template-columns:1fr auto; gap:3px var(--s2); margin-top:8px; padding-top:8px; border-top:1px solid rgba(240,232,216,0.06); font-size:0.76rem; color:var(--text); }
+.saga-trial strong { font-weight:500; color:var(--accent); font-variant-numeric:tabular-nums; }
+.saga-trial i { grid-column:1 / -1; height:3px; border-radius:2px; background:rgba(240,232,216,0.08); overflow:hidden; }
+.saga-trial b { display:block; height:100%; border-radius:2px; background:linear-gradient(90deg,#b38636,#f2d891); }
+.saga-trial small { grid-column:1 / -1; font-size:0.7rem; color:var(--text-dim); }
+.saga-trial.done span { color:var(--text-dim); }
+.sum-saga .saga-trial { margin-top:var(--s3); }
+.saga-fork { display:grid; grid-template-columns:1fr auto; gap:2px var(--s2); align-items:center; width:100%; margin:0 0 var(--s3); padding:var(--s3) var(--s4); border:1px solid rgba(230,184,74,0.4); border-radius:var(--r-inner); background:rgba(230,184,74,0.07); color:var(--text); font:inherit; text-align:left; cursor:pointer; }
+.saga-fork span { grid-column:1 / -1; font-size:0.6rem; font-weight:600; letter-spacing:0.16em; text-transform:uppercase; color:var(--accent); }
+.saga-fork strong { font-weight:500; font-size:0.9rem; }
+.saga-fork em { font-style:normal; font-size:0.76rem; color:var(--accent); white-space:nowrap; }
+.modal .cross-title { margin:var(--s1) 0 var(--s2); font-family:var(--font-display); font-size:1.7rem; font-weight:400; letter-spacing:0.05em; line-height:1.05; }
+.modal p.cross-line { margin:0 0 var(--s4); font-family:'Instrument Serif', Georgia, serif; font-size:1.12rem; line-height:1.3; color:var(--text); }
+.cross-path { display:block; width:100%; margin-bottom:var(--s2); padding:var(--s3) var(--s4); border:1px solid rgba(240,232,216,0.1); border-radius:var(--r-inner); background:var(--raised); color:var(--text); font:inherit; text-align:left; cursor:pointer; }
+.cross-path:active { border-color:var(--accent); background:rgba(230,184,74,0.08); }
+.cross-path span { display:block; font-size:0.58rem; font-weight:600; letter-spacing:0.16em; text-transform:uppercase; color:var(--accent); }
+.cross-path strong { display:block; margin:2px 0; font-weight:500; font-size:1rem; }
+.cross-path small { display:block; font-size:0.76rem; line-height:1.35; color:var(--text-dim); }
+.modal p.cross-note { margin:var(--s2) 0 var(--s3); font-size:0.72rem; text-align:center; color:var(--text-muted); }
+.relic circle { fill:rgba(240,232,216,0.03); stroke:rgba(240,232,216,0.16); stroke-width:1.5; }
+.relic .inner { fill:none; stroke:rgba(240,232,216,0.07); stroke-width:1; }
+.relic path { fill:none; stroke:rgba(240,232,216,0.22); stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+.relic.earned circle { fill:rgba(230,184,74,0.14); stroke:#e6b84a; }
+.relic.earned .inner { fill:none; stroke:rgba(242,216,145,0.4); }
+.relic.earned path { stroke:#f2d891; filter:drop-shadow(0 0 3px rgba(242,216,145,0.6)); }
+.road-relic { fill:none; stroke:#f2d891; stroke-width:1.5; opacity:0.75; }
+.trial-list { display:flex; flex-direction:column; gap:var(--s2); }
+.trial-row { display:grid; grid-template-columns:42px 1fr auto; gap:var(--s3); align-items:center; padding:var(--s3); border-radius:var(--r-inner); background:var(--raised); }
+.trial-text { display:flex; flex-direction:column; gap:2px; min-width:0; }
+.trial-text strong { font-weight:500; font-size:0.9rem; }
+.trial-text small { font-size:0.74rem; color:var(--text-dim); }
+.trial-text em { font-family:'Instrument Serif', Georgia, serif; font-size:0.9rem; line-height:1.2; color:var(--text-muted); }
+.trial-n { font-size:0.82rem; color:var(--accent); font-variant-numeric:tabular-nums; }
+.trial-open { margin:var(--s2) 0 0; font-size:0.72rem; color:var(--text-muted); }
+.relic-grid { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:var(--s3) var(--s1); }
+.relic-cell { display:flex; flex-direction:column; align-items:center; gap:4px; padding:0; border:none; background:none; color:var(--text); font:inherit; cursor:pointer; }
+.relic-cell span { font-size:0.58rem; line-height:1.15; text-align:center; color:var(--text-dim); }
+.relic-cell small { font-size:0.56rem; color:var(--accent); }
+.relic-cell.locked span { color:var(--text-muted); }
+#recordValue .relic { display:block; margin:0 auto; }

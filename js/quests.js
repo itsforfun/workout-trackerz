@@ -102,6 +102,7 @@ function checkQuests() {
         scheduleSave();
         if (revealed('quests')) queueMoment(() => showMoment({ kicker: 'Quest complete', valueHtml: `+${QUEST_XP}`, unit: 'XP', name: questLabel(q), sub: 'Three new quests every Monday.', sound: 'badge' }));
     });
+    checkTrials();
 }
 
 // Today: one line (quests done, days left, a dot per quest); opens into the list
