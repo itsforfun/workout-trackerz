@@ -90,7 +90,8 @@ function journalUnreadCount() {
     const read = journalRead();
     let n = 0;
     for (let w = 0; w <= latestWorld(); w++) {
-        for (let i = 0; i < journalUnlocked(w); i++) if (!read.has(w * PAGES_PER_SAGA + i)) n++;
+        const open = journalUnlocked(w);
+        for (let i = 0; i < open; i++) if (!read.has(w * PAGES_PER_SAGA + i)) n++;
     }
     return n;
 }

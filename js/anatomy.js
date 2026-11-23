@@ -202,7 +202,13 @@ function renderTodayBody(session = bodySession, restDay = bodyRestDay) {
     if (window.THREE) mountBody3d(box, weights);
     else {
         clearTimeout(bodyMountTimer);
-        bodyMountTimer = setTimeout(() => mountBody3d(box, weights), 900);
+        // Not while the quote is leaving: the 3D model waits until the app has settled
+        const whenSettled = () => {
+            const splash = document.getElementById('splash');
+            if (splash && !splash.classList.contains('hide')) bodyMountTimer = setTimeout(whenSettled, 300);
+            else bodyMountTimer = setTimeout(() => mountBody3d(box, weights), 1400);
+        };
+        whenSettled();
     }
 }
 

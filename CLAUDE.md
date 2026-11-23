@@ -698,3 +698,11 @@ reference/debug-screenshots/  ← Supabase key page, "Script error" console, Git
 - **Freyja's letters** (`FREYJA_LETTERS`, `pendingLetter`, `letterModal`): one letter after 7+ days without a workout, on the saga card, once per break (`_letters` {last workout date: read date}). Warm, never a guilt trip.
 - **Crew expeditions** (js/crews.js): the weekly ship now has a named destination (`crewExpedition`, the same for the whole crew); reaching it gets a moment once a week (`checkExpedition`, `_expeditions` {monday: place}).
 - **Your Saga** (`sagaChapters`, `chapterLines`, `yourSagaHtml`, journey screen): one chapter per landmark passed, written from the user's own log: days and workouts, comebacks, the most improved lift, dawn sessions, Relics. Recomputed, never stored.
+
+## 84. Instant start (v2.9, 2026-11-23)
+- Owner: a long wait after the opening quote. Measured: rendering Today takes ~60 ms, but Supabase answered in 9.6 s and 24 s on a cold request, and the app waited for it behind the skeleton screen.
+- **`quickStartFromCache()`** (js/sync.js, called first in `checkAuth`): a returning user with a complete profile and a program opens at once from the phone's copy (`wt_cache_<id>`). The session is then checked in the background; no session while online returns to sign-in, and another account resets the state (`resetAccountState`, js/auth.js). Skipped for `?test`, recovery links and first logins.
+- **`refreshFromCloud()`**: same version: nothing; newer cloud and no local changes: replace; local changes or a workout in progress: `mergeWorkoutData` then save. Views refresh only when no workout or input is active.
+- **Steps** are remembered per account (`wt_steps_<id>`, `restoreSteps`), so rings and leagues are right before the network answers.
+- The 3D body now loads 1.4 s after the quote has left. `journalUnreadCount` no longer recomputes the journey per page.
+

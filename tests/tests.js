@@ -1038,6 +1038,48 @@
         stepData = realSteps;
     });
 
+    await check('Instant start: opens from the phone, then the cloud catches up without losing anything', async () => {
+        const saved = { sb, cloudAt, pending: savePending, steps: stepData };
+        const mine = { date: todayStr(), day: 0, week: 0, type: 'workout', minutes: 30, sets: 8 };
+        const theirs = { date: addDays(todayStr(), -1), day: 1, week: 0, type: 'workout', minutes: 40, sets: 10 };
+        let row = { updated_at: 'cloud-2', selected_program: currentProgram, profile: userProfile, workout_data: { _sessions: { [currentProgram]: [theirs] } } };
+        const q = { select: () => q, eq: () => q, maybeSingle: async () => ({ data: row, error: null }) };
+        try {
+            sb = { from: () => q };
+            // Nothing changed on the phone: the newer cloud copy simply replaces it
+            cloudAt = 'cloud-1';
+            savePending = false;
+            await refreshFromCloud();
+            equal(cloudAt, 'cloud-2', 'cloud version');
+            equal(programSessions().length, 1, 'cloud copy not applied');
+            // A workout logged on the phone meanwhile survives
+            allData = { _sessions: { [currentProgram]: [mine] } };
+            cloudAt = 'cloud-1';
+            savePending = true;
+            clearTimeout(saveTimer);
+            await refreshFromCloud();
+            clearTimeout(saveTimer);
+            equal(programSessions().length, 2, 'a workout was lost in the background refresh');
+            // Same version: nothing to do
+            const before = allData;
+            cloudAt = 'cloud-2';
+            savePending = false;
+            await refreshFromCloud();
+            assert(allData === before, 'data replaced although nothing changed');
+            // Steps are remembered per account
+            localStorage.setItem('wt_steps_restore-test', JSON.stringify({ [todayStr()]: { steps: 4321 } }));
+            stepData = {};
+            restoreSteps('restore-test');
+            equal(stepsOn(todayStr()), 4321, 'steps not restored');
+            localStorage.removeItem('wt_steps_restore-test');
+        } finally {
+            sb = saved.sb;
+            cloudAt = saved.cloudAt;
+            savePending = saved.pending;
+            stepData = saved.steps;
+        }
+    });
+
     await check('Your ghost: you four weeks ago, beaten once per workout', () => {
         const ex = PROGRAMS[currentProgram].exercises.find(e => e.thresholds && !isRepsBased(e));
         const old = addDays(todayStr(), -40);

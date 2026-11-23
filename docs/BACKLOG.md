@@ -132,6 +132,7 @@ Status: **Done** · **Check** (built, still needs a look on the iPhone or a smal
 | 2.6 | Saga batch 1: no more fake league gains, "this session takes you to…", the traveller walks on the summary, Rest-Fire Tales during rest, a cliffhanger on every journal page |
 | 2.7 | Saga batch 2: a Trial on every stretch of road, Crossroads with three paths (Mountain, Coast, Forest), ten rune Relics on the journey map |
 | 2.8 | Saga batch 3: Sagas II and III with a full story to its ending, Freyja's letters after time off, weekly crew expeditions, Your Saga written from your own log |
+| 2.9 | Instant start: returning users open from the copy on their phone while the cloud updates in the background; steps remembered; 3D body waits until the app has settled |
 | 1.82 | Sets per muscle on Progress: weekly hard sets per muscle against 10–20, with the source |
 | 1.81 | Stall ladder for every program: +1 rep, +1 set, slower tempo, drop set (isolation only), then a reset |
 | 1.80 | Odyr's Journal: a short story in Odyr's voice at every landmark, revealed line by line, read aloud by the phone's voice |

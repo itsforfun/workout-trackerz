@@ -10,14 +10,27 @@ async function checkAuth() {
         showAuthError('Could not load the login service. Check your connection and refresh.');
         return;
     }
+    // Returning user: open at once from the copy on this phone; the cloud catches up in the background
+    const quick = quickStartFromCache();
     try {
         const { data: { session }, error } = await sb.auth.getSession();
         if (!session) {
             // An expired login can't be refreshed without signal; keep training from the cached copy
-            if ((error || !navigator.onLine) && enterOfflineFromCache()) return;
+            if (error || !navigator.onLine) {
+                if (quick) { offlineMode = true; setSaveStatus('offline'); return; }
+                if (enterOfflineFromCache()) return;
+            }
+            if (quick) resetAccountState();
             showScreen('auth');
             return;
         }
+        if (quick && session.user.id === currentUser.id) {
+            currentUser = session.user;
+            renderGuestCard();
+            refreshFromCloud();
+            return;
+        }
+        if (quick) resetAccountState();
         currentUser = session.user;
         if (recoveryMode) {
             showNewPasswordForm();
@@ -26,6 +39,7 @@ async function checkAuth() {
         await enterApp();
     } catch (error) {
         console.error('Auth check error:', error);
+        if (quick) { offlineMode = true; setSaveStatus('offline'); return; }
         if (enterOfflineFromCache()) return;
         showScreen('auth');
     }
@@ -288,23 +302,29 @@ async function handleLogout() {
     await signOutAndReset();
 }
 
+// Nothing of one account may carry over to the next one on this phone
+function resetAccountState() {
+    currentUser = null;
+    currentProgram = null;
+    userProfile = null;
+    allData = {};
+    offlineMode = false;
+    savePending = false;
+    cloudAt = null;
+    stepData = {};
+    stepsLoaded = false;
+    heroStepsRequested = false;
+    crew = null;
+    crewState = 'idle';
+}
+
 async function signOutAndReset() {
     if (currentUser) {
         clearLocalCache(currentUser.id);
         clearActiveWorkout();
     }
     if (sb) await sb.auth.signOut();
-    currentUser = null;
-    currentProgram = null;
-    userProfile = null;
-    allData = {};
-    offlineMode = false;
-    // Nothing of this account may carry over to the next one on this phone
-    stepData = {};
-    stepsLoaded = false;
-    heroStepsRequested = false;
-    crew = null;
-    crewState = 'idle';
+    resetAccountState();
     showScreen('auth');
     showAuthForm('login');
 }

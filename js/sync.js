@@ -75,9 +75,9 @@ const CACHE_PREFIX = 'wt_cache_';
 function writeLocalCache(dirty) {
     if (!currentUser) return;
     try {
-        const { id, email, created_at } = currentUser;
+        const { id, email, created_at, is_anonymous } = currentUser;
         localStorage.setItem(CACHE_PREFIX + id, JSON.stringify({
-            user: { id, email, created_at }, allData, userProfile, currentProgram, dirty, savedAt: Date.now(), cloudAt
+            user: { id, email, created_at, is_anonymous }, allData, userProfile, currentProgram, dirty, savedAt: Date.now(), cloudAt
         }));
         localStorage.setItem('wt_last_user', id);
     } catch (e) { /* storage full or blocked: the cloud copy still works */ }
@@ -94,6 +94,7 @@ function readLocalCache(userId) {
 function clearLocalCache(userId) {
     try {
         localStorage.removeItem(CACHE_PREFIX + userId);
+        localStorage.removeItem(`wt_steps_${userId}`);
         localStorage.removeItem('wt_last_user');
     } catch (e) { /* ignore */ }
 }
@@ -116,6 +117,70 @@ function enterOfflineFromCache() {
     routeAfterLogin();
     setSaveStatus('offline');
     return true;
+}
+
+// ── Instant start: a returning user sees Today from this phone's copy, without waiting for the network ──
+function quickStartFromCache() {
+    // A password-reset link and the automated checks take the normal route
+    if (/[?&]test\b/.test(location.search) || /access_token|type=recovery/.test(location.hash) || recoveryMode) return false;
+    let cache = null;
+    try { cache = readLocalCache(localStorage.getItem('wt_last_user')); } catch (e) { /* private mode */ }
+    if (!cache || !cache.user || !cache.userProfile || !cache.userProfile.age || !cache.userProfile.weight) return false;
+    currentUser = cache.user;
+    applyCache(cache);
+    if (!currentProgram) {
+        resetAccountState();
+        return false;
+    }
+    cloudAt = cache.cloudAt || null;
+    savePending = !!cache.dirty;
+    restoreSteps(currentUser.id);
+    routeAfterLogin();
+    return true;
+}
+
+// Bring in what changed in the cloud, without interrupting whatever is on screen
+async function refreshFromCloud() {
+    let row, error;
+    try {
+        ({ data: row, error } = await sb.from('user_data').select('*').eq('user_id', currentUser.id).maybeSingle());
+    } catch (e) {
+        error = e;
+    }
+    if (error) {
+        console.warn('Background refresh failed:', error);
+        offlineMode = true;
+        setSaveStatus('offline');
+        return;
+    }
+    offlineMode = false;
+    if (!row) {
+        scheduleSave();
+        return;
+    }
+    if (row.updated_at === cloudAt) {
+        if (savePending) scheduleSave();
+        else setSaveStatus('saved');
+        return;
+    }
+    const remote = migrateWorkoutData(row.workout_data || {}, currentProgram).data;
+    if (savePending || activeWorkout) {
+        // Changes on this phone since the last save: keep both sides
+        allData = mergeWorkoutData(allData, remote);
+        cloudAt = row.updated_at;
+        registerCustomPrograms();
+        scheduleSave();
+    } else {
+        allData = remote;
+        cloudAt = row.updated_at;
+        registerCustomPrograms(remote._customPrograms);
+        if (row.profile && Object.keys(row.profile).length) userProfile = row.profile;
+        if (PROGRAMS[row.selected_program]) currentProgram = row.selected_program;
+        writeLocalCache(false);
+        setSaveStatus('saved');
+    }
+    if (!activeWorkout && !(document.activeElement && document.activeElement.matches('input, textarea, select'))
+        && document.getElementById('mainApp').classList.contains('active')) refreshAllViews();
 }
 
 async function loadUserData() {

@@ -22,6 +22,17 @@ function stepGoal() {
 // False until the first load finishes (shows placeholders instead of a misleading 0)
 let stepsLoaded = false;
 
+// The last steps seen on this phone, so the rings and the journey are right before the network answers
+function restoreSteps(userId) {
+    try {
+        const saved = JSON.parse(localStorage.getItem(`wt_steps_${userId}`));
+        if (saved) {
+            stepData = saved;
+            stepsLoaded = true;
+        }
+    } catch (e) { /* nothing saved */ }
+}
+
 async function loadSteps() {
     if (!currentUser || !sb) return false;
     try {
@@ -36,6 +47,7 @@ async function loadSteps() {
         }
         if (error) throw error;
         stepData = Object.fromEntries(data.map(row => [row.date, row]));
+        try { localStorage.setItem(`wt_steps_${currentUser.id}`, JSON.stringify(stepData)); } catch (e) { /* storage full */ }
         return true;
     } catch (error) {
         console.warn('Steps not loaded:', error.message || error);
