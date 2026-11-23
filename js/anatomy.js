@@ -132,9 +132,12 @@ let bodySession = null;
 let bodyRestDay = false;
 let bodyMountTimer = null;
 
+// Sets for full gold: the legend under the body shows the same scale
+const BODY_FULL = { session: 6, week: 10 };
+
 function bodyWeights(sets, mode) {
     return Object.fromEntries(Object.entries(sets).filter(([, n]) => n > 0)
-        .map(([g, n]) => [g, mode === 'session' ? Math.min(1, 0.3 + n / 8) : Math.min(1, n / 10)]));
+        .map(([g, n]) => [g, Math.min(1, n / BODY_FULL[mode])]));
 }
 
 function renderTodayBody(session = bodySession, restDay = bodyRestDay) {
@@ -167,6 +170,7 @@ function renderTodayBody(session = bodySession, restDay = bodyRestDay) {
                     </div>
                     <div class="bh-read"></div>
                 </div>
+                <div class="bh-legend"></div>
                 <div class="bh-sets"></div>
                 <p class="mw-credit">3D anatomy: BodyParts3D, © DBCLS, CC BY 4.0</p>
             </div>`;
@@ -189,6 +193,8 @@ function renderTodayBody(session = bodySession, restDay = bodyRestDay) {
         ${!rows.length ? '<span class="bh-empty">Nothing trained yet this week</span>' : ''}
         ${missing.length ? `<p class="bh-missing"><span>Not trained this week:</span> ${muscleList(missing)}</p>` : ''}
         <button class="mw-link" onclick="openExerciseLibrary()">Exercise library ›</button>`;
+    const full = BODY_FULL[mode];
+    el.querySelector('.bh-legend').innerHTML = `<span>0</span><i class="low"></i><span>${full / 2}</span><i class="high"></i><span>${full}+ sets</span>`;
     el.querySelector('.bh-sets').innerHTML = hasWeek ? muscleSetsHtml(week) : '';
     const box = el.querySelector('.body3d');
     if (typeof mountBody3d !== 'function' || (navigator.connection && navigator.connection.saveData)) return;

@@ -2430,3 +2430,7 @@ div.ring-tile { cursor:default; }
 .body-hero .mw-sets { margin-top:var(--s2); padding:var(--s2) var(--s1) var(--s1); }
 .body-hero .mw-credit { margin:4px 0 0; font-size:0.56rem; }
 .body-hero:not(:has(.body3d.live)) .mw-credit { display:none; }
+.bh-legend { display:flex; align-items:center; gap:6px; margin:var(--s2) var(--s1) 0; font-size:0.64rem; color:var(--text-muted); font-variant-numeric:tabular-nums; white-space:nowrap; }
+.bh-legend i { flex:1; height:4px; }
+.bh-legend i.low { border-radius:2px 0 0 2px; background:linear-gradient(90deg, #2e2621, #a5823d); }
+.bh-legend i.high { border-radius:0 2px 2px 0; background:linear-gradient(90deg, #a5823d, #f0c35a); }

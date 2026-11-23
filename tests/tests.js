@@ -484,6 +484,7 @@
         assert(!document.getElementById('muscleWeekCard'), 'a second body is still on Progress');
         assert(body.querySelector('.bh-seg .on').textContent.length, 'no Session / This week switch');
         // Sets per muscle: the numbers behind the map, against 10–20 a week
+        assert(/10\+/.test(body.querySelector('.bh-legend').textContent), 'week legend should end at 10+');
         const rows = [...body.querySelectorAll('.ms-row')];
         assert(rows.length >= MAJOR_GROUPS.length, 'sets per muscle list missing');
         const first = rows[0];
@@ -491,6 +492,9 @@
         bodyMode = 'session';
         renderTodayBody();
         assert(body.querySelector('.bh-seg button.on').getAttribute('onclick').includes('session'), 'switch to Session');
+        assert(/6\+/.test(body.querySelector('.bh-legend').textContent), 'session legend should end at 6+');
+        equal(bodyWeights({ ch: 3 }, 'session').ch, 0.5, 'session colour follows the legend');
+        equal(bodyWeights({ ch: 5 }, 'week').ch, 0.5, 'week colour follows the legend');
         assert(body.querySelectorAll('.bh-read .bs-row').length, 'no session sets');
         renderTodayBody(bodySession, true);
         equal(body.parentElement.id, 'restBody', 'body not under the rest card');

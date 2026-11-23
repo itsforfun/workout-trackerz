@@ -128,6 +128,7 @@ Status: **Done** · **Check** (built, still needs a look on the iPhone or a smal
 | 2.2 | Saves from two devices merge instead of overwriting (no lost workouts); set controls are small chips on the exercise in focus; Steps ring says "Connect" until steps exist |
 | 2.3 | Rewards step by step: quests after the 3rd workout, badges after two weeks (earned quietly until then), earlier accounts keep everything; score and level moved from Today to Progress; a lone Today tile takes the full row |
 | 2.4 | One turning 3D body on Today with a Session / This week switch, sets per muscle and untrained muscles; the duplicate body on Progress is gone |
+| 2.5 | Colour legend under the 3D body, with one clear scale for Session (6+ sets) and This week (10+ sets) |
 | 1.82 | Sets per muscle on Progress: weekly hard sets per muscle against 10–20, with the source |
 | 1.81 | Stall ladder for every program: +1 rep, +1 set, slower tempo, drop set (isolation only), then a reset |
 | 1.80 | Odyr's Journal: a short story in Odyr's voice at every landmark, revealed line by line, read aloud by the phone's voice |

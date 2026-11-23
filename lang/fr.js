@@ -2148,6 +2148,7 @@ I18N_PACKS.fr = {
         "Saga": "Saga",
         "Leagues": "Lieues",
         "Landmark": "Étape",
+        "{#}+ sets": "{0}+ séries",
         "Your muscles in 3D. Drag to turn, tap a muscle for its exercises.": "Tes muscles en 3D. Fais glisser pour tourner, touche un muscle pour voir ses exercices.",
         "Nothing trained yet this week": "Rien de travaillé cette semaine",
         "Cardio sessions this week, cardio minutes toward your weekly target, and today's steps. A ring turns gold when it closes.": "Les séances de cardio de la semaine, les minutes de cardio vers ton objectif hebdomadaire et les pas du jour. Un anneau devient doré quand il se ferme.",
