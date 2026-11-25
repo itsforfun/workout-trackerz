@@ -547,8 +547,27 @@
         renderTodayBody();
         assert(body.querySelector('.bh-seg button.on').getAttribute('onclick').includes('session'), 'switch to Session');
         assert(/6\+/.test(body.querySelector('.bh-legend').textContent), 'session legend should end at 6+');
-        equal(bodyWeights({ ch: 3 }, 'session').ch, 0.5, 'session colour follows the legend');
-        equal(bodyWeights({ ch: 5 }, 'week').ch, 0.5, 'week colour follows the legend');
+        // Four clear colour steps, the same numbers as the legend dots
+        equal(JSON.stringify([0, 0.5, 2, 3, 5, 6, 9].map(n => bodyStep(n, 'session'))), JSON.stringify([0, 1, 1, 2, 2, 3, 3]), 'session steps 1–2 / 3–5 / 6+');
+        equal(JSON.stringify([0, 4, 5, 9, 10, 25].map(n => bodyStep(n, 'week'))), JSON.stringify([0, 1, 2, 2, 3, 3]), 'week steps 1–4 / 5–9 / 10+');
+        equal(body.querySelectorAll('.bh-legend .bl-step').length, 3, 'three legend dots');
+        assert(/1–2[\s\S]*3–5[\s\S]*6\+/.test(body.querySelector('.bh-legend').textContent), 'session dots read 1–2, 3–5, 6+');
+        // Each step must stay clearly lighter than the one below it (CIE L*), so colour-blind users can tell them apart
+        const lightness = hex => {
+            const lin = c => (c /= 255) <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+            const [r, g, b] = [1, 3, 5].map(i => lin(parseInt(hex.slice(i, i + 2), 16)));
+            const y = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+            return y > 0.008856 ? 116 * Math.cbrt(y) - 16 : 903.3 * y;
+        };
+        BODY_COLORS.slice(1).forEach((c, i) => assert(lightness(c) - lightness(BODY_COLORS[i]) >= 15, `colour steps ${i} and ${i + 1} too close in lightness`));
+        // Tapping a dot keeps only that step lit; tapping it again shows everything
+        const allLit = Object.keys(bodyWeights(bodySession.sets, 'session')).length;
+        setBodyFocus(3);
+        assert(Object.values(bodyWeights(bodySession.sets, 'session', bodyFocus)).every(v => v === 3), 'focus keeps only Full muscles');
+        assert(body.querySelector('.bh-legend').classList.contains('focused'), 'legend shows the focus');
+        setBodyFocus(3);
+        equal(bodyFocus, 0, 'second tap clears the focus');
+        equal(Object.keys(bodyWeights(bodySession.sets, 'session', bodyFocus)).length, allLit, 'all muscles lit again');
         assert(body.querySelectorAll('.bh-read .bs-row').length, 'no session sets');
         renderTodayBody(bodySession, true);
         equal(body.parentElement.id, 'restBody', 'body not under the rest card');

@@ -1,0 +1,44 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><base href="/"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Body colours preview</title>
+<style>
+  body { margin:0; background:#1a1612; color:#efe6d6; font:14px system-ui; }
+  #row { display:flex; gap:8px; padding:8px; }
+  .cell { flex:1; text-align:center; }
+  .cell img { width:100%; background:#211c18; border-radius:12px; }
+  .body3d { position:absolute; left:-9999px; width:256px; height:500px; }
+  .b3-stage { width:256px; height:500px; position:relative; }
+  .b3-canvas { width:256px; height:500px; }
+</style></head>
+<body>
+<div id="row"></div>
+<div class="body3d"><div class="b3-stage"></div></div>
+<!-- Local check of the 3D colour steps (not part of the app). Open /tools/body-preview.html?grey for greyscale. -->
+<script>
+  const BODY_COLORS = ['#2a231e', '#5a4231', '#c08a5a', '#f2c65c'];
+  const tr = s => s, haptic = () => {}, openExerciseLibrary = () => {};
+</script>
+<script src="js/body3d.js"></script>
+<script>
+(async () => {
+  // Started: chest, abs · Building: shoulders, hamstrings, upper back · Full: glutes, quads
+  const weights = { ch: 1, ab: 1, sh: 2, hm: 2, ub: 2, gl: 3, qd: 3 };
+  const el = document.querySelector('.body3d');
+  await mountBody3d(el, weights);
+  for (let i = 0; i < 40 && !body3d; i++) await new Promise(r => setTimeout(r, 250));
+  const b = body3d; b.spin = 0;
+  const grey = location.search.includes('grey');
+  [['Front', 0], ['Side', Math.PI / 2], ['Back', Math.PI]].forEach(([name, a]) => {
+    b.root.rotation.y = a;
+    b.renderer.render(b.scene, b.camera);
+    const c = document.createElement('canvas');
+    c.width = b.renderer.domElement.width; c.height = b.renderer.domElement.height;
+    const g = c.getContext('2d');
+    if (grey) g.filter = 'grayscale(1)';
+    g.drawImage(b.renderer.domElement, 0, 0);
+    document.getElementById('row').insertAdjacentHTML('beforeend', `<div class="cell"><img src="${c.toDataURL()}"><div>${name}</div></div>`);
+  });
+  document.title = 'READY';
+})();
+</script>
+</body></html>

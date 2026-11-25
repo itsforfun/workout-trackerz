@@ -50,22 +50,22 @@ function webglAvailable() {
     } catch (e) { return false; }
 }
 
-// Gold by weight (0 = untrained, 1 = 10+ sets)
-function body3dColor(weight) {
-    const rest = new THREE.Color('#2e2621');
-    if (!weight) return rest;
-    // 1–2 sets: a dim bronze; 10+ sets: full gold
-    return new THREE.Color('#5a4120').lerp(new THREE.Color('#f0c35a'), Math.min(1, weight));
+// One colour per step (BODY_COLORS in anatomy.js). Each muscle also glows softly in its own colour, so the side
+// turned away from the light still reads as its step; only Full muscles get the extra gold shine.
+function body3dColor(step) {
+    return new THREE.Color(BODY_COLORS[step] || BODY_COLORS[0]);
 }
 
 function paintBody3d(weights) {
     if (!body3d) return;
     body3d.weights = weights;
     Object.entries(body3d.meshes).forEach(([group, mesh]) => {
-        const w = weights[group] || 0;
-        mesh.material.color.copy(body3dColor(w));
-        mesh.material.emissive.copy(new THREE.Color('#e6b84a')).multiplyScalar(w * w * 0.35);
-        mesh.userData.weight = w;
+        const step = weights[group] || 0;
+        const color = body3dColor(step);
+        mesh.material.color.copy(color);
+        mesh.material.emissive.copy(color).multiplyScalar([0, 0.12, 0.3, 0.3][step]);
+        if (step === 3) mesh.material.emissive.add(new THREE.Color('#e6b84a').multiplyScalar(0.12));
+        mesh.userData.weight = step;
     });
     body3d.dirty = true;
 }

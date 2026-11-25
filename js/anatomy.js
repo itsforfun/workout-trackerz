@@ -17,8 +17,8 @@ function bodyMapSvg({ main = [], extra = [], weights = null, tap = '', selected 
         if (!group) return BODY_QUIET.has(slug) ? 'var(--bm-quiet)' : 'var(--bm-rest)';
         if (selected) return group === selected ? 'url(#odyrGold)' : 'var(--bm-rest)';
         if (weights) {
-            const w = weights[group] || 0;
-            return w >= 0.999 ? 'url(#odyrGold)' : w > 0 ? `rgba(217,178,95,${(0.16 + w * 0.7).toFixed(2)})` : 'var(--bm-rest)';
+            const step = weights[group] || 0;
+            return step >= 3 ? 'url(#odyrGold)' : step > 0 ? BODY_COLORS[step] : 'var(--bm-rest)';
         }
         if (main.includes(group)) return 'url(#odyrGold)';
         if (extra.includes(group)) return 'var(--bm-extra)';
@@ -51,7 +51,7 @@ function bodyScanHtml({ main = [], extra = [], sets = {}, key = '', compact = fa
         <div class="body-scan${compact ? ' compact' : ''}${fresh ? ' play' : ''}">
             <div class="bs-figure">
                 <div class="bs-base">${bodyMapSvg({ compact })}</div>
-                <div class="bs-lit">${bodyMapSvg({ main, extra, compact })}</div>
+                <div class="bs-lit">${bodyMapSvg({ weights: bodyWeights(sets, 'session'), compact })}</div>
                 <span class="bs-line" aria-hidden="true"></span>
                 <span class="bs-corner tl"></span><span class="bs-corner tr"></span><span class="bs-corner bl"></span><span class="bs-corner br"></span>
             </div>
@@ -132,12 +132,36 @@ let bodySession = null;
 let bodyRestDay = false;
 let bodyMountTimer = null;
 
-// Sets for full gold: the legend under the body shows the same scale
-const BODY_FULL = { session: 6, week: 10 };
+// Four clear steps (v3.1): untrained, started, building, full. Each colour is about 20 lighter (CIE L*) than the
+// one before (14 → 30 → 62 → 82; Started is a muted bronze so the 3D lighting doesn't lift it into copper), so the steps read apart for colour-blind users and in greyscale. Shared by the
+// 3D body, the flat map, the post-workout scan and the legend, so colour and legend can never disagree.
+const BODY_STEPS = { session: [3, 6], week: [5, 10] };   // sets that reach Building and Full; any set is Started
+const BODY_COLORS = ['#2a231e', '#5a4231', '#c08a5a', '#f2c65c'];
+let bodyFocus = 0;   // a legend dot tapped: only that step stays lit (0 = all)
 
-function bodyWeights(sets, mode) {
-    return Object.fromEntries(Object.entries(sets).filter(([, n]) => n > 0)
-        .map(([g, n]) => [g, Math.min(1, n / BODY_FULL[mode])]));
+function bodyStep(n, mode) {
+    const [building, full] = BODY_STEPS[mode];
+    return n >= full ? 3 : n >= building ? 2 : n > 0 ? 1 : 0;
+}
+
+// { group: step 1–3 } for the groups trained; with a focus, only the groups at that step
+function bodyWeights(sets, mode, focus = 0) {
+    return Object.fromEntries(Object.entries(sets).map(([g, n]) => [g, bodyStep(n, mode)])
+        .filter(([, step]) => step > 0 && (!focus || step === focus)));
+}
+
+function bodyLegendHtml(mode) {
+    const [building, full] = BODY_STEPS[mode];
+    const labels = [`1–${building - 1}`, `${building}–${full - 1}`, `${full}+`];
+    return labels.map((label, i) => `
+        <button class="bl-step${bodyFocus === i + 1 ? ' on' : ''}" style="--c:${BODY_COLORS[i + 1]}" aria-pressed="${bodyFocus === i + 1}" onclick="setBodyFocus(${i + 1})"><i></i>${label}</button>`).join('')
+        + '<span class="bl-unit">sets</span>';
+}
+
+function setBodyFocus(step) {
+    haptic();
+    bodyFocus = bodyFocus === step ? 0 : step;
+    renderTodayBody();
 }
 
 function renderTodayBody(session = bodySession, restDay = bodyRestDay) {
@@ -175,7 +199,7 @@ function renderTodayBody(session = bodySession, restDay = bodyRestDay) {
                 <p class="mw-credit">3D anatomy: BodyParts3D, © DBCLS, CC BY 4.0</p>
             </div>`;
     }
-    const weights = bodyWeights(sets, mode);
+    const weights = bodyWeights(sets, mode, bodyFocus);
     const rows = MUSCLE_GROUPS.filter(g => (mode === 'session' ? session.main.includes(g.id) : sets[g.id] > 0))
         .map(g => [g, Math.round((sets[g.id] || 0) * 2) / 2])
         .sort((a, b) => b[1] - a[1]);
@@ -193,8 +217,9 @@ function renderTodayBody(session = bodySession, restDay = bodyRestDay) {
         ${!rows.length ? '<span class="bh-empty">Nothing trained yet this week</span>' : ''}
         ${missing.length ? `<p class="bh-missing"><span>Not trained this week:</span> ${muscleList(missing)}</p>` : ''}
         <button class="mw-link" onclick="openExerciseLibrary()">Exercise library ›</button>`;
-    const full = BODY_FULL[mode];
-    el.querySelector('.bh-legend').innerHTML = `<span>0</span><i class="low"></i><span>${full / 2}</span><i class="high"></i><span>${full}+ sets</span>`;
+    const legend = el.querySelector('.bh-legend');
+    legend.innerHTML = bodyLegendHtml(mode);
+    legend.classList.toggle('focused', !!bodyFocus);
     el.querySelector('.bh-sets').innerHTML = hasWeek ? muscleSetsHtml(week) : '';
     const box = el.querySelector('.body3d');
     if (typeof mountBody3d !== 'function' || (navigator.connection && navigator.connection.saveData)) return;
@@ -215,6 +240,7 @@ function renderTodayBody(session = bodySession, restDay = bodyRestDay) {
 function setBodyMode(mode) {
     haptic();
     bodyMode = mode;
+    bodyFocus = 0;
     renderTodayBody();
 }
 
