@@ -11,6 +11,7 @@ Status: **Done** · **Check** (built, still needs a look on the iPhone or a smal
 
 | Item | What's left |
 |---|---|
+| Database outage, Nov 2026 | Scheduler run log filled the database (1.6 GB). Project moved to Pro (Micro). Owner: run `supabase-cron-cleanup.sql` once; then rerun `tools/db-health-check.sql` in a week to confirm the log stays small |
 | Try without an account (v2.0) | Owner: Supabase → Authentication → Sign In / Providers → turn on "Allow anonymous sign-ins" (the button stays hidden until then); then try "Save your progress" once to confirm the email is added straight away |
 | Faster first workout (v2.0) | Watch a tester go from sign-up to the first set |
 | One 3D body on Today (v2.4) | See it on the iPhone: loading on mobile data, battery, turning while scrolling |
@@ -35,6 +36,9 @@ Status: **Done** · **Check** (built, still needs a look on the iPhone or a smal
 | Exercise guide (v1.39) | The owner finds the stick-figure demos inaccurate; still deciding on licensed demos (exercise.com, ExRx.net, MuscleWiki, WorkoutLabs). Body map and muscle library done in v1.47 |
 
 ## Next — not started
+
+**Learning from use**
+- Anonymous behaviour report for the idea coach: a read-only SQL query that turns `user_data`, `step_counts`, `error_log` and `pro_waitlist` into totals only (first-workout drop-off, programs dropped, when people stop, quest/saga use, unused features); the owner exports it as CSV and the idea coach reads it. Add one line to the privacy page at the same time. Owner said "later" (suggested 2026-11-25)
 
 **Sharing and motivation**
 - Streak shield: one per month, keeps a streak alive through a missed week (suggested 2026-10-30)

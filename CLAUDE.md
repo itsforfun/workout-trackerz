@@ -257,6 +257,7 @@ reference/debug-screenshots/  ← Supabase key page, "Script error" console, Git
 - App writes `rest_timers` (one row per user: `fire_at`, title, body) when rest starts; deletes it on skip / when seen on screen.
 - `pg_cron` job `rest-push` runs every 5 s and calls the Edge Function `supabase/functions/rest-push` (deployed via the dashboard editor, **JWT verification off**, authenticated by `x-cron-secret`) only when a timer is due. The function deletes due timers and sends Web Push with `npm:web-push` to `push_subscriptions`.
 - Keys: VAPID public key is in `index.html` (`VAPID_PUBLIC_KEY`); the VAPID private key and cron secret live only in the DB table `push_config` (RLS, no policies). `supabase-push-setup.sql` in the repo has placeholders; the filled-in copy was given to the owner via clipboard and is not in git.
+- **Run log cleanup (2026-11-25):** pg_cron logs every run in `cron.job_run_details` and never deletes it. At 5 s that reached 431,000 rows / 1.6 GB of a 1.7 GB database, put the free org over quota and took the database down (PGRST002, Nov 2026). Fix: the project moved to the owner's Pro org "Kevin Inc" on Micro compute, and `supabase-cron-cleanup.sql` empties the log and schedules `cron-log-cleanup` (hourly, keeps one day). Any new frequent cron job needs the same care. `tools/db-health-check.sql` is a read-only check of sizes, connections and jobs.
 - `push_log` (anon-readable status codes + push host) is for troubleshooting: `GET /rest/v1/push_log?order=at.desc`.
 - iPhone: only works when the app is installed to the Home Screen (iOS 16.4+), then Settings → Rest Alerts → Turn on.
 
@@ -346,6 +347,7 @@ reference/debug-screenshots/  ← Supabase key page, "Script error" console, Git
 
 ## 26. Ideas backlog
 - `docs/BACKLOG.md` lists every idea raised so far: Check (built, needs a look or a follow-up), Next, Dropped (with the reason) and Done by version. Update it in the same commit whenever something is built, dropped or newly suggested.
+- **Idea coach** (`.claude/agents/idea-coach.md`, 2026-11-25): when the owner proposes a feature or asks to brainstorm, run it through the `idea-coach` agent first. It reads this file and the backlog, judges value and friction, gives a verdict (Build / Smaller / Change / Park / Drop), a refined version and ideas built on the proposal. Build only what the owner approves.
 
 ## 27. Summary, share cards, file layout, checks, error reports (v1.38, 2026-10-28)
 - **Post-workout summary** (`summaryScreen`, `openSummary(summary)`, built in `finishWorkout`): XP gained inside the open level ring, day name, date + week (serif), Time / Sets / Volume (display units, weight × reps of weighted sets) / Records, new records with the gain, new tiers, and each exercise's sets. Replaces the old PR/tier pop-ups at the end of a workout. Badge, level-up and recap moments wait until it is closed (`summaryOpen`, checked in `nextMoment`).
