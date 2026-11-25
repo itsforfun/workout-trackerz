@@ -905,6 +905,8 @@ function renderPushStatus() {
     if (splashToggle) splashToggle.checked = !splashOff();
     const soundToggle = document.getElementById('soundToggle');
     if (soundToggle) soundToggle.checked = soundsOn();
+    const bodySelect = document.getElementById('settingsBody');
+    if (bodySelect && typeof bodyChoice === 'function') bodySelect.value = bodyChoice();
     const voiceSelect = document.getElementById('settingsVoice');
     if (voiceSelect && typeof narratorChoice === 'function') voiceSelect.value = narratorChoice();
     const langSelect = document.getElementById('settingsLang');

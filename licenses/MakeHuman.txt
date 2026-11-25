@@ -1,0 +1,9 @@
+models/body-female.glb — the female figure of Odyr's 3D body
+
+Made with MPFB 2 (MakeHuman for Blender, https://static.makehumancommunity.org/mpfb.html) by
+tools/build-body-female.py. Per the MakeHuman licence (https://static.makehumancommunity.org/about/license.html),
+models exported from official MakeHuman/MPFB builds are released under CC0 1.0 (no rights reserved). MPFB itself is
+GPL-3.0-or-later; no MPFB code is part of Odyr.
+
+Changes made by Odyr: athletic female shape settings, arms lowered, face and nipples smoothed into a mannequin,
+skin split into muscle-group regions by rule (not anatomical muscles).

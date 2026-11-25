@@ -5,8 +5,25 @@
 const BODY_GROUP = Object.fromEntries(MUSCLE_GROUPS.flatMap(g => g.body.map(slug => [slug, g.id])));
 const BODY_QUIET = new Set(['head', 'neck', 'hands', 'feet', 'ankles', 'knees']);
 
+// Settings → Experience → Body figure (per phone): 'f' | 'm' | '' (automatic, follows the profile).
+// The flat map and the 3D body both follow it.
+function bodyChoice() {
+    try { return localStorage.getItem('odyr_body') || ''; } catch (e) { return ''; }
+}
+
 function bodySex() {
+    const choice = bodyChoice();
+    if (choice === 'f' || choice === 'm') return choice;
     return userProfile && userProfile.gender === 'female' ? 'f' : 'm';
+}
+
+function setBodyFigure(value) {
+    haptic();
+    try { localStorage.setItem('odyr_body', value || ''); } catch (e) { /* private mode */ }
+    if (typeof unmountBody3d === 'function') unmountBody3d();
+    const el = document.getElementById('todayMuscles');
+    if (el) el.innerHTML = '';
+    renderTodayBody();
 }
 
 // main / extra: muscle group ids. weights: { group: 0–1 } for a heat map. tap: name of a function called with the group id.
@@ -196,7 +213,7 @@ function renderTodayBody(session = bodySession, restDay = bodyRestDay) {
                 </div>
                 <div class="bh-legend"></div>
                 <div class="bh-sets"></div>
-                <p class="mw-credit">3D anatomy: BodyParts3D, © DBCLS, CC BY 4.0</p>
+                <p class="mw-credit"></p>
             </div>`;
     }
     const weights = bodyWeights(sets, mode, bodyFocus);
@@ -217,6 +234,7 @@ function renderTodayBody(session = bodySession, restDay = bodyRestDay) {
         ${!rows.length ? '<span class="bh-empty">Nothing trained yet this week</span>' : ''}
         ${missing.length ? `<p class="bh-missing"><span>Not trained this week:</span> ${muscleList(missing)}</p>` : ''}
         <button class="mw-link" onclick="openExerciseLibrary()">Exercise library ›</button>`;
+    el.querySelector('.mw-credit').textContent = bodySex() === 'f' ? '3D figure: MakeHuman (CC0)' : '3D anatomy: BodyParts3D, © DBCLS, CC BY 4.0';
     const legend = el.querySelector('.bh-legend');
     legend.innerHTML = bodyLegendHtml(mode);
     legend.classList.toggle('focused', !!bodyFocus);

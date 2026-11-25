@@ -13,20 +13,29 @@
 <body>
 <div id="row"></div>
 <div class="body3d"><div class="b3-stage"></div></div>
-<!-- Local check of the 3D colour steps (not part of the app). Open /tools/body-preview.html?grey for greyscale. -->
+<!-- Local check of the 3D colour steps (not part of the app). Open /tools/body-preview.html?grey for greyscale, ?female for the female figure, ?all to light every group. -->
 <script>
   const BODY_COLORS = ['#2a231e', '#5a4231', '#c08a5a', '#f2c65c'];
   const tr = s => s, haptic = () => {}, openExerciseLibrary = () => {};
+  const bodySex = () => location.search.includes('female') ? 'f' : 'm';
 </script>
 <script src="js/body3d.js"></script>
 <script>
 (async () => {
   // Started: chest, abs · Building: shoulders, hamstrings, upper back · Full: glutes, quads
-  const weights = { ch: 1, ab: 1, sh: 2, hm: 2, ub: 2, gl: 3, qd: 3 };
+  const q = location.search;
+  const groups = ['ch', 'sh', 'bi', 'tr', 'fa', 'ob', 'tp', 'ub', 'lb', 'gl', 'qd', 'hm', 'ad', 'cf', 'ab'];
+  // ?all: every group in alternating steps, to see the regions; default: a sample week
+  const weights = q.includes('all') ? Object.fromEntries(groups.map((g, i) => [g, 1 + (i % 3)])) : { ch: 1, ab: 1, sh: 2, hm: 2, ub: 2, gl: 3, qd: 3 };
   const el = document.querySelector('.body3d');
   await mountBody3d(el, weights);
   for (let i = 0; i < 40 && !body3d; i++) await new Promise(r => setTimeout(r, 250));
   const b = body3d; b.spin = 0;
+  // ?debug: one distinct colour per group, to check the region borders (preview only)
+  if (q.includes('debug')) Object.entries(b.meshes).forEach(([g, mesh], i) => {
+    const c = new THREE.Color().setHSL((i * 0.618) % 1, 0.75, 0.55);
+    mesh.material.color.copy(c); mesh.material.emissive.copy(c).multiplyScalar(0.25);
+  });
   const grey = location.search.includes('grey');
   [['Front', 0], ['Side', Math.PI / 2], ['Back', Math.PI]].forEach(([name, a]) => {
     b.root.rotation.y = a;

@@ -10,9 +10,10 @@ const THREE_URLS = [
     'https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js',
     'https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/loaders/GLTFLoader.js',
 ];
-const BODY_MODEL_URL = 'models/body.glb';
+// Male: BodyParts3D muscles. Female (v3.2): a MakeHuman figure with muscle-group regions (tools/build-body-female.py)
+const BODY_MODELS = { m: 'models/body.glb', f: 'models/body-female.glb' };
 let threeLoading = null;
-let bodyModelLoading = null;
+let bodyModelLoading = {};   // one load per figure
 let body3d = null;   // { el, renderer, scene, camera, root, meshes, frame, … } for the card on screen
 
 function loadScriptOnce(src) {
@@ -35,12 +36,16 @@ function loadThree() {
     return threeLoading;
 }
 
-function loadBodyModel() {
-    if (!bodyModelLoading) {
-        bodyModelLoading = new Promise((resolve, reject) => new THREE.GLTFLoader().load(BODY_MODEL_URL, resolve, undefined, reject));
-        bodyModelLoading.catch(() => { bodyModelLoading = null; });
+function bodyFigure() {
+    return typeof bodySex === 'function' ? bodySex() : 'm';
+}
+
+function loadBodyModel(figure = bodyFigure()) {
+    if (!bodyModelLoading[figure]) {
+        bodyModelLoading[figure] = new Promise((resolve, reject) => new THREE.GLTFLoader().load(BODY_MODELS[figure], resolve, undefined, reject));
+        bodyModelLoading[figure].catch(() => { delete bodyModelLoading[figure]; });
     }
-    return bodyModelLoading;
+    return bodyModelLoading[figure];
 }
 
 function webglAvailable() {
@@ -127,7 +132,7 @@ function buildBody3d(el, model, weights) {
     const meshes = {};
     model.traverse(obj => {
         if (!obj.isMesh) return;
-        obj.geometry.computeVertexNormals();
+        if (!obj.geometry.attributes.normal) obj.geometry.computeVertexNormals();   // the female figure ships smooth normals
         const name = obj.name || (obj.parent && obj.parent.name) || '';
         if (name === 'bone') {
             obj.material = new THREE.MeshStandardMaterial({ color: 0xefe6d6, roughness: 0.9, transparent: true, opacity: 0.16, depthWrite: false });

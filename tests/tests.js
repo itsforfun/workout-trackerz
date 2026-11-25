@@ -499,15 +499,35 @@
         }
     });
 
-    await check('The 3D body model has a mesh for every muscle group it can show', async () => {
-        const buf = await (await fetch(BODY_MODEL_URL)).arrayBuffer();
-        const view = new DataView(buf);
-        equal(view.getUint32(0, true), 0x46546C67, 'models/body.glb is a GLB');
-        const json = JSON.parse(new TextDecoder().decode(new Uint8Array(buf, 20, view.getUint32(12, true))));
-        const names = json.meshes.map(m => m.name);
-        MUSCLE_GROUPS.forEach(g => assert(names.includes(`g_${g.id}`), `no 3D mesh for ${g.name}`));
-        assert(names.includes('bone'), 'no skeleton in the 3D body');
-        assert(buf.byteLength < 2.5 * 1024 * 1024, `3D body too heavy for a phone: ${Math.round(buf.byteLength / 1024)} KB`);
+    await check('Both 3D figures have a mesh for every muscle group and stay light', async () => {
+        for (const [figure, url] of Object.entries(BODY_MODELS)) {
+            const buf = await (await fetch(url)).arrayBuffer();
+            const view = new DataView(buf);
+            equal(view.getUint32(0, true), 0x46546C67, `${url} is a GLB`);
+            const json = JSON.parse(new TextDecoder().decode(new Uint8Array(buf, 20, view.getUint32(12, true))));
+            const names = json.meshes.map(m => m.name);
+            MUSCLE_GROUPS.forEach(g => assert(names.includes(`g_${g.id}`), `no ${figure} 3D mesh for ${g.name}`));
+            if (figure === 'm') assert(names.includes('bone'), 'no skeleton in the male 3D body');
+            assert(buf.byteLength < (figure === 'f' ? 1 : 2.5) * 1024 * 1024, `${figure} 3D body too heavy for a phone: ${Math.round(buf.byteLength / 1024)} KB`);
+        }
+    });
+
+    await check('The Body setting picks the figure, else the profile decides', () => {
+        const saved = userProfile;
+        try {
+            userProfile = { ...saved, gender: 'female' };
+            localStorage.removeItem('odyr_body');
+            equal(bodySex(), 'f', 'automatic follows a female profile');
+            localStorage.setItem('odyr_body', 'm');
+            equal(bodySex(), 'm', 'the setting wins over the profile');
+            userProfile = { ...saved, gender: 'male' };
+            localStorage.setItem('odyr_body', 'f');
+            equal(bodySex(), 'f', 'a man can pick the female figure');
+            equal(BODY_MODELS[bodyFigure()], 'models/body-female.glb', '3D follows the same choice');
+        } finally {
+            localStorage.removeItem('odyr_body');
+            userProfile = saved;
+        }
     });
 
     await check('The body map lights the right muscles and filters the library', () => {
