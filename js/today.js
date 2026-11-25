@@ -154,6 +154,7 @@ function renderToday() {
     else { syncCrewStats(); openCrewInvite(); }
     checkQuests();
     renderQuests();
+    suggestMoveBreaks();
     renderInsight();
     renderDeloadCard();
     renderWeekPlan();

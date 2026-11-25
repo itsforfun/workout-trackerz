@@ -282,6 +282,60 @@
         closeRecap();
     });
 
+    await check('Wander breaks: off by default, weekdays in work hours, suggested for some goals', async () => {
+        const realAlerts = window.restAlertsOn;
+        const realFrom = sb.from;
+        const saved = { user: currentUser, profile: userProfile, offline: offlineMode };
+        let inserted = [];
+        sb.from = table => {
+            const q = realFrom(table);
+            if (table === 'scheduled_pushes') q.insert = rows => { inserted = rows; return q; };
+            return q;
+        };
+        window.restAlertsOn = () => true;
+        try {
+            currentUser = currentUser || { id: 'test-user' };
+            offlineMode = false;
+            const others = { workout: false, streak: false, steps: false };
+            userProfile = { ...saved.profile, goal: 'muscle', nudges: others };
+            assert(!nudgePrefs().move, 'move breaks must be off until turned on');
+            assert(!moveBreaksSuggested(), 'not suggested for Build muscle');
+            userProfile = { ...userProfile, goal: 'fatloss' };
+            assert(moveBreaksSuggested(), 'suggested for Lose fat');
+            lastNudgePlan = '';
+            await planNudges();
+            equal(inserted.filter(r => r.kind === 'move').length, 0, 'move reminders while off');
+
+            userProfile = { ...userProfile, nudges: { ...others, move: true }, moveBreaks: { every: 45, start: 9, end: 17 } };
+            assert(!moveBreaksSuggested(), 'no suggestion once on');
+            equal(JSON.stringify(moveBreakTimes()), JSON.stringify([585, 640, 695, 750, 805, 860, 915, 970]), '45 min sitting + 10 min walk from 9:00 to 17:00');
+            lastNudgePlan = '';
+            await planNudges();
+            const moves = inserted.filter(r => r.kind === 'move');
+            assert(moves.length >= 8, `planned ${moves.length} breaks over the next 7 days`);
+            moves.forEach(r => {
+                const d = new Date(r.fire_at);
+                assert(d.getDay() !== 0 && d.getDay() !== 6, `break on a weekend: ${r.fire_at}`);
+                const min = d.getHours() * 60 + d.getMinutes();
+                assert(min >= 9 * 60 && min + 10 <= 17 * 60, `break outside work hours: ${r.fire_at}`);
+                assert(r.title && r.body, 'break has a title and a line');
+            });
+            const perDay = {};
+            moves.forEach(r => { const k = new Date(r.fire_at).toDateString(); perDay[k] = (perDay[k] || 0) + 1; });
+            assert(Object.values(perDay).every(n => n <= 8), 'more than 8 breaks in a day');
+            equal(moveLine(0, 8), MOVE_FIRST, 'first break of the day');
+            equal(moveLine(7, 8), MOVE_LAST, 'last break of the day');
+            equal(new Set([1, 2, 3, 4, 5, 6].map(n => moveLine(n, 8))).size, 6, 'no line repeats within a day');
+        } finally {
+            sb.from = realFrom;
+            window.restAlertsOn = realAlerts;
+            currentUser = saved.user;
+            userProfile = saved.profile;
+            offlineMode = saved.offline;
+            lastNudgePlan = '';
+        }
+    });
+
     await check('Locking the phone mid-rest puts the rest\'s end time on the lock screen', async () => {
         const shown = [];
         const closed = [];

@@ -11,6 +11,7 @@ Status: **Done** · **Check** (built, still needs a look on the iPhone or a smal
 
 | Item | What's left |
 |---|---|
+| Wander breaks (v3.0) | Try a work day with it on: are 10-minute walks after 45 min realistic, do reminders land at bad times? Ask testers whether it feels helpful or nagging; watch weekday steps. Ideas from the coach not built yet: a "Desk days" option in profile setup, a walking-break Trial, a 2-minute desk mobility routine |
 | Database outage, Nov 2026 | Scheduler run log filled the database (1.6 GB). Project moved to Pro (Micro). Owner: run `supabase-cron-cleanup.sql` once; then rerun `tools/db-health-check.sql` in a week to confirm the log stays small |
 | Try without an account (v2.0) | Owner: Supabase → Authentication → Sign In / Providers → turn on "Allow anonymous sign-ins" (the button stays hidden until then); then try "Save your progress" once to confirm the email is added straight away |
 | Faster first workout (v2.0) | Watch a tester go from sign-up to the first set |

@@ -513,6 +513,17 @@ const COACH_SCIENCE = [
         ],
     },
     {
+        title: 'Wander breaks',
+        rule: 'If you sit for work, Settings → Reminders → Wander breaks sends a reminder after every 45, 60 or 90 minutes of sitting, on weekdays in your work hours: get up and walk for about 10 minutes.',
+        why: 'Breaking up long sitting with light walking lowers blood sugar and insulin after meals, and walking works better than only standing. In a trial testing different schedules, 5 minutes of walking every 30 minutes lowered blood sugar the most, and even 1 minute every hour lowered blood pressure.',
+        note: 'Ten minutes is our pick between what the trials tested and what fits a work day; shorter, more frequent breaks may suit blood sugar better. These are short lab studies, so the long-term effect is less certain. The app can’t tell whether you’re already moving, so some reminders will come at the wrong time.',
+        refs: [
+            ['Duran AT, Friel CP, Serafini MA, et al. Med Sci Sports Exerc. 2023;55(5):847–855.', 'Breaking Up Prolonged Sitting to Improve Cardiometabolic Risk: Dose-Response Analysis of a Randomized Crossover Trial', '10.1249/MSS.0000000000003109'],
+            ['Loh R, Stamatakis E, Folkerts D, et al. Sports Med. 2020;50(2):295–330.', 'Effects of Interrupting Prolonged Sitting with Physical Activity Breaks on Blood Glucose, Insulin and Triacylglycerol Measures: A Systematic Review and Meta-analysis', '10.1007/s40279-019-01183-w'],
+            ['Buffey AJ, Herring MP, Langley CK, et al. Sports Med. 2022;52(8):1765–1787.', 'The Acute Effects of Interrupting Prolonged Sitting Time in Adults with Standing and Light-Intensity Walking on Biomarkers of Cardiometabolic Health in Adults: A Systematic Review and Meta-analysis', '10.1007/s40279-022-01649-4'],
+        ],
+    },
+    {
         title: 'Daily habits',
         rule: 'Six daily habits chosen by your goal, not your program: steps, protein for your goal and bodyweight, sleep (7+ hours) and a direction for eating. Each goal has its own section below.',
         why: 'Training builds the stimulus; whether you lose fat or gain muscle depends mostly on what you eat, how you sleep and how much you move. The 2026 position stand of the International Society of Sports Nutrition puts protein at 1.2–1.6 g per kg a day for general health and 1.6–2.2 g with resistance training, higher while dieting.',
@@ -817,6 +828,7 @@ const COACH_TIPS = {
     badges: 'New: badges. The ones you’ve earned so far are waiting in the trophy room on Progress.',
     restday: 'Rest day. Recovery comes first; cardio is optional.',
     progress: 'Tap a lift to see its chart and your weekly log.',
+    move: 'Sitting a lot? Wander breaks remind you to walk for 10 minutes, and help your goal. Turn them on in Settings → Reminders.',
 };
 const tipQueue = [];
 let tipShowing = null;
@@ -992,10 +1004,92 @@ const NUDGE_TYPES = [
     { id: 'workout', label: 'Workout days', note: 'A morning reminder on lifting days' },
     { id: 'streak', label: 'Streak at risk', note: 'Saturday morning, if the week has no workout yet' },
     { id: 'steps', label: 'Steps', note: 'Early evening, only if you\'re short of your goal' },
+    { id: 'move', label: 'Wander breaks', note: 'A 10-minute walk after each stretch of sitting, on weekdays in your work hours' },
 ];
 
 function nudgePrefs() {
-    return { workout: true, streak: true, steps: true, ...((userProfile && userProfile.nudges) || {}) };
+    return { workout: true, streak: true, steps: true, move: false, ...((userProfile && userProfile.nudges) || {}) };
+}
+
+// Wander breaks (id "move"): a 10-minute walk after every `every` minutes of sitting, weekdays between start and end
+const MOVE_BREAK_MIN = 10;
+const MOVE_EVERY = [45, 60, 90];
+// The first and last break of the day have their own line; the ones between take turns
+const MOVE_FIRST = 'First stretch done. Rise and wander for ten.';
+const MOVE_LAST = 'Last stretch of the day. One more wander.';
+const MOVE_LINES = [
+    'The road is waiting. Ten minutes on your feet.',
+    'Odyr never sat still for long. Walk for ten.',
+    'Step outside if you can. Ten minutes of air.',
+    'Rise and wander. The desk will keep.',
+    'Every step counts on the road. Ten minutes.',
+    'Shoulders down, eyes up. Walk for ten.',
+];
+
+function moveLine(n, count) {
+    if (n === 0) return MOVE_FIRST;
+    if (n === count - 1) return MOVE_LAST;
+    return MOVE_LINES[(n - 1) % MOVE_LINES.length];
+}
+
+// Goals where moving more through the day matters most: Odyr suggests move breaks (never turns them on)
+const MOVE_GOALS = ['fatloss', 'recomp', 'general'];
+
+function moveBreaksSuggested() {
+    return MOVE_GOALS.includes(userGoal()) && !nudgePrefs().move;
+}
+
+function suggestMoveBreaks() {
+    if (moveBreaksSuggested()) todayTip('move');
+}
+
+function moveBreakPrefs() {
+    const m = (userProfile && userProfile.moveBreaks) || {};
+    return {
+        every: MOVE_EVERY.includes(Number(m.every)) ? Number(m.every) : 45,
+        start: Number.isInteger(m.start) ? m.start : 9,
+        end: Number.isInteger(m.end) ? m.end : 17,
+    };
+}
+
+function setMoveBreaks(key, value) {
+    haptic();
+    userProfile = { ...userProfile, moveBreaks: { ...moveBreakPrefs(), [key]: Number(value) } };
+    scheduleSave();
+    lastNudgePlan = '';
+    renderNudgeSettings();
+    scheduleNudges();
+}
+
+// Minutes after midnight of each break on one day (a break is only planned if it ends by the end of the work day)
+function moveBreakTimes(prefs = moveBreakPrefs()) {
+    const times = [];
+    const end = prefs.end * 60;
+    for (let t = prefs.start * 60 + prefs.every; t + MOVE_BREAK_MIN <= end; t += prefs.every + MOVE_BREAK_MIN) times.push(t);
+    return times;
+}
+
+function moveBreakSettingsHtml(enabled) {
+    const p = moveBreakPrefs();
+    const hour = h => `${String(h).padStart(2, '0')}:00`;
+    const hours = (from, to, chosen) => Array.from({ length: to - from + 1 }, (_, i) => from + i)
+        .map(h => `<option value="${h}" ${h === chosen ? 'selected' : ''}>${hour(h)}</option>`).join('');
+    const count = moveBreakTimes(p).length;
+    return `
+        <div class="move-break-opts">
+            <label><small>Sitting time</small>
+                <select class="form-input" ${enabled ? '' : 'disabled'} onchange="setMoveBreaks('every', this.value)">
+                    ${MOVE_EVERY.map(m => `<option value="${m}" ${m === p.every ? 'selected' : ''}>${m} min</option>`).join('')}
+                </select>
+            </label>
+            <label><small>From</small>
+                <select class="form-input" ${enabled ? '' : 'disabled'} onchange="setMoveBreaks('start', this.value)">${hours(5, 13, p.start)}</select>
+            </label>
+            <label><small>Until</small>
+                <select class="form-input" ${enabled ? '' : 'disabled'} onchange="setMoveBreaks('end', this.value)">${hours(12, 22, p.end)}</select>
+            </label>
+        </div>
+        <p class="settings-note">${tr(count === 1 ? '1 break a day, Monday to Friday' : `${count} breaks a day, Monday to Friday`)}</p>`;
 }
 
 function renderNudgeSettings() {
@@ -1006,9 +1100,9 @@ function renderNudgeSettings() {
         <p class="settings-note">${restAlertsOn() ? 'Gentle reminders on your lock screen. Turn off any you don\'t want.' : 'Turn on Rest Alerts above first; reminders use the same notifications.'}</p>
         ${NUDGE_TYPES.map(t => `
             <label class="toggle-row">
-                <span><strong>${t.label}</strong><small>${t.note}</small></span>
+                <span><strong>${t.label}</strong><small>${t.note}</small>${t.id === 'move' && moveBreaksSuggested() ? `<small class="suggested">${tr('Suggested for your goal')}</small>` : ''}</span>
                 <input type="checkbox" class="toggle" ${prefs[t.id] ? 'checked' : ''} ${restAlertsOn() ? '' : 'disabled'} onchange="setNudge('${t.id}', this.checked)">
-            </label>`).join('')}
+            </label>${t.id === 'move' && prefs.move ? moveBreakSettingsHtml(restAlertsOn()) : ''}`).join('')}
     `;
 }
 
@@ -1017,6 +1111,7 @@ function setNudge(id, on) {
     userProfile = { ...userProfile, nudges: { ...nudgePrefs(), [id]: on } };
     scheduleSave();
     lastNudgePlan = '';
+    if (id === 'move') renderNudgeSettings();
     scheduleNudges();
 }
 
@@ -1080,6 +1175,23 @@ async function planNudges() {
         for (let i = 0; i < 7; i++) {
             const date = addDays(today, i);
             add('steps', localTime(date, 18, 30), 'Steps', '', date);
+        }
+    }
+    if (prefs.move) {
+        // Weekdays only; today, no break within 2 hours after a workout ends
+        const todays = Object.values(allData._sessions || {}).flat()
+            .filter(s => s && s.date === today && s.type === 'workout' && Number.isFinite(s.startHour));
+        const busyUntil = Math.max(-1, ...todays.map(s => s.startHour * 60 + (s.minutes || 60) + 120));
+        const busyFrom = Math.min(24 * 60, ...todays.map(s => s.startHour * 60));
+        for (let i = 0; i < 7; i++) {
+            const date = addDays(today, i);
+            const weekday = parseDate(date).getDay();
+            if (weekday === 0 || weekday === 6) continue;
+            const times = moveBreakTimes();
+            times.forEach((t, n) => {
+                if (date === today && t >= busyFrom && t <= busyUntil) return;
+                add('move', localTime(date, Math.floor(t / 60), t % 60), 'Time to wander', moveLine(n, times.length));
+            });
         }
     }
 

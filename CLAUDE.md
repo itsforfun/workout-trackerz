@@ -708,3 +708,10 @@ reference/debug-screenshots/  ← Supabase key page, "Script error" console, Git
 - **Steps** are remembered per account (`wt_steps_<id>`, `restoreSteps`), so rings and leagues are right before the network answers.
 - The 3D body now loads 1.4 s after the quote has left. `journalUnreadCount` no longer recomputes the journey per page.
 
+
+## 85. Wander breaks (v3.0, 2026-11-25)
+- Owner's idea (sits all day, forgets to move), checked by the idea coach: a reminder to get up and walk ~10 minutes after each stretch of sitting. **Off for everyone until turned on** (Settings → Reminders → Wander breaks, `nudgePrefs().move`, default false). When on: sitting time 45 / 60 / 90 min and work hours (from 05–13, until 12–22), stored as `profile.moveBreaks {every, start, end}` (`moveBreakPrefs`); weekdays only.
+- `moveBreakTimes()` gives the minutes of each break: start + sitting time, then every sitting time + 10 min, while the break ends by the end of the work day (45 min, 9–17 → 8 a day). `planNudges` writes them as `scheduled_pushes` rows of kind `move` for the next 7 days (title "Time to wander"; first and last break of the day get `MOVE_FIRST` / `MOVE_LAST`, the others take turns through six `MOVE_LINES` in Odyr's voice, via `moveLine`); today skips breaks from a logged workout's start until 2 hours after it. `rest-push` already sends any kind (tag `reminder-move`), so no server change. ~40 rows a week per user.
+- **Suggested by goal, never switched on:** for Lose fat, Lose fat and build muscle, and Maintain (`MOVE_GOALS`, `moveBreaksSuggested`), Settings shows "Suggested for your goal" under the toggle and Today shows the one-time tip `move` (`suggestMoveBreaks`, after the first workout and the tour, one tip per visit).
+- Pomodoro is 25 min work / 5 min break; 45 / 10 is the owner's pick between the trials (5 min every 30 min lowered blood sugar most) and a work day. "How the coach works" → Wander breaks: Duran 2023 (10.1249/MSS.0000000000003109), Loh 2020 (10.1007/s40279-019-01183-w), Buffey 2022 (10.1007/s40279-022-01649-4), checked on PubMed 2026-11-25.
+- Needs Rest Alerts on (Home Screen app), like every reminder.

@@ -2521,3 +2521,10 @@ body:has(.rest-bar.show.has-tale) #workoutScreen .workout-body { padding-bottom:
 .chapter-more summary::-webkit-details-marker { display:none; }
 .chapter-more .chapter { margin-bottom:var(--s2); }
 .crew-exp { margin-top:6px; font-size:0.72rem; color:var(--accent); }
+
+/* Move breaks (v3.0): sitting time and work hours under the reminder toggle */
+.move-break-opts { display:grid; grid-template-columns:repeat(3,1fr); gap:var(--s3); padding:var(--s3) 0 0; }
+.move-break-opts label { display:flex; flex-direction:column; gap:6px; min-width:0; }
+.move-break-opts small { font-size:0.7rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.08em; }
+.move-break-opts select.form-input { width:100%; min-width:0; font-size:1rem; padding:10px 26px 10px 10px; }
+.toggle-row small.suggested { color:var(--accent); }
